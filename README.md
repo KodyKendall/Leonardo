@@ -6,7 +6,7 @@ The design keeps this repo small, safe for AI-assisted editing, and still easy t
 
 ---
 
-## Quick Start: 
+## Quick Start:  
 ```
 git clone https://github.com/kodykendall/Leonardo && cd Leonardo && cp .env.example .env && docker compose up -d
 ```
