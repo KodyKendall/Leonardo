@@ -3,15 +3,15 @@ version: "3.8"
 services:
   llamapress:
     image: kody06/llamapress-simple:0.1.18          # <— pre-built tag
-    env_file: .env                           # read secrets from this file
+    env_file: .env.rails                           # read secrets from this file
     environment:
       - RAILS_ENV=development
       - BOOTSNAP_CACHE_DIR=/rails/tmp/cache/bootsnap
     volumes:
       - rails_storage:/rails/storage         # ActiveStorage local files
-      - ./rails/app:/rails/app
-      - ./rails/config/routes.rb:/rails/config/routes.rb
-      - ./rails/db:/rails/db
+      - ./rails/app:/rails/app:delegated
+      - ./rails/config/routes.rb:/rails/config/routes.rb:delegated
+      - ./rails/db:/rails/db:delegated
       - ./rails/config/environments/development.rb:/rails/config/environments/development.rb
       - ./rails/config/database.yml:/rails/config/database.yml
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:prepare && bundle exec rails s -b 0.0.0.0"
@@ -32,30 +32,32 @@ services:
       - .env
     command: bash -c "python init_pg_checkpointer.py --uri  && uvicorn main:app --host 0.0.0.0 --port 8000"
     volumes:
-      - auth_json:/app/auth.json
       - ./rails:/app/app/rails
       - /var/run/docker.sock:/var/run/docker.sock
+      - type: bind
+        source: /mnt/data/auth/auth.json
+        target: /app/auth.json
     ports:
-      - "8000:8000"
+      - "8080:8000"
     depends_on:
       db:
         condition: service_healthy
     networks:
       - llama-network
-  
+
   db:
     image: postgres:16
     environment:
-      POSTGRES_DB:      llamapress_development
+      POSTGRES_DB:      llamapress_production
       POSTGRES_USER:    postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_PASSWORD: 0f09af4c9631e1c136cb6787aeb0254d
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
     networks:
       - llama-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d llamapress_development"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d llamapress_production"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -70,8 +72,12 @@ services:
 volumes:
   redis_data:
   postgres_data:
+    driver: local
+    driver_opts: { type: none, device: /mnt/data/postgres, o: bind }
   rails_storage:
-  auth_json:
+    driver: local
+    driver_opts: { type: none, device: /mnt/data/storage, o: bind }
+
 
 # Declare the external network
 networks:

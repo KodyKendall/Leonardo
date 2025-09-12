@@ -8,7 +8,7 @@ The design keeps this repo small, safe for AI-assisted editing, and still easy t
 
 ## Quick Start:  
 ```
-git clone https://github.com/kodykendall/Leonardo && cd Leonardo && cp .env.example .env && docker compose up -d
+git clone https://github.com/kodykendall/Leonardo && cd Leonardo && cp .env.example .env && cp .env.example .env.rails && docker compose -f docker-compose-dev.yml up -d 
 ```
 
 ## Repository Layout
