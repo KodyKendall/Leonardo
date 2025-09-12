@@ -1,8 +1,10 @@
 # Leonardo Overlay Repository
 
-This repository is the **overlay codebase** for apps built with the LlamaPress/Leonardo system. It contains only the user-owned parts of a Ruby on Rails project and AI agent customizations. The Rails **framework skeleton** (Gemfile, bin, boot files, vendor, etc.) lives in the public `llamapress-simple-skeleton` repo and is bundled into the Docker base image.
+This repository is the **overlay codebase** for apps built with the LlamaPress/Leonardo system. It contains only the user-owned parts of a Ruby on Rails project and AI agent customizations. The Rails **framework skeleton** (Gemfile, bin, boot files, vendor, etc.) lives in the public `llamapress-simple` repo and is bundled into the Docker base image.
 
 The design keeps this repo small, safe for AI-assisted editing, and still easy to "eject" into a normal Rails workflow by combining it with the skeleton.
+
+See the starting rails project and base image here: https://github.com/kodykendall/llamapress-simple
 
 ---
 
@@ -87,7 +89,7 @@ Leonardo, the AI coding agent, runs in its own container and commits changes via
 * They live in the **base skeleton** and Docker image.
 * To add a gem:
 
-  1. Clone the `llamapress-simple-skeleton` repo.
+  1. Clone the `llamapress-simple` repo.
   2. Modify `Gemfile` and run `bundle lock`.
   3. Build and push a new Docker image (`kody06/llamapress-simple:<tag>`).
   4. Update `RAILS_IMAGE_REF` in `compose.vars`.
@@ -106,7 +108,7 @@ If you want to run your Rails app without Docker:
 3. Copy overlay folders into skeleton:
 
    ```bash
-   cp -R rails/app rails/db rails/config rails/test langgraph llamapress-simple-skeleton/
+   cp -R rails/app rails/db rails/config rails/test langgraph llamapress-simple/
    ```
 4. Run:
 
