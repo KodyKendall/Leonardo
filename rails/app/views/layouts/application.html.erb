@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html class="h-full bg-gray-50">
+  <head>
+    <title><%= content_for(:title) || "Rails Basic" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- Prevent caching to ensure fresh request_path and view_path -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <!-- For taking screenshots to feed to Leonardo AI -->
+    <%# <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script> %>
+
+    <script>
+      // Force fresh data on every page load - cache busting with timestamp
+      window.page_loaded_at = <%= Time.current.to_f %>;
+      window.request_path = "<%= @request_path %>";
+      window.view_path = "<%= @view_path %>";
+      
+      // Function to update context variables
+      function updatePageContext() {
+        // These are set fresh on each page load from server-side variables
+        console.log('Page context updated:', {
+          request_path: window.request_path,
+          view_path: window.view_path,
+          loaded_at: window.page_loaded_at
+        });
+      }
+      
+      // Wait for entire page to load before calling this
+      document.addEventListener('DOMContentLoaded', function() {
+        window.full_html = document.documentElement.outerHTML;
+        updatePageContext();
+      });
+      
+      // Handle Turbo navigation to ensure fresh context on SPA-style navigation
+      document.addEventListener('turbo:load', function() {
+        // Force refresh of page context on Turbo navigation
+        window.full_html = document.documentElement.outerHTML;
+        updatePageContext();
+      });
+      
+      // Additional event for when Turbo renders new content
+      document.addEventListener('turbo:render', function() {
+        updatePageContext();
+      });
+    </script>
+
+    <%= yield :head %>
+
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="https://service-jobs-images.s3.us-east-2.amazonaws.com/7rl98t1weu387r43il97h6ipk1l7" type="image/png">
+    <link rel="apple-touch-icon" href="https://service-jobs-images.s3.us-east-2.amazonaws.com/7rl98t1weu387r43il97h6ipk1l7">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <%# stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="h-full">
+    <div class="min-h-full" data-controller="menu">
+      <nav class="bg-white shadow">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="flex h-16 justify-between">
+            <div class="flex">
+              <div class="flex flex-shrink-0 items-center">
+                <img class="h-8 w-auto" src="https://service-jobs-images.s3.us-east-2.amazonaws.com/7rl98t1weu387r43il97h6ipk1l7" alt="Logo">
+              </div>
+              <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                <%= link_to "Home", root_path, class: "inline-flex items-center border-b-2 border-indigo-500 px-1 pt-1 text-sm font-medium text-gray-900" %>
+                <%= link_to "Chat with AI", "/chat", class: "inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-900 hover:border-indigo-500 hover:text-indigo-700" %>
+              </div>
+            </div>
+            <div class="hidden sm:ml-6 sm:flex sm:items-center">
+              <% if user_signed_in? %>
+                <%= link_to user_path(current_user), class: "inline-flex items-center justify-center rounded-full h-9 w-9 text-gray-500 hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500" do %>
+                  <span class="sr-only">Your profile</span>
+                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6.75a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5a7.5 7.5 0 1115 0v.75a.75.75 0 01-.75.75H5.25a.75.75 0 01-.75-.75v-.75z" />
+                  </svg>
+                <% end %>
+                <%= button_to "Sign Out", destroy_user_session_path, method: :delete, class: "rounded-full px-4 py-2 bg-gray-100 text-gray-800 font-medium hover:bg-gray-200 hover:text-indigo-700 border border-gray-200 transition-colors duration-150 ml-3 shadow-sm" %>
+              <% else %>
+                <%= link_to "Sign In", new_user_session_path, class: "rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 font-medium ml-2" %>
+              <% end %>
+            </div>
+            <div class="-mr-2 flex items-center sm:hidden">
+              <!-- Mobile menu button -->
+              <button type="button" class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500" aria-controls="mobile-menu" aria-expanded="false" data-action="click->menu#toggle">
+                <span class="sr-only">Open main menu</span>
+                <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile menu, show/hide based on menu state. -->
+        <div class="sm:hidden" id="mobile-menu" data-menu-target="mobileMenu">
+          <div class="space-y-1 pb-3 pt-2">
+            <%= link_to "Home", root_path, class: "block border-l-4 border-indigo-500 bg-indigo-50 py-2 pl-3 pr-4 text-base font-medium text-indigo-700" %>
+            <%= link_to "Chat with AI", "/chat", class: "block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700" %>
+            <% if user_signed_in? %>
+              <%= link_to "Profile", user_path(current_user), class: "block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700" %>
+            <% else %>
+              <%= link_to "Sign In", new_user_session_path, class: "block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-500 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700" %>
+            <% end %>
+          </div>
+        </div>
+      </nav>
+
+      <div class="py-10">
+        <header>
+          <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">
+              <%= content_for(:header) || "Welcome" %>
+            </h1>
+          </div>
+        </header>
+        <main>
+          <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="px-4 py-8 sm:px-0">
+              <%= yield %>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>

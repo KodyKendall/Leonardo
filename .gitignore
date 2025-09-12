@@ -1,0 +1,17 @@
+.env
+.env.rails
+__pycache__
+experiments/
+chat_app.log
+.langgraph_api/*
+frontend/node_modules
+
+env/
+
+.env.production
+LlamaBot.egg-info/
+
+app/agents/private
+
+llamapress/*
+auth.json

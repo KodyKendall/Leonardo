@@ -1,0 +1,78 @@
+version: "3.8"
+
+services:
+  llamapress:
+    image: kody06/llamapress-simple:0.1.18          # <— pre-built tag
+    env_file: .env.rails                           # read secrets from this file
+    environment:
+      - RAILS_ENV=development
+      - BOOTSNAP_CACHE_DIR=/rails/tmp/cache/bootsnap
+    volumes:
+      - rails_storage:/rails/storage         # ActiveStorage local files
+      - ./rails/app:/rails/app
+      - ./rails/config/routes.rb:/rails/config/routes.rb
+      - ./rails/db:/rails/db
+      - ./rails/config/environments/development.rb:/rails/config/environments/development.rb
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:prepare && bundle exec rails s -b 0.0.0.0"
+    ports:
+      - "3000:3000"                            # http://server_ip/
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - llama-network
+
+  llamabot:
+    image: kody06/llamabot:0.2.8
+    env_file:
+      - .env
+    command: bash -c "python init_pg_checkpointer.py --uri  && uvicorn main:app --host 0.0.0.0 --port 8000"
+    volumes:
+      - auth_json:/app/auth.json
+      - ./rails:/app/app/rails
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - llama-network
+  
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB:      llamapress_development
+      POSTGRES_USER:    postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - llama-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d llamapress_development"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    volumes: [redis_data:/data]
+    restart: unless-stopped
+    networks:
+      - llama-network
+      
+volumes:
+  redis_data:
+  postgres_data:
+  rails_storage:
+  auth_json:
+
+# Declare the external network
+networks:
+  llama-network:
+    name: llama-network

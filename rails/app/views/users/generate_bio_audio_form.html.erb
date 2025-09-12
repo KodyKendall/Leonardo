@@ -1,0 +1,48 @@
+<% content_for :title, "Generate AI Bio Audio" %>
+
+<div class="max-w-md mx-auto mt-12 bg-white rounded-lg shadow-md p-8">
+  <h1 class="text-2xl font-bold mb-6">Generate AI Bio Audio</h1>
+  <%= form_with url: generate_bio_audio_user_path(@user), method: :post, local: false, id: "ai-bio-audio-form" do |f| %>
+    <div class="mb-4">
+      <%= f.label :bio_text, "Enter your bio" %>
+      <%= f.text_area :bio_text, class: "block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", rows: 4 %>
+    </div>
+    <div>
+      <%= f.submit "Generate Bio Audio", class: "w-full rounded bg-indigo-600 py-2 px-4 text-white font-semibold hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-opacity-75" %>
+    </div>
+    <div id="loading-indicator-bio" class="hidden text-center mt-4">
+      <span class="loader inline-block align-middle"></span> Generating audio, please wait...
+    </div>
+  <% end %>
+</div>
+
+<script>
+  document.addEventListener("turbo:load", function() {
+    const form = document.getElementById("ai-bio-audio-form");
+    const loading = document.getElementById("loading-indicator-bio");
+    if (!form || !loading) return;
+
+    form.addEventListener("turbo:submit-start", function() {
+      loading.classList.remove("hidden");
+    });
+
+    form.addEventListener("turbo:submit-end", function() {
+      loading.classList.add("hidden");
+    });
+  });
+</script>
+
+<style>
+  .loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #6366f1;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
