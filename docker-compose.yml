@@ -33,6 +33,7 @@ services:
     command: bash -c "python init_pg_checkpointer.py && uvicorn main:app --host 0.0.0.0 --port 8000"
     volumes:
       - ./rails:/app/app/rails
+      - ./langgraph/agents/leo/nodes.py:/app/app/agents/llamabot/nodes.py
       - /var/run/docker.sock:/var/run/docker.sock
       - type: bind
         source: /mnt/data/auth/auth.json
