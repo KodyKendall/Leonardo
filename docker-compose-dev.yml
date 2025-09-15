@@ -30,7 +30,7 @@ services:
     image: kody06/llamabot:0.2.12b
     env_file:
       - .env
-    command: bash -c "python init_pg_checkpointer.py --uri  && uvicorn main:app --host 0.0.0.0 --port 8000"
+    command: bash -c "python init_pg_checkpointer.py && uvicorn main:app --host 0.0.0.0 --port 8000"
     volumes:
       - auth_json:/app/auth.json
       - ./langgraph/agents/leo/nodes.py:/app/app/agents/llamabot/nodes.py

@@ -1,6 +1,6 @@
 # Leonardo Overlay Repository
 
-This repository is the **overlay codebase** for apps built with the LlamaPress/Leonardo system. It contains only the user-owned parts of a Ruby on Rails project and AI agent customizations. The Rails **framework skeleton** (Gemfile, bin, boot files, vendor, etc.) lives in the public `llamapress-simple` repo and is bundled into the Docker base image.
+This repository is the **overlay codebase** for apps built with the LlamaPress/Leonardo system. It contains only the user-owned parts of a Ruby on Rails project and an AI agent through LangGraph (Python). The Rails **framework skeleton** (Gemfile, bin, boot files, vendor, etc.) lives in the public `llamapress-simple` repo and is bundled into the Docker base image.
 
 The design keeps this repo small, safe for AI-assisted editing, and still easy to "eject" into a normal Rails workflow by combining it with the skeleton.
 
@@ -30,14 +30,14 @@ leonardo/
     test/ or spec/          # User tests (optional, recommended)
 
   langgraph/
-    src/                    # User-editable AI agent code
-    requirements.txt        # Agent dependencies
-    Dockerfile              # Agent runtime image definition
+    agents/                    # User-editable AI agent code
+      - leo/                   # Default agent embedded in Rails application 
+        - nodes.py             # LangGraph agent logic
 
   scripts/
-    eject.sh                # Build full Rails app from skeleton + overlay
-    smoke.sh                # CI checks using base image
-    add-gem.md              # Human instructions for adding gems
+    eject.sh                # TODO: Build full Rails app from skeleton + overlay
+    smoke.sh                # TODO: CI checks using base image
+    add-gem.md              # TODO: Human instructions for adding gems
 
   README.md
 ```
