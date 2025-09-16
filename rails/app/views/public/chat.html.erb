@@ -8,8 +8,12 @@
 <% if defined?(action_cable_meta_tag) %>
   <%= action_cable_meta_tag %>
 <% end %>
+<!-- Add Tailwind Typography CDN -->
+<link rel="stylesheet" href="https://unpkg.com/@tailwindcss/typography@0.4.x/dist/typography.min.css">
 <!-- Add Snarkdown CDN -->
 <script src="https://unpkg.com/snarkdown/dist/snarkdown.umd.js"></script>
+<!-- Add marked.js for markdown parsing -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <div class="flex flex-col h-screen bg-gray-100">
 
   <div class="flex flex-col flex-grow bg-white shadow-lg rounded-lg mx-2 md:mx-auto my-2 max-w-4xl">
@@ -449,8 +453,8 @@
         `;
       } else {
         messageDiv.innerHTML = `
-          <div class="bg-white border border-gray-200 rounded-lg py-2 px-4 max-w-[80%] shadow-sm">
-            <p class="text-gray-800">${text}</p>
+          <div class="prose prose-sm max-w-none bg-white border border-gray-200 rounded-lg py-2 px-4 max-w-[80%] shadow-sm">
+            ${parseMarkdown(text)}
           </div>
         `;
       }
@@ -496,6 +500,36 @@
       sendMessage();
     }
   });
+
+     // Configure marked.js for better security and formatting
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            sanitize: false, // We'll handle XSS prevention differently
+            smartLists: true,
+            smartypants: true
+        });
+
+        // Function to parse markdown to HTML
+        function parseMarkdown(text) {
+            if (!text) return '';
+            
+            try {
+                // Parse markdown to HTML
+                let html = marked.parse(text);
+                
+                // Basic XSS prevention - remove script tags and event handlers
+                html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+                html = html.replace(/\son\w+="[^"]*"/gi, '');
+                html = html.replace(/\son\w+='[^']*'/gi, '');
+                
+                return html;
+            } catch (error) {
+                console.error('Markdown parsing error:', error);
+                // Fallback to plain text with line breaks
+                return text.replace(/\n/g, '<br>');
+            }
+        }
   
   // Add CSS for loading dots animation
   const style = document.createElement('style');
