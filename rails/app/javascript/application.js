@@ -1,4 +1,6 @@
 window.addEventListener("message", (event) => {
+    if (event.data.source !== 'leonardo') { return; } // don't process messages from leonardo (prevents infinite loop)
+    
     console.log("here is the message", event);
     
     // Ensure we have the most up-to-date HTML content
