@@ -23,6 +23,7 @@ Rails.application.routes.draw do
   get "home" => "public#home"
   get "chat" => "public#chat"
 
+  get "/prototypes/*page", to: "prototypes#show"
   # Defines the root path route ("/")
   # root "posts#index"
 end
