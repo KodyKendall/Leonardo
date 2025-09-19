@@ -1,23 +1,66 @@
-<div class="min-h-full">
-  <nav class="bg-gray-800">
+<div class="min-h-full" data-controller="menu">
+  <nav class="bg-white border-b border-gray-200">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
       <div class="flex h-16 items-center justify-between">
         <div class="flex items-center">
           <div class="flex-shrink-0">
-            <img class="h-8 w-8" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company">
+            <img class="h-8 w-8" src="https://service-jobs-images.s3.us-east-2.amazonaws.com/7rl98t1weu387r43il97h6ipk1l7" alt="Your Company">
           </div>
           <div class="hidden md:block">
             <div class="ml-10 flex items-baseline space-x-4">
-              <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-              <a href="#" class="bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Prototype Nav</a>
-              <%= link_to "Home", "/prototypes/home", class: "text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium" %>
-              <%= link_to "Hello", "/prototypes/hello", class: "text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium" %>
+              <a href="#" class="bg-gray-100 text-gray-900 rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Prototype Nav</a>
+              <%= link_to "Home", "/prototypes/home", class: "text-gray-500 hover:bg-gray-100 hover:text-gray-900 rounded-md px-3 py-2 text-sm font-medium" %>
+              <%= link_to "Hello", "/prototypes/hello", class: "text-gray-500 hover:bg-gray-100 hover:text-gray-900 rounded-md px-3 py-2 text-sm font-medium" %>
+              <%= link_to "Play Snake", "/prototypes/snake", class: "text-green-500 hover:bg-green-100 hover:text-green-900 rounded-md px-3 py-2 text-sm font-medium" %>
             </div>
           </div>
+        </div>
+        <div class="flex md:hidden">
+          <button type="button" data-action="click->menu#toggle" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500" aria-controls="mobile-menu" aria-expanded="false">
+            <span class="sr-only">Open main menu</span>
+            <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
   </nav>
+
+  <!-- Mobile menu, slide-out from the left -->
+  <div data-menu-target="mobileMenu" class="fixed inset-0 flex z-40 md:hidden hidden" role="dialog" aria-modal="true">
+    <div data-menu-target="overlay" class="fixed inset-0 bg-gray-600 bg-opacity-75 opacity-0 transition-opacity ease-linear duration-300" aria-hidden="true"></div>
+
+    <div data-menu-target="panel" class="relative flex-1 flex flex-col max-w-xs w-full bg-white transform -translate-x-full transition-transform ease-in-out duration-300"">
+      <div class="absolute top-0 right-0 -mr-12 pt-2">
+        <button type="button" data-action="click->menu#toggle" class="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+          <span class="sr-only">Close menu</span>
+          <!-- Heroicon name: outline/x -->
+          <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex-1 h-0 pt-5 pb-4 overflow-y-auto">
+        <div class="flex-shrink-0 flex items-center px-4">
+          <img class="h-8 w-auto" src="https://service-jobs-images.s3.us-east-2.amazonaws.com/7rl98t1weu387r43il97h6ipk1l7" alt="Your Company">
+        </div>
+        <nav class="mt-5 px-2 space-y-1">
+          <a href="#" class="bg-gray-100 text-gray-900 group flex items-center px-2 py-2 text-base font-medium rounded-md">
+            Prototype Nav
+          </a>
+          <%= link_to "Home", "/prototypes/home", class: "text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-base font-medium rounded-md" %>
+          <%= link_to "Hello", "/prototypes/hello", class: "text-gray-600 hover:bg-gray-50 hover:text-gray-900 group flex items-center px-2 py-2 text-base font-medium rounded-md" %>
+          <%= link_to "Play Snake", "/prototypes/snake", class: "text-green-600 hover:bg-green-50 hover:text-green-900 group flex items-center px-2 py-2 text-base font-medium rounded-md" %>
+        </nav>
+      </div>
+    </div>
+    <div class="flex-shrink-0 w-14" aria-hidden="true">
+      <!-- Dummy element to force sidebar to shrink to fit close icon -->
+    </div>
+  </div>
+
 
   <header class="bg-white shadow">
     <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
