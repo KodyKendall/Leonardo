@@ -1,4 +1,6 @@
 class PrototypesController < ApplicationController
+  layout "prototypes"
+
   def show
     page = params[:page]
     if lookup_context.exists?(page, ["prototypes"], false)
