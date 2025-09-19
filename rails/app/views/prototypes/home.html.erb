@@ -1,7 +1,9 @@
 <%= render layout: 'prototypes/layouts/default' do %>
-  <div class="p-10 text-center">
+  <div class="p-10 text-center opacity-0 translate-y-4 transition duration-700" data-controller="prototypes--global" data-prototypes--global-target="fadeIn">
     <h1 class="text-2xl font-bold">Hello Prototype!</h1>
     <p>This is the first page in <code>app/views/prototypes/hello.html.erb</code>.</p>
     <%= link_to "Back to Home", root_path, class: "mt-4 inline-block text-blue-600 hover:underline" %>
+    <button class="mt-8 px-6 py-3 rounded-full bg-pink-500 text-white font-bold shadow-lg hover:bg-pink-600 focus:outline-none transition" data-action="click->prototypes--global#confetti">🎉 Celebrate!</button>
+    <canvas id="confettiCanvas" class="absolute top-0 left-0 pointer-events-none w-full h-full" style="display:none; z-index: 50;"></canvas>
   </div>
 <% end %>

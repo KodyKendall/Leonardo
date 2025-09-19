@@ -1,0 +1,102 @@
+<%= render layout: 'prototypes/layouts/default' do %>
+  <div class="flex flex-col items-center mt-10">
+    <h1 class="text-3xl font-bold mb-6">🐍 Snake Game</h1>
+    <canvas id="snake-canvas" width="320" height="320" class="border-4 border-gray-600 bg-black"></canvas>
+    <div class="mt-4 text-gray-700 text-lg" id="snake-status">Score: <span id="snake-score">0</span></div>
+    <button id="snake-restart" class="mt-6 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Restart Game</button>
+    <div class="mt-4 text-sm text-gray-400">Use arrow keys on your keyboard to control the snake.</div>
+  </div>
+  <script>
+    const canvas = document.getElementById('snake-canvas');
+    const ctx = canvas.getContext('2d');
+    const scale = 20;
+    const rows = canvas.height / scale;
+    const columns = canvas.width / scale;
+    let snake, direction, food, score, gameInterval, gameOver;
+
+    function resetGame() {
+      snake = [{ x: 8, y: 8 }];
+      direction = { x: 1, y: 0 };
+      placeFood();
+      score = 0;
+      gameOver = false;
+      document.getElementById('snake-score').innerText = score;
+      document.getElementById('snake-status').textContent = 'Score: ' + score;
+      if (gameInterval) clearInterval(gameInterval);
+      gameInterval = setInterval(gameLoop, 120);
+    }
+
+    function placeFood() {
+      food = {
+        x: Math.floor(Math.random() * columns),
+        y: Math.floor(Math.random() * rows)
+      };
+      // Ensure food doesn't spawn on snake
+      while (snake.some(segment => segment.x === food.x && segment.y === food.y)) {
+        food.x = Math.floor(Math.random() * columns);
+        food.y = Math.floor(Math.random() * rows);
+      }
+    }
+
+    function gameLoop() {
+      const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
+      // Game Over checks
+      if (
+        head.x < 0 || head.x >= columns ||
+        head.y < 0 || head.y >= rows ||
+        snake.some(segment => segment.x === head.x && segment.y === head.y)
+      ) {
+        gameOver = true;
+        document.getElementById('snake-status').textContent = `Game Over! Final Score: ${score}`;
+        clearInterval(gameInterval);
+        return;
+      }
+      snake.unshift(head);
+      // Food collision
+      if (head.x === food.x && head.y === food.y) {
+        score++;
+        document.getElementById('snake-score').innerText = score;
+        placeFood();
+      } else {
+        snake.pop();
+      }
+      draw();
+    }
+
+    function draw() {
+      // Background
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Draw Snake
+      for (let i = 0; i < snake.length; i++) {
+        ctx.fillStyle = i === 0 ? '#34d399' : '#6ee7b7';
+        ctx.fillRect(snake[i].x * scale, snake[i].y * scale, scale - 2, scale - 2);
+      }
+      // Draw Food
+      ctx.fillStyle = '#f59e42';
+      ctx.fillRect(food.x * scale, food.y * scale, scale - 2, scale - 2);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (gameOver) return;
+      switch (e.key) {
+        case 'ArrowUp':
+          if (direction.y !== 1) direction = { x: 0, y: -1 };
+          break;
+        case 'ArrowDown':
+          if (direction.y !== -1) direction = { x: 0, y: 1 };
+          break;
+        case 'ArrowLeft':
+          if (direction.x !== 1) direction = { x: -1, y: 0 };
+          break;
+        case 'ArrowRight':
+          if (direction.x !== -1) direction = { x: 1, y: 0 };
+          break;
+      }
+    });
+
+    document.getElementById('snake-restart').onclick = resetGame;
+
+    resetGame();
+  </script>
+<% end %>
