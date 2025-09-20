@@ -2,7 +2,7 @@
   <div class="flex flex-col items-center mt-10">
     <h1 class="text-3xl font-bold mb-6">🐍 Snake Game</h1>
     <canvas id="snake-canvas" width="320" height="320" class="border-4 border-gray-600 bg-black"></canvas>
-    <div class="mt-4 text-gray-700 text-lg" id="snake-status">Score: <span id="snake-score">0</span></div>
+    <div class="mt-4 text-gray-700 text-lg" id="snake-status">Score: 0</div>
     <button id="snake-restart" class="mt-6 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Restart Game</button>
     <div class="mt-4 text-sm text-gray-400">Use arrow keys on your keyboard to control the snake.</div>
   </div>
@@ -20,7 +20,6 @@
       placeFood();
       score = 0;
       gameOver = false;
-      document.getElementById('snake-score').innerText = score;
       document.getElementById('snake-status').textContent = 'Score: ' + score;
       if (gameInterval) clearInterval(gameInterval);
       gameInterval = setInterval(gameLoop, 120);
