@@ -2,8 +2,6 @@ Rails.application.routes.draw do
   resources :journal_entries, only: [:index, :show, :new, :create, :edit, :update]
   resources :goals
   devise_for :users, controllers: { registrations: 'users/registrations' }
-  resources :users
-  devise_for :users, controllers: { registrations: 'users/registrations' }
   resources :users do
     member do
       get :generate_profile_pic, action: :generate_profile_pic_form
@@ -24,7 +22,6 @@ Rails.application.routes.draw do
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
   root "public#home"
-  get "home" => "public#home"
   # root "public#home"
   # root "prototypes#show", page: "home"
   get "home" => "public#home"
