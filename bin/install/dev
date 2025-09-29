@@ -89,3 +89,5 @@ EOF
 cp .env .env.rails
 
 bash bin/dev
+
+echo "🦙🎉 Done! Open http://localhost:8000 to build with Leonardo the Llama!"
