@@ -1,0 +1,91 @@
+##
+# Leonardo Installation Script
+# ---------------------------------------------------------------------
+# This script installs Leonardo, and a lightweight LlamaPress app (Rails app being modified) on a local machine.
+
+# To run:
+# curl -fsSL "https://raw.githubusercontent.com/KodyKendall/Leonardo/refs/heads/main-save/bin/install/dev" -o install_leonardo_local.sh && bash install_leonardo_local.sh
+# ---------------------------------------------------------------------
+
+#!/usr/bin/install/dev
+set -e
+
+# --- Pretty banner ----------------------------------------------------
+_show_llamabot_banner() {
+  # Respect non-interactive logs/CI or NO_BANNER=1
+  if [ ! -t 1 ] || [ -n "${CI:-}" ] || [ -n "${NO_BANNER:-}" ]; then
+    return
+  fi
+
+  # Simple color detection
+  local BOLD="" DIM="" PURPLE="" CYAN="" RESET=""
+  if [ -z "${NO_COLOR:-}" ] && [ "${TERM:-}" != "dumb" ]; then
+    BOLD="\033[1m"; DIM="\033[2m"; PURPLE="\033[35m"; CYAN="\033[36m"; RESET="\033[0m"
+  fi
+
+  printf "${PURPLE}${BOLD}"
+  cat <<'LLAMABOT_ASCII'
+   _      _                           _          _   
+  | |    | |  __ _  _ __  __    __ _ | | _  ___ | |_ 
+  | |    | | / _` || '_ \ _ \  / _` ||  _ \/ _ \| __|
+  | |___ | || (_| || | | | | || (_| || |_)  |_| | |_ 
+  |_____||_| \__,_||_| |_| |_| \__,_||____/\___/ \__|
+                                                           
+                   (\     (\
+                  (  )   (  )
+                 (   )___(  )
+         ______ /           )
+        {                   )
+         |                 ))   L L A M A B O T   I N S T A L L E R
+          \______         ))    LangGraph + Rails + Docker
+             (           ))
+             |           ))     LlamaBot (LangGraph) • LlamaPress (Rails)
+             |           ))
+             |           ))     v0.2.15
+             |           ))
+    
+
+LLAMABOT_ASCII
+  printf "${RESET}"
+  printf "${CYAN}${BOLD}→ Kickstarting setup...${RESET} ${DIM}(press Ctrl+C to abort)${RESET}\n\n"
+}
+
+_show_llamabot_banner
+
+# Prompt for OpenAI API Key
+read -p "🦙🤖 Paste your OpenAI API Key: " OPENAI_API_KEY
+export OPENAI_API_KEY
+
+# Check for required tools
+command -v docker >/dev/null 2>&1 || { echo "Docker required but not installed. Please install Docker Desktop." >&2; exit 1; }
+
+git clone https://github.com/kodykendall/Leonardo && cd Leonardo
+
+# 4. Write .env file
+cat <<EOF > .env
+LLAMABOT_VERSION=0.2.15
+
+TAVILY_API_KEY=tvly-dev-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Necessary:
+LLAMABOT_API_URL="http://llamabot:8000"
+REDIS_URL="redis://redis:6379/1"
+LLAMABOT_WEBSOCKET_URL="ws://llamabot:8000/ws"
+LLAMAPRESS_API_URL="http://llamapress:3000"
+
+AWS_KEY='your-access-key'
+AWS_PASS='your-secret-key'
+AWS_BUCKET='your-bucket-name'
+AWS_REGION='your-region'
+
+OPENAI_API_KEY=${OPENAI_API_KEY}
+
+POSTGRES_PASSWORD=password
+DB_URI="postgresql://postgres:password@db:5432/llamapress_development"
+DATABASE_URL="postgresql://postgres:password@db:5432/llamapress_development"
+SECRET_KEY_BASE=1234567890
+EOF
+
+cp .env .env.rails
+
+bash bin/dev
