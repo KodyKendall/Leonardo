@@ -12,7 +12,7 @@ See the starting rails project and base image here: https://github.com/kodykenda
 
 ## Quick Start:  
 ```
-git clone https://github.com/kodykendall/Leonardo && cd Leonardo && cp .env.example .env && cp .env.example .env.rails && docker compose -f docker-compose-dev.yml up -d 
+curl -fsSL "https://raw.githubusercontent.com/KodyKendall/Leonardo/refs/heads/main-save/bin/install/dev" -o install_leonardo_local.sh && bash install_leonardo_local.sh
 ```
 
 ## Repository Layout
