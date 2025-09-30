@@ -4,7 +4,7 @@
 # This script installs Leonardo, and a lightweight LlamaPress app (Rails app being modified) on a local machine.
 
 # To run:
-# curl -fsSL "https://raw.githubusercontent.com/KodyKendall/Leonardo/refs/heads/main-save/bin/install/dev" -o install_leonardo_local.sh && bash install_leonardo_local.sh
+# curl -fsSL "https://raw.githubusercontent.com/KodyKendall/Leonardo/refs/heads/main/bin/install/dev" -o install_leonardo_local.sh && bash install_leonardo_local.sh
 # ---------------------------------------------------------------------
 
 #!/usr/bin/install/dev
