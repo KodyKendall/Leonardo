@@ -19,6 +19,16 @@ class ApplicationController < ActionController::Base
     response.headers['Expires'] = '0'
   end
 
+  def stop_impersonating
+    if session[:admin_id]
+      admin = User.find(session.delete(:admin_id))
+      sign_in(admin)
+      redirect_to admin_root_path, notice: "Stopped impersonation"
+    else
+      redirect_to root_path
+    end
+  end
+
   private
 
   def resolve_view_path

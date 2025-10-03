@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <%= csrf_meta_tags %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+</head>
+<body class="bg-gray-100">
+  <div class="flex">
+    <aside class="w-64 bg-white shadow h-screen p-4">
+      <nav>
+        <%= link_to "Dashboard", admin_root_path, class: "block py-2" %>
+        <%= link_to "Users", admin_users_path, class: "block py-2" %>
+      </nav>
+    </aside>
+    <main class="flex-1 p-6">
+      <%= yield %>
+    </main>
+  </div>
+</body>
+</html>

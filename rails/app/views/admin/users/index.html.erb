@@ -1,0 +1,30 @@
+<div class="p-6 space-y-6">
+  <div class="flex justify-between items-center">
+    <h1 class="text-2xl font-bold">Users</h1>
+    <%= form_with url: admin_users_path, method: :get, class: "flex items-center" do |form| %>
+      <%= form.text_field :q, value: params[:q], class: "border rounded-l px-2 py-1" %>
+      <%= form.submit "Search", class: "bg-blue-500 text-white rounded-r px-4 py-1" %>
+    <% end %>
+  </div>
+
+  <table class="w-full bg-white shadow rounded">
+    <thead>
+      <tr class="border-b">
+        <th class="text-left p-2">ID</th>
+        <th class="text-left p-2">Email</th>
+        <th class="text-left p-2">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr class="border-b">
+          <td class="p-2"><%= user.id %></td>
+          <td class="p-2"><%= user.email %></td>
+          <td class="p-2">
+            <%= button_to "Impersonate", impersonate_admin_user_path(user), method: :post, class: "text-blue-500" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
