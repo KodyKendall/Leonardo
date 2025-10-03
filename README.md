@@ -10,9 +10,16 @@ See the starting rails project and base image here: https://github.com/kodykenda
 
 ---
 
-## Quick Start:  
+## Quick Start (Non-Dev)
 ```
 curl -fsSL "https://raw.githubusercontent.com/KodyKendall/Leonardo/refs/heads/main-save/bin/install/dev" -o install_leonardo_local.sh && bash install_leonardo_local.sh
+```
+
+## Quick Start Dev
+```
+clone your repo
+bash bin/dev
+open localhost:8000
 ```
 
 ## Repository Layout
