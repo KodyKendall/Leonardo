@@ -10,7 +10,7 @@ See the starting rails project and base image here: https://github.com/kodykenda
 
 ---
 
-## Quick Start (Non-Dev)
+## Quick Start for Devs:  
 ```
 curl -fsSL "https://raw.githubusercontent.com/KodyKendall/Leonardo/refs/heads/main-save/bin/install/dev" -o install_leonardo_local.sh && bash install_leonardo_local.sh
 ```
@@ -23,7 +23,6 @@ open localhost:8000
 ```
 
 ## Repository Layout
-
 ```
 leonardo/
   docker-compose.yml        # Base compose definition (services, volumes)

@@ -30,7 +30,7 @@ services:
       - llama-network
 
   llamabot:
-    image: kody06/llamabot:0.2.14b
+    image: kody06/llamabot:0.2.14c
     # build: ../LlamaBot
     env_file:
       - .env
@@ -42,7 +42,7 @@ services:
       - ./langgraph/agents/leo/nodes.py:/app/app/agents/llamabot/nodes.py
       - ./rails:/app/app/rails
       - /var/run/docker.sock:/var/run/docker.sock
-      # - ../LlamaBot/app:/app/app
+      - ../LlamaBot/app:/app/app
     ports:
       - "8000:8000"
     depends_on:
