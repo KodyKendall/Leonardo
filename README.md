@@ -12,7 +12,7 @@ See the starting rails project and base image here: https://github.com/kodykenda
 
 ## Quick Start for Devs:  
 ```
-curl -fsSL "https://raw.githubusercontent.com/KodyKendall/Leonardo/refs/heads/main-save/bin/install/dev" -o install_leonardo_local.sh && bash install_leonardo_local.sh
+curl -fsSL "https://raw.githubusercontent.com/KodyKendall/Leonardo/refs/heads/main/bin/install/dev" -o install_leonardo_local.sh && bash install_leonardo_local.sh
 ```
 
 ## Quick Start Dev
