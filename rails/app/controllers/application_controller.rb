@@ -1,9 +1,11 @@
 class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
+  before_action :authenticate_user_from_token!
   before_action :authenticate_user!
   before_action :allow_iframe_requests
   before_action :set_context
+  protect_from_forgery with: :exception, unless: :api_request?
 
   def allow_iframe_requests
     response.headers.delete('X-Frame-Options')
@@ -30,6 +32,28 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  def authenticate_user_from_token!
+    return unless api_request?
+
+    token = request.headers['Authorization']&.match(/^Bearer\s+(.+)$/)&.captures&.first ||
+            params['api_token']
+
+    if token.present?
+      user = User.find_by(api_token: token)
+      if user
+        sign_in(user, store: false)
+        return
+      end
+    end
+
+    render json: { error: 'Invalid API token' }, status: :unauthorized
+  end
+
+  def api_request?
+    request.headers['Authorization']&.start_with?('Bearer ') ||
+    params['api_token'].present?
+  end
 
   def resolve_view_path
     route = Rails.application.routes.recognize_path(request.path, method: request.method)
