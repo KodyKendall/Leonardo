@@ -16,3 +16,5 @@ app/agents/private
 llamapress/*
 auth.json
 new-a-record.json
+
+.idea/
