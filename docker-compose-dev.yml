@@ -90,16 +90,18 @@ services:
       - "8443:8443"
     restart: unless-stopped
 
-  # pgweb:
-  #   image: sosedoff/pgweb
-  #   ports:
-  #     - "8082:8081"
-  #   environment:
-  #     DATABASE_URL: postgres://postgres:password@db:5432/llamapress_development?sslmode=disable
-  #   depends_on:
-  #     - db
-  #   networks:
-  #     - llama-network
+  pgweb:
+    image: sosedoff/pgweb
+    ports:
+      - "8082:8081"
+    environment:
+      DATABASE_URL: postgres://postgres:password@db:5432/llamapress_development?sslmode=disable
+      AUTH_USER: admin
+      AUTH_PASS: changeme
+    depends_on:
+      - db
+    networks:
+      - llama-network
       
 volumes:
   redis_data:
