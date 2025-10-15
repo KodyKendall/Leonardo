@@ -30,7 +30,7 @@ services:
       - llama-network
 
   llamabot:
-    image: kody06/llamabot:0.2.15b
+    image: kody06/llamabot:0.2.16a
     # build: ../LlamaBot
     env_file:
       - .env
@@ -74,6 +74,31 @@ services:
     restart: unless-stopped
     networks:
       - llama-network
+
+  code:
+    image: kodykendall/llamabot-vscode:latest
+    container_name: code
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Denver
+      - PASSWORD=password
+    volumes:
+      - ./:/config/workspace
+    ports:
+      - "8443:8443"
+    restart: unless-stopped
+
+  # pgweb:
+  #   image: sosedoff/pgweb
+  #   ports:
+  #     - "8082:8081"
+  #   environment:
+  #     DATABASE_URL: postgres://postgres:password@db:5432/llamapress_development?sslmode=disable
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - llama-network
       
 volumes:
   redis_data:
