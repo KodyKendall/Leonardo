@@ -84,6 +84,7 @@ services:
       - TZ=America/Denver
       - PASSWORD=password
     volumes:
+      - code_config:/config
       - ./:/config/workspace
     ports:
       - "8443:8443"
@@ -105,6 +106,7 @@ volumes:
   postgres_data:
   rails_storage:
   auth_json:
+  code_config:
 
 # Declare the external network
 networks:
