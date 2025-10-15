@@ -71,7 +71,7 @@ services:
       - llama-network
 
   code:
-    image: kodykendall/llamabot-vscode:latest
+    image: kody06/llamabot-vscode:latest
     container_name: code
     environment:
       - PUID=1000
