@@ -30,12 +30,12 @@ services:
       - llama-network
 
   llamabot:
-    image: kody06/llamabot:0.2.16f
+    image: kody06/llamabot:0.2.17
     # build: ../LlamaBot
     env_file:
       - .env
-    # command: bash -c "python init_pg_checkpointer.py && uvicorn main:app --host 0.0.0.0 --port 8000"
-    command: tail -f /dev/null
+    command: bash -c "python init_pg_checkpointer.py && uvicorn main:app --host 0.0.0.0 --port 8000"
+    # command: tail -f /dev/null
     # docker compose exec -it llamabot uvicorn main:app --host 0.0.0.0 --port 8000
     volumes:
       - auth_json:/app/auth.json
@@ -78,9 +78,8 @@ services:
   code:
     image: kody06/llamabot-vscode:latest
     container_name: code
+    user: root
     environment:
-      - PUID=1000
-      - PGID=1000
       - TZ=America/Denver
       - PASSWORD=password
     volumes:
@@ -88,7 +87,7 @@ services:
       - ./:/config/workspace
     ports:
       - "8443:8443"
-    restart: unless-stopped
+    restart: unless-stopped  
 
   pgweb:
     image: sosedoff/pgweb
