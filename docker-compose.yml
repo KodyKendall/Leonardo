@@ -73,7 +73,7 @@ services:
   code:
     image: kody06/llamabot-vscode:latest
     container_name: code
-    user: root
+    user: "1000:1000"  # ubuntu user id
     environment:
       - TZ=America/Denver
       - PASSWORD=password
