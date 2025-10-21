@@ -34,8 +34,8 @@ services:
     # build: ../LlamaBot
     env_file:
       - .env
-    command: bash -c "python init_pg_checkpointer.py && uvicorn main:app --host 0.0.0.0 --port 8000"
-    # command: tail -f /dev/null
+    # command: bash -c "python init_pg_checkpointer.py && uvicorn main:app --host 0.0.0.0 --port 8000"
+    command: bash -c "python init_pg_checkpointer.py && tail -f /dev/null"
     # docker compose exec -it llamabot uvicorn main:app --host 0.0.0.0 --port 8000
     volumes:
       - auth_json:/app/auth.json
@@ -78,7 +78,7 @@ services:
   code:
     image: kody06/llamabot-vscode:latest
     container_name: code
-    user: root
+    user: "1000:1000"  # ubuntu user id
     environment:
       - TZ=America/Denver
       - PASSWORD=password
