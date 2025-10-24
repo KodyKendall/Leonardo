@@ -39,10 +39,11 @@ services:
     # docker compose exec -it llamabot uvicorn main:app --host 0.0.0.0 --port 8000
     volumes:
       - auth_json:/app/auth.json
-      - ./langgraph/agents/leo/nodes.py:/app/app/agents/llamabot/nodes.py
-      - ./rails:/app/app/rails
+      - ../LlamaBot/app:/app/app  # Dev: full mount for hot reload
+      - ./rails:/app/app/rails  # Override: Leonardo's Rails code
+      - ./langgraph/langgraph.json:/app/app/langgraph.json  # Override: merged config
+      - ./langgraph/agents:/app/app/user_agents  # Add: custom agents
       - /var/run/docker.sock:/var/run/docker.sock
-      # - ../LlamaBot/app:/app/app
     ports:
       - "8000:8000"
     depends_on:
