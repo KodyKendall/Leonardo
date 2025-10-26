@@ -74,6 +74,7 @@ services:
   code:
     image: kody06/llamabot-vscode:latest
     container_name: code
+    user: root
     environment:
       - TZ=America/Denver
       - PASSWORD=password
