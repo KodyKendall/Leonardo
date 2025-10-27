@@ -18,5 +18,3 @@ auth.json
 new-a-record.json
 
 .idea/
-
-bin/backups/cloud/*
