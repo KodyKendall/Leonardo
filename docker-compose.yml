@@ -3,7 +3,7 @@ version: "3.8"
 services:
   llamapress:
     image: kody06/llamapress-simple:0.2.2          # <— pre-built tag
-    env_file: .env.rails                           # read secrets from this file
+    env_file: .env                           # read secrets from this file
     environment:
       - RAILS_ENV=development
       - BOOTSNAP_CACHE_DIR=/rails/tmp/cache/bootsnap
@@ -72,12 +72,13 @@ services:
       - llama-network
 
   code:
-    image: kody06/llamabot-vscode:latest
+    image: kody06/llamabot-vscode:0.2.0
     container_name: code
-    user: root
     environment:
       - TZ=America/Denver
       - PASSWORD=password
+      - PUID=1000
+      - PGID=1000
     volumes:
       - code_config:/config
       - ./:/config/workspace
