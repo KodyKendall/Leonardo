@@ -31,7 +31,7 @@ services:
       - llama-network
 
   llamabot:
-    image: kody06/llamabot:0.2.19-memory-efficienta
+    image: kody06/llamabot:0.2.19-b
     # build: ../LlamaBot
     env_file:
       - .env
