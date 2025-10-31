@@ -1,3 +1,6 @@
+ENV['RAILS_ENV'] ||= 'test'
+abort("Tests are running in #{ENV['RAILS_ENV']}!") unless ENV['RAILS_ENV'] == 'test'
+
 require 'simplecov'
 SimpleCov.start 'rails' do
   add_filter '/bin/'
