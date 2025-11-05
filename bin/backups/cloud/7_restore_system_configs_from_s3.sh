@@ -20,12 +20,30 @@ START=$(date +%s)
 # If no backup specified, find the latest
 if [ -z "$BACKUP_NAME" ]; then
     echo "📋 Finding latest backup for ${INSTANCE_NAME}..."
-    LATEST=$(aws s3 ls "${S3_BUCKET}/" | grep "system-${INSTANCE_NAME}-" | sort | tail -n 1 | awk '{print $4}')
-    if [ -z "$LATEST" ]; then
-        echo "❌ No backups found for ${INSTANCE_NAME}"
+
+    # Try to read the latest-backup.txt index file
+    LATEST_TIMESTAMP=$(aws s3 cp "${S3_BUCKET}/latest-backup.txt" - 2>/dev/null || echo "")
+
+    if [ -z "$LATEST_TIMESTAMP" ]; then
+        # Fallback: list all timestamp folders and get the most recent
+        LATEST_TIMESTAMP=$(aws s3 ls "${S3_BUCKET}/" | grep "PRE" | awk '{print $2}' | sed 's|/||g' | sort | tail -n 1)
+    fi
+
+    if [ -z "$LATEST_TIMESTAMP" ]; then
+        echo "❌ No backups found in ${S3_BUCKET}"
         exit 1
     fi
-    BACKUP_NAME="$LATEST"
+
+    echo "📍 Using timestamp: ${LATEST_TIMESTAMP}"
+
+    # Find the system backup in this timestamp folder
+    LATEST=$(aws s3 ls "${S3_BUCKET}/${LATEST_TIMESTAMP}/" | grep "system-${INSTANCE_NAME}-" | awk '{print $4}' | head -n 1)
+    if [ -z "$LATEST" ]; then
+        echo "❌ No system backup found for ${INSTANCE_NAME} in ${LATEST_TIMESTAMP}/"
+        exit 1
+    fi
+
+    BACKUP_NAME="${LATEST_TIMESTAMP}/${LATEST}"
     echo "📍 Using: ${BACKUP_NAME}"
 fi
 

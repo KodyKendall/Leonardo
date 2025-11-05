@@ -22,12 +22,31 @@ START=$(date +%s)
 # If no backup specified, find the latest
 if [ -z "$BACKUP_NAME" ]; then
     echo "📋 Finding latest backup for ${INSTANCE_NAME}..."
-    LATEST=$(aws s3 ls "${S3_BUCKET}/" | grep "project-${INSTANCE_NAME}-" | sort | tail -n 1 | awk '{print $4}')
+
+    # Try to read the latest-backup.txt index file
+    LATEST_TIMESTAMP=$(aws s3 cp "${S3_BUCKET}/latest-backup.txt" - 2>/dev/null || echo "")
+
+    if [ -z "$LATEST_TIMESTAMP" ]; then
+        # Fallback: list all timestamp folders and get the most recent
+        LATEST_TIMESTAMP=$(aws s3 ls "${S3_BUCKET}/" | grep "PRE" | awk '{print $2}' | sed 's|/||g' | sort | tail -n 1)
+    fi
+
+    if [ -z "$LATEST_TIMESTAMP" ]; then
+        echo "⚠️  No backups found in ${S3_BUCKET}"
+        echo "ℹ️  This appears to be a new instance - skipping restore"
+        exit 0
+    fi
+
+    echo "📍 Using timestamp: ${LATEST_TIMESTAMP}"
+
+    # Find the project backup in this timestamp folder
+    LATEST=$(aws s3 ls "${S3_BUCKET}/${LATEST_TIMESTAMP}/" | grep "project-${INSTANCE_NAME}-" | awk '{print $4}' | head -n 1)
     if [ -z "$LATEST" ]; then
-        echo "❌ No backups found for ${INSTANCE_NAME}"
+        echo "❌ No project backup found for ${INSTANCE_NAME} in ${LATEST_TIMESTAMP}/"
         exit 1
     fi
-    BACKUP_NAME="$LATEST"
+
+    BACKUP_NAME="${LATEST_TIMESTAMP}/${LATEST}"
     echo "📍 Using: ${BACKUP_NAME}"
 fi
 
@@ -36,8 +55,15 @@ echo "📥 Downloading and extracting to ${RESTORE_DIR}..."
 mkdir -p "$RESTORE_DIR"
 cd "$RESTORE_DIR"
 
+# Clean up existing Leonardo directory with sudo (handles any permission issues)
+if [ -d "$RESTORE_DIR/Leonardo" ] || [ -d "$RESTORE_DIR/llamapress" ]; then
+    echo "🧹 Cleaning up existing project directory..."
+    sudo rm -rf "$RESTORE_DIR/Leonardo" "$RESTORE_DIR/llamapress"
+fi
+
+# Extract with --no-same-owner to normalize ownership to current user (ubuntu)
 aws s3 cp "${S3_BUCKET}/${BACKUP_NAME}" - \
-    | tar xzf -
+    | tar -xozf -
 
 # Find what was extracted (Leonardo or llamapress)
 EXTRACTED_DIR=$(find . -maxdepth 1 -type d \( -name "Leonardo" -o -name "llamapress" \) | head -n 1 | sed 's|^\./||')
@@ -46,6 +72,10 @@ if [ -z "$EXTRACTED_DIR" ]; then
     echo "❌ Could not find extracted Leonardo or llamapress folder"
     exit 1
 fi
+
+# Ensure everything is owned by ubuntu:ubuntu
+echo "🔧 Setting ownership to ubuntu:ubuntu..."
+sudo chown -R ubuntu:ubuntu "$RESTORE_DIR/$EXTRACTED_DIR"
 
 END=$(date +%s)
 DURATION=$((END - START))
