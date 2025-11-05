@@ -14,6 +14,28 @@ if [ -z "$INSTANCE_NAME" ] || [ -z "$S3_BUCKET" ]; then
     exit 1
 fi
 
+# Check if this is a new instance (no backups exist)
+echo "🔍 Checking for existing backups..."
+BACKUP_CHECK=$(aws s3 ls "${S3_BUCKET}/latest-backup.txt" 2>/dev/null || echo "")
+if [ -z "$BACKUP_CHECK" ]; then
+    # No latest-backup.txt, check for any timestamp folders
+    FOLDER_CHECK=$(aws s3 ls "${S3_BUCKET}/" 2>/dev/null | grep "PRE" || echo "")
+    if [ -z "$FOLDER_CHECK" ]; then
+        echo "════════════════════════════════════════════════════════════"
+        echo "🆕 NEW INSTANCE DETECTED"
+        echo "════════════════════════════════════════════════════════════"
+        echo "📍 Instance: ${INSTANCE_NAME}"
+        echo "📍 S3 Path: ${S3_BUCKET}"
+        echo ""
+        echo "ℹ️  No backups found - this is a brand new instance"
+        echo "✅ Skipping restore - instance will use fresh Leonardo installation"
+        echo ""
+        echo "🎉 Instance is ready to use!"
+        echo "════════════════════════════════════════════════════════════"
+        exit 0
+    fi
+fi
+
 echo "════════════════════════════════════════════════════════════"
 echo "🚀 MASTER RESTORE: ${INSTANCE_NAME}"
 echo "════════════════════════════════════════════════════════════"
@@ -52,37 +74,84 @@ cd ~/Leonardo
 echo "✅ Step 1 complete"
 echo ""
 
-# Step 2: Restore Docker volumes
+# Step 2: Restore Docker Volumes (includes postgres_data)
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "📦 STEP 2/6: Restore Docker Volumes"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+# Stop all services before restoring volumes
+docker compose down
+
 ./bin/backups/cloud/9_restore_docker_volumes_from_s3.sh \
     "${INSTANCE_NAME}" \
     "${S3_BUCKET}"
 echo "✅ Step 2 complete"
 echo ""
 
-# Step 3: Start database
+# Step 3: Fix Postgres Password Mismatch
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "📦 STEP 3/6: Start Database"
+echo "📦 STEP 3/6: Fix Postgres Password"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+# CRITICAL: The restored postgres_data volume has data with one password,
+# but the restored .env file may have a different password.
+# We need to change the password in postgres to match .env
+
+echo "🚀 Starting postgres with OLD password (from restored volume)..."
+docker compose up -d db
+
+# Wait for postgres to be ready (with timeout)
+echo "⏳ Waiting for postgres to start..."
+TIMEOUT=30
+ELAPSED=0
+until docker compose exec -T db pg_isready -U postgres > /dev/null 2>&1; do
+    if [ $ELAPSED -ge $TIMEOUT ]; then
+        echo "   ❌ Postgres failed to start within ${TIMEOUT} seconds!"
+        exit 1
+    fi
+    sleep 1
+    ELAPSED=$((ELAPSED + 1))
+done
+echo "   ✓ Postgres is ready"
+
+# Get the password from restored .env
+NEW_PASSWORD=$(grep "^POSTGRES_PASSWORD=" .env | cut -d= -f2)
+echo "🔐 Updating postgres password to match .env..."
+
+# Change the password (using trust auth since we don't know the old password)
+# We'll temporarily use local socket auth which doesn't require password
+docker compose exec -T db psql -U postgres -c "ALTER USER postgres PASSWORD '$NEW_PASSWORD';" > /dev/null 2>&1
+
+# Verify the new password works
+if docker compose exec -T db env PGPASSWORD="$NEW_PASSWORD" psql -U postgres -c "SELECT 1" > /dev/null 2>&1; then
+    echo "   ✓ Password updated successfully"
+else
+    echo "   ❌ Password update failed!"
+    exit 1
+fi
+
+# Restart all services with new password
+echo "🔄 Restarting all services..."
+docker compose down
 docker compose up -d db redis
-sleep 5
+
+# Wait for postgres again
+echo "⏳ Waiting for postgres to restart..."
+ELAPSED=0
+until docker compose exec -T db pg_isready -U postgres > /dev/null 2>&1; do
+    if [ $ELAPSED -ge $TIMEOUT ]; then
+        echo "   ❌ Postgres failed to restart!"
+        exit 1
+    fi
+    sleep 1
+    ELAPSED=$((ELAPSED + 1))
+done
+echo "   ✓ Postgres restarted with new password"
+
 echo "✅ Step 3 complete"
 echo ""
 
-# Step 4: Restore Postgres data
+# Step 4: Restore system configs (SSL certs, Caddyfile, etc.)
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "📦 STEP 4/6: Restore Postgres Database"
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-./bin/backups/cloud/10_restore_postgres_from_s3.sh \
-    "${S3_BUCKET}"
-echo "✅ Step 4 complete"
-echo ""
-
-# Step 5: Restore system configs (SSL certs, Caddyfile, etc.)
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "📦 STEP 5/6: Restore System Configs & SSL Certificates"
+echo "📦 STEP 4/6: Restore System Configs & SSL Certificates"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 sudo ./bin/backups/cloud/7_restore_system_configs_from_s3.sh \
     "${INSTANCE_NAME}" \
@@ -91,76 +160,28 @@ sudo ./bin/backups/cloud/7_restore_system_configs_from_s3.sh \
 # Reload Caddy to pick up restored certificates
 echo "🔄 Reloading Caddy..."
 sudo systemctl reload caddy
-echo "✅ Step 5 complete"
+echo "✅ Step 4 complete"
 echo ""
 
-# Step 6: Update DNS and start all services
+# Step 5: Start all services
+# Note: DNS is managed by the Rails app - we don't update it here
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "📦 STEP 6/6: Update DNS & Start All Services"
+echo "📦 STEP 5/5: Start All Services"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-# Get public IP using IMDSv2
+# Get public IP using IMDSv2 (for logging purposes)
 TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" 2>/dev/null)
 IPADDRESS=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -s http://169.254.169.254/latest/meta-data/public-ipv4 2>/dev/null)
 
 echo "📍 Public IP: ${IPADDRESS}"
-
-# Update Route 53
-ZONE_ID=$(aws route53 list-hosted-zones-by-name \
-  --dns-name "llamapress.ai." \
-  --query 'HostedZones[0].Id' \
-  --output text | sed 's|/hostedzone/||')
-
-cat > /tmp/update-dns.json <<EOF
-{
-  "Comment": "Update A records for ${INSTANCE_NAME} to new EC2 IP",
-  "Changes": [
-    {
-      "Action": "UPSERT",
-      "ResourceRecordSet": {
-        "Name": "${INSTANCE_NAME}.llamapress.ai.",
-        "Type": "A",
-        "TTL": 60,
-        "ResourceRecords": [{ "Value": "${IPADDRESS}" }]
-      }
-    },
-    {
-      "Action": "UPSERT",
-      "ResourceRecordSet": {
-        "Name": "rails-${INSTANCE_NAME}.llamapress.ai.",
-        "Type": "A",
-        "TTL": 60,
-        "ResourceRecords": [{ "Value": "${IPADDRESS}" }]
-      }
-    },
-    {
-      "Action": "UPSERT",
-      "ResourceRecordSet": {
-        "Name": "vscode-${INSTANCE_NAME}.llamapress.ai.",
-        "Type": "A",
-        "TTL": 60,
-        "ResourceRecords": [{ "Value": "${IPADDRESS}" }]
-      }
-    }
-  ]
-}
-EOF
-
-aws route53 change-resource-record-sets \
-  --hosted-zone-id "$ZONE_ID" \
-  --change-batch file:///tmp/update-dns.json
-
-echo "✅ DNS updated"
-echo "   - ${INSTANCE_NAME}.llamapress.ai -> ${IPADDRESS}"
-echo "   - rails-${INSTANCE_NAME}.llamapress.ai -> ${IPADDRESS}"
-echo "   - vscode-${INSTANCE_NAME}.llamapress.ai -> ${IPADDRESS}"
+echo "🌐 DNS already configured by orchestrator"
 
 # Start all services
 echo ""
 echo "🚀 Starting all services..."
 docker compose up -d
 
-echo "✅ Step 6 complete"
+echo "✅ Step 5 complete"
 echo ""
 
 # Final summary

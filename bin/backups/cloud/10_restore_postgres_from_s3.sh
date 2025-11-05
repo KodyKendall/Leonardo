@@ -19,12 +19,30 @@ START=$(date +%s)
 # If no backup specified, try to find the latest
 if [ -z "$BACKUP_NAME" ]; then
     echo "📋 No backup specified, finding latest..."
-    LATEST_FILE=$(aws s3 ls "${S3_BUCKET}/" | grep "postgres-" | sort | tail -n 1 | awk '{print $4}')
-    if [ -z "$LATEST_FILE" ]; then
+
+    # Try to read the latest-backup.txt index file
+    LATEST_TIMESTAMP=$(aws s3 cp "${S3_BUCKET}/latest-backup.txt" - 2>/dev/null || echo "")
+
+    if [ -z "$LATEST_TIMESTAMP" ]; then
+        # Fallback: list all timestamp folders and get the most recent
+        LATEST_TIMESTAMP=$(aws s3 ls "${S3_BUCKET}/" | grep "PRE" | awk '{print $2}' | sed 's|/||g' | sort | tail -n 1)
+    fi
+
+    if [ -z "$LATEST_TIMESTAMP" ]; then
         echo "❌ No backups found in ${S3_BUCKET}"
         exit 1
     fi
-    BACKUP_NAME="$LATEST_FILE"
+
+    echo "📍 Using timestamp: ${LATEST_TIMESTAMP}"
+
+    # Find the postgres backup in this timestamp folder
+    LATEST_FILE=$(aws s3 ls "${S3_BUCKET}/${LATEST_TIMESTAMP}/" | grep "postgres-" | awk '{print $4}' | head -n 1)
+    if [ -z "$LATEST_FILE" ]; then
+        echo "❌ No postgres backup found in ${S3_BUCKET}/${LATEST_TIMESTAMP}/"
+        exit 1
+    fi
+
+    BACKUP_NAME="${LATEST_TIMESTAMP}/${LATEST_FILE}"
     echo "📍 Using: ${BACKUP_NAME}"
 fi
 
@@ -49,9 +67,24 @@ echo " ✓"
 
 # Stream from S3 directly to postgres (no temp file)
 echo "📥 Downloading and restoring from S3..."
+echo "   Source: ${S3_BUCKET}/${BACKUP_NAME}"
+
+# Restore the SQL dump - show errors but suppress routine output
+# Note: We keep stderr visible to catch any errors
 aws s3 cp "${S3_BUCKET}/${BACKUP_NAME}" - \
     | gunzip \
-    | docker compose exec -T db psql -U postgres > /dev/null
+    | docker compose exec -T db psql -U postgres 2>&1 \
+    | grep -v "^CREATE\|^ALTER\|^SET\|^--\|^INSERT\|^COPY\|^$" || true
+
+# Verify data was restored
+echo "🔍 Verifying data restoration..."
+TABLE_COUNT=$(docker compose exec -T db psql -U postgres -t -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';" 2>/dev/null | tr -d ' \n' || echo "0")
+echo "   Found ${TABLE_COUNT} tables in database"
+
+if [ "$TABLE_COUNT" = "0" ]; then
+    echo "   ❌ WARNING: No tables found after restore! Data may not have been restored."
+    echo "   Check if SQL dump exists at: ${S3_BUCKET}/${BACKUP_NAME}"
+fi
 
 END=$(date +%s)
 DURATION=$((END - START))

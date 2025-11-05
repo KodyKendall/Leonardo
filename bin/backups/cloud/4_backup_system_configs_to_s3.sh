@@ -4,14 +4,22 @@ set -e
 # Parse arguments
 INSTANCE_NAME="$1"
 S3_BUCKET="$2"
+BACKUP_FOLDER="$3"  # Shared timestamp folder for this backup session
 
 if [ -z "$INSTANCE_NAME" ] || [ -z "$S3_BUCKET" ]; then
-    echo "Usage: $0 <instance_name> <s3_bucket>"
+    echo "Usage: $0 <instance_name> <s3_bucket> [backup_folder]"
     echo "Example: $0 production-server-1 s3://my-bucket/system-configs"
+    echo "Example: $0 production-server-1 s3://my-bucket/system-configs 20251020-153022"
     exit 1
 fi
 
-TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+# Use provided backup folder or generate new timestamp
+if [ -z "$BACKUP_FOLDER" ]; then
+    BACKUP_FOLDER=$(date +%Y%m%d-%H%M%S)
+    echo "⚠️  No backup folder specified, generating: ${BACKUP_FOLDER}"
+fi
+
+TIMESTAMP="$BACKUP_FOLDER"  # Keep TIMESTAMP variable for backward compatibility
 BACKUP_NAME="system-${INSTANCE_NAME}-${TIMESTAMP}.tar.gz"
 TEMP_DIR="/tmp/system-backup-$$"
 
@@ -67,11 +75,11 @@ if [ -z "$(ls -A $TEMP_DIR)" ]; then
     exit 1
 fi
 
-# Create tarball and stream to S3
+# Create tarball and stream to S3 in timestamped folder
 echo "📤 Uploading to S3..."
 cd "$TEMP_DIR"
 tar czf - . \
-    | aws s3 cp - "${S3_BUCKET}/${BACKUP_NAME}" \
+    | aws s3 cp - "${S3_BUCKET}/${TIMESTAMP}/${BACKUP_NAME}" \
         --storage-class STANDARD_IA
 
 # Cleanup
@@ -82,11 +90,11 @@ END=$(date +%s)
 DURATION=$((END - START))
 
 echo "✅ System configs backed up in ${DURATION} seconds"
-echo "📍 ${S3_BUCKET}/${BACKUP_NAME}"
+echo "📍 ${S3_BUCKET}/${TIMESTAMP}/${BACKUP_NAME}"
 
 # Get size from S3
 sleep 1
-SIZE_INFO=$(aws s3 ls "${S3_BUCKET}/${BACKUP_NAME}" 2>/dev/null || echo "")
+SIZE_INFO=$(aws s3 ls "${S3_BUCKET}/${TIMESTAMP}/${BACKUP_NAME}" 2>/dev/null || echo "")
 if [ -n "$SIZE_INFO" ]; then
     SIZE_BYTES=$(echo "$SIZE_INFO" | awk '{print $3}')
     SIZE_KB=$((SIZE_BYTES / 1024))
@@ -95,6 +103,8 @@ fi
 
 echo "⏱️  End: $(date +%H:%M:%S)"
 
-# Save latest backup name
-echo "${BACKUP_NAME}" > /tmp/latest-system-backup.txt
-aws s3 cp /tmp/latest-system-backup.txt "${S3_BUCKET}/latest-${INSTANCE_NAME}.txt"
+# Update latest backup timestamp at root level
+TEMP_FILE=$(mktemp)
+echo "${TIMESTAMP}" > "$TEMP_FILE"
+aws s3 cp "$TEMP_FILE" "${S3_BUCKET}/latest-backup.txt"
+rm -f "$TEMP_FILE"
