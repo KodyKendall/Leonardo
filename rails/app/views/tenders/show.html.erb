@@ -1,15 +1,63 @@
 <% content_for :title, "Showing tender" %>
 
-<div class="md:w-2/3 w-full">
+<div class="w-full">
   <% if notice.present? %>
     <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
   <% end %>
 
-  <h1 class="font-bold text-4xl">Showing tender</h1>
+  <h1 class="font-bold text-4xl mb-6">Showing tender</h1>
 
-  <%= render @tender %>
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2">
+      <%= render @tender %>
+    </div>
 
-  <%= link_to "Edit this tender", edit_tender_path(@tender), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= link_to "Back to tenders", tenders_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= button_to "Destroy this tender", @tender, method: :delete, form_class: "sm:inline-block mt-2 sm:mt-0 sm:ml-2", class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+    <% if @tender.qob_file.attached? %>
+      <div class="lg:col-span-1 bg-white rounded-lg border border-gray-200 p-4">
+        <h2 class="font-bold text-lg mb-4 flex items-center gap-2">
+          <i class="fa-regular fa-file-spreadsheet text-blue-600"></i>
+          File Preview
+        </h2>
+        
+        <% preview = preview_qob_file(@tender) %>
+        <% if preview %>
+          <div class="overflow-x-auto mb-4">
+            <table class="w-full text-sm border-collapse">
+              <thead>
+                <tr class="bg-gray-50 border-b border-gray-200">
+                  <% preview[:headers].each do |header| %>
+                    <th class="px-3 py-2 text-left font-semibold text-gray-700"><%= header %></th>
+                  <% end %>
+                </tr>
+              </thead>
+              <tbody>
+                <% preview[:data].each do |row| %>
+                  <tr class="border-b border-gray-200 hover:bg-gray-50">
+                    <% row.each do |cell| %>
+                      <td class="px-3 py-2 text-gray-600"><%= cell %></td>
+                    <% end %>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+          <% if preview[:data].length >= 10 %>
+            <p class="text-xs text-gray-500 mb-4">Showing first 10 rows</p>
+          <% end %>
+        <% else %>
+          <p class="text-gray-500 text-sm">Unable to preview file</p>
+        <% end %>
+
+        <div class="pt-2 border-t border-gray-200">
+          <%= link_to "Download File", rails_blob_path(@tender.qob_file, disposition: "attachment"), class: "inline-block w-full text-center rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-6 flex gap-2">
+    <%= link_to "Edit this tender", edit_tender_path(@tender), class: "rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+    <%= link_to "Back to tenders", tenders_path, class: "rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+    <%= button_to "Destroy this tender", @tender, method: :delete, form_class: "inline-block", class: "rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+  </div>
 </div>
