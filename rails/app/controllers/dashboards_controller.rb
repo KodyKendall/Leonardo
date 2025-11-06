@@ -2,6 +2,39 @@ class DashboardsController < ApplicationController
   def index
   end
 
+  def upload_tender_qob
+    if params[:qob_file].present?
+      # Generate a unique e_number for the tender
+      e_number = generate_unique_e_number
+      
+      tender = Tender.new(
+        e_number: e_number,
+        status: 'draft',
+        project_type: 'commercial'
+      )
+      
+      tender.qob_file.attach(params[:qob_file])
+      
+      if tender.valid?
+        tender.save
+        redirect_to dashboard_path, notice: "Tender QOB file uploaded successfully! (E-Number: #{e_number})"
+      else
+        redirect_to dashboard_path, alert: "Error: " + tender.errors.full_messages.join(", ")
+      end
+    else
+      redirect_to dashboard_path, alert: "Please select a file to upload."
+    end
+  end
+
+  private
+
+  def generate_unique_e_number
+    # Generate e_number format: EN-YYYYMMDD-XXXX (e.g., EN-20251106-0001)
+    date_part = Time.current.strftime("%Y%m%d")
+    sequence = Tender.where("e_number LIKE ?", "EN-#{date_part}-%").count + 1
+    "EN-#{date_part}-#{sequence.to_s.rjust(4, '0')}"
+  end
+
   def metrics
     render json: {
       # Tender metrics

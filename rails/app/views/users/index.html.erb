@@ -1,29 +1,103 @@
 <% content_for :title, "Users" %>
 
 <div class="w-full">
-  <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
-  <% end %>
+  <!-- Header Section -->
+  <div class="mb-8">
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h1 class="font-bold text-4xl text-slate-900 mb-2">Users</h1>
+        <p class="text-slate-600">Manage system users and their access</p>
+      </div>
+      <%= link_to new_user_path, class: "btn btn-primary gap-2" do %>
+        <i class="fas fa-plus"></i>Add New User
+      <% end %>
+    </div>
 
-  <div class="flex justify-between items-center">
-    <h1 class="font-bold text-4xl">Users</h1>
-    <%= link_to "New user", new_user_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
+    <!-- Success Alert -->
+    <% if notice.present? %>
+      <div class="alert alert-success shadow-lg border-l-4 mb-6" id="notice">
+        <div class="flex items-center gap-3">
+          <i class="fas fa-check-circle text-lg"></i>
+          <span><%= notice %></span>
+        </div>
+      </div>
+    <% end %>
   </div>
 
-  <div id="users" class="min-w-full divide-y divide-gray-200 space-y-5">
-    <% if @users.any? %>
-      <% @users.each do |user| %>
-        <div class="flex flex-col sm:flex-row justify-between items-center pb-5 sm:pb-0">
-          <%= render user %>
-          <div class="w-full sm:w-auto flex flex-col sm:flex-row space-x-2 space-y-2">
-            <%= link_to "Show", user, class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= link_to "Edit", edit_user_path(user), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= button_to "Destroy", user, method: :delete, class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
-          </div>
-        </div>
-      <% end %>
-    <% else %>
-      <p class="text-center my-10">No users found.</p>
-    <% end %>
+  <!-- Users Table -->
+  <div class="card bg-white shadow-md border border-slate-200">
+    <div class="overflow-x-auto">
+      <table class="table table-zebra w-full">
+        <thead>
+          <tr class="bg-slate-50 border-b-2 border-slate-200">
+            <th class="text-slate-700 font-semibold">Email</th>
+            <th class="text-slate-700 font-semibold">Created</th>
+            <th class="text-slate-700 font-semibold text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @users.any? %>
+            <% @users.each do |user| %>
+              <tr class="hover:bg-slate-50 transition">
+                <td class="py-4">
+                  <div class="flex items-center gap-3">
+                    <div class="avatar placeholder bg-blue-100 rounded-full w-10 h-10">
+                      <span class="text-blue-600 font-bold">
+                        <%= user.email.first.upcase %>
+                      </span>
+                    </div>
+                    <div>
+                      <p class="font-medium text-slate-900"><%= user.email %></p>
+                      <p class="text-xs text-slate-500">ID: <%= user.id %></p>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-slate-600">
+                  <%= user.created_at.strftime("%b %d, %Y") %>
+                </td>
+                <td>
+                  <div class="flex justify-center gap-2">
+                    <%= link_to edit_user_path(user), class: "btn btn-sm btn-ghost gap-1", title: "Edit user" do %>
+                      <i class="fas fa-edit"></i>Edit
+                    <% end %>
+                    <%= button_to user, method: :delete, class: "btn btn-sm btn-ghost text-error gap-1", data: { turbo_confirm: "Are you sure? This cannot be undone." }, title: "Delete user" do %>
+                      <i class="fas fa-trash"></i>Delete
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="3" class="py-12 text-center">
+                <div class="flex flex-col items-center gap-4">
+                  <i class="fas fa-users text-4xl text-slate-300"></i>
+                  <p class="text-slate-500 font-medium">No users found</p>
+                  <p class="text-slate-400 text-sm">Get started by <%= link_to "adding your first user", new_user_path, class: "link link-primary font-semibold" %></p>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Summary Stats -->
+  <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="stat bg-white shadow-md border border-slate-200 rounded-lg">
+      <div class="stat-figure text-primary">
+        <i class="fas fa-users text-3xl"></i>
+      </div>
+      <div class="stat-title text-slate-600">Total Users</div>
+      <div class="stat-value text-primary"><%= @users.count %></div>
+    </div>
+    <div class="stat bg-white shadow-md border border-slate-200 rounded-lg">
+      <div class="stat-figure text-info">
+        <i class="fas fa-user-plus text-3xl"></i>
+      </div>
+      <div class="stat-title text-slate-600">Latest User</div>
+      <div class="stat-value text-info"><%= @users.max_by(&:created_at)&.created_at&.strftime("%b %d") || "—" %></div>
+    </div>
   </div>
 </div>

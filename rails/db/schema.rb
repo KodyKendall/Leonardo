@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_06_111932) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_06_121225) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -220,6 +220,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_06_111932) do
     t.bigint "awarded_project_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "qob_file"
     t.index ["awarded_project_id"], name: "index_tenders_on_awarded_project_id"
     t.index ["e_number"], name: "index_tenders_on_e_number", unique: true
     t.index ["status"], name: "index_tenders_on_status"

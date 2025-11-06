@@ -29,6 +29,7 @@ Rails.application.routes.draw do
 
   root "dashboards#index"
   get "dashboard" => "dashboards#index"
+  post "upload_tender_qob" => "dashboards#upload_tender_qob"
   get "api/dashboard_metrics" => "dashboards#metrics"
   # root "prototypes#show", page: "home"
   get "home" => "public#home"
