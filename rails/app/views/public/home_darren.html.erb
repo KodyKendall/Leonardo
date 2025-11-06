@@ -1,0 +1,611 @@
+<div class="min-h-screen bg-base-200 pb-24">
+  <!-- Header -->
+  <div class="bg-gradient-to-r from-primary to-secondary p-8 text-white">
+    <div class="max-w-6xl mx-auto">
+      <h1 class="text-4xl font-bold mb-2">
+        <i class="fa-solid fa-calendar-days mr-3"></i>Availability Settings
+      </h1>
+      <p class="text-lg opacity-90">Configure your scheduling preferences and available time slots</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-6xl mx-auto p-6">
+    
+    <!-- Meeting Duration Section -->
+    <div class="card bg-base-100 shadow-xl mb-6">
+      <div class="card-body">
+        <h2 class="card-title text-2xl mb-4">
+          <i class="fa-solid fa-hourglass-half mr-2"></i>Meeting Duration
+        </h2>
+        <p class="text-sm opacity-70 mb-6">Choose the default length for your meetings</p>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <label class="cursor-pointer">
+            <input type="radio" name="duration" value="15" class="radio radio-primary hidden" id="duration-15">
+            <div class="card bg-base-200 hover:bg-primary hover:text-primary-content transition-all duration-200 border-2 border-transparent hover:border-primary duration-card">
+              <div class="card-body items-center text-center p-4">
+                <i class="fa-solid fa-clock text-3xl mb-2"></i>
+                <p class="font-bold">15 min</p>
+              </div>
+            </div>
+          </label>
+          
+          <label class="cursor-pointer">
+            <input type="radio" name="duration" value="30" class="radio radio-primary hidden" id="duration-30" checked>
+            <div class="card bg-primary text-primary-content transition-all duration-200 border-2 border-primary duration-card">
+              <div class="card-body items-center text-center p-4">
+                <i class="fa-solid fa-clock text-3xl mb-2"></i>
+                <p class="font-bold">30 min</p>
+              </div>
+            </div>
+          </label>
+          
+          <label class="cursor-pointer">
+            <input type="radio" name="duration" value="45" class="radio radio-primary hidden" id="duration-45">
+            <div class="card bg-base-200 hover:bg-primary hover:text-primary-content transition-all duration-200 border-2 border-transparent hover:border-primary duration-card">
+              <div class="card-body items-center text-center p-4">
+                <i class="fa-solid fa-clock text-3xl mb-2"></i>
+                <p class="font-bold">45 min</p>
+              </div>
+            </div>
+          </label>
+          
+          <label class="cursor-pointer">
+            <input type="radio" name="duration" value="60" class="radio radio-primary hidden" id="duration-60">
+            <div class="card bg-base-200 hover:bg-primary hover:text-primary-content transition-all duration-200 border-2 border-transparent hover:border-primary duration-card">
+              <div class="card-body items-center text-center p-4">
+                <i class="fa-solid fa-clock text-3xl mb-2"></i>
+                <p class="font-bold">60 min</p>
+              </div>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weekly Availability Section -->
+    <div class="card bg-base-100 shadow-xl mb-6">
+      <div class="card-body">
+        <h2 class="card-title text-2xl mb-4">
+          <i class="fa-solid fa-calendar-days mr-2"></i>Weekly Availability
+        </h2>
+        <p class="text-sm opacity-70 mb-6">Select the times you're available for meetings. Click a day name to toggle all times for that day.</p>
+        
+        <div class="overflow-x-auto">
+          <table class="table table-sm" id="availabilityTable">
+            <thead>
+              <tr>
+                <th class="w-32">Day</th>
+                <th>9 AM</th>
+                <th>10 AM</th>
+                <th>11 AM</th>
+                <th>12 PM</th>
+                <th>1 PM</th>
+                <th>2 PM</th>
+                <th>3 PM</th>
+                <th>4 PM</th>
+                <th>5 PM</th>
+              </tr>
+            </thead>
+            <tbody id="availabilityBody">
+              <!-- Monday -->
+              <tr>
+                <td class="font-semibold cursor-pointer hover:bg-base-200" data-day="monday">Monday</td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="monday" data-time="9"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="monday" data-time="10"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="monday" data-time="11"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="monday" data-time="12"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="monday" data-time="13"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="monday" data-time="14"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="monday" data-time="15"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="monday" data-time="16"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="monday" data-time="17"></td>
+              </tr>
+              <!-- Tuesday -->
+              <tr>
+                <td class="font-semibold cursor-pointer hover:bg-base-200" data-day="tuesday">Tuesday</td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="tuesday" data-time="9"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="tuesday" data-time="10"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="tuesday" data-time="11"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="tuesday" data-time="12"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="tuesday" data-time="13"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="tuesday" data-time="14"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="tuesday" data-time="15"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="tuesday" data-time="16"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="tuesday" data-time="17"></td>
+              </tr>
+              <!-- Wednesday -->
+              <tr>
+                <td class="font-semibold cursor-pointer hover:bg-base-200" data-day="wednesday">Wednesday</td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="wednesday" data-time="9"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="wednesday" data-time="10"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="wednesday" data-time="11"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="wednesday" data-time="12"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="wednesday" data-time="13"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="wednesday" data-time="14"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="wednesday" data-time="15"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="wednesday" data-time="16"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="wednesday" data-time="17"></td>
+              </tr>
+              <!-- Thursday -->
+              <tr>
+                <td class="font-semibold cursor-pointer hover:bg-base-200" data-day="thursday">Thursday</td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="thursday" data-time="9"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="thursday" data-time="10"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="thursday" data-time="11"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="thursday" data-time="12"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="thursday" data-time="13"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="thursday" data-time="14"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="thursday" data-time="15"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="thursday" data-time="16"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="thursday" data-time="17"></td>
+              </tr>
+              <!-- Friday -->
+              <tr>
+                <td class="font-semibold cursor-pointer hover:bg-base-200" data-day="friday">Friday</td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="friday" data-time="9"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="friday" data-time="10"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="friday" data-time="11"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="friday" data-time="12"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="friday" data-time="13"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="friday" data-time="14"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="friday" data-time="15"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="friday" data-time="16"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="friday" data-time="17"></td>
+              </tr>
+              <!-- Saturday -->
+              <tr>
+                <td class="font-semibold cursor-pointer hover:bg-base-200" data-day="saturday">Saturday</td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="saturday" data-time="9"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="saturday" data-time="10"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="saturday" data-time="11"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="saturday" data-time="12"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="saturday" data-time="13"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="saturday" data-time="14"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="saturday" data-time="15"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="saturday" data-time="16"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="saturday" data-time="17"></td>
+              </tr>
+              <!-- Sunday -->
+              <tr>
+                <td class="font-semibold cursor-pointer hover:bg-base-200" data-day="sunday">Sunday</td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="sunday" data-time="9"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="sunday" data-time="10"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="sunday" data-time="11"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="sunday" data-time="12"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="sunday" data-time="13"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="sunday" data-time="14"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="sunday" data-time="15"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="sunday" data-time="16"></td>
+                <td><input type="checkbox" class="checkbox checkbox-primary" data-day="sunday" data-time="17"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meeting Details Section -->
+    <div class="card bg-base-100 shadow-xl mb-6">
+      <div class="card-body">
+        <h2 class="card-title text-2xl mb-4">
+          <i class="fa-solid fa-pen-to-square mr-2"></i>Meeting Details
+        </h2>
+        <p class="text-sm opacity-70 mb-6">Customize your meeting information</p>
+        
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text font-semibold">Meeting Title</span>
+          </label>
+          <input type="text" id="meetingTitle" placeholder="e.g., 30 Minute Meeting" class="input input-bordered w-full" value="30 Minute Meeting">
+        </div>
+
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text font-semibold">Meeting Description</span>
+          </label>
+          <textarea id="meetingDescription" class="textarea textarea-bordered h-24" placeholder="Describe what this meeting is for...">Let's discuss your project and goals.</textarea>
+        </div>
+
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text font-semibold">Location / Meeting Link</span>
+          </label>
+          <input type="text" id="meetingLocation" placeholder="e.g., Zoom, Google Meet, or physical address" class="input input-bordered w-full" value="Zoom (link will be provided)">
+        </div>
+      </div>
+    </div>
+
+    <!-- Booking Link Section -->
+    <div class="card bg-base-100 shadow-xl mb-6 border-2 border-primary">
+      <div class="card-body">
+        <h2 class="card-title text-2xl mb-4">
+          <i class="fa-solid fa-link mr-2"></i>Your Booking Link
+        </h2>
+        <p class="text-sm opacity-70 mb-4">Share this link with people to let them book time with you</p>
+        
+        <div class="flex gap-2">
+          <input type="text" id="bookingLink" readonly value="https://yoursite.com/book/your-username" class="input input-bordered flex-1 font-mono text-sm">
+          <button class="btn btn-primary" id="copyLinkBtn">
+            <i class="fa-solid fa-copy mr-2"></i>Copy Link
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Settings Section -->
+    <div class="card bg-base-100 shadow-xl mb-6">
+      <div class="card-body">
+        <h2 class="card-title text-2xl mb-4">
+          <i class="fa-solid fa-sliders mr-2"></i>Additional Settings
+        </h2>
+        <p class="text-sm opacity-70 mb-6">Configure buffer times and scheduling limits</p>
+        
+        <div class="form-control mb-4">
+          <label class="label cursor-pointer justify-start gap-4">
+            <input type="checkbox" class="toggle toggle-primary" id="bufferTimeToggle">
+            <div>
+              <span class="label-text font-semibold">Buffer Time</span>
+              <p class="text-sm opacity-70">Add time between meetings</p>
+            </div>
+          </label>
+          <div id="bufferTimeOptions" class="ml-16 mt-2 hidden">
+            <select class="select select-bordered select-sm" id="bufferTimeAmount">
+              <option value="5">5 minutes</option>
+              <option value="10" selected>10 minutes</option>
+              <option value="15">15 minutes</option>
+              <option value="30">30 minutes</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="form-control mb-4">
+          <label class="label cursor-pointer justify-start gap-4">
+            <input type="checkbox" class="toggle toggle-primary" id="dateRangeLimitToggle">
+            <div>
+              <span class="label-text font-semibold">Date Range Limit</span>
+              <p class="text-sm opacity-70">Limit how far in advance people can book</p>
+            </div>
+          </label>
+          <div id="dateRangeLimitOptions" class="ml-16 mt-2 hidden">
+            <select class="select select-bordered select-sm" id="dateRangeAmount">
+              <option value="7">1 week</option>
+              <option value="14">2 weeks</option>
+              <option value="30" selected>30 days</option>
+              <option value="60">60 days</option>
+              <option value="90">90 days</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="form-control">
+          <label class="label cursor-pointer justify-start gap-4">
+            <input type="checkbox" class="toggle toggle-primary" id="confirmationEmailToggle" checked>
+            <div>
+              <span class="label-text font-semibold">Send Confirmation Emails</span>
+              <p class="text-sm opacity-70">Automatically send booking confirmations</p>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Fixed Save Button -->
+  <div class="fixed bottom-0 left-0 right-0 bg-base-100 border-t border-base-300 p-4 shadow-lg z-50">
+    <div class="max-w-6xl mx-auto flex justify-between items-center">
+      <div class="text-sm opacity-70">
+        <i class="fa-solid fa-circle-info mr-2"></i>
+        <span id="saveStatus">Make changes to update your settings</span>
+      </div>
+      <button class="btn btn-primary btn-lg" id="saveSettingsBtn">
+        <i class="fa-solid fa-check-circle mr-2"></i>Save Changes
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Availability Grid - Day row toggle functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    // Toggle all checkboxes for a day when clicking the day name
+    document.querySelectorAll('td[data-day]').forEach(dayCell => {
+      dayCell.addEventListener('click', function() {
+        const day = this.getAttribute('data-day');
+        const row = this.closest('tr');
+        const checkboxes = row.querySelectorAll('input[type="checkbox"]');
+        
+        // Check if all are checked
+        const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+        
+        // Toggle all checkboxes
+        checkboxes.forEach(cb => {
+          cb.checked = !allChecked;
+        });
+        
+        markUnsaved();
+      });
+    });
+
+    // Mark as unsaved when any checkbox changes
+    document.querySelectorAll('.checkbox').forEach(checkbox => {
+      checkbox.addEventListener('change', markUnsaved);
+    });
+
+    // Duration card selection
+    document.querySelectorAll('input[name="duration"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        // Update visual state of duration cards
+        document.querySelectorAll('.duration-card').forEach(card => {
+          card.classList.remove('bg-primary', 'text-primary-content', 'border-primary');
+          card.classList.add('bg-base-200', 'border-transparent');
+        });
+        
+        const selectedCard = this.closest('label').querySelector('.duration-card');
+        if (selectedCard) {
+          selectedCard.classList.remove('bg-base-200', 'border-transparent');
+          selectedCard.classList.add('bg-primary', 'text-primary-content', 'border-primary');
+        }
+        
+        markUnsaved();
+      });
+    });
+
+    // Toggle visibility of buffer time options
+    document.getElementById('bufferTimeToggle').addEventListener('change', function() {
+      const options = document.getElementById('bufferTimeOptions');
+      if (this.checked) {
+        options.classList.remove('hidden');
+      } else {
+        options.classList.add('hidden');
+      }
+      markUnsaved();
+    });
+
+    // Toggle visibility of date range limit options
+    document.getElementById('dateRangeLimitToggle').addEventListener('change', function() {
+      const options = document.getElementById('dateRangeLimitOptions');
+      if (this.checked) {
+        options.classList.remove('hidden');
+      } else {
+        options.classList.add('hidden');
+      }
+      markUnsaved();
+    });
+
+    // Mark as unsaved for all form inputs
+    ['meetingTitle', 'meetingDescription', 'meetingLocation', 'bufferTimeAmount', 'dateRangeAmount'].forEach(id => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.addEventListener('input', markUnsaved);
+        element.addEventListener('change', markUnsaved);
+      }
+    });
+
+    // Mark unsaved for toggle switches
+    ['confirmationEmailToggle'].forEach(id => {
+      const element = document.getElementById(id);
+      if (element) {
+        element.addEventListener('change', markUnsaved);
+      }
+    });
+  });
+
+  function markUnsaved() {
+    const saveBtn = document.getElementById('saveSettingsBtn');
+    const saveStatus = document.getElementById('saveStatus');
+    
+    saveBtn.classList.add('btn-warning');
+    saveBtn.classList.remove('btn-primary', 'btn-success');
+    saveStatus.textContent = 'Unsaved changes';
+  }
+
+  // Load settings from localStorage on page load
+  function loadSettings() {
+    const settings = localStorage.getItem('calendlySettings');
+    if (settings) {
+      const data = JSON.parse(settings);
+      
+      // Load availability checkboxes
+      if (data.availability) {
+        Object.keys(data.availability).forEach(day => {
+          data.availability[day].forEach(time => {
+            const checkbox = document.querySelector(`input[data-day="${day}"][data-time="${time}"]`);
+            if (checkbox) checkbox.checked = true;
+          });
+        });
+      }
+      
+      // Load duration
+      if (data.duration) {
+        const durationRadio = document.getElementById(`duration-${data.duration}`);
+        if (durationRadio) {
+          durationRadio.checked = true;
+          // Update visual state
+          document.querySelectorAll('.duration-card').forEach(card => {
+            card.classList.remove('bg-primary', 'text-primary-content', 'border-primary');
+            card.classList.add('bg-base-200', 'border-transparent');
+          });
+          const selectedCard = durationRadio.closest('label').querySelector('.duration-card');
+          if (selectedCard) {
+            selectedCard.classList.remove('bg-base-200', 'border-transparent');
+            selectedCard.classList.add('bg-primary', 'text-primary-content', 'border-primary');
+          }
+        }
+      }
+      
+      // Load meeting details
+      if (data.meetingTitle) document.getElementById('meetingTitle').value = data.meetingTitle;
+      if (data.meetingDescription) document.getElementById('meetingDescription').value = data.meetingDescription;
+      if (data.meetingLocation) document.getElementById('meetingLocation').value = data.meetingLocation;
+      
+      // Load additional settings
+      if (data.bufferTime !== undefined) {
+        const bufferToggle = document.getElementById('bufferTimeToggle');
+        bufferToggle.checked = data.bufferTime.enabled;
+        if (data.bufferTime.enabled) {
+          document.getElementById('bufferTimeOptions').classList.remove('hidden');
+          document.getElementById('bufferTimeAmount').value = data.bufferTime.amount;
+        }
+      }
+      
+      if (data.dateRangeLimit !== undefined) {
+        const dateRangeToggle = document.getElementById('dateRangeLimitToggle');
+        dateRangeToggle.checked = data.dateRangeLimit.enabled;
+        if (data.dateRangeLimit.enabled) {
+          document.getElementById('dateRangeLimitOptions').classList.remove('hidden');
+          document.getElementById('dateRangeAmount').value = data.dateRangeLimit.amount;
+        }
+      }
+      
+      if (data.confirmationEmail !== undefined) {
+        document.getElementById('confirmationEmailToggle').checked = data.confirmationEmail;
+      }
+    }
+  }
+
+  // Save all settings to localStorage
+  function saveSettings() {
+    const settings = {
+      availability: {},
+      duration: document.querySelector('input[name="duration"]:checked')?.value || '30',
+      meetingTitle: document.getElementById('meetingTitle').value,
+      meetingDescription: document.getElementById('meetingDescription').value,
+      meetingLocation: document.getElementById('meetingLocation').value,
+      bufferTime: {
+        enabled: document.getElementById('bufferTimeToggle').checked,
+        amount: document.getElementById('bufferTimeAmount').value
+      },
+      dateRangeLimit: {
+        enabled: document.getElementById('dateRangeLimitToggle').checked,
+        amount: document.getElementById('dateRangeAmount').value
+      },
+      confirmationEmail: document.getElementById('confirmationEmailToggle').checked
+    };
+    
+    // Collect all checked availability slots
+    const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    days.forEach(day => {
+      settings.availability[day] = [];
+      document.querySelectorAll(`input[data-day="${day}"]:checked`).forEach(checkbox => {
+        const time = checkbox.getAttribute('data-time');
+        settings.availability[day].push(time);
+      });
+    });
+    
+    localStorage.setItem('calendlySettings', JSON.stringify(settings));
+    return settings;
+  }
+
+  // Save button click handler
+  document.getElementById('saveSettingsBtn').addEventListener('click', function() {
+    const saveBtn = this;
+    const saveStatus = document.getElementById('saveStatus');
+    
+    // Show loading state
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Saving...';
+    
+    // Simulate save delay for better UX
+    setTimeout(() => {
+      saveSettings();
+      
+      // Show success state
+      saveBtn.classList.remove('btn-warning', 'btn-primary');
+      saveBtn.classList.add('btn-success');
+      saveBtn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Saved!';
+      saveStatus.textContent = 'All changes saved successfully';
+      
+      // Reset button after 2 seconds
+      setTimeout(() => {
+        saveBtn.disabled = false;
+        saveBtn.classList.remove('btn-success');
+        saveBtn.classList.add('btn-primary');
+        saveBtn.innerHTML = '<i class="fa-solid fa-check-circle mr-2"></i>Save Changes';
+        saveStatus.textContent = 'Make changes to update your settings';
+      }, 2000);
+    }, 500);
+  });
+
+  // Copy booking link functionality with toast notification
+  document.getElementById('copyLinkBtn').addEventListener('click', function() {
+    const linkInput = document.getElementById('bookingLink');
+    const copyBtn = this;
+    
+    // Copy to clipboard
+    linkInput.select();
+    linkInput.setSelectionRange(0, 99999); // For mobile devices
+    
+    navigator.clipboard.writeText(linkInput.value).then(() => {
+      // Show success state on button
+      const originalHTML = copyBtn.innerHTML;
+      copyBtn.innerHTML = '<i class="fa-solid fa-check mr-2"></i>Copied!';
+      copyBtn.classList.add('btn-success');
+      copyBtn.classList.remove('btn-primary');
+      
+      // Show toast notification
+      showToast('Booking link copied to clipboard!', 'success');
+      
+      // Reset button after 2 seconds
+      setTimeout(() => {
+        copyBtn.innerHTML = originalHTML;
+        copyBtn.classList.remove('btn-success');
+        copyBtn.classList.add('btn-primary');
+      }, 2000);
+    }).catch(err => {
+      showToast('Failed to copy link', 'error');
+      console.error('Copy failed:', err);
+    });
+  });
+
+  // Toast notification function
+  function showToast(message, type = 'info') {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type === 'success' ? 'success' : 'error'} shadow-lg fixed top-4 right-4 w-auto max-w-md z-50 animate-fade-in`;
+    toast.innerHTML = `
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+        <span>${message}</span>
+      </div>
+    `;
+    
+    // Add to page
+    document.body.appendChild(toast);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transition = 'opacity 0.3s ease';
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+
+  // Initialize - load settings when page loads
+  document.addEventListener('DOMContentLoaded', function() {
+    loadSettings();
+  });
+</script>
+
+<style>
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fade-in {
+    animation: fade-in 0.3s ease;
+  }
+</style>
