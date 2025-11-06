@@ -29,6 +29,7 @@ Rails.application.routes.draw do
 
   root "dashboards#index"
   get "dashboard" => "dashboards#index"
+  get "api/dashboard_metrics" => "dashboards#metrics"
   # root "prototypes#show", page: "home"
   get "home" => "public#home"
   get "chat" => "public#chat"
