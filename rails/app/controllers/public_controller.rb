@@ -4,6 +4,7 @@ class PublicController < ApplicationController
     # Root page of our application.
     # GET /
     def home
+      redirect_to dashboard_path if user_signed_in?
     end
 
     # Chat page of our application.

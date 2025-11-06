@@ -1,0 +1,47 @@
+<%= form_with(model: fabrication_record, class: "contents") do |form| %>
+  <% if fabrication_record.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(fabrication_record.errors.count, "error") %> prohibited this fabrication_record from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% fabrication_record.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :project_id %>
+    <%= form.text_field :project_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": fabrication_record.errors[:project_id].none?, "border-red-400 focus:outline-red-600": fabrication_record.errors[:project_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :record_month %>
+    <%= form.date_field :record_month, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": fabrication_record.errors[:record_month].none?, "border-red-400 focus:outline-red-600": fabrication_record.errors[:record_month].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :tonnes_fabricated %>
+    <%= form.text_field :tonnes_fabricated, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": fabrication_record.errors[:tonnes_fabricated].none?, "border-red-400 focus:outline-red-600": fabrication_record.errors[:tonnes_fabricated].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :allowed_rate %>
+    <%= form.text_field :allowed_rate, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": fabrication_record.errors[:allowed_rate].none?, "border-red-400 focus:outline-red-600": fabrication_record.errors[:allowed_rate].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :allowed_amount %>
+    <%= form.text_field :allowed_amount, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": fabrication_record.errors[:allowed_amount].none?, "border-red-400 focus:outline-red-600": fabrication_record.errors[:allowed_amount].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :actual_spend %>
+    <%= form.text_field :actual_spend, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": fabrication_record.errors[:actual_spend].none?, "border-red-400 focus:outline-red-600": fabrication_record.errors[:actual_spend].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

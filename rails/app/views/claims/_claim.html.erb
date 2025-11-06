@@ -1,0 +1,38 @@
+<div id="<%= dom_id claim %>" class="w-full sm:w-auto my-5 space-y-5">
+  <div>
+    <strong class="block font-medium mb-1">Claim number:</strong>
+    <%= claim.claim_number %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Project:</strong>
+    <%= claim.project_id %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Claim date:</strong>
+    <%= claim.claim_date %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Claim status:</strong>
+    <%= claim.claim_status %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Total claimed:</strong>
+    <%= claim.total_claimed %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Total paid:</strong>
+    <%= claim.total_paid %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Amount due:</strong>
+    <%= claim.amount_due %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Submitted by:</strong>
+    <%= claim.submitted_by_id %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Notes:</strong>
+    <%= claim.notes %>
+  </div>
+</div>

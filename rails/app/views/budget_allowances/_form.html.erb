@@ -1,0 +1,42 @@
+<%= form_with(model: budget_allowance, class: "contents") do |form| %>
+  <% if budget_allowance.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(budget_allowance.errors.count, "error") %> prohibited this budget_allowance from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% budget_allowance.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :project_id %>
+    <%= form.text_field :project_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": budget_allowance.errors[:project_id].none?, "border-red-400 focus:outline-red-600": budget_allowance.errors[:project_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :budget_category_id %>
+    <%= form.text_field :budget_category_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": budget_allowance.errors[:budget_category_id].none?, "border-red-400 focus:outline-red-600": budget_allowance.errors[:budget_category_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :budgeted_amount %>
+    <%= form.text_field :budgeted_amount, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": budget_allowance.errors[:budgeted_amount].none?, "border-red-400 focus:outline-red-600": budget_allowance.errors[:budgeted_amount].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :actual_spend %>
+    <%= form.text_field :actual_spend, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": budget_allowance.errors[:actual_spend].none?, "border-red-400 focus:outline-red-600": budget_allowance.errors[:actual_spend].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :variance %>
+    <%= form.text_field :variance, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": budget_allowance.errors[:variance].none?, "border-red-400 focus:outline-red-600": budget_allowance.errors[:variance].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

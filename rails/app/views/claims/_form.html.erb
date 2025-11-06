@@ -1,0 +1,62 @@
+<%= form_with(model: claim, class: "contents") do |form| %>
+  <% if claim.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(claim.errors.count, "error") %> prohibited this claim from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% claim.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :claim_number %>
+    <%= form.text_field :claim_number, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": claim.errors[:claim_number].none?, "border-red-400 focus:outline-red-600": claim.errors[:claim_number].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :project_id %>
+    <%= form.text_field :project_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": claim.errors[:project_id].none?, "border-red-400 focus:outline-red-600": claim.errors[:project_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :claim_date %>
+    <%= form.date_field :claim_date, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": claim.errors[:claim_date].none?, "border-red-400 focus:outline-red-600": claim.errors[:claim_date].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :claim_status %>
+    <%= form.text_field :claim_status, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": claim.errors[:claim_status].none?, "border-red-400 focus:outline-red-600": claim.errors[:claim_status].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :total_claimed %>
+    <%= form.text_field :total_claimed, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": claim.errors[:total_claimed].none?, "border-red-400 focus:outline-red-600": claim.errors[:total_claimed].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :total_paid %>
+    <%= form.text_field :total_paid, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": claim.errors[:total_paid].none?, "border-red-400 focus:outline-red-600": claim.errors[:total_paid].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :amount_due %>
+    <%= form.text_field :amount_due, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": claim.errors[:amount_due].none?, "border-red-400 focus:outline-red-600": claim.errors[:amount_due].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :submitted_by_id %>
+    <%= form.text_field :submitted_by_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": claim.errors[:submitted_by_id].none?, "border-red-400 focus:outline-red-600": claim.errors[:submitted_by_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :notes %>
+    <%= form.text_area :notes, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": claim.errors[:notes].none?, "border-red-400 focus:outline-red-600": claim.errors[:notes].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

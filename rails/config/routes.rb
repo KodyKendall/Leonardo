@@ -1,4 +1,12 @@
 Rails.application.routes.draw do
+  resources :fabrication_records
+  resources :budget_allowances
+  resources :budget_categories
+  resources :variation_orders
+  resources :claim_line_items
+  resources :claims
+  resources :projects
+  resources :tenders
   devise_for :users, controllers: { registrations: 'users/registrations' }
   resources :users do
     member do
@@ -19,7 +27,8 @@ Rails.application.routes.draw do
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
-  root "public#home"
+  root "dashboards#index"
+  get "dashboard" => "dashboards#index"
   # root "prototypes#show", page: "home"
   get "home" => "public#home"
   get "chat" => "public#chat"

@@ -1,0 +1,32 @@
+<%= form_with(model: budget_category, class: "contents") do |form| %>
+  <% if budget_category.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(budget_category.errors.count, "error") %> prohibited this budget_category from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% budget_category.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :category_name %>
+    <%= form.text_field :category_name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": budget_category.errors[:category_name].none?, "border-red-400 focus:outline-red-600": budget_category.errors[:category_name].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :cost_code %>
+    <%= form.text_field :cost_code, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": budget_category.errors[:cost_code].none?, "border-red-400 focus:outline-red-600": budget_category.errors[:cost_code].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :description %>
+    <%= form.text_area :description, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": budget_category.errors[:description].none?, "border-red-400 focus:outline-red-600": budget_category.errors[:description].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

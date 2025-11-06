@@ -1,0 +1,2 @@
+module VariationOrdersHelper
+end

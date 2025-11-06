@@ -1,0 +1,57 @@
+<%= form_with(model: claim_line_item, class: "contents") do |form| %>
+  <% if claim_line_item.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(claim_line_item.errors.count, "error") %> prohibited this claim_line_item from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% claim_line_item.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :claim_id %>
+    <%= form.text_field :claim_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": claim_line_item.errors[:claim_id].none?, "border-red-400 focus:outline-red-600": claim_line_item.errors[:claim_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :line_item_description %>
+    <%= form.text_field :line_item_description, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": claim_line_item.errors[:line_item_description].none?, "border-red-400 focus:outline-red-600": claim_line_item.errors[:line_item_description].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :tender_rate %>
+    <%= form.text_field :tender_rate, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": claim_line_item.errors[:tender_rate].none?, "border-red-400 focus:outline-red-600": claim_line_item.errors[:tender_rate].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :claimed_quantity %>
+    <%= form.text_field :claimed_quantity, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": claim_line_item.errors[:claimed_quantity].none?, "border-red-400 focus:outline-red-600": claim_line_item.errors[:claimed_quantity].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :claimed_amount %>
+    <%= form.text_field :claimed_amount, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": claim_line_item.errors[:claimed_amount].none?, "border-red-400 focus:outline-red-600": claim_line_item.errors[:claimed_amount].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :cumulative_quantity %>
+    <%= form.text_field :cumulative_quantity, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": claim_line_item.errors[:cumulative_quantity].none?, "border-red-400 focus:outline-red-600": claim_line_item.errors[:cumulative_quantity].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :is_new_item %>
+    <%= form.check_box :is_new_item, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": claim_line_item.errors[:is_new_item].none?, "border-red-400 focus:outline-red-600": claim_line_item.errors[:is_new_item].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :price_escalation %>
+    <%= form.text_field :price_escalation, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": claim_line_item.errors[:price_escalation].none?, "border-red-400 focus:outline-red-600": claim_line_item.errors[:price_escalation].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

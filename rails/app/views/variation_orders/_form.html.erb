@@ -1,0 +1,62 @@
+<%= form_with(model: variation_order, class: "contents") do |form| %>
+  <% if variation_order.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(variation_order.errors.count, "error") %> prohibited this variation_order from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% variation_order.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :vo_number %>
+    <%= form.text_field :vo_number, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": variation_order.errors[:vo_number].none?, "border-red-400 focus:outline-red-600": variation_order.errors[:vo_number].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :project_id %>
+    <%= form.text_field :project_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": variation_order.errors[:project_id].none?, "border-red-400 focus:outline-red-600": variation_order.errors[:project_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :vo_status %>
+    <%= form.text_field :vo_status, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": variation_order.errors[:vo_status].none?, "border-red-400 focus:outline-red-600": variation_order.errors[:vo_status].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :vo_amount %>
+    <%= form.text_field :vo_amount, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": variation_order.errors[:vo_amount].none?, "border-red-400 focus:outline-red-600": variation_order.errors[:vo_amount].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :description %>
+    <%= form.text_area :description, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": variation_order.errors[:description].none?, "border-red-400 focus:outline-red-600": variation_order.errors[:description].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :created_by_id %>
+    <%= form.text_field :created_by_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": variation_order.errors[:created_by_id].none?, "border-red-400 focus:outline-red-600": variation_order.errors[:created_by_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :approved_by_id %>
+    <%= form.text_field :approved_by_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": variation_order.errors[:approved_by_id].none?, "border-red-400 focus:outline-red-600": variation_order.errors[:approved_by_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :approver_notes %>
+    <%= form.text_area :approver_notes, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": variation_order.errors[:approver_notes].none?, "border-red-400 focus:outline-red-600": variation_order.errors[:approver_notes].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :approved_at %>
+    <%= form.datetime_field :approved_at, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": variation_order.errors[:approved_at].none?, "border-red-400 focus:outline-red-600": variation_order.errors[:approved_at].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

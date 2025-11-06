@@ -1,1 +1,118 @@
-home
+<div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+  <!-- Navigation Bar -->
+  <nav class="navbar bg-slate-900 shadow-lg border-b border-slate-700">
+    <div class="navbar-start">
+      <a href="/" class="btn btn-ghost text-xl font-bold text-blue-400">
+        <i class="fas fa-file-contract mr-2"></i>RSB Contracts
+      </a>
+    </div>
+    <div class="navbar-end">
+      <%= link_to "Sign In", new_user_session_path, class: "btn btn-primary" %>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <div class="hero min-h-[calc(100vh-80px)] bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div class="hero-content text-center text-neutral-content">
+      <div class="max-w-2xl">
+        <h1 class="mb-5 text-5xl font-bold text-white">
+          <i class="fas fa-handshake text-blue-400 mr-3"></i>RSB Contracts
+        </h1>
+        
+        <p class="mb-8 text-xl text-slate-300">
+          Streamline your contract management workflow. Create, manage, and track contracts effortlessly in one centralized platform.
+        </p>
+
+        <!-- Feature Highlights -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 mt-12">
+          <div class="card bg-slate-800 border border-slate-700 shadow-lg">
+            <div class="card-body items-center text-center">
+              <i class="fas fa-rocket text-blue-400 text-3xl mb-3"></i>
+              <h2 class="card-title text-lg text-white">Quick Setup</h2>
+              <p class="text-slate-400">Get started instantly with our intuitive interface</p>
+            </div>
+          </div>
+
+          <div class="card bg-slate-800 border border-slate-700 shadow-lg">
+            <div class="card-body items-center text-center">
+              <i class="fas fa-shield-alt text-blue-400 text-3xl mb-3"></i>
+              <h2 class="card-title text-lg text-white">Secure & Reliable</h2>
+              <p class="text-slate-400">Your contracts are protected with enterprise-grade security</p>
+            </div>
+          </div>
+
+          <div class="card bg-slate-800 border border-slate-700 shadow-lg">
+            <div class="card-body items-center text-center">
+              <i class="fas fa-chart-line text-blue-400 text-3xl mb-3"></i>
+              <h2 class="card-title text-lg text-white">Smart Insights</h2>
+              <p class="text-slate-400">Track and analyze all your contracts in one place</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- CTA Buttons -->
+        <div class="flex gap-4 justify-center flex-wrap">
+          <%= link_to "Get Started", new_user_session_path, class: "btn btn-primary btn-lg gap-2" %>
+          <a href="#about" class="btn btn-outline btn-lg text-white border-blue-400 hover:bg-blue-400">Learn More</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- About Section -->
+  <div id="about" class="py-20 px-4 bg-slate-800">
+    <div class="max-w-4xl mx-auto">
+      <h2 class="text-4xl font-bold text-center text-white mb-12">
+        <i class="fas fa-info-circle text-blue-400 mr-3"></i>About RSB Contracts
+      </h2>
+      
+      <div class="space-y-8">
+        <div class="flex gap-6">
+          <div class="flex-shrink-0">
+            <i class="fas fa-check-circle text-blue-400 text-2xl mt-1"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-white mb-2">Centralized Contract Management</h3>
+            <p class="text-slate-300">Keep all your contracts organized in one secure location. Never lose track of important documents again.</p>
+          </div>
+        </div>
+
+        <div class="flex gap-6">
+          <div class="flex-shrink-0">
+            <i class="fas fa-check-circle text-blue-400 text-2xl mt-1"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-white mb-2">Easy Collaboration</h3>
+            <p class="text-slate-300">Work with your team efficiently. Share contracts, leave comments, and track changes effortlessly.</p>
+          </div>
+        </div>
+
+        <div class="flex gap-6">
+          <div class="flex-shrink-0">
+            <i class="fas fa-check-circle text-blue-400 text-2xl mt-1"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-semibold text-white mb-2">Better Visibility</h3>
+            <p class="text-slate-300">Get real-time insights into contract status, deadlines, and important milestones at a glance.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer CTA -->
+  <div class="py-16 px-4 bg-slate-900 border-t border-slate-700">
+    <div class="max-w-2xl mx-auto text-center">
+      <h2 class="text-3xl font-bold text-white mb-6">Ready to streamline your contracts?</h2>
+      <p class="text-slate-400 mb-8">Join us today and take control of your contract management.</p>
+      <%= link_to "Sign In Now", new_user_session_path, class: "btn btn-primary btn-lg gap-2" %>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer footer-center p-6 bg-slate-950 text-slate-400 border-t border-slate-700">
+    <div>
+      <p>&copy; 2024 RSB Contracts. All rights reserved.</p>
+    </div>
+  </footer>
+</div>

@@ -1,0 +1,34 @@
+<div id="<%= dom_id claim_line_item %>" class="w-full sm:w-auto my-5 space-y-5">
+  <div>
+    <strong class="block font-medium mb-1">Claim:</strong>
+    <%= claim_line_item.claim_id %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Line item description:</strong>
+    <%= claim_line_item.line_item_description %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Tender rate:</strong>
+    <%= claim_line_item.tender_rate %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Claimed quantity:</strong>
+    <%= claim_line_item.claimed_quantity %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Claimed amount:</strong>
+    <%= claim_line_item.claimed_amount %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Cumulative quantity:</strong>
+    <%= claim_line_item.cumulative_quantity %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Is new item:</strong>
+    <%= claim_line_item.is_new_item? ? "Yes" : "No" %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Price escalation:</strong>
+    <%= claim_line_item.price_escalation %>
+  </div>
+</div>

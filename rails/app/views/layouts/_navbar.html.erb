@@ -1,0 +1,36 @@
+<% if user_signed_in? %>
+  <nav class="navbar bg-white shadow-lg border-b border-slate-200 sticky top-0 z-50">
+    <div class="navbar-start">
+      <div class="dropdown">
+        <button class="btn btn-ghost btn-circle">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+        <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+          <li><a href="<%= dashboard_path %>"><i class="fas fa-home mr-2"></i>Dashboard</a></li>
+          <li><a href="<%= tenders_path %>"><i class="fas fa-file-invoice mr-2"></i>Tenders</a></li>
+          <li><a href="<%= projects_path %>"><i class="fas fa-project-diagram mr-2"></i>Projects</a></li>
+          <li><a href="<%= claims_path %>"><i class="fas fa-receipt mr-2"></i>Claims</a></li>
+          <li><a href="<%= variation_orders_path %>"><i class="fas fa-edit mr-2"></i>Variation Orders</a></li>
+          <li><a href="<%= budget_categories_path %>"><i class="fas fa-list mr-2"></i>Budget Categories</a></li>
+          <li><a href="<%= budget_allowances_path %>"><i class="fas fa-chart-pie mr-2"></i>Budget Allowances</a></li>
+          <li><a href="<%= fabrication_records_path %>"><i class="fas fa-industry mr-2"></i>Fabrication Records</a></li>
+          <li><a href="<%= claim_line_items_path %>"><i class="fas fa-bars mr-2"></i>Claim Line Items</a></li>
+        </ul>
+      </div>
+      <a href="<%= dashboard_path %>" class="btn btn-ghost text-xl font-bold text-blue-600">
+        <i class="fas fa-file-contract mr-2"></i>RSB Contracts
+      </a>
+    </div>
+    <div class="navbar-end pr-6">
+      <div class="dropdown dropdown-end">
+        <button class="btn btn-circle btn-ghost">
+          <i class="fas fa-user text-xl"></i>
+        </button>
+        <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+          <li><a href="<%= edit_user_path(current_user) %>"><i class="fas fa-cog mr-2"></i>Settings</a></li>
+          <li><a href="<%= user_session_path %>" data-method="delete" rel="nofollow"><i class="fas fa-sign-out-alt mr-2"></i>Sign Out</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+<% end %>

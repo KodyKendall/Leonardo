@@ -1,0 +1,2 @@
+module FabricationRecordsHelper
+end

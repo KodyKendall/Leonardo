@@ -1,0 +1,52 @@
+<%= form_with(model: tender, class: "contents") do |form| %>
+  <% if tender.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(tender.errors.count, "error") %> prohibited this tender from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% tender.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :e_number %>
+    <%= form.text_field :e_number, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender.errors[:e_number].none?, "border-red-400 focus:outline-red-600": tender.errors[:e_number].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :status %>
+    <%= form.text_field :status, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender.errors[:status].none?, "border-red-400 focus:outline-red-600": tender.errors[:status].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :client_name %>
+    <%= form.text_field :client_name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender.errors[:client_name].none?, "border-red-400 focus:outline-red-600": tender.errors[:client_name].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :tender_value %>
+    <%= form.text_field :tender_value, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender.errors[:tender_value].none?, "border-red-400 focus:outline-red-600": tender.errors[:tender_value].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :project_type %>
+    <%= form.text_field :project_type, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender.errors[:project_type].none?, "border-red-400 focus:outline-red-600": tender.errors[:project_type].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :notes %>
+    <%= form.text_area :notes, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender.errors[:notes].none?, "border-red-400 focus:outline-red-600": tender.errors[:notes].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :awarded_project_id %>
+    <%= form.text_field :awarded_project_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender.errors[:awarded_project_id].none?, "border-red-400 focus:outline-red-600": tender.errors[:awarded_project_id].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>
