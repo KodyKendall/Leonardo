@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_06_121225) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_09_184221) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -60,6 +60,38 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_06_121225) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["flow_id"], name: "index_activities_on_flow_id"
+  end
+
+  create_table "boq_items", force: :cascade do |t|
+    t.bigint "boq_id", null: false
+    t.string "item_number"
+    t.text "item_description"
+    t.string "unit_of_measure"
+    t.decimal "quantity", precision: 10, scale: 3, default: "0.0"
+    t.string "section_category"
+    t.integer "sequence_order"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["boq_id"], name: "index_boq_items_on_boq_id"
+  end
+
+  create_table "boqs", force: :cascade do |t|
+    t.string "boq_name", null: false
+    t.string "file_name", null: false
+    t.string "file_path"
+    t.string "status", default: "uploaded", null: false
+    t.string "client_name"
+    t.string "client_reference"
+    t.string "qs_name"
+    t.text "notes"
+    t.date "received_date"
+    t.bigint "uploaded_by_id"
+    t.datetime "parsed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_boqs_on_status"
+    t.index ["uploaded_by_id"], name: "index_boqs_on_uploaded_by_id"
   end
 
   create_table "budget_allowances", force: :cascade do |t|
@@ -267,6 +299,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_06_121225) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "activities", "flows"
+  add_foreign_key "boq_items", "boqs"
+  add_foreign_key "boqs", "users", column: "uploaded_by_id"
   add_foreign_key "budget_allowances", "budget_categories"
   add_foreign_key "budget_allowances", "projects"
   add_foreign_key "claim_line_items", "claims"
@@ -282,3 +316,4 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_06_121225) do
   add_foreign_key "variation_orders", "users", column: "approved_by_id"
   add_foreign_key "variation_orders", "users", column: "created_by_id"
 end
+Ste123123

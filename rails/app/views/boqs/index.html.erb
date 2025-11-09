@@ -1,0 +1,48 @@
+<div class="container mx-auto p-6">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold">Bills of Quantity</h1>
+    <%= link_to "Upload BOQ", new_boq_path, class: "btn btn-primary" %>
+  </div>
+
+  <% if @boqs.any? %>
+    <div class="overflow-x-auto">
+      <table class="table table-zebra w-full">
+        <thead>
+          <tr>
+            <th>BOQ Name</th>
+            <th>Client</th>
+            <th>File</th>
+            <th>Status</th>
+            <th>Received</th>
+            <th>Uploaded By</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @boqs.each do |boq| %>
+            <tr>
+              <td class="font-semibold"><%= boq.boq_name %></td>
+              <td><%= boq.client_name || "—" %></td>
+              <td class="text-sm text-gray-600"><%= boq.file_name %></td>
+              <td>
+                <div class="badge <%= boq.status == 'parsed' ? 'badge-success' : 'badge-warning' %>">
+                  <%= boq.status %>
+                </div>
+              </td>
+              <td><%= boq.received_date&.to_formatted_s(:short) || "—" %></td>
+              <td><%= boq.uploaded_by&.name || "—" %></td>
+              <td>
+                <%= link_to "View", boq_path(boq), class: "link link-primary text-sm" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      <i class="fas fa-info-circle"></i>
+      <div>No BOQs uploaded yet. <%= link_to "Upload one", new_boq_path, class: "link link-primary font-semibold" %></div>
+    </div>
+  <% end %>
+</div>

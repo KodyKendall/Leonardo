@@ -1,0 +1,62 @@
+<div class="container mx-auto p-6 max-w-2xl">
+  <h1 class="text-3xl font-bold mb-6">Upload BOQ</h1>
+
+  <%= form_with(model: @boq, local: true) do |form| %>
+    <% if @boq.errors.any? %>
+      <div class="alert alert-error mb-6">
+        <i class="fas fa-exclamation-circle"></i>
+        <div>
+          <h3 class="font-bold"><%= pluralize(@boq.errors.count, "error") %> prohibited this BOQ from being saved:</h3>
+          <ul class="list-disc list-inside mt-2">
+            <% @boq.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="form-control w-full mb-4">
+      <%= form.label :boq_name, "BOQ Name", class: "label" %>
+      <%= form.text_field :boq_name, class: "input input-bordered w-full", placeholder: "e.g., Steel Fabrication Q4 2024", required: true %>
+    </div>
+
+    <div class="form-control w-full mb-4">
+      <%= form.label :client_name, "Client Name", class: "label" %>
+      <%= form.text_field :client_name, class: "input input-bordered w-full", placeholder: "Optional" %>
+    </div>
+
+    <div class="form-control w-full mb-4">
+      <%= form.label :client_reference, "Client Reference", class: "label" %>
+      <%= form.text_field :client_reference, class: "input input-bordered w-full", placeholder: "e.g., RFQ-2024-001" %>
+    </div>
+
+    <div class="form-control w-full mb-4">
+      <%= form.label :qs_name, "Quantity Surveyor Name", class: "label" %>
+      <%= form.text_field :qs_name, class: "input input-bordered w-full", placeholder: "Optional" %>
+    </div>
+
+    <div class="form-control w-full mb-4">
+      <%= form.label :received_date, "Date Received", class: "label" %>
+      <%= form.date_field :received_date, class: "input input-bordered w-full" %>
+    </div>
+
+    <div class="form-control w-full mb-6">
+      <%= form.label :csv_file, class: "label" do %>
+        <span class="label-text font-semibold">CSV File <span class="text-error">*</span></span>
+        <span class="label-text-alt text-sm">CSV only</span>
+      <% end %>
+      <%= form.file_field :csv_file, accept: ".csv", class: "file-input file-input-bordered w-full", required: true %>
+    </div>
+
+    <div class="form-control w-full mb-6">
+      <%= form.label :notes, "Notes", class: "label" %>
+      <%= form.text_area :notes, class: "textarea textarea-bordered w-full", rows: 3, placeholder: "Additional notes or instructions" %>
+    </div>
+
+    <div class="flex gap-4">
+      <%= form.submit "Upload BOQ", class: "btn btn-primary" %>
+      <%= link_to "Cancel", boqs_path, class: "btn btn-ghost" %>
+    </div>
+  <% end %>
+</div>

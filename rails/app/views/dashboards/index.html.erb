@@ -101,6 +101,25 @@
     <div class="mb-12">
       <h2 class="text-2xl font-bold text-slate-900 mb-6">Quick Access</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- BOQs Card -->
+        <div class="card bg-white shadow-md border border-slate-200 hover:shadow-lg transition">
+          <div class="card-body">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="card-title text-lg text-slate-900">Bills of Quantity</h3>
+              <i class="fas fa-file-csv text-indigo-600 text-2xl"></i>
+            </div>
+            <p class="text-slate-600 text-sm mb-4">Upload and parse BOQ documents</p>
+            <div class="card-actions justify-between">
+              <a href="<%= boqs_path %>" class="btn btn-sm btn-ghost gap-1">
+                <i class="fas fa-list"></i>View All
+              </a>
+              <a href="<%= new_boq_path %>" class="btn btn-sm btn-primary gap-1">
+                <i class="fas fa-plus"></i>Upload
+              </a>
+            </div>
+          </div>
+        </div>
+
         <!-- Tenders Card -->
         <div class="card bg-white shadow-md border border-slate-200 hover:shadow-lg transition">
           <div class="card-body">

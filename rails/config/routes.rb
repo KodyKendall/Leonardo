@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+  resources :boqs do
+    member do
+      post :parse
+    end
+  end
   resources :fabrication_records
   resources :budget_allowances
   resources :budget_categories

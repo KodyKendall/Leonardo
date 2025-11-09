@@ -1,0 +1,121 @@
+<div class="container mx-auto p-6">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-3xl font-bold"><%= @boq.boq_name %></h1>
+      <p class="text-gray-600 mt-1">
+        <% if @boq.client_name %>
+          <%= @boq.client_name %> 
+          <% if @boq.client_reference %> · <%= @boq.client_reference %><% end %>
+        <% end %>
+      </p>
+    </div>
+    <%= link_to "Back to BOQs", boqs_path, class: "btn btn-ghost" %>
+  </div>
+
+  <!-- BOQ Metadata -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <div class="card bg-base-100 shadow-sm">
+      <div class="card-body p-4">
+        <h3 class="font-semibold text-sm mb-2">BOQ Details</h3>
+        <div class="space-y-2 text-sm">
+          <div><span class="font-medium">File:</span> <%= @boq.file_name %></div>
+          <div><span class="font-medium">Status:</span> <span class="badge <%= @boq.status == 'parsed' ? 'badge-success' : 'badge-warning' %>"><%= @boq.status %></span></div>
+          <div><span class="font-medium">Received:</span> <%= @boq.received_date&.to_formatted_s(:short) || "—" %></div>
+          <div><span class="font-medium">Uploaded By:</span> <%= @boq.uploaded_by&.name || "—" %></div>
+          <% if @boq.parsed_at %>
+            <div><span class="font-medium">Parsed:</span> <%= @boq.parsed_at.to_formatted_s(:short) %></div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="card bg-base-100 shadow-sm">
+      <div class="card-body p-4">
+        <h3 class="font-semibold text-sm mb-2">QS & Client Info</h3>
+        <div class="space-y-2 text-sm">
+          <% if @boq.qs_name %>
+            <div><span class="font-medium">Quantity Surveyor:</span> <%= @boq.qs_name %></div>
+          <% else %>
+            <div class="text-gray-500">No QS name provided</div>
+          <% end %>
+        </div>
+        <% if @boq.notes %>
+          <div class="mt-3 text-sm bg-blue-50 p-2 rounded border border-blue-200">
+            <span class="font-medium">Notes:</span> <%= simple_format(@boq.notes) %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Parse Action -->
+  <% if @boq.uploaded? %>
+    <div class="alert alert-info mb-6">
+      <i class="fas fa-info-circle"></i>
+      <div>
+        <h3 class="font-bold">Ready to parse</h3>
+        <p>This BOQ has been uploaded but not yet parsed. Click "Parse BOQ" to extract line items using AI.</p>
+      </div>
+      <%= button_to "Parse BOQ", parse_boq_path(@boq), method: :post, class: "btn btn-sm btn-primary mt-2" %>
+    </div>
+  <% elsif @boq.parsing? %>
+    <div class="alert alert-warning mb-6">
+      <i class="fas fa-spinner fa-spin"></i>
+      <div>
+        <h3 class="font-bold">Parsing in progress...</h3>
+        <p>The BOQ is being processed by the AI service. This may take a few moments.</p>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- BOQ Items -->
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <h2 class="card-title mb-4">
+        <i class="fas fa-list"></i>
+        BOQ Line Items
+        <span class="badge badge-lg"><%= @boq_items.count %></span>
+      </h2>
+
+      <% if @boq_items.any? %>
+        <div class="overflow-x-auto">
+          <table class="table table-sm w-full">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Item Number</th>
+                <th>Description</th>
+                <th>Category</th>
+                <th>UOM</th>
+                <th>Quantity</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @boq_items.each_with_index do |item, idx| %>
+                <tr>
+                  <td><%= idx + 1 %></td>
+                  <td class="font-mono text-sm"><%= item.item_number || "—" %></td>
+                  <td>
+                    <div class="text-sm"><%= truncate(item.item_description, length: 60) %></div>
+                    <% if item.notes %>
+                      <div class="text-xs text-gray-500 mt-1"><%= item.notes %></div>
+                    <% end %>
+                  </td>
+                  <td><span class="badge badge-sm"><%= item.section_category || "—" %></span></td>
+                  <td><%= item.unit_of_measure || "—" %></td>
+                  <td class="text-right font-semibold"><%= item.quantity || "—" %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <div class="alert alert-info">
+          <i class="fas fa-info-circle"></i>
+          <div>No line items yet. Parse the BOQ to extract items.</div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
