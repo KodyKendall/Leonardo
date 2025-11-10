@@ -63,44 +63,213 @@
 
       <!-- CSV Preview -->
       <% if @boq.csv_file.attached? %>
-        <div class="bg-gray-50 rounded border border-gray-200 p-4 overflow-x-auto" style="max-height: 400px; overflow-y: auto;">
-          <table class="table table-sm text-xs">
-            <% 
-              csv_content = @boq.csv_file.download
-              csv_lines = csv_content.split("\n").first(20)
-              csv_lines.each_with_index do |line, idx|
-                columns = line.strip.split(',').map(&:strip)
-            %>
-              <% if idx == 0 %>
-                <thead>
+        <div id="csv-container" data-show-all="false">
+          <div id="csv-preview" class="bg-gray-50 rounded border border-gray-200 p-4 overflow-x-auto" style="max-height: 400px; overflow-y: auto;">
+            <table class="table table-sm text-xs">
+              <% 
+                csv_content = @boq.csv_file.download
+                csv_lines = csv_content.split("\n").first(20)
+                csv_lines.each_with_index do |line, idx|
+                  columns = line.strip.split(',').map(&:strip)
+              %>
+                <% if idx == 0 %>
+                  <thead>
+                    <tr>
+                      <% columns.each do |col| %>
+                        <th><%= col %></th>
+                      <% end %>
+                    </tr>
+                  </thead>
+                <% else %>
+                  <% if idx == 1 %>
+                    <tbody>
+                  <% end %>
                   <tr>
                     <% columns.each do |col| %>
-                      <th><%= col %></th>
+                      <td><%= col %></td>
                     <% end %>
                   </tr>
-                </thead>
-              <% else %>
-                <% if idx == 1 %>
-                  <tbody>
                 <% end %>
-                <tr>
-                  <% columns.each do |col| %>
-                    <td><%= col %></td>
-                  <% end %>
-                </tr>
               <% end %>
-            <% end %>
-            </tbody>
-          </table>
+              </tbody>
+            </table>
+          </div>
+
+          <div id="csv-full" class="bg-gray-50 rounded border border-gray-200 p-4 overflow-x-auto hidden" style="max-height: 600px; overflow-y: auto;">
+            <table class="table table-sm text-xs">
+              <% 
+                csv_all_lines = csv_content.split("\n")
+                csv_all_lines.each_with_index do |line, idx|
+                  columns = line.strip.split(',').map(&:strip)
+              %>
+                <% if idx == 0 %>
+                  <thead>
+                    <tr>
+                      <% columns.each do |col| %>
+                        <th><%= col %></th>
+                      <% end %>
+                    </tr>
+                  </thead>
+                <% else %>
+                  <% if idx == 1 %>
+                    <tbody>
+                  <% end %>
+                  <tr>
+                    <% columns.each do |col| %>
+                      <td><%= col %></td>
+                    <% end %>
+                  </tr>
+                <% end %>
+              <% end %>
+              </tbody>
+            </table>
+          </div>
+
           <% 
             total_rows = csv_content.split("\n").count
             if total_rows > 20
           %>
-            <div class="text-xs text-gray-500 mt-3 text-center">
-              Showing first 20 rows of <%= total_rows %> total rows
+            <div class="flex justify-between items-center mt-3">
+              <div class="text-xs text-gray-500">
+                <span id="row-count">Showing first 20 rows of <%= total_rows %> total rows</span>
+              </div>
+              <div class="flex gap-2">
+                <button id="copy-all-btn" class="btn btn-sm btn-ghost" onclick="copyAllToClipboard()">
+                  <i class="fas fa-copy"></i> Copy All
+                </button>
+                <button id="view-all-btn" class="btn btn-sm btn-ghost" onclick="toggleViewAll()">
+                  <i class="fas fa-expand"></i> View All
+                </button>
+              </div>
             </div>
           <% end %>
         </div>
+
+        <script>
+          function copyAllToClipboard() {
+            const tableElement = document.getElementById('csv-container').querySelector('div:not(.hidden) table');
+            let csvText = '';
+            
+            // Extract headers
+            const headers = Array.from(tableElement.querySelectorAll('thead th')).map(th => th.textContent.trim());
+            csvText += headers.join(',') + '\n';
+            
+            // Extract rows
+            tableElement.querySelectorAll('tbody tr').forEach(row => {
+              const cells = Array.from(row.querySelectorAll('td')).map(td => {
+                let text = td.textContent.trim();
+                // Escape quotes and wrap in quotes if contains comma
+                if (text.includes(',') || text.includes('"') || text.includes('\n')) {
+                  text = '"' + text.replace(/"/g, '""') + '"';
+                }
+                return text;
+              });
+              csvText += cells.join(',') + '\n';
+            });
+
+            // Fallback method using textarea
+            const textarea = document.createElement('textarea');
+            textarea.value = csvText;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            
+            try {
+              textarea.select();
+              document.execCommand('copy');
+              showToast('Content copied to clipboard!', 'success');
+            } catch (err) {
+              console.error('Failed to copy:', err);
+              showToast('Failed to copy to clipboard', 'error');
+            } finally {
+              document.body.removeChild(textarea);
+            }
+          }
+
+          function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('toast-container') || createToastContainer();
+            
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type} shadow-lg fixed top-4 right-4 z-50 flex items-center gap-2 animate-fade-in max-w-sm`;
+            toast.innerHTML = `
+              <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+              <span>${message}</span>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+              toast.classList.add('animate-fade-out');
+              setTimeout(() => toast.remove(), 300);
+            }, 3000);
+          }
+
+          function createToastContainer() {
+            const container = document.createElement('div');
+            container.id = 'toast-container';
+            document.body.appendChild(container);
+            return container;
+          }
+        </script>
+
+        <style>
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+              transform: translateY(10px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          
+          @keyframes fadeOut {
+            from {
+              opacity: 1;
+              transform: translateY(0);
+            }
+            to {
+              opacity: 0;
+              transform: translateY(10px);
+            }
+          }
+          
+          .animate-fade-in {
+            animation: fadeIn 0.3s ease-out;
+          }
+          
+          .animate-fade-out {
+            animation: fadeOut 0.3s ease-out;
+          }
+        </style>
+
+        <script>
+          function toggleViewAll() {
+            const container = document.getElementById('csv-container');
+            const preview = document.getElementById('csv-preview');
+            const full = document.getElementById('csv-full');
+            const btn = document.getElementById('view-all-btn');
+            const rowCount = document.getElementById('row-count');
+            const showAll = container.getAttribute('data-show-all') === 'true';
+            
+            if (showAll) {
+              // Hide all, show preview
+              preview.classList.remove('hidden');
+              full.classList.add('hidden');
+              container.setAttribute('data-show-all', 'false');
+              btn.innerHTML = '<i class="fas fa-expand"></i> View All';
+              rowCount.textContent = 'Showing first 20 rows of <%= total_rows %> total rows';
+            } else {
+              // Show all
+              preview.classList.add('hidden');
+              full.classList.remove('hidden');
+              container.setAttribute('data-show-all', 'true');
+              btn.innerHTML = '<i class="fas fa-compress"></i> View Less';
+              rowCount.textContent = 'Showing all <%= total_rows %> rows';
+            }
+          }
+        </script>
       <% else %>
         <div class="alert alert-info">
           <i class="fas fa-info-circle"></i>
