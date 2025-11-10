@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   resources :boqs do
     member do
       post :parse
+      get :csv_download
     end
   end
   resources :fabrication_records

@@ -48,25 +48,133 @@
     </div>
   </div>
 
-  <!-- Parse Action -->
-  <% if @boq.uploaded? %>
-    <div class="alert alert-info mb-6">
-      <i class="fas fa-info-circle"></i>
-      <div>
-        <h3 class="font-bold">Ready to parse</h3>
-        <p>This BOQ has been uploaded but not yet parsed. Click "Parse BOQ" to extract line items using AI.</p>
+  <!-- CSV Preview & Download -->
+  <div class="card bg-base-100 shadow-sm mb-6">
+    <div class="card-body">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="card-title text-lg">
+          <i class="fas fa-file-csv"></i>
+          CSV File
+        </h3>
+        <% if @boq.csv_file.attached? %>
+          <%= link_to "Download", rails_blob_path(@boq.csv_file, disposition: "attachment"), class: "btn btn-sm btn-outline" %>
+        <% end %>
       </div>
-      <%= button_to "Parse BOQ", parse_boq_path(@boq), method: :post, class: "btn btn-sm btn-primary mt-2" %>
+
+      <!-- CSV Preview -->
+      <% if @boq.csv_file.attached? %>
+        <div class="bg-gray-50 rounded border border-gray-200 p-4 overflow-x-auto" style="max-height: 400px; overflow-y: auto;">
+          <table class="table table-sm text-xs">
+            <% 
+              csv_content = @boq.csv_file.download
+              csv_lines = csv_content.split("\n").first(20)
+              csv_lines.each_with_index do |line, idx|
+                columns = line.strip.split(',').map(&:strip)
+            %>
+              <% if idx == 0 %>
+                <thead>
+                  <tr>
+                    <% columns.each do |col| %>
+                      <th><%= col %></th>
+                    <% end %>
+                  </tr>
+                </thead>
+              <% else %>
+                <% if idx == 1 %>
+                  <tbody>
+                <% end %>
+                <tr>
+                  <% columns.each do |col| %>
+                    <td><%= col %></td>
+                  <% end %>
+                </tr>
+              <% end %>
+            <% end %>
+            </tbody>
+          </table>
+          <% 
+            total_rows = csv_content.split("\n").count
+            if total_rows > 20
+          %>
+            <div class="text-xs text-gray-500 mt-3 text-center">
+              Showing first 20 rows of <%= total_rows %> total rows
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="alert alert-info">
+          <i class="fas fa-info-circle"></i>
+          <div>No CSV file attached yet</div>
+        </div>
+      <% end %>
     </div>
-  <% elsif @boq.parsing? %>
-    <div class="alert alert-warning mb-6">
-      <i class="fas fa-spinner fa-spin"></i>
-      <div>
-        <h3 class="font-bold">Parsing in progress...</h3>
-        <p>The BOQ is being processed by the AI service. This may take a few moments.</p>
+  </div>
+
+  <!-- AI BOQ Parser Chat Interface -->
+  <div class="card bg-base-100 shadow-sm mb-6">
+    <div class="card-body">
+      <h2 class="card-title mb-4">
+        <i class="fas fa-robot"></i>
+        AI BOQ Parser Assistant
+      </h2>
+      <p class="text-sm text-gray-600 mb-4">
+        Chat with our AI assistant to parse the CSV file and automatically create line items. 
+        The AI will analyze the file structure and help you organize the data.
+      </p>
+      
+      <!-- Chat Container -->
+      <div id="boq-parser-chat" class="bg-gray-50 rounded border border-gray-200 p-4 mb-4" style="height: 400px; overflow-y: auto; display: flex; flex-direction: column;">
+        <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 mb-4">
+          <!-- Messages will be inserted here -->
+          <div class="chat chat-start">
+            <div class="chat-bubble chat-bubble-primary">
+              <i class="fas fa-robot mr-2"></i>
+              <span>Hi! I'm ready to help parse your BOQ file. You can ask me to:</span>
+              <ul class="text-sm mt-2 ml-4 list-disc">
+                <li>Analyze the CSV structure</li>
+                <li>Parse and extract line items</li>
+                <li>Update BOQ metadata</li>
+                <li>Organize items by category</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Input Area -->
+        <div class="flex gap-2">
+          <input 
+            type="text" 
+            id="chat-input" 
+            placeholder="Ask the AI to parse the BOQ... (e.g., 'Parse the CSV and create line items')"
+            class="input input-bordered flex-1 input-sm"
+            onkeypress="handleChatKeypress(event)"
+          >
+          <button 
+            onclick="sendChatMessage()"
+            class="btn btn-primary btn-sm"
+          >
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="flex flex-wrap gap-2">
+        <button 
+          onclick="sendQuickPrompt('Analyze the CSV file structure and tell me what columns and data you find.')"
+          class="btn btn-sm btn-outline"
+        >
+          <i class="fas fa-search"></i> Analyze Structure
+        </button>
+        <button 
+          onclick="sendQuickPrompt('Parse the entire CSV file and create all line items with proper categorization.')"
+          class="btn btn-sm btn-outline"
+        >
+          <i class="fas fa-wand-magic-2"></i> Auto-Parse
+        </button>
       </div>
     </div>
-  <% end %>
+  </div>
 
   <!-- BOQ Items -->
   <div class="card bg-base-100 shadow">
@@ -118,4 +226,176 @@
     </div>
   </div>
 </div>
+
+<script>
+// LangGraph Chat Interface for BOQ Parser
+class BoqParserChat {
+  constructor(boqId) {
+    this.boqId = boqId;
+    this.threadId = null;
+    this.messagesContainer = document.getElementById('chat-messages');
+    this.chatInput = document.getElementById('chat-input');
+    this.isWaitingForResponse = false;
+  }
+
+  async initialize() {
+    // Get or create thread ID for this session
+    this.threadId = `boq_${this.boqId}_${Date.now()}`;
+    this.addSystemMessage('Connected to BOQ Parser Agent. Ready to parse your CSV file!');
+  }
+
+  addMessage(content, role = 'user') {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chat chat-${role === 'user' ? 'end' : 'start'}`;
+    
+    const bubbleClass = role === 'user' ? 'chat-bubble-info' : 'chat-bubble-primary';
+    messageDiv.innerHTML = `
+      <div class="chat-bubble ${bubbleClass}">
+        ${this.escapeHtml(content)}
+      </div>
+    `;
+    
+    this.messagesContainer.appendChild(messageDiv);
+    this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+  }
+
+  addSystemMessage(content) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'chat chat-start';
+    messageDiv.innerHTML = `
+      <div class="chat-bubble chat-bubble-primary">
+        <i class="fas fa-robot mr-2"></i>
+        ${this.escapeHtml(content)}
+      </div>
+    `;
+    
+    this.messagesContainer.appendChild(messageDiv);
+    this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+  }
+
+  addLoadingMessage() {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'chat chat-start';
+    messageDiv.id = 'loading-message';
+    messageDiv.innerHTML = `
+      <div class="chat-bubble chat-bubble-primary">
+        <span class="loading loading-spinner loading-sm"></span>
+        <span class="ml-2">Parsing...</span>
+      </div>
+    `;
+    
+    this.messagesContainer.appendChild(messageDiv);
+    this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+  }
+
+  removeLoadingMessage() {
+    const loadingMsg = document.getElementById('loading-message');
+    if (loadingMsg) {
+      loadingMsg.remove();
+    }
+  }
+
+  escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  async sendMessage(userMessage) {
+    if (!userMessage.trim() || this.isWaitingForResponse) return;
+
+    // Display user message
+    this.addMessage(userMessage, 'user');
+    this.chatInput.value = '';
+    
+    // Show loading indicator
+    this.addLoadingMessage();
+    this.isWaitingForResponse = true;
+
+    try {
+      // Send to LlamaBotRails chat channel via WebSocket
+      const response = await this.sendToAgent(userMessage);
+      
+      this.removeLoadingMessage();
+      
+      // Handle response
+      if (response && response.message) {
+        this.addSystemMessage(response.message);
+      }
+      
+      // Check if there were any errors
+      if (response && response.error) {
+        this.addSystemMessage(`Error: ${response.error}`);
+      }
+    } catch (error) {
+      this.removeLoadingMessage();
+      console.error('Chat error:', error);
+      this.addSystemMessage(`Error: ${error.message}`);
+    } finally {
+      this.isWaitingForResponse = false;
+      this.chatInput.focus();
+    }
+  }
+
+  async sendToAgent(message) {
+    // Connect to LlamaBotRails WebSocket channel
+    // This assumes you have a chat interface integrated with LlamaBotRails
+    return new Promise((resolve, reject) => {
+      // Build the message payload
+      const payload = {
+        message: message,
+        raw_params: {
+          boq_id: this.boqId,
+          controller: 'boqs',
+          action: 'show'
+        }
+      };
+
+      // Send via fetch API to Rails backend
+      // The backend will route this through the LlamaBotRails chat channel
+      fetch(`/boqs/${this.boqId}/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('[name="csrf-token"]')?.content || ''
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(response => response.json())
+      .then(data => resolve(data))
+      .catch(error => reject(error));
+    });
+  }
+}
+
+// Initialize chat when page loads
+let boqChat = null;
+
+document.addEventListener('DOMContentLoaded', async function() {
+  const boqId = <%= @boq.id %>;
+  boqChat = new BoqParserChat(boqId);
+  await boqChat.initialize();
+});
+
+// Send message on button click or Enter key
+function sendChatMessage() {
+  if (boqChat) {
+    const message = document.getElementById('chat-input').value;
+    boqChat.sendMessage(message);
+  }
+}
+
+function handleChatKeypress(event) {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    sendChatMessage();
+  }
+}
+
+function sendQuickPrompt(prompt) {
+  if (boqChat) {
+    boqChat.sendMessage(prompt);
+  }
+}
+</script>
 

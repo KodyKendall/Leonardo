@@ -1,0 +1,199 @@
+erDiagram
+    TENDER ||--o| BOQ : "receives"
+    TENDER ||--o{ TENDER_LINE_ITEM : contains
+    TENDER ||--o| TENDER_ATTACHMENT : has
+    TENDER ||--o| CLIENT_SUMMARY : generates
+    TENDER }o--|| CLIENT : "submitted to"
+    TENDER }o--|| USER : "created by"
+    TENDER }o--o| JOB : "converts to"
+    
+    BOQ ||--o{ BOQ_ITEM : contains
+    BOQ_ITEM ||--o| TENDER_LINE_ITEM : "maps to"
+    
+    TENDER_LINE_ITEM }o--o| BOM_TEMPLATE : "uses"
+    TENDER_LINE_ITEM ||--o{ LINE_ITEM_COST : "breaks down to"
+    
+    BOM_TEMPLATE ||--o{ BOM_LINE : contains
+    BOM_LINE }o--|| COST_ITEM : references
+    
+    SUPPLIER_RATE_SHEET ||--o{ MATERIAL_RATE : contains
+    MATERIAL_RATE }o--|| SUPPLIER : "provided by"
+    
+    LINE_ITEM_COST }o--o| MATERIAL_RATE : "pulls from"
+    LINE_ITEM_COST }o--|| COST_ITEM : references
+    
+    USER ||--o{ AUDIT_LOG : creates
+    TENDER ||--o{ AUDIT_LOG : tracks
+    
+    TENDER {
+        string tender_number PK "E Number - auto-generated"
+        string tender_name
+        string status "Draft, In Progress, Submitted, Awarded, Not Awarded"
+        date submission_deadline
+        string notes
+        date created_at
+        date updated_at
+        boolean is_locked
+        int created_by_user_id FK
+        int client_id FK
+        int job_id FK "NULL until awarded"
+    }
+    
+    BOQ {
+        int boq_id PK
+        int tender_id FK
+        string boq_name
+        string source_file_name
+        string file_format "Excel, PDF"
+        date received_date
+        string client_reference
+        string qs_name "Quantity Surveyor name"
+        string notes
+    }
+    
+    BOQ_ITEM {
+        int boq_item_id PK
+        int boq_id FK
+        string item_number "Original BOQ item number"
+        string item_description
+        string unit_of_measure
+        decimal quantity
+        string section_category "e.g. Structural Steel, Foundations"
+        int sequence_order
+        string notes
+    }
+    
+    CLIENT {
+        int client_id PK
+        string client_name
+        string contact_person
+        string email
+        string phone
+        string address
+    }
+    
+    TENDER_LINE_ITEM {
+        int line_item_id PK
+        int tender_id FK
+        int boq_item_id FK "Link to original BOQ item"
+        string item_description
+        string unit_of_measure
+        decimal quantity
+        int bom_template_id FK
+        decimal total_cost "calculated"
+        decimal markup_percentage
+        decimal final_price "calculated"
+        int sequence_order
+    }
+    
+    BOM_TEMPLATE {
+        int bom_template_id PK
+        string template_name
+        string description
+        boolean is_active
+        date created_at
+    }
+    
+    BOM_LINE {
+        int bom_line_id PK
+        int bom_template_id FK
+        int cost_item_id FK
+        decimal quantity_multiplier
+        string calculation_method "per unit, percentage, fixed"
+        int sequence_order
+    }
+    
+    COST_ITEM {
+        int cost_item_id PK
+        string cost_category "Material, Fabrication, Transport, Overhead"
+        string cost_name
+        string description
+        string unit_of_measure
+    }
+    
+    LINE_ITEM_COST {
+        int line_item_cost_id PK
+        int line_item_id FK
+        int cost_item_id FK
+        int material_rate_id FK "NULL for non-material costs"
+        decimal quantity
+        decimal unit_rate
+        decimal total_cost "calculated"
+        string cost_type "Material, Labor, Overhead, Markup"
+    }
+    
+    SUPPLIER_RATE_SHEET {
+        int rate_sheet_id PK
+        string sheet_name
+        date effective_date
+        date last_updated
+        int updated_by_user_id FK
+        boolean is_active
+    }
+    
+    MATERIAL_RATE {
+        int material_rate_id PK
+        int rate_sheet_id FK
+        int supplier_id FK
+        string material_name
+        string material_code
+        decimal unit_rate
+        string unit_of_measure
+        date effective_from
+        date effective_to
+        string notes
+    }
+    
+    SUPPLIER {
+        int supplier_id PK
+        string supplier_name
+        string contact_person
+        string email
+        string phone
+        string material_category "Steel, Galvanising, etc"
+    }
+    
+    TENDER_ATTACHMENT {
+        int attachment_id PK
+        int tender_id FK
+        string file_name
+        string file_path
+        string file_type "BOQ Excel, BOQ PDF, Supporting Doc"
+        date uploaded_at
+        int uploaded_by_user_id FK
+    }
+    
+    CLIENT_SUMMARY {
+        int summary_id PK
+        int tender_id FK
+        date generated_at
+        string pdf_file_path
+        int generated_by_user_id FK
+    }
+    
+    USER {
+        int user_id PK
+        string username
+        string email
+        string role "Admin, Buyer, Estimator, Viewer"
+        boolean is_active
+        date created_at
+    }
+    
+    JOB {
+        int job_id PK
+        string job_number "RSB Job Number"
+        int tender_id FK
+        date start_date
+        string status
+        date created_at
+    }
+    
+    AUDIT_LOG {
+        int log_id PK
+        int tender_id FK
+        int user_id FK
+        string action "Created, Updated, Status Changed, Locked, Unlocked"
+        string details
+        timestamp logged_at
+    }
