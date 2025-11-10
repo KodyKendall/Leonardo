@@ -36,8 +36,9 @@ Rails.application.routes.draw do
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
-  root "dashboards#index"
+  root "boqs#index"
   get "dashboard" => "dashboards#index"
+  get "old_dashboard" => "dashboards#old_dashboard"
   post "upload_tender_qob" => "dashboards#upload_tender_qob"
   get "api/dashboard_metrics" => "dashboards#metrics"
   # root "prototypes#show", page: "home"

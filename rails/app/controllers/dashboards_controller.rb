@@ -2,6 +2,10 @@ class DashboardsController < ApplicationController
   def index
   end
 
+  def old_dashboard
+    render :old_dashboard
+  end
+
   def upload_tender_qob
     if params[:qob_file].present?
       # Generate a unique e_number for the tender
