@@ -110,7 +110,7 @@
     </div>
   </div>
 
-  <!-- AI BOQ Parser Chat Interface -->
+  <!-- AI BOQ Parser Chat Interface (LlamaBot) -->
   <div class="card bg-base-100 shadow-sm mb-6">
     <div class="card-body">
       <h2 class="card-title mb-4">
@@ -122,56 +122,65 @@
         The AI will analyze the file structure and help you organize the data.
       </p>
       
-      <!-- Chat Container -->
-      <div id="boq-parser-chat" class="bg-gray-50 rounded border border-gray-200 p-4 mb-4" style="height: 400px; overflow-y: auto; display: flex; flex-direction: column;">
-        <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 mb-4">
-          <!-- Messages will be inserted here -->
-          <div class="chat chat-start">
-            <div class="chat-bubble chat-bubble-primary">
-              <i class="fas fa-robot mr-2"></i>
-              <span>Hi! I'm ready to help parse your BOQ file. You can ask me to:</span>
-              <ul class="text-sm mt-2 ml-4 list-disc">
-                <li>Analyze the CSV structure</li>
-                <li>Parse and extract line items</li>
-                <li>Update BOQ metadata</li>
-                <li>Organize items by category</li>
-              </ul>
-            </div>
+      <!-- LlamaBot Chat Container -->
+      <div data-llamabot="chat-container" class="flex flex-col border border-gray-200 rounded-lg bg-white overflow-hidden" style="height: 500px;">
+        <!-- Header -->
+        <div class="flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200 p-4">
+          <div class="flex items-center gap-2">
+            <i class="fas fa-robot text-indigo-600"></i>
+            <span class="font-semibold text-gray-800">BOQ Parser</span>
           </div>
+          <div data-llamabot="connection-status" class="h-3 w-3 rounded-full bg-green-400 animate-pulse"></div>
         </div>
-        
+
+        <!-- Message History -->
+        <div data-llamabot="message-history" class="flex-grow overflow-y-auto p-4 bg-gray-50"></div>
+
+        <!-- Thinking Area -->
+        <div data-llamabot="thinking-area" class="hidden bg-blue-50 border-t border-blue-200 px-4 py-3 text-sm text-blue-700"></div>
+
         <!-- Input Area -->
-        <div class="flex gap-2">
+        <div class="border-t border-gray-200 bg-white p-4 flex gap-2">
           <input 
+            data-llamabot="message-input" 
             type="text" 
-            id="chat-input" 
-            placeholder="Ask the AI to parse the BOQ... (e.g., 'Parse the CSV and create line items')"
-            class="input input-bordered flex-1 input-sm"
-            onkeypress="handleChatKeypress(event)"
-          >
+            placeholder="Ask the AI to parse the BOQ..." 
+            class="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
+          />
           <button 
-            onclick="sendChatMessage()"
-            class="btn btn-primary btn-sm"
+            data-llamabot="send-button" 
+            class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            disabled
           >
             <i class="fas fa-paper-plane"></i>
+            <span class="hidden sm:inline">Send</span>
           </button>
         </div>
       </div>
 
-      <!-- Quick Actions -->
-      <div class="flex flex-wrap gap-2">
-        <button 
-          onclick="sendQuickPrompt('Analyze the CSV file structure and tell me what columns and data you find.')"
-          class="btn btn-sm btn-outline"
-        >
-          <i class="fas fa-search"></i> Analyze Structure
-        </button>
-        <button 
-          onclick="sendQuickPrompt('Parse the entire CSV file and create all line items with proper categorization.')"
-          class="btn btn-sm btn-outline"
-        >
-          <i class="fas fa-wand-magic-2"></i> Auto-Parse
-        </button>
+      <!-- Quick Actions / Suggested Prompts -->
+      <div class="mt-4 pt-4 border-t border-gray-200">
+        <div class="text-xs font-semibold text-gray-600 mb-3 uppercase tracking-wide">Quick Actions</div>
+        <div class="flex flex-wrap gap-2">
+          <button 
+            data-llamabot="suggested-prompt"
+            class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
+          >
+            <i class="fas fa-search mr-1"></i> Analyze Structure
+          </button>
+          <button 
+            data-llamabot="suggested-prompt"
+            class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
+          >
+            <i class="fas fa-wand-magic-2 mr-1"></i> Auto-Parse All Items
+          </button>
+          <button 
+            data-llamabot="suggested-prompt"
+            class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
+          >
+            <i class="fas fa-tags mr-1"></i> Categorize Items
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -227,175 +236,128 @@
   </div>
 </div>
 
-<script>
-// LangGraph Chat Interface for BOQ Parser
-class BoqParserChat {
-  constructor(boqId) {
-    this.boqId = boqId;
-    this.threadId = null;
-    this.messagesContainer = document.getElementById('chat-messages');
-    this.chatInput = document.getElementById('chat-input');
-    this.isWaitingForResponse = false;
-  }
+<script type="module">
+  console.log('🚀 BOQ Chat: Initializing...');
 
-  async initialize() {
-    // Get or create thread ID for this session
-    this.threadId = `boq_${this.boqId}_${Date.now()}`;
-    this.addSystemMessage('Connected to BOQ Parser Agent. Ready to parse your CSV file!');
-  }
-
-  addMessage(content, role = 'user') {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `chat chat-${role === 'user' ? 'end' : 'start'}`;
+  // Wait for ActionCable to be available, then initialize LlamaBot chat
+  function waitForCableConnection(callback, maxWaitMs = 10000) {
+    const startTime = Date.now();
     
-    const bubbleClass = role === 'user' ? 'chat-bubble-info' : 'chat-bubble-primary';
-    messageDiv.innerHTML = `
-      <div class="chat-bubble ${bubbleClass}">
-        ${this.escapeHtml(content)}
-      </div>
-    `;
-    
-    this.messagesContainer.appendChild(messageDiv);
-    this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      
+      if (window.LlamaBotRails && window.LlamaBotRails.cable) {
+        console.log('✅ BOQ Chat: ActionCable ready');
+        clearInterval(interval);
+        callback(window.LlamaBotRails.cable);
+      } else if (elapsed > maxWaitMs) {
+        console.error('❌ BOQ Chat: ActionCable timeout after', maxWaitMs, 'ms');
+        console.error('window.LlamaBotRails:', window.LlamaBotRails);
+        clearInterval(interval);
+      }
+    }, 50);
   }
 
-  addSystemMessage(content) {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'chat chat-start';
-    messageDiv.innerHTML = `
-      <div class="chat-bubble chat-bubble-primary">
-        <i class="fas fa-robot mr-2"></i>
-        ${this.escapeHtml(content)}
-      </div>
-    `;
-    
-    this.messagesContainer.appendChild(messageDiv);
-    this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
-  }
-
-  addLoadingMessage() {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'chat chat-start';
-    messageDiv.id = 'loading-message';
-    messageDiv.innerHTML = `
-      <div class="chat-bubble chat-bubble-primary">
-        <span class="loading loading-spinner loading-sm"></span>
-        <span class="ml-2">Parsing...</span>
-      </div>
-    `;
-    
-    this.messagesContainer.appendChild(messageDiv);
-    this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
-  }
-
-  removeLoadingMessage() {
-    const loadingMsg = document.getElementById('loading-message');
-    if (loadingMsg) {
-      loadingMsg.remove();
-    }
-  }
-
-  escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-  }
-
-  async sendMessage(userMessage) {
-    if (!userMessage.trim() || this.isWaitingForResponse) return;
-
-    // Display user message
-    this.addMessage(userMessage, 'user');
-    this.chatInput.value = '';
-    
-    // Show loading indicator
-    this.addLoadingMessage();
-    this.isWaitingForResponse = true;
-
+  async function initializeChat() {
     try {
-      // Send to LlamaBotRails chat channel via WebSocket
-      const response = await this.sendToAgent(userMessage);
+      console.log('📦 BOQ Chat: Loading LlamaBot library from S3...');
+      const cdnUrl = 'https://llamapress-cdn.s3.amazonaws.com/llamabot-chat-js-v0.2.19/index.js';
+      console.log('📍 CDN URL:', cdnUrl);
       
-      this.removeLoadingMessage();
-      
-      // Handle response
-      if (response && response.message) {
-        this.addSystemMessage(response.message);
+      try {
+        // Test CDN availability with a fetch first
+        console.log('🔍 Testing CDN connectivity...');
+        const headResponse = await fetch(cdnUrl, { method: 'HEAD' });
+        console.log('🌐 CDN HEAD response status:', headResponse.status);
+      } catch (fetchError) {
+        console.warn('⚠️ CDN HEAD request failed (this may be okay):', fetchError.message);
       }
       
-      // Check if there were any errors
-      if (response && response.error) {
-        this.addSystemMessage(`Error: ${response.error}`);
+      // Import LlamaBot chat from S3 CDN
+      console.log('📥 Attempting dynamic import...');
+      let LlamaBot;
+      try {
+        const module = await import(cdnUrl);
+        LlamaBot = module.default;
+        console.log('✅ BOQ Chat: LlamaBot library loaded successfully');
+        console.log('LlamaBot object:', LlamaBot);
+        console.log('LlamaBot.create:', typeof LlamaBot?.create);
+      } catch (importError) {
+        console.error('❌ Import failed with error:', importError);
+        console.error('Error name:', importError.name);
+        console.error('Error message:', importError.message);
+        console.error('Error stack:', importError.stack);
+        
+        // Check if it's a CORS issue
+        if (importError.message.includes('CORS') || importError.message.includes('Failed to fetch')) {
+          console.error('🚨 Likely CORS or network issue - CDN might be unreachable');
+        }
+        throw importError;
       }
+
+      // Extract BOQ ID from current page URL
+      const pathParts = window.location.pathname.split('/');
+      const boqId = pathParts[pathParts.length - 1];
+      console.log('BOQ ID extracted:', boqId);
+
+      console.log('⏳ BOQ Chat: Waiting for ActionCable...');
+      waitForCableConnection((consumer) => {
+        try {
+          console.log('🔌 BOQ Chat: Initializing chat with consumer:', consumer);
+          console.log('📋 LlamaBot.create type:', typeof LlamaBot.create);
+
+          // Initialize the chat interface
+          try {
+            console.log('🎯 Calling LlamaBot.create with config...');
+            const config = {
+              actionCable: {
+                consumer: consumer,
+                channel: 'LlamaBotRails::ChatChannel',
+                session_id: crypto.randomUUID(),
+                raw_params: {
+                  boq_id: boqId
+                }
+              },
+              agent: {
+                name: 'boq_parser'  // Must match the key in langgraph.json
+              },
+              // Tailwind CSS classes for styling
+              cssClasses: {
+                humanMessage: 'bg-indigo-100 text-indigo-900 p-3 rounded-lg mb-2 max-w-xs',
+                aiMessage: 'bg-blue-50 text-gray-900 p-3 rounded-lg mb-2 max-w-2xl prose prose-sm',
+                errorMessage: 'bg-red-100 text-red-800 p-3 rounded-lg mb-2 max-w-xs',
+                connectionStatusConnected: 'h-3 w-3 rounded-full bg-green-400 animate-pulse',
+                connectionStatusDisconnected: 'h-3 w-3 rounded-full bg-red-400'
+              }
+            };
+            console.log('📝 Config:', config);
+            
+            const chat = LlamaBot.create('[data-llamabot="chat-container"]', config);
+            console.log('✅ BOQ Chat: Initialized successfully');
+            console.log('Chat instance:', chat);
+          } catch (createError) {
+            console.error('❌ BOQ Chat: LlamaBot.create error:', createError);
+            console.error('Error name:', createError.name);
+            console.error('Error message:', createError.message);
+            console.error('Stack:', createError.stack);
+            throw createError;
+          }
+        } catch (error) {
+          console.error('❌ BOQ Chat: Callback error:', error);
+          console.error('Stack:', error.stack);
+        }
+      });
     } catch (error) {
-      this.removeLoadingMessage();
-      console.error('Chat error:', error);
-      this.addSystemMessage(`Error: ${error.message}`);
-    } finally {
-      this.isWaitingForResponse = false;
-      this.chatInput.focus();
+      console.error('❌ BOQ Chat: Library import error:', error);
+      console.error('Stack:', error.stack);
     }
   }
 
-  async sendToAgent(message) {
-    // Connect to LlamaBotRails WebSocket channel
-    // This assumes you have a chat interface integrated with LlamaBotRails
-    return new Promise((resolve, reject) => {
-      // Build the message payload
-      const payload = {
-        message: message,
-        raw_params: {
-          boq_id: this.boqId,
-          controller: 'boqs',
-          action: 'show'
-        }
-      };
-
-      // Send via fetch API to Rails backend
-      // The backend will route this through the LlamaBotRails chat channel
-      fetch(`/boqs/${this.boqId}/chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': document.querySelector('[name="csrf-token"]')?.content || ''
-        },
-        body: JSON.stringify(payload)
-      })
-      .then(response => response.json())
-      .then(data => resolve(data))
-      .catch(error => reject(error));
-    });
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeChat);
+  } else {
+    initializeChat();
   }
-}
-
-// Initialize chat when page loads
-let boqChat = null;
-
-document.addEventListener('DOMContentLoaded', async function() {
-  const boqId = <%= @boq.id %>;
-  boqChat = new BoqParserChat(boqId);
-  await boqChat.initialize();
-});
-
-// Send message on button click or Enter key
-function sendChatMessage() {
-  if (boqChat) {
-    const message = document.getElementById('chat-input').value;
-    boqChat.sendMessage(message);
-  }
-}
-
-function handleChatKeypress(event) {
-  if (event.key === 'Enter' && !event.shiftKey) {
-    event.preventDefault();
-    sendChatMessage();
-  }
-}
-
-function sendQuickPrompt(prompt) {
-  if (boqChat) {
-    boqChat.sendMessage(prompt);
-  }
-}
 </script>
 
