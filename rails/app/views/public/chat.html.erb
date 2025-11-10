@@ -8,84 +8,100 @@
 <% if defined?(action_cable_meta_tag) %>
   <%= action_cable_meta_tag %>
 <% end %>
-<!-- Add Tailwind Typography CDN -->
-<link rel="stylesheet" href="https://unpkg.com/@tailwindcss/typography@0.4.x/dist/typography.min.css">
-<!-- Add Snarkdown CDN -->
-<script src="https://unpkg.com/snarkdown/dist/snarkdown.umd.js"></script>
+<!-- Add Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
 <!-- Add marked.js for markdown parsing -->
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-<div class="flex flex-col h-screen bg-gray-100">
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-  <div class="flex flex-col flex-grow bg-white shadow-lg rounded-lg mx-2 md:mx-auto my-2 max-w-4xl">
+<div class="flex flex-col h-screen bg-gray-100">
+  <!-- Chat Container -->
+  <div class="flex flex-col flex-grow bg-white shadow-lg rounded-lg mx-2 md:mx-auto my-2 max-w-4xl" data-llamabot="chat-container">
+
+    <!-- Header -->
     <div class="flex items-center justify-between border-b p-4">
       <div class="flex items-center space-x-4">
-        <button id="toggle-sidebar" class="p-1 rounded-full hover:bg-gray-200 focus:outline-none" title="Toggle sidebar">
+        <button data-llamabot="hamburger-menu" class="p-1 rounded-full hover:bg-gray-200 focus:outline-none" title="Toggle sidebar">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M15 18l-6-6 6-6" />
           </svg>
         </button>
         <div class="flex items-center">
           <img src="https://service-jobs-images.s3.us-east-2.amazonaws.com/7rl98t1weu387r43il97h6ipk1l7" alt="LlamaBot Logo" class="h-8 w-8">
-          <div id="connectionStatusIconForLlamaBot" class="ml-2 h-3 w-3 rounded-full bg-yellow-400"></div>
+          <div data-llamabot="connection-status" class="ml-2 h-3 w-3 rounded-full bg-yellow-400"></div>
         </div>
         <h1 class="text-xl font-bold">Leo the Llama</h1>
       </div>
     </div>
-    <div id="chat-messages" class="flex-grow overflow-y-auto p-4 space-y-4">
+
+    <!-- Slide-out drawer for threads -->
+    <div data-llamabot="menu-drawer" class="menu-drawer">
+      <div class="drawer-content p-4">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-bold text-lg">Conversations</h3>
+          <button data-llamabot="new-thread-btn" class="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700" title="Start new conversation">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+        <div data-llamabot="thread-list" class="space-y-2">
+          <!-- Thread items will be populated dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Message History -->
+    <div data-llamabot="message-history" class="flex-grow overflow-y-auto p-4 space-y-4">
       <!-- Messages will be added here dynamically -->
     </div>
-    
-    <!-- Simple loading indicator with just animated text -->
-    <div id="loading-indicator" class="hidden p-4 text-center">
+
+    <!-- Thinking indicator -->
+    <div data-llamabot="thinking-area" class="hidden p-4 text-center">
       <span class="inline-flex items-center text-gray-600">
         Leo is thinking<span class="loading-dots"></span>
       </span>
     </div>
-    
-    <!-- Suggested Prompts - Always visible above input -->
-    <div id="suggested-prompts" class="p-4 border-t border-gray-200">
+
+    <!-- Suggested Prompts -->
+    <div data-llamabot="suggested-prompts" class="p-4 border-t border-gray-200">
       <div class="text-sm text-gray-600 mb-2">Quick actions:</div>
       <div class="space-y-2">
         <div class="flex flex-wrap gap-2">
-          <button onclick="selectPrompt(this)" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">What's the weather like today?</button>
-          <button onclick="selectPrompt(this)" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">Tell me a fun fact.</button>
-          <button onclick="selectPrompt(this)" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">How do I make pancakes?</button>
-          <button onclick="selectPrompt(this)" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">What's a good movie to watch?</button>
+          <button data-llamabot="suggested-prompt" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">What's the weather like today?</button>
+          <button data-llamabot="suggested-prompt" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">Tell me a fun fact.</button>
+          <button data-llamabot="suggested-prompt" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">How do I make pancakes?</button>
+          <button data-llamabot="suggested-prompt" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">What's a good movie to watch?</button>
         </div>
         <div class="flex flex-wrap gap-2">
-          <button onclick="selectPrompt(this)" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">Give me a motivational quote.</button>
-          <button onclick="selectPrompt(this)" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">What's the capital of France?</button>
-          <button onclick="selectPrompt(this)" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">How do I stay productive?</button>
-          <button onclick="selectPrompt(this)" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">Tell me a joke.</button>
+          <button data-llamabot="suggested-prompt" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">Give me a motivational quote.</button>
+          <button data-llamabot="suggested-prompt" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">What's the capital of France?</button>
+          <button data-llamabot="suggested-prompt" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">How do I stay productive?</button>
+          <button data-llamabot="suggested-prompt" class="px-3 py-1 text-sm bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">Tell me a joke.</button>
         </div>
       </div>
     </div>
-    
+
+    <!-- Input Area -->
     <div class="border-t border-gray-200 p-4 flex">
-      <input type="text" id="message-input" class="flex-grow border rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Type your message...">
-      <button onclick="sendMessage()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-r-lg">Send</button>
+      <input type="text" data-llamabot="message-input" class="flex-grow border rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Type your message...">
+      <button data-llamabot="send-button" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-r-lg" disabled>Send</button>
     </div>
   </div>
 </div>
 
-<div id="modalOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
-<div id="errorModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+<!-- Error Modal -->
+<div data-llamabot="error-modal-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+<div data-llamabot="error-modal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
   <div class="bg-white rounded-lg shadow-xl p-6 max-w-md mx-auto">
     <h2 class="text-xl font-bold mb-4">Connection Error</h2>
     <p class="mb-6">Lost connection to Leo. Is LlamaBot running? Refresh the page.</p>
-    <button onclick="closeErrorModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded">Close</button>
+    <button data-llamabot="close-error-modal" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded">Close</button>
   </div>
 </div>
 
-<script>
-  let currentThreadId = null;
-  let isSidebarCollapsed = false;
-  let lastPongTime = Date.now();
-  let redStatusStartTime = null;
-  let errorModalShown = false;
-  let connectionCheckInterval;
-  let subscription = null;
-
+<!-- Load LlamaBot modular JavaScript -->
+<script type="module">
+  // Wait for ActionCable to be ready
   function waitForCableConnection(callback) {
     const interval = setInterval(() => {
       if (window.LlamaBotRails && LlamaBotRails.cable) {
@@ -94,456 +110,78 @@
       }
     }, 50);
   }
-  
-  waitForCableConnection((consumer) => {
+
+  waitForCableConnection(async (consumer) => {
+    // Import LlamaBot modules from S3 CDN
+    const { default: LlamaBot } = await import('https://llamapress-cdn.s3.amazonaws.com/llamabot-chat-js-v0.2.19/index.js');
+
     const sessionId = crypto.randomUUID();
 
-    subscription = consumer.subscriptions.create({channel: 'LlamaBotRails::ChatChannel', session_id: sessionId}, {
-      connected() {
-        console.log('Connected to chat channel');
-        lastPongTime = Date.now();
-        loadThreads();
-        startConnectionCheck();
+    // Initialize LlamaBot with ActionCable configuration
+    console.log('🔧 Initializing LlamaBot with ActionCable consumer:', consumer);
+    const chat = LlamaBot.create('[data-llamabot="chat-container"]', {
+      actionCable: {
+        consumer: consumer,
+        channel: 'LlamaBotRails::ChatChannel',
+        session_id: sessionId
       },
-      disconnected() {
-        console.log('Disconnected from chat channel');
-        updateStatusIcon('bg-red-500');
+      agent: {
+        name: 'rails_agent'
       },
-      received(data) {
-        const parsedData = JSON.parse(data).message;
-        console.log("LLM Response:", parsedData);
-        switch (parsedData.type) {
-          case "AIMessageChunk":
-            //NOTE: DISABLE AI Message Chunk for now so that we don't double add messages on accident.
-            //addMessage(parsedData.content, parsedData.type, parsedData.base_message);
-            break;
-          case "ai":
-            addMessage(parsedData.content, parsedData.type, parsedData.base_message);
-            break;
-          case "tool":
-            addMessage(parsedData.content, parsedData.type, parsedData.base_message);
-            break;
-          case "error":
-            addMessage(parsedData.content, parsedData.type, parsedData.base_message);
-            break;
-          case "pong":
-            lastPongTime = Date.now();
-            break;
-        }
+      // Tailwind CSS classes for message styling
+      cssClasses: {
+        humanMessage: 'bg-indigo-100 text-indigo-900 p-3 rounded-lg mb-2 max-w-3xl',
+        aiMessage: 'bg-gray-100 text-gray-900 p-3 rounded-lg mb-2 max-w-4xl prose prose-sm',
+        errorMessage: 'bg-red-100 text-red-800 p-3 rounded-lg mb-2',
+        queuedMessage: 'bg-yellow-50 text-yellow-800 p-3 rounded-lg mb-2',
+        connectionStatusConnected: 'h-3 w-3 rounded-full bg-green-400 transition-colors',
+        connectionStatusDisconnected: 'h-3 w-3 rounded-full bg-red-400 transition-colors'
+      },
+      // Custom callbacks for Leonardo-specific behavior
+      onMessageReceived: (data) => {
+        console.log('Leonardo received message:', data);
+      },
+      onError: (error) => {
+        console.error('Leonardo chat error:', error);
       }
     });
+
+    console.log('Leonardo chat initialized with LlamaBot modules');
   });
-
-  function startConnectionCheck() {
-    if (connectionCheckInterval) {
-      clearInterval(connectionCheckInterval);
-    }
-    connectionCheckInterval = setInterval(updateConnectionStatus, 1000);
-  }
-
-  function updateConnectionStatus() {
-    const timeSinceLastPong = Date.now() - lastPongTime;
-    
-    if (timeSinceLastPong < 30000) { // Less than 30 seconds
-      updateStatusIcon('bg-green-500');
-      redStatusStartTime = null;
-      errorModalShown = false;
-    } else if (timeSinceLastPong < 50000) { // Between 30-50 seconds
-      updateStatusIcon('bg-yellow-400');
-      redStatusStartTime = null;
-      errorModalShown = false;
-    } else { // More than 50 seconds
-      updateStatusIcon('bg-red-500');
-      if (!redStatusStartTime) {
-        redStatusStartTime = Date.now();
-      } else if (Date.now() - redStatusStartTime > 5000 && !errorModalShown) { // 5 seconds in red status
-        showErrorModal();
-      }
-    }
-  }
-
-  function updateStatusIcon(statusClass) {
-    const statusIndicator = document.getElementById('connectionStatusIconForLlamaBot');
-    statusIndicator.classList.remove('bg-green-500', 'bg-yellow-400', 'bg-red-500');
-    statusIndicator.classList.add(statusClass);
-  }
-
-  function showErrorModal() {
-    const modal = document.getElementById('errorModal');
-    const overlay = document.getElementById('modalOverlay');
-    modal.classList.remove('hidden');
-    overlay.classList.remove('hidden');
-    errorModalShown = true;
-  }
-
-  function closeErrorModal() {
-    const modal = document.getElementById('errorModal');
-    const overlay = document.getElementById('modalOverlay');
-    modal.classList.add('hidden');
-    overlay.classList.add('hidden');
-  }
-
-  // Toggle sidebar
-  document.getElementById('toggle-sidebar').addEventListener('click', function() {
-    const sidebar = document.getElementById('threads-sidebar');
-    const toggleButton = this;
-    isSidebarCollapsed = !isSidebarCollapsed;
-    
-    if (sidebar) {
-      sidebar.classList.toggle('hidden');
-    }
-    toggleButton.classList.toggle('rotate-180');
-  });
-
-  async function loadThreads() {
-    try {
-      const response = await fetch('/llama_bot/agent/threads');
-      const threads = await response.json();
-      console.log('Loaded threads:', threads);  // Debug log
-      
-      const threadsList = document.getElementById('threads-list');
-      if (threadsList) {
-        threadsList.innerHTML = '';
-        
-        if (!threads || threads.length === 0) {
-          console.log('No threads available');
-          // Start with a blank conversation
-          startNewConversation();
-          return;
-        }
-        
-        //sort conversation threads by creation date.
-        threads.sort((a, b) => { // checkpoint_id in LangGraph checkpoints are monotonically increasing, so we know their order based on checkpoint_id          
-          const checkpoint_id_a = a.state[2].configurable.checkpoint_id; //langgraph checkpoint object structure, derived from a breakpoint and inspecting object shape.
-          const checkpoint_id_b = b.state[2].configurable.checkpoint_id;
-          if (checkpoint_id_a === checkpoint_id_b) {
-            return a.thread_id.localeCompare(b.thread_id);
-          } else {
-            return checkpoint_id_b.localeCompare(checkpoint_id_a);
-          }
-        });
-        
-        threads.forEach(thread => {
-          const threadElement = createThreadElement(thread);
-          threadsList.appendChild(threadElement);
-        });
-      }
-
-      // Start with a blank conversation instead of loading the first thread
-      startNewConversation();
-    } catch (error) {
-      console.error('Error loading threads:', error);
-      // Start with a blank conversation on error
-      startNewConversation();
-    }
-  }
-
-  function createThreadElement(thread) {
-    const threadElement = document.createElement('div');
-    threadElement.className = 'p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-200';
-    const threadId = thread.thread_id || thread.id;
-    
-    // Parse timestamp from thread ID and format it nicely
-    let displayText;
-    if (threadId && threadId.match(/^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}$/)) {
-      // Parse the timestamp format: YYYY-MM-DD_HH-MM-SS
-      const [datePart, timePart] = threadId.split('_');
-      const [year, month, day] = datePart.split('-');
-      const [hour, minute, second] = timePart.split('-');
-      
-      const date = new Date(year, month - 1, day, hour, minute, second);
-      displayText = date.toLocaleString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      });
-    } else {
-      displayText = threadId || 'New Chat';
-    }
-    
-    threadElement.textContent = displayText;
-    threadElement.dataset.threadId = threadId;
-    threadElement.onclick = () => {
-      console.log('Clicked thread with ID:', threadId);  // Debug log
-      loadThread(threadId);
-    };
-    return threadElement;
-  }
-
-  async function loadThread(threadId) {
-    console.log('Loading thread:', threadId);  // Debug log
-    
-    if (!threadId) {
-      console.error('No thread ID provided');
-      return;
-    }
-    
-    currentThreadId = threadId;
-    const messagesDiv = document.getElementById('chat-messages');
-    messagesDiv.innerHTML = '';
-
-    try {
-      const response = await fetch(`/llama_bot/agent/chat-history/${threadId}`);
-      const threadState = await response.json();
-      console.log('Loaded thread state:', threadState);  // Debug log
-      
-      if (Array.isArray(threadState) && threadState.length > 0) {
-        // Get the messages array from the first state object
-        const messages = threadState[0].messages || [];
-        console.log('Processing messages:', messages);  // Debug log
-        messages.forEach(message => { //NOTE: this is where you can access 
-          if (message) {
-            addMessage(message.content, message.type, message);
-          }
-        });
-      }
-
-      // Update active thread in sidebar
-      document.querySelectorAll('[data-thread-id]').forEach(item => {
-        item.classList.remove('bg-indigo-50', 'text-indigo-700');
-        if (item.dataset.threadId === threadId) {
-          item.classList.add('bg-indigo-50', 'text-indigo-700');
-        }
-      });
-    } catch (error) {
-      console.error('Error loading chat history:', error);
-      addMessage('Error loading chat history', 'error');
-    }
-  }
-
-  function startNewConversation() {
-    currentThreadId = null;
-    const messagesDiv = document.getElementById('chat-messages');
-    messagesDiv.innerHTML = '';
-    
-    // Show welcome message
-    showWelcomeMessage();
-  }
-
-  function showWelcomeMessage() {
-    const messagesDiv = document.getElementById('chat-messages');
-    const welcomeDiv = document.createElement('div');
-    welcomeDiv.className = 'flex flex-col items-center justify-center h-full p-8 text-center text-gray-600';
-    welcomeDiv.innerHTML = `
-      <h2 class="text-2xl font-bold mb-2">Welcome</h2>
-      <p class="text-lg">What's on the agenda?</p>
-    `;
-    messagesDiv.appendChild(welcomeDiv);
-  }
-
-  function showLoadingIndicator() {
-    const loadingIndicator = document.getElementById('loading-indicator');
-    loadingIndicator.classList.remove('hidden');
-  }
-
-  function hideLoadingIndicator() {
-    const loadingIndicator = document.getElementById('loading-indicator');
-    loadingIndicator.classList.add('hidden');
-  }
-
-  function selectPrompt(buttonElement) {
-    const promptText = buttonElement.textContent;
-    const messageInput = document.getElementById('message-input');
-    
-    // Populate the input field
-    messageInput.value = promptText;
-    
-    // Focus the input field for better UX
-    messageInput.focus();
-    
-    // Add a subtle animation to show the prompt was selected
-    buttonElement.style.transform = 'scale(0.98)';
-    setTimeout(() => {
-      buttonElement.style.transform = '';
-    }, 150);
-  }
-  function sendMessage() {
-    const input = document.getElementById('message-input');
-    const message = input.value.trim();
-    
-    if (message) {
-      // Check if subscription is available
-      if (!subscription) {
-        console.error('WebSocket connection not established yet');
-        addMessage('Connection not ready. Please wait...', 'error');
-        return;
-      }
-
-      // Clear welcome message if it exists
-      const welcomeMessage = document.querySelector('[class*="flex flex-col items-center justify-center"]');
-      if (welcomeMessage) {
-        welcomeMessage.remove();
-      }
-      
-      addMessage(message, 'human');
-      input.value = '';
-
-      // Show loading indicator
-      showLoadingIndicator();
-
-      // Generate timestamp-based thread ID if we don't have one
-      let threadId = currentThreadId;
-      if (!threadId || threadId === 'global_thread_id') {
-        // Create timestamp in format: YYYY-MM-DD_HH-MM-SS
-        const now = new Date();
-        threadId = now.getFullYear() + '-' + 
-                  String(now.getMonth() + 1).padStart(2, '0') + '-' + 
-                  String(now.getDate()).padStart(2, '0') + '_' + 
-                  String(now.getHours()).padStart(2, '0') + '-' + 
-                  String(now.getMinutes()).padStart(2, '0') + '-' + 
-                  String(now.getSeconds()).padStart(2, '0');
-        currentThreadId = threadId;
-      }
-
-      const messageData = {
-        message: message,
-        thread_id: threadId
-      };
-      
-      console.log('Sending message with data:', messageData);  // Debug log
-      subscription.send(messageData);
-    }
-  }
-
-  /**
-  * @param {string} text - The text content of the message
-  * @param {string} sender - The sender of the message. This matches LangGraph schema -- either 'ai', 'tool', or 'human'. 'error' if an error occurs somewhere in the stack.
-  * @param {object} base_message - The base message object. This is the object that is sent from LangGraph, and is used to parse the message.
-  * @returns {void}
-  */
-  function addMessage(text, sender, base_message=null) {
-    console.log('🧠 Message from LlamaBot:', text, sender, base_message);
-
-    // Hide loading indicator when we receive an AI response
-    if (sender === 'ai') {
-      hideLoadingIndicator();
-    }
-
-    const messagesDiv = document.getElementById('chat-messages');
-    const messageDiv = document.createElement('div');
-    
-    // Apply different styling based on sender
-    if (sender === 'human') {
-      messageDiv.className = 'flex justify-end mb-4';
-      messageDiv.innerHTML = `
-        <div class="bg-indigo-100 rounded-lg py-2 px-4 max-w-[80%]">
-          <p class="text-gray-800">${text}</p>
-        </div>
-      `;
-    } else if (sender === 'ai' || sender === 'AIMessageChunk') {
-      messageDiv.className = 'flex mb-4';
-      
-      if (text === '' && base_message && base_message.additional_kwargs && base_message.additional_kwargs.tool_calls) {
-        // Handle tool calls
-        let tool_call = base_message.additional_kwargs.tool_calls[0];
-        let function_name = tool_call.function.name;
-        let function_arguments = JSON.parse(tool_call.function.arguments);
-       
-        messageDiv.innerHTML = `
-          <div class="bg-white border border-gray-200 rounded-lg p-4 max-w-[80%]">
-            <div class="flex items-center mb-2">
-              <span class="text-gray-500 mr-2">🔨</span>
-              <span class="font-medium">${function_name}</span>
-            </div>
-            <pre class="bg-gray-100 p-2 rounded text-sm overflow-x-auto">${JSON.stringify(function_arguments, null, 2)}</pre>
-          </div>
-        `;
-      } else {
-        messageDiv.innerHTML = `
-          <div class="prose prose-sm max-w-none bg-white border border-gray-200 rounded-lg py-2 px-4 max-w-[80%] shadow-sm">
-            ${parseMarkdown(text)}
-          </div>
-        `;
-      }
-    } else if (sender === 'tool') {
-      messageDiv.className = 'flex mb-4';
-      
-      if (base_message.name === 'run_rails_console_command') {
-        const command_result = JSON.parse(base_message.content)['result'];
-        messageDiv.innerHTML = `
-          <div class="bg-gray-100 border border-gray-200 rounded-lg py-2 px-4 max-w-[80%]">
-            <div class="flex items-center mb-1">
-              <span class="text-gray-500 mr-2">🖥️</span>
-              <span class="font-medium text-gray-700">Console Result</span>
-            </div>
-            <pre class="text-gray-800 text-sm overflow-x-auto">${command_result}</pre>
-          </div>
-        `;
-      } else {
-        messageDiv.innerHTML = `
-          <div class="bg-gray-100 border border-gray-200 rounded-lg py-2 px-4 max-w-[80%]">
-            <div class="flex items-center">
-              <span class="text-gray-500 mr-2">🔨</span>
-              <p class="text-gray-800">${text}</p>
-            </div>
-          </div>
-        `;
-      }
-    } else if (sender === 'error') {
-      messageDiv.className = 'flex mb-4';
-      messageDiv.innerHTML = `
-        <div class="bg-red-100 border border-red-200 text-red-800 rounded-lg py-2 px-4 max-w-[80%]">
-          <p>${text}</p>
-        </div>
-      `;
-    }
-    
-    messagesDiv.appendChild(messageDiv);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
-  }
-
-  document.getElementById('message-input').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-      sendMessage();
-    }
-  });
-
-     // Configure marked.js for better security and formatting
-        marked.setOptions({
-            breaks: true,
-            gfm: true,
-            sanitize: false, // We'll handle XSS prevention differently
-            smartLists: true,
-            smartypants: true
-        });
-
-        // Function to parse markdown to HTML
-        function parseMarkdown(text) {
-            if (!text) return '';
-            
-            try {
-                // Parse markdown to HTML
-                let html = marked.parse(text);
-                
-                // Basic XSS prevention - remove script tags and event handlers
-                html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-                html = html.replace(/\son\w+="[^"]*"/gi, '');
-                html = html.replace(/\son\w+='[^']*'/gi, '');
-                
-                return html;
-            } catch (error) {
-                console.error('Markdown parsing error:', error);
-                // Fallback to plain text with line breaks
-                return text.replace(/\n/g, '<br>');
-            }
-        }
-  
-  // Add CSS for loading dots animation
-  const style = document.createElement('style');
-  style.textContent = `
-    .loading-dots:after {
-      content: '.';
-      animation: dots 1.5s steps(5, end) infinite;
-    }
-    
-    @keyframes dots {
-      0%, 20% { content: '.'; }
-      40% { content: '..'; }
-      60% { content: '...'; }
-      80%, 100% { content: ''; }
-    }
-  `;
-  document.head.appendChild(style);
 </script>
+
+<!-- Inline styles for loading animation and menu drawer -->
+<style>
+  .loading-dots:after {
+    content: '.';
+    animation: dots 1.5s steps(5, end) infinite;
+  }
+
+  @keyframes dots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60% { content: '...'; }
+    80%, 100% { content: ''; }
+  }
+
+  .menu-drawer {
+    position: fixed;
+    top: 0;
+    left: -300px;
+    width: 300px;
+    height: 100%;
+    background: white;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    transition: left 0.3s ease;
+    z-index: 1000;
+  }
+
+  .menu-drawer.open {
+    left: 0;
+  }
+
+  .drawer-content {
+    height: 100%;
+    overflow-y: auto;
+  }
+</style>
