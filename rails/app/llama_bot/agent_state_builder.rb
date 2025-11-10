@@ -1,7 +1,4 @@
 # frozen_string_literal: true
-#
-# Customize the params sent to your LangGraph agent here.
-# Uncomment the line in the initializer to activate this builder.
 class AgentStateBuilder
   def initialize(params:, context:)
     @params = params
@@ -9,12 +6,35 @@ class AgentStateBuilder
   end
 
   def build
+    raw_params = @params["raw_params"] || {}
+    
+    # Extract BOQ ID from raw_params (passed from JavaScript config)
+    boq_id = raw_params["boq_id"]
+    boq = Boq.find_by(id: boq_id) if boq_id
+
+    # Load CSV content if BOQ has attached file
+    csv_content = nil
+    if boq&.csv_file&.attached?
+      csv_content = boq.csv_file.download
+    end
+
     {
-      message: @params["message"], # Rails param from JS/chat UI. This is the user's message to the agent.
-      thread_id: @params["thread_id"], # This is the thread id for the agent. It is used to track the conversation history.
-      api_token: @context["api_token"], # This is an authenticated API token for the agent, so that it can authenticate with us. (It may need access to resources on our Rails app, such as the Rails Console.)
-      agent_prompt: LlamaBotRails.agent_prompt_text, # System prompt instructions for the agent. Can be customized in app/llama_bot/prompts/agent_prompt.txt
-      agent_name: "leo" # This routes to the appropriate LangGraph agent as defined in LlamaBot/langgraph.json, and enables us to access different agents on our LlamaBot server.
+    message: @params["message"],
+      thread_id: @params["thread_id"],
+      api_token: @context[:api_token],
+      agent_name: "boq_parser",  # Must match langgraph.json key
+      boq_id: boq&.id,
+      boq_name: boq&.boq_name,
+      client_name: boq&.client_name,
+      client_reference: boq&.client_reference,
+      qs_name: boq&.qs_name,
+      csv_content: csv_content,  # Raw CSV content for LLM to parse
+      boq_metadata: {
+        file_name: boq&.file_name,
+        received_date: boq&.received_date,
+        status: boq&.status,
+        notes: boq&.notes
+      }
     }
   end
 end

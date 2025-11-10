@@ -271,8 +271,16 @@ def build_workflow(checkpointer=None):
         
         # Build system message with CSV context
         system_context = sys_msg
-        if state.get("csv_content"):
-            system_context += f"\n\nCSV File Content:\n```\n{state['csv_content'][:2000]}\n...\n```"
+        csv_content = state.get("csv_content")
+        
+        if csv_content:
+            # Include full CSV content or truncate if very large
+            csv_preview = csv_content if len(csv_content) < 10000 else f"{csv_content[:10000]}\n\n... (truncated, {len(csv_content)} total characters)"
+            system_context += f"\n\n📋 CSV FILE CONTENT (Ready for parsing):\n```csv\n{csv_preview}\n```"
+            logger.info(f"✅ CSV content loaded: {len(csv_content)} characters")
+        else:
+            logger.warning("⚠️ No CSV content available in agent state")
+            system_context += "\n\n⚠️ NOTE: No CSV file content was provided. Ask the user to ensure a CSV file is attached to the BOQ."
         
         full_sys_msg = SystemMessage(content=system_context)
         return {"messages": [llm_with_tools.invoke([full_sys_msg] + state["messages"])]}

@@ -16,6 +16,8 @@ services:
       - ./rails/config/environments/development.rb:/rails/config/environments/development.rb
       - ./rails/config/database.yml:/rails/config/database.yml
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:prepare && bundle exec rails s -b 0.0.0.0"
+    # command: tail -f /dev/null
+    # docker compose exec -it llamapress bundle exec rails s -b 0.0.0.0
     ports:
       - "3000:3000"                            # http://server_ip/
     restart: unless-stopped
@@ -28,7 +30,7 @@ services:
       - llama-network
 
   llamabot:
-    image: kody06/llamabot:0.2.19i
+    image: kody06/llamabot:0.2.19j
     env_file:
       - .env
     command: bash -c "python init_pg_checkpointer.py && uvicorn main:app --host 0.0.0.0 --port 8000"

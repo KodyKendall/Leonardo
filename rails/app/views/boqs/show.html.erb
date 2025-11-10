@@ -313,13 +313,16 @@
               actionCable: {
                 consumer: consumer,
                 channel: 'LlamaBotRails::ChatChannel',
-                session_id: crypto.randomUUID(),
-                raw_params: {
-                  boq_id: boqId
-                }
+                session_id: crypto.randomUUID()
               },
               agent: {
                 name: 'boq_parser'  // Must match the key in langgraph.json
+              },
+              // Pass raw_params with each message
+              messagePayload: {
+                raw_params: {
+                  boq_id: boqId
+                }
               },
               // Tailwind CSS classes for styling
               cssClasses: {
