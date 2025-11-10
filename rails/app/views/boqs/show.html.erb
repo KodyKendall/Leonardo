@@ -1,3 +1,24 @@
+<!-- Required LlamaBot Imports -->
+<% if defined?(javascript_importmap_tags) %> <!-- Rails 7+ -->
+  <%= javascript_importmap_tags %>
+<% else %> <!-- Rails 6 -->
+  <%= javascript_include_tag "application" %>
+<% end %>
+
+<%= javascript_include_tag "llama_bot_rails/application" %>
+<% if defined?(action_cable_meta_tag) %>
+  <%= action_cable_meta_tag %>
+<% end %>
+
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- marked.js for Markdown parsing (REQUIRED!) -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 <div class="container mx-auto p-6">
   <div class="flex justify-between items-center mb-6">
     <div>
@@ -147,29 +168,54 @@
 
         <script>
           function copyAllToClipboard() {
-            const tableElement = document.getElementById('csv-container').querySelector('div:not(.hidden) table');
-            let csvText = '';
+            const boqId = window.location.pathname.split('/').pop();
             
-            // Extract headers
-            const headers = Array.from(tableElement.querySelectorAll('thead th')).map(th => th.textContent.trim());
-            csvText += headers.join(',') + '\n';
+            // Show loading state
+            const btn = document.getElementById('copy-all-btn');
+            const originalHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Copying...';
             
-            // Extract rows
-            tableElement.querySelectorAll('tbody tr').forEach(row => {
-              const cells = Array.from(row.querySelectorAll('td')).map(td => {
-                let text = td.textContent.trim();
-                // Escape quotes and wrap in quotes if contains comma
-                if (text.includes(',') || text.includes('"') || text.includes('\n')) {
-                  text = '"' + text.replace(/"/g, '""') + '"';
-                }
-                return text;
-              });
-              csvText += cells.join(',') + '\n';
-            });
+            try {
+              // Fetch complete CSV data from API
+              fetch(`/boqs/${boqId}/csv_as_json`)
+                .then(response => {
+                  if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                  }
+                  return response.json();
+                })
+                .then(jsonArray => {
+                  // Convert to formatted JSON string
+                  const jsonString = JSON.stringify(jsonArray, null, 2);
+                  
+                  // Copy to clipboard
+                  navigator.clipboard.writeText(jsonString).then(() => {
+                    showToast(`JSON copied to clipboard! (${jsonArray.length} rows)`, 'success');
+                  }).catch(err => {
+                    console.error('Clipboard API failed:', err);
+                    copyJSONAsText(jsonString);
+                  });
+                })
+                .catch(err => {
+                  console.error('Failed to fetch CSV data:', err);
+                  showToast('Failed to fetch CSV data', 'error');
+                })
+                .finally(() => {
+                  btn.disabled = false;
+                  btn.innerHTML = originalHTML;
+                });
+            } catch (err) {
+              console.error('Error:', err);
+              showToast('Failed to copy CSV data', 'error');
+              btn.disabled = false;
+              btn.innerHTML = originalHTML;
+            }
+          }
 
-            // Fallback method using textarea
+          function copyJSONAsText(jsonString) {
             const textarea = document.createElement('textarea');
-            textarea.value = csvText;
+            textarea.value = jsonString;
             textarea.style.position = 'fixed';
             textarea.style.opacity = '0';
             document.body.appendChild(textarea);
@@ -177,9 +223,9 @@
             try {
               textarea.select();
               document.execCommand('copy');
-              showToast('Content copied to clipboard!', 'success');
+              showToast('JSON copied to clipboard!', 'success');
             } catch (err) {
-              console.error('Failed to copy:', err);
+              console.error('Fallback copy failed:', err);
               showToast('Failed to copy to clipboard', 'error');
             } finally {
               document.body.removeChild(textarea);
@@ -357,52 +403,152 @@
   <!-- BOQ Items -->
   <div class="card bg-base-100 shadow">
     <div class="card-body">
-      <h2 class="card-title mb-4">
-        <i class="fas fa-list"></i>
-        BOQ Line Items
-        <span class="badge badge-lg"><%= @boq_items.count %></span>
-      </h2>
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="card-title mb-0">
+          <i class="fas fa-list"></i>
+          BOQ Line Items
+          <span id="items-count" class="badge badge-lg"><%= @boq_items.count %></span>
+        </h2>
+        <button 
+          id="refresh-items-btn" 
+          class="btn btn-sm btn-outline gap-2"
+          onclick="refreshBoqItems()"
+        >
+          <i class="fas fa-refresh"></i>
+          Refresh
+        </button>
+      </div>
 
-      <% if @boq_items.any? %>
-        <div class="overflow-x-auto">
-          <table class="table table-sm w-full">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Item Number</th>
-                <th>Description</th>
-                <th>Category</th>
-                <th>UOM</th>
-                <th>Quantity</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% @boq_items.each_with_index do |item, idx| %>
+      <div id="items-container">
+        <% if @boq_items.any? %>
+          <div class="overflow-x-auto">
+            <table class="table table-sm w-full">
+              <thead>
                 <tr>
-                  <td><%= idx + 1 %></td>
-                  <td class="font-mono text-sm"><%= item.item_number || "—" %></td>
-                  <td>
-                    <div class="text-sm"><%= truncate(item.item_description, length: 60) %></div>
-                    <% if item.notes %>
-                      <div class="text-xs text-gray-500 mt-1"><%= item.notes %></div>
-                    <% end %>
-                  </td>
-                  <td><span class="badge badge-sm"><%= item.section_category || "—" %></span></td>
-                  <td><%= item.unit_of_measure || "—" %></td>
-                  <td class="text-right font-semibold"><%= item.quantity || "—" %></td>
+                  <th>#</th>
+                  <th>Item Number</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th>UOM</th>
+                  <th>Quantity</th>
                 </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
-      <% else %>
-        <div class="alert alert-info">
-          <i class="fas fa-info-circle"></i>
-          <div>No line items yet. Parse the BOQ to extract items.</div>
-        </div>
-      <% end %>
+              </thead>
+              <tbody id="items-tbody">
+                <% @boq_items.each_with_index do |item, idx| %>
+                  <tr>
+                    <td><%= idx + 1 %></td>
+                    <td class="font-mono text-sm"><%= item.item_number || "—" %></td>
+                    <td>
+                      <div class="text-sm"><%= truncate(item.item_description, length: 60) %></div>
+                      <% if item.notes %>
+                        <div class="text-xs text-gray-500 mt-1"><%= item.notes %></div>
+                      <% end %>
+                    </td>
+                    <td><span class="badge badge-sm"><%= item.section_category || "—" %></span></td>
+                    <td><%= item.unit_of_measure || "—" %></td>
+                    <td class="text-right font-semibold"><%= item.quantity || "—" %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <div id="empty-state" class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <div>No line items yet. Parse the BOQ to extract items.</div>
+          </div>
+        <% end %>
+      </div>
     </div>
   </div>
+
+  <script>
+    async function refreshBoqItems() {
+      const btn = document.getElementById('refresh-items-btn');
+      const originalHTML = btn.innerHTML;
+      
+      // Show loading state
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+      
+      try {
+        const boqId = window.location.pathname.split('/').pop();
+        const response = await fetch(`/boqs/${boqId}.json`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        const items = data.boq_items || [];
+        
+        // Update count badge
+        document.getElementById('items-count').textContent = items.length;
+        
+        if (items.length === 0) {
+          // Show empty state
+          document.getElementById('items-container').innerHTML = `
+            <div id="empty-state" class="alert alert-info">
+              <i class="fas fa-info-circle"></i>
+              <div>No line items yet. Parse the BOQ to extract items.</div>
+            </div>
+          `;
+        } else {
+          // Build table HTML
+          let tableHTML = `
+            <div class="overflow-x-auto">
+              <table class="table table-sm w-full">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Item Number</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>UOM</th>
+                    <th>Quantity</th>
+                  </tr>
+                </thead>
+                <tbody id="items-tbody">
+          `;
+          
+          items.forEach((item, idx) => {
+            const notes = item.notes ? `<div class="text-xs text-gray-500 mt-1">${item.notes}</div>` : '';
+            tableHTML += `
+              <tr>
+                <td>${idx + 1}</td>
+                <td class="font-mono text-sm">${item.item_number || "—"}</td>
+                <td>
+                  <div class="text-sm">${item.item_description ? item.item_description.substring(0, 60) : "—"}</div>
+                  ${notes}
+                </td>
+                <td><span class="badge badge-sm">${item.section_category || "—"}</span></td>
+                <td>${item.unit_of_measure || "—"}</td>
+                <td class="text-right font-semibold">${item.quantity || "—"}</td>
+              </tr>
+            `;
+          });
+          
+          tableHTML += `
+                </tbody>
+              </table>
+            </div>
+          `;
+          
+          document.getElementById('items-container').innerHTML = tableHTML;
+        }
+        
+        // Show success toast
+        showToast(`Loaded ${items.length} line items`, 'success');
+      } catch (error) {
+        console.error('Error refreshing items:', error);
+        showToast('Failed to refresh items', 'error');
+      } finally {
+        // Restore button
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+      }
+    }
+  </script>
 </div>
 
 <script type="module">

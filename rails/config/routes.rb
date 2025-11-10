@@ -3,6 +3,7 @@ Rails.application.routes.draw do
     member do
       post :parse
       get :csv_download
+      get :csv_as_json
     end
   end
   resources :fabrication_records

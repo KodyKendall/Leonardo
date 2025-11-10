@@ -3,10 +3,10 @@ class BoqsController < ApplicationController
   include LlamaBotRails::AgentAuth
   skip_before_action :verify_authenticity_token, only: [:update_attributes, :create_line_items]
   before_action :authenticate_user!
-  before_action :set_boq, only: [:show, :parse, :update_attributes, :create_line_items, :chat]
+  before_action :set_boq, only: [:show, :parse, :update_attributes, :create_line_items, :chat, :csv_as_json]
   
   # Whitelist actions for LangGraph agent access
-  llama_bot_allow :update_attributes, :create_line_items, :chat
+  llama_bot_allow :show, :update_attributes, :create_line_items, :chat
 
   def index
     @boqs = Boq.order(created_at: :desc)
@@ -14,6 +14,10 @@ class BoqsController < ApplicationController
 
   def show
     @boq_items = @boq.boq_items.order(:sequence_order)
+    respond_to do |format|
+      format.html
+      format.json { render json: @boq.to_json(include: :boq_items) }
+    end
   end
 
   def new
@@ -144,6 +148,42 @@ class BoqsController < ApplicationController
           message: "Error processing your request", 
           error: e.message 
         }, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def csv_as_json
+    # API endpoint to fetch complete CSV data as JSON array
+    respond_to do |format|
+      if @boq.csv_file.attached?
+        begin
+          csv_content = @boq.csv_file.download
+          csv_lines = csv_content.split("\n")
+          
+          # Extract headers from first line
+          headers = csv_lines.first.strip.split(',').map(&:strip)
+          
+          # Convert all rows to JSON objects
+          json_array = []
+          csv_lines[1..-1].each do |line|
+            next if line.strip.empty?
+            
+            columns = line.strip.split(',').map(&:strip)
+            row_object = {}
+            
+            headers.each_with_index do |header, index|
+              row_object[header] = columns[index] || ''
+            end
+            
+            json_array << row_object
+          end
+          
+          format.json { render json: json_array, status: :ok }
+        rescue StandardError => e
+          format.json { render json: { error: "Failed to parse CSV: #{e.message}" }, status: :unprocessable_entity }
+        end
+      else
+        format.json { render json: { error: "No CSV file attached" }, status: :not_found }
       end
     end
   end
