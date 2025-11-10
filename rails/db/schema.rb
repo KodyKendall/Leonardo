@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_09_184221) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_10_210555) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -90,6 +90,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_09_184221) do
     t.datetime "parsed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "header_row_index", default: 0
     t.index ["status"], name: "index_boqs_on_status"
     t.index ["uploaded_by_id"], name: "index_boqs_on_uploaded_by_id"
   end
@@ -316,4 +317,3 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_09_184221) do
   add_foreign_key "variation_orders", "users", column: "approved_by_id"
   add_foreign_key "variation_orders", "users", column: "created_by_id"
 end
-Ste123123

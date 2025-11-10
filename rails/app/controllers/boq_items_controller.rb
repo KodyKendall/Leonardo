@@ -9,7 +9,8 @@ class BoqItemsController < ApplicationController
   llama_bot_allow :index, :show, :create, :update, :destroy
 
   def index
-    @boq_items = BoqItem.all
+    # Scope to BOQ items belonging to current user's BOQs
+    @boq_items = BoqItem.joins(:boq).where(boqs: { uploaded_by_id: current_user.id })
     respond_to do |format|
       format.json { render json: @boq_items }
     end
@@ -22,7 +23,16 @@ class BoqItemsController < ApplicationController
   end
 
   def create
-    @boq_item = BoqItem.new(boq_item_params)
+    # Verify the BOQ belongs to current user before creating item
+    boq = Boq.find_by(id: boq_item_params[:boq_id], uploaded_by_id: current_user.id)
+    
+    unless boq
+      return respond_to do |format|
+        format.json { render json: { error: "BOQ not found or unauthorized" }, status: :forbidden }
+      end
+    end
+
+    @boq_item = boq.boq_items.new(boq_item_params)
 
     respond_to do |format|
       if @boq_item.save
@@ -53,7 +63,14 @@ class BoqItemsController < ApplicationController
   private
 
   def set_boq_item
-    @boq_item = BoqItem.find(params[:id])
+    # Scope to BOQ items belonging to current user's BOQs
+    @boq_item = BoqItem.joins(:boq).find_by(id: params[:id], boqs: { uploaded_by_id: current_user.id })
+    
+    unless @boq_item
+      respond_to do |format|
+        format.json { render json: { error: "BOQ item not found or unauthorized" }, status: :not_found }
+      end
+    end
   end
 
   def boq_item_params

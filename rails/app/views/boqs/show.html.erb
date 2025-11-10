@@ -82,77 +82,113 @@
         <% end %>
       </div>
 
+      <!-- Header Row Selector -->
+      <% if @boq.csv_file.attached? %>
+        <div class="mb-4 flex items-end gap-3">
+          <div class="form-control w-32">
+            <label class="label">
+              <span class="label-text font-semibold text-sm">Header Row</span>
+            </label>
+            <input 
+              type="number" 
+              id="header-row-input" 
+              min="0" 
+              value="<%= @boq.header_row_index || 0 %>"
+              class="input input-sm input-bordered"
+              placeholder="Row number"
+            />
+            <label class="label">
+              <span class="label-text-alt text-xs text-gray-500">Which row contains column headers?</span>
+            </label>
+          </div>
+          <button 
+            id="update-header-btn" 
+            class="btn btn-sm btn-primary gap-2"
+            onclick="updateHeaderRow()"
+          >
+            <i class="fas fa-refresh"></i>
+            Apply
+          </button>
+        </div>
+      <% end %>
+
       <!-- CSV Preview -->
       <% if @boq.csv_file.attached? %>
         <div id="csv-container" data-show-all="false">
           <div id="csv-preview" class="bg-gray-50 rounded border border-gray-200 p-4 overflow-x-auto" style="max-height: 400px; overflow-y: auto;">
             <table class="table table-sm text-xs">
               <% 
-                csv_content = @boq.csv_file.download
-                csv_lines = csv_content.split("\n").first(20)
-                csv_lines.each_with_index do |line, idx|
-                  columns = line.strip.split(',').map(&:strip)
+                require 'csv'
+                csv_content = @boq.csv_file.download.force_encoding('UTF-8')
+                all_rows = CSV.parse(csv_content)
+                header_row_idx = @boq.header_row_index || 0
+                
+                # Get headers from the specified row
+                headers = all_rows[header_row_idx] || [] rescue []
+                
+                # Get preview rows (starting after header row, max 20)
+                preview_rows = []
+                all_rows.each_with_index do |row, idx|
+                  next if idx <= header_row_idx || preview_rows.length >= 20
+                  next if row.compact.empty?
+                  preview_rows << row
+                end
               %>
-                <% if idx == 0 %>
-                  <thead>
-                    <tr>
-                      <% columns.each do |col| %>
-                        <th><%= col %></th>
-                      <% end %>
-                    </tr>
-                  </thead>
-                <% else %>
-                  <% if idx == 1 %>
-                    <tbody>
-                  <% end %>
+                <thead>
                   <tr>
-                    <% columns.each do |col| %>
-                      <td><%= col %></td>
+                    <% headers.each do |col| %>
+                      <th><%= col %></th>
                     <% end %>
                   </tr>
-                <% end %>
-              <% end %>
-              </tbody>
+                </thead>
+                <tbody>
+                  <% preview_rows.each do |row| %>
+                    <tr>
+                      <% row.each do |col| %>
+                        <td><%= col %></td>
+                      <% end %>
+                    </tr>
+                  <% end %>
+                </tbody>
             </table>
           </div>
 
           <div id="csv-full" class="bg-gray-50 rounded border border-gray-200 p-4 overflow-x-auto hidden" style="max-height: 600px; overflow-y: auto;">
             <table class="table table-sm text-xs">
               <% 
-                csv_all_lines = csv_content.split("\n")
-                csv_all_lines.each_with_index do |line, idx|
-                  columns = line.strip.split(',').map(&:strip)
+                # Use same logic for full view
+                full_rows = []
+                all_rows.each_with_index do |row, idx|
+                  next if idx <= header_row_idx || row.compact.empty?
+                  full_rows << row
+                end
               %>
-                <% if idx == 0 %>
-                  <thead>
-                    <tr>
-                      <% columns.each do |col| %>
-                        <th><%= col %></th>
-                      <% end %>
-                    </tr>
-                  </thead>
-                <% else %>
-                  <% if idx == 1 %>
-                    <tbody>
-                  <% end %>
+                <thead>
                   <tr>
-                    <% columns.each do |col| %>
-                      <td><%= col %></td>
+                    <% headers.each do |col| %>
+                      <th><%= col %></th>
                     <% end %>
                   </tr>
-                <% end %>
-              <% end %>
-              </tbody>
+                </thead>
+                <tbody>
+                  <% full_rows.each do |row| %>
+                    <tr>
+                      <% row.each do |col| %>
+                        <td><%= col %></td>
+                      <% end %>
+                    </tr>
+                  <% end %>
+                </tbody>
             </table>
           </div>
 
           <% 
-            total_rows = csv_content.split("\n").count
+            total_rows = all_rows.count - header_row_idx - 1
             if total_rows > 20
           %>
             <div class="flex justify-between items-center mt-3">
               <div class="text-xs text-gray-500">
-                <span id="row-count">Showing first 20 rows of <%= total_rows %> total rows</span>
+                <span id="row-count">Showing first 20 rows of <%= total_rows %> total data rows</span>
               </div>
               <div class="flex gap-2">
                 <button id="copy-all-btn" class="btn btn-sm btn-ghost" onclick="copyAllToClipboard()">
@@ -169,6 +205,7 @@
         <script>
           function copyAllToClipboard() {
             const boqId = window.location.pathname.split('/').pop();
+            const headerRowIdx = parseInt(document.getElementById('header-row-input').value, 10) || 0;
             
             // Show loading state
             const btn = document.getElementById('copy-all-btn');
@@ -177,8 +214,8 @@
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Copying...';
             
             try {
-              // Fetch complete CSV data from API
-              fetch(`/boqs/${boqId}/csv_as_json`)
+              // Fetch complete CSV data from API with header row offset
+              fetch(`/boqs/${boqId}/csv_as_json?header_row_index=${headerRowIdx}`)
                 .then(response => {
                   if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -305,15 +342,108 @@
               full.classList.add('hidden');
               container.setAttribute('data-show-all', 'false');
               btn.innerHTML = '<i class="fas fa-expand"></i> View All';
-              rowCount.textContent = 'Showing first 20 rows of <%= total_rows %> total rows';
+              rowCount.textContent = 'Showing first 20 rows of <%= total_rows %> total data rows';
             } else {
               // Show all
               preview.classList.add('hidden');
               full.classList.remove('hidden');
               container.setAttribute('data-show-all', 'true');
               btn.innerHTML = '<i class="fas fa-compress"></i> View Less';
-              rowCount.textContent = 'Showing all <%= total_rows %> rows';
+              rowCount.textContent = 'Showing all <%= total_rows %> data rows';
             }
+          }
+
+          async function updateHeaderRow() {
+            const headerInput = document.getElementById('header-row-input');
+            const headerRowIdx = parseInt(headerInput.value, 10);
+            const boqId = window.location.pathname.split('/').pop();
+            const btn = document.getElementById('update-header-btn');
+            const originalHTML = btn.innerHTML;
+
+            // Show loading state
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+
+            try {
+              const response = await fetch(`/boqs/${boqId}/update_header_row`, {
+                method: 'PATCH',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ header_row_index: headerRowIdx })
+              });
+
+              if (!response.ok) {
+                const errorData = await response.json();
+                showToast(errorData.error || 'Failed to update header row', 'error');
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+                return;
+              }
+
+              const data = await response.json();
+              
+              // Update the table with new headers and preview
+              updateCSVPreview(data.headers, data.preview_rows, data.total_rows);
+              
+              showToast('Header row updated successfully!', 'success');
+            } catch (error) {
+              console.error('Error updating header row:', error);
+              showToast('Failed to update header row', 'error');
+            } finally {
+              btn.disabled = false;
+              btn.innerHTML = originalHTML;
+            }
+          }
+
+          function updateCSVPreview(headers, previewRows, totalRows) {
+            const previewTable = document.querySelector('#csv-preview table');
+            const fullTable = document.querySelector('#csv-full table');
+            const rowCountSpan = document.getElementById('row-count');
+
+            if (!previewTable) return;
+
+            // Build header row HTML
+            let headerHTML = '<thead><tr>';
+            headers.forEach(header => {
+              headerHTML += `<th>${escapeHtml(header)}</th>`;
+            });
+            headerHTML += '</tr></thead>';
+
+            // Build preview rows HTML
+            let previewBodyHTML = '<tbody>';
+            previewRows.forEach(row => {
+              previewBodyHTML += '<tr>';
+              row.columns.forEach(col => {
+                previewBodyHTML += `<td>${escapeHtml(col)}</td>`;
+              });
+              previewBodyHTML += '</tr>';
+            });
+            previewBodyHTML += '</tbody>';
+
+            // Update preview table
+            previewTable.innerHTML = headerHTML + previewBodyHTML;
+
+            // Update full table if it exists
+            if (fullTable) {
+              fullTable.innerHTML = headerHTML + previewBodyHTML;
+            }
+
+            // Update row count
+            if (rowCountSpan) {
+              if (totalRows > 20) {
+                rowCountSpan.textContent = `Showing first 20 rows of ${totalRows} total data rows`;
+              } else {
+                rowCountSpan.textContent = `Showing all ${totalRows} data rows`;
+              }
+            }
+          }
+
+          function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
           }
         </script>
       <% else %>

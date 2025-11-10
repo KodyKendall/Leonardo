@@ -3,7 +3,7 @@ class BoqsController < ApplicationController
   include LlamaBotRails::AgentAuth
   skip_before_action :verify_authenticity_token, only: [:update_attributes, :create_line_items]
   before_action :authenticate_user!
-  before_action :set_boq, only: [:show, :parse, :update_attributes, :create_line_items, :chat, :csv_as_json]
+  before_action :set_boq, only: [:show, :parse, :update_attributes, :create_line_items, :chat, :csv_as_json, :update_header_row]
   
   # Whitelist actions for LangGraph agent access
   llama_bot_allow :show, :update_attributes, :create_line_items, :chat
@@ -154,25 +154,30 @@ class BoqsController < ApplicationController
 
   def csv_as_json
     # API endpoint to fetch complete CSV data as JSON array
+    require 'csv'
     respond_to do |format|
       if @boq.csv_file.attached?
         begin
-          csv_content = @boq.csv_file.download
-          csv_lines = csv_content.split("\n")
+          csv_content = @boq.csv_file.download.force_encoding('UTF-8')
           
-          # Extract headers from first line
-          headers = csv_lines.first.strip.split(',').map(&:strip)
+          # Get header row index from params or use stored value
+          header_row_idx = params[:header_row_index].to_i rescue (@boq.header_row_index || 0)
           
-          # Convert all rows to JSON objects
+          # Parse CSV with proper quote handling
+          all_rows = CSV.parse(csv_content)
+          
+          # Extract headers from specified row
+          headers = all_rows[header_row_idx] || []
+          
+          # Convert all rows to JSON objects (starting after header row)
           json_array = []
-          csv_lines[1..-1].each do |line|
-            next if line.strip.empty?
+          all_rows.each_with_index do |row, idx|
+            next if idx <= header_row_idx
+            next if row.compact.empty? # Skip if all cells are empty
             
-            columns = line.strip.split(',').map(&:strip)
             row_object = {}
-            
             headers.each_with_index do |header, index|
-              row_object[header] = columns[index] || ''
+              row_object[header] = row[index] || ''
             end
             
             json_array << row_object
@@ -188,6 +193,58 @@ class BoqsController < ApplicationController
     end
   end
 
+  def update_header_row
+    # AJAX endpoint to update header_row_index and return updated CSV preview
+    require 'csv'
+    respond_to do |format|
+      header_row_idx = params[:header_row_index].to_i
+      
+      # Validate header row index
+      if header_row_idx < 0
+        format.json { render json: { error: "Header row index cannot be negative" }, status: :unprocessable_entity }
+        return
+      end
+      
+      if @boq.update(header_row_index: header_row_idx)
+        # Generate updated CSV preview with new header row
+        if @boq.csv_file.attached?
+          csv_content = @boq.csv_file.download.force_encoding('UTF-8')
+          
+          # Parse CSV with proper quote handling
+          all_rows = CSV.parse(csv_content)
+          
+          if header_row_idx >= all_rows.length
+            format.json { render json: { error: "Header row index exceeds file length" }, status: :unprocessable_entity }
+            return
+          end
+          
+          # Extract headers from specified row
+          headers = all_rows[header_row_idx] || []
+          
+          # Build preview (first 20 rows after header)
+          preview_rows = []
+          all_rows.each_with_index do |row, idx|
+            next if idx < header_row_idx + 1 || preview_rows.length >= 20
+            next if row.compact.empty? # Skip if all cells are empty
+            
+            preview_rows << { columns: row }
+          end
+          
+          format.json { render json: { 
+            success: true, 
+            headers: headers, 
+            preview_rows: preview_rows,
+            total_rows: all_rows.count
+          }, status: :ok }
+        else
+          format.json { render json: { error: "No CSV file attached" }, status: :not_found }
+        end
+      else
+        format.json { render json: @boq.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
   private
 
   def set_boq
@@ -195,10 +252,10 @@ class BoqsController < ApplicationController
   end
 
   def boq_params
-    params.require(:boq).permit(:boq_name, :client_name, :client_reference, :qs_name, :received_date, :notes)
+    params.require(:boq).permit(:boq_name, :client_name, :client_reference, :qs_name, :received_date, :notes, :header_row_index)
   end
 
   def boq_update_params
-    params.require(:boq).permit(:boq_name, :client_name, :client_reference, :qs_name, :received_date, :notes)
+    params.require(:boq).permit(:boq_name, :client_name, :client_reference, :qs_name, :received_date, :notes, :header_row_index)
   end
 end

@@ -4,8 +4,10 @@ Rails.application.routes.draw do
       post :parse
       get :csv_download
       get :csv_as_json
+      patch :update_header_row
     end
   end
+  resources :boq_items
   resources :fabrication_records
   resources :budget_allowances
   resources :budget_categories
