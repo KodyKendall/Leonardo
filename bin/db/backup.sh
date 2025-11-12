@@ -3,7 +3,7 @@
 
 set -e 
 
-BACKUP_DIR="/home/ubuntu/llamapress/backups"
+BACKUP_DIR="$PWD/backups"
 DATE=$(date +%Y%m%d_%H%M%S)
 BACKUP_FILE="$BACKUP_DIR/llamapress_manual_$DATE.sql.gz"
 
