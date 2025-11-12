@@ -539,14 +539,20 @@
           BOQ Line Items
           <span id="items-count" class="badge badge-lg"><%= @boq_items.count %></span>
         </h2>
-        <button 
-          id="refresh-items-btn" 
-          class="btn btn-sm btn-outline gap-2"
-          onclick="refreshBoqItems()"
-        >
-          <i class="fas fa-refresh"></i>
-          Refresh
-        </button>
+        <div class="flex gap-2">
+          <%= link_to export_boq_csv_boq_path(@boq, format: :csv), class: "btn btn-sm btn-outline gap-2" do %>
+            <i class="fas fa-download"></i>
+            Download CSV
+          <% end %>
+          <button 
+            id="refresh-items-btn" 
+            class="btn btn-sm btn-outline gap-2"
+            onclick="refreshBoqItems()"
+          >
+            <i class="fas fa-refresh"></i>
+            Refresh
+          </button>
+        </div>
       </div>
 
       <div id="items-container">

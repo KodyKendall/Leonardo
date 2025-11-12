@@ -3,7 +3,7 @@ class BoqsController < ApplicationController
   include LlamaBotRails::AgentAuth
   skip_before_action :verify_authenticity_token, only: [:update_attributes, :create_line_items]
   before_action :authenticate_user!
-  before_action :set_boq, only: [:show, :parse, :update_attributes, :create_line_items, :chat, :csv_as_json, :update_header_row]
+  before_action :set_boq, only: [:show, :parse, :update_attributes, :create_line_items, :chat, :csv_as_json, :update_header_row, :export_boq_csv]
   
   # Whitelist actions for LangGraph agent access
   llama_bot_allow :show, :update_attributes, :create_line_items, :chat
@@ -241,6 +241,47 @@ class BoqsController < ApplicationController
         end
       else
         format.json { render json: @boq.errors, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  def export_boq_csv
+    # Export BOQ and BOQ Items as CSV
+    require 'csv'
+    
+    respond_to do |format|
+      format.csv do
+        csv_data = CSV.generate do |csv|
+          # Header section with BOQ metadata
+          csv << ["BOQ Export"]
+          csv << ["BOQ Name", @boq.boq_name]
+          csv << ["Client Name", @boq.client_name]
+          csv << ["Client Reference", @boq.client_reference]
+          csv << ["QS Name", @boq.qs_name]
+          csv << ["Received Date", @boq.received_date&.to_formatted_s(:short)]
+          csv << ["Status", @boq.status]
+          csv << ["Uploaded By", @boq.uploaded_by&.name]
+          csv << [] # Blank row for separation
+          
+          # BOQ Items data
+          csv << ["Item #", "Item Number", "Description", "Category", "UOM", "Quantity", "Notes"]
+          
+          @boq.boq_items.order(:sequence_order).each_with_index do |item, idx|
+            csv << [
+              idx + 1,
+              item.item_number,
+              item.item_description,
+              item.section_category,
+              item.unit_of_measure,
+              item.quantity,
+              item.notes
+            ]
+          end
+        end
+        
+        # Set filename with timestamp
+        filename = "#{@boq.boq_name.parameterize}-#{Time.current.strftime('%Y%m%d-%H%M%S')}.csv"
+        send_data csv_data, filename: filename, type: "text/csv", disposition: "attachment"
       end
     end
   end

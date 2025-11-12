@@ -5,6 +5,7 @@ Rails.application.routes.draw do
       get :csv_download
       get :csv_as_json
       patch :update_header_row
+      get :export_boq_csv
     end
   end
   resources :boq_items

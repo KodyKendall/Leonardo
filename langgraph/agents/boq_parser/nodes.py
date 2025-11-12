@@ -35,7 +35,7 @@ YOUR WORKFLOW:
    - item_description: from DESCRIPTION column (trim quotes if present)
    - unit_of_measure: from UNIT column (standardize: m², kg, pieces, m, l, etc.)
    - quantity: from QUANTITY column (must be numeric)
-   - section_category: infer from section headers or DESCRIPTION text
+   - section_category: infer from section headers or DESCRIPTION text using the valid enum values (see VALID SECTION CATEGORIES below)
 5. Show preview to user with:
    - Count of items found
    - Sample of first 3-5 items with all details
@@ -47,6 +47,36 @@ YOUR WORKFLOW:
    - ❌ Items that failed
    - ⚠️ Any errors encountered
 
+VALID SECTION CATEGORIES (ENUM VALUES):
+You MUST use ONLY these exact enum values for section_category:
+- Blank
+- Steel Sections
+- Paintwork
+- Bolts
+- Gutter Meter
+- M16 Mechanical Anchor
+- M16 Chemical
+- M20 Chemical
+- M24 Chemical
+- M16 HD Bolt
+- M20 HD Bolt
+- M24 HD Bolt
+- M30 HD Bolt
+- M36 HD Bolt
+- M42 HD Bolt
+
+CATEGORY INFERENCE RULES:
+1. Look for explicit section headers in the CSV (e.g., "STEEL SECTIONS", "PAINTWORK", "BOLTS")
+2. Match description keywords to appropriate categories:
+   - "M16", "M20", "M24", "M30", "M36", "M42" with "mechanical" → M16/M20/M24/M30/M36/M42 Mechanical Anchor
+   - "M16", "M20", "M24", "M30", "M36", "M42" with "chemical" → M16/M20/M24 Chemical
+   - "M16", "M20", "M24", "M30", "M36", "M42" with "HD bolt" or "HD" → M16/M20/M24/M30/M36/M42 HD Bolt
+   - "steel", "section", "profile" → Steel Sections
+   - "paint", "coating" → Paintwork
+   - "bolt" (standalone) → Bolts
+   - "gutter", "meter" → Gutter Meter
+   - If no match found → use "Blank"
+
 KEY REQUIREMENTS:
 - parse CSV directly into individual BOQ items and use the tools to add them to app/database using the given ID
 - CSV content is ALWAYS available in state from user's <CSV> tags
@@ -56,6 +86,7 @@ KEY REQUIREMENTS:
 - Show a clear preview before taking action
 - ALWAYS ask for confirmation before creating items
 - Process items one by one for reliability and clear reporting
+- ALWAYS use one of the valid enum values for section_category - never create custom values
 
 PARSING INTELLIGENCE:
 1. Identify header row by looking for RECORD, DESCRIPTION, UNIT, QUANTITY pattern
