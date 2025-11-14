@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mermaid Diagram Viewer</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/svg-pan-zoom@3.6.1/dist/svg-pan-zoom.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #1e1e1e;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background: #2d2d2d;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #444;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        button, .file-input-label {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        button:hover, .file-input-label:hover {
+            background: #0052a3;
+        }
+
+        button.active {
+            background: #00cc66;
+        }
+
+        button.active:hover {
+            background: #00a352;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .editor-section, .preview-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .editor-section {
+            border-right: 1px solid #444;
+        }
+
+        .section-header {
+            background: #2d2d2d;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #444;
+            font-weight: 500;
+        }
+
+        #editor {
+            flex: 1;
+            padding: 1rem;
+            background: #1e1e1e;
+            color: #d4d4d4;
+            border: none;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            resize: none;
+            outline: none;
+        }
+
+        .preview-container {
+            flex: 1;
+            overflow: hidden;
+            padding: 0;
+            background: #fff;
+            position: relative;
+        }
+
+        #diagram {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #diagram svg {
+            max-width: none !important;
+            max-height: none !important;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .error {
+            color: #ff4444;
+            padding: 1rem;
+            background: #2d2d2d;
+            border-left: 4px solid #ff4444;
+            border-radius: 4px;
+            margin: 1rem;
+        }
+
+        .empty-state {
+            color: #888;
+            text-align: center;
+            padding: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🧜‍♀️ Mermaid Diagram Viewer</h1>
+        <div class="controls">
+            <label for="file-input" class="file-input-label">
+                📁 Load File
+            </label>
+            <input type="file" id="file-input" accept=".mmd,.mermaid,.md,.txt">
+            <button id="pan-zoom-btn" onclick="togglePanZoom()">🔍 Pan & Zoom</button>
+            <button onclick="resetZoom()">🔄 Reset View</button>
+            <button onclick="downloadDiagram()">💾 Download SVG</button>
+            <button onclick="downloadPNG()">🖼️ Download PNG</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="editor-section">
+            <div class="section-header">Mermaid Code</div>
+            <textarea id="editor" placeholder="Paste your Mermaid diagram code here or load a file...
+
+Example:
+graph TD
+    A[Start] --> B{Is it working?}
+    B -->|Yes| C[Great!]
+    B -->|No| D[Debug]
+    D --> A"></textarea>
+        </div>
+
+        <div class="preview-section">
+            <div class="section-header">Preview</div>
+            <div class="preview-container">
+                <div id="diagram" class="empty-state">
+                    <p>Load a Mermaid file or paste code to see preview</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'default',
+            securityLevel: 'loose'
+        });
+
+        const editor = document.getElementById('editor');
+        const diagramDiv = document.getElementById('diagram');
+        const fileInput = document.getElementById('file-input');
+        const panZoomBtn = document.getElementById('pan-zoom-btn');
+
+        // Pan & Zoom instance
+        let panZoomInstance = null;
+        let panZoomEnabled = true; // Start enabled by default
+
+        // Debounce function to avoid too many renders
+        let debounceTimer;
+        function debounce(func, delay) {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(func, delay);
+        }
+
+        // Initialize pan & zoom
+        function initPanZoom() {
+            const svg = diagramDiv.querySelector('svg');
+            if (svg && panZoomEnabled) {
+                // Destroy previous instance if exists
+                if (panZoomInstance) {
+                    panZoomInstance.destroy();
+                }
+
+                // Remove any max-width/height constraints
+                svg.style.maxWidth = 'none';
+                svg.style.maxHeight = 'none';
+
+                panZoomInstance = svgPanZoom(svg, {
+                    zoomEnabled: true,
+                    controlIconsEnabled: false,
+                    fit: true,
+                    center: true,
+                    minZoom: 0.1,
+                    maxZoom: 10,
+                    zoomScaleSensitivity: 0.3,
+                    dblClickZoomEnabled: true,
+                    mouseWheelZoomEnabled: true,
+                    preventMouseEventsDefault: true,
+                    contain: false,
+                    refreshRate: 'auto'
+                });
+
+                // Update button state
+                panZoomBtn.classList.add('active');
+                panZoomBtn.textContent = '🔍 Pan & Zoom (ON)';
+            }
+        }
+
+        // Toggle pan & zoom
+        function togglePanZoom() {
+            panZoomEnabled = !panZoomEnabled;
+
+            if (panZoomEnabled) {
+                panZoomBtn.classList.add('active');
+                panZoomBtn.textContent = '🔍 Pan & Zoom (ON)';
+                initPanZoom();
+            } else {
+                panZoomBtn.classList.remove('active');
+                panZoomBtn.textContent = '🔍 Pan & Zoom';
+                if (panZoomInstance) {
+                    panZoomInstance.destroy();
+                    panZoomInstance = null;
+                }
+            }
+        }
+
+        // Reset zoom
+        function resetZoom() {
+            if (panZoomInstance) {
+                panZoomInstance.reset();
+                panZoomInstance.fit();
+                panZoomInstance.center();
+            }
+        }
+
+        // Render diagram
+        async function renderDiagram(code) {
+            // Destroy existing pan-zoom instance
+            if (panZoomInstance) {
+                panZoomInstance.destroy();
+                panZoomInstance = null;
+            }
+
+            if (!code.trim()) {
+                diagramDiv.innerHTML = '<div class="empty-state"><p>No diagram code to render</p></div>';
+                return;
+            }
+
+            try {
+                // Validate and render
+                const { svg } = await mermaid.render('diagram-preview', code);
+                diagramDiv.innerHTML = svg;
+                diagramDiv.classList.remove('error');
+
+                // Re-initialize pan-zoom if enabled
+                if (panZoomEnabled) {
+                    setTimeout(initPanZoom, 100);
+                }
+            } catch (error) {
+                diagramDiv.innerHTML = `<div class="error">
+                    <strong>Error:</strong> ${error.message}
+                </div>`;
+            }
+        }
+
+        // Editor input handler
+        editor.addEventListener('input', (e) => {
+            debounce(() => renderDiagram(e.target.value), 500);
+        });
+
+        // File input handler
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const content = event.target.result;
+                    editor.value = content;
+                    renderDiagram(content);
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // Download as SVG
+        function downloadDiagram() {
+            const svg = diagramDiv.querySelector('svg');
+            if (!svg) {
+                alert('No diagram to download');
+                return;
+            }
+
+            const svgData = new XMLSerializer().serializeToString(svg);
+            const blob = new Blob([svgData], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'diagram.svg';
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Download as PNG
+        function downloadPNG() {
+            const svg = diagramDiv.querySelector('svg');
+            if (!svg) {
+                alert('No diagram to download');
+                return;
+            }
+
+            const svgData = new XMLSerializer().serializeToString(svg);
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+
+            img.onload = () => {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'diagram.png';
+                    link.click();
+                    URL.revokeObjectURL(url);
+                });
+            };
+
+            img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+        }
+
+        // Example diagram on load
+        const exampleDiagram = `graph TD
+    A[Start] --> B{Is it working?}
+    B -->|Yes| C[Great!]
+    B -->|No| D[Debug]
+    D --> A`;
+
+        // Initialize with pan-zoom enabled
+        panZoomBtn.classList.add('active');
+        panZoomBtn.textContent = '🔍 Pan & Zoom (ON)';
+
+        editor.value = exampleDiagram;
+        renderDiagram(exampleDiagram);
+    </script>
+</body>
+</html>

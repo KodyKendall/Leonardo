@@ -17,6 +17,14 @@ Rails.application.routes.draw do
   resources :claims
   resources :projects
   resources :tenders
+  resources :suppliers
+  resources :material_supplies
+  resources :monthly_material_supply_rates do
+    member do
+      post :save_rate
+    end
+  end
+  resources :material_supply_rates
   devise_for :users, controllers: { registrations: 'users/registrations' }
   resources :users do
     member do

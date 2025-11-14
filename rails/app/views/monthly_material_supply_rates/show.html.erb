@@ -1,0 +1,166 @@
+<% content_for :title, "Material Supply Rates" %>
+
+<div class="w-full">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="font-bold text-4xl mb-2">Material Supply Rates — <%= @monthly_material_supply_rate.effective_from.strftime("%B %Y") %></h1>
+      <p class="text-gray-600">Start typing to auto-save prices per ton</p>
+    </div>
+    <div id="auto_save_status" class="text-sm text-gray-500">
+      <span id="save_indicator"></span>
+    </div>
+  </div>
+
+  <div class="overflow-x-auto border border-gray-200 rounded-lg">
+    <table class="w-full border-collapse text-sm">
+      <thead>
+        <tr class="bg-gray-100 border-b border-gray-200">
+          <th class="border-r border-gray-200 px-4 py-3 text-left font-bold bg-gray-50">Material Item</th>
+          <th class="border-r border-gray-200 px-4 py-3 text-center font-bold text-xs">Waste %</th>
+          <% @suppliers.each do |supplier| %>
+            <th class="border-r border-gray-200 px-4 py-3 text-center font-bold text-xs">
+              <%= supplier.name %>
+            </th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% @material_supplies.each_with_index do |material, idx| %>
+          <tr class="<%= idx.even? ? 'bg-white' : 'bg-gray-50' %> border-b border-gray-200 hover:bg-blue-50 transition">
+            <td class="border-r border-gray-200 px-4 py-3 font-medium text-gray-900 bg-gray-50 sticky left-0">
+              <%= material.name %>
+            </td>
+            <td class="border-r border-gray-200 px-4 py-3 text-center text-gray-600 bg-gray-50">
+              <%= material.waste_percentage %>%
+            </td>
+            <% @suppliers.each do |supplier| %>
+              <% existing_rate = @existing_rates[[material.id, supplier.id]] %>
+              <% rate_id = existing_rate&.id %>
+              <td class="border-r border-gray-200 px-4 py-3 text-center">
+                <div class="flex items-center justify-center gap-1">
+                  <span class="text-gray-700 font-medium">R</span>
+                  <input
+                    type="number"
+                    class="rate-input w-16 text-center px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value="<%= existing_rate&.rate %>"
+                    placeholder="-"
+                    step="0.01"
+                    min="0"
+                    data-material-id="<%= material.id %>"
+                    data-supplier-id="<%= supplier.id %>"
+                    data-rate-id="<%= rate_id %>"
+                    data-monthly-rate-id="<%= @monthly_material_supply_rate.id %>"
+                  />
+                </div>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="mt-6 flex gap-3">
+    <%= link_to "Back to Monthly Rates", monthly_material_supply_rates_path, class: "rounded-md px-6 py-2.5 bg-gray-100 hover:bg-gray-50 text-gray-900 font-medium" %>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const inputs = document.querySelectorAll('.rate-input');
+  let saveTimeout;
+
+  inputs.forEach(input => {
+    input.addEventListener('change', function() {
+      saveRateDirectly(this);
+    });
+
+    input.addEventListener('blur', function() {
+      clearTimeout(saveTimeout);
+      if (this.value && this.value !== this.dataset.lastSavedValue) {
+        saveRateDirectly(this);
+      }
+    });
+
+    input.addEventListener('input', function() {
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        if (this.value && this.value !== this.dataset.lastSavedValue) {
+          saveRateDirectly(this);
+        }
+      }, 800);
+    });
+  });
+
+  function saveRateDirectly(input) {
+    const materialId = input.dataset.materialId;
+    const supplierId = input.dataset.supplierId;
+    const monthlyRateId = input.dataset.monthlyRateId;
+    const rate = input.value;
+    const rateId = input.dataset.rateId;
+
+    // Skip if empty
+    if (!rate || rate === '') return;
+
+    showSaving();
+
+    // Create or update MaterialSupplyRate via Rails controller
+    const formData = new FormData();
+    formData.append('_method', rateId ? 'PATCH' : 'POST');
+    formData.append('material_supply_rate[material_supply_id]', materialId);
+    formData.append('material_supply_rate[supplier_id]', supplierId);
+    formData.append('material_supply_rate[monthly_material_supply_rate_id]', monthlyRateId);
+    formData.append('material_supply_rate[rate]', rate);
+    formData.append('material_supply_rate[unit]', 'ton');
+    formData.append('authenticity_token', document.querySelector('meta[name="csrf-token"]').content);
+
+    const url = rateId 
+      ? `/material_supply_rates/${rateId}`
+      : `/material_supply_rates`;
+
+    fetch(url, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+      if (response.ok) {
+        showSaved();
+        input.classList.add('bg-green-50');
+        input.dataset.lastSavedValue = rate;
+        setTimeout(() => input.classList.remove('bg-green-50'), 1000);
+      } else {
+        showError('Failed to save');
+        console.error('Response:', response);
+      }
+    })
+    .catch(error => {
+      showError('Save failed');
+      console.error('Error:', error);
+    });
+  }
+
+  function showSaving() {
+    const indicator = document.getElementById('save_indicator');
+    indicator.textContent = '💾 Saving...';
+    indicator.classList.remove('text-green-600', 'text-red-600');
+    indicator.classList.add('text-gray-500');
+  }
+
+  function showSaved() {
+    const indicator = document.getElementById('save_indicator');
+    indicator.textContent = '✅ Saved';
+    indicator.classList.remove('text-gray-500', 'text-red-600');
+    indicator.classList.add('text-green-600');
+    setTimeout(() => {
+      indicator.textContent = '';
+    }, 2000);
+  }
+
+  function showError(message) {
+    const indicator = document.getElementById('save_indicator');
+    indicator.textContent = '❌ ' + message;
+    indicator.classList.remove('text-green-600', 'text-gray-500');
+    indicator.classList.add('text-red-600');
+  }
+});
+</script>

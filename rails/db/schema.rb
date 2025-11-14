@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_11_162245) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_14_171138) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -230,6 +230,33 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_11_162245) do
     t.index ["user_id"], name: "index_flows_on_user_id"
   end
 
+  create_table "material_supplies", force: :cascade do |t|
+    t.string "name"
+    t.decimal "waste_percentage"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "material_supply_rates", force: :cascade do |t|
+    t.decimal "rate"
+    t.string "unit"
+    t.bigint "material_supply_id", null: false
+    t.bigint "supplier_id", null: false
+    t.bigint "monthly_material_supply_rate_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["material_supply_id"], name: "index_material_supply_rates_on_material_supply_id"
+    t.index ["monthly_material_supply_rate_id"], name: "index_material_supply_rates_on_monthly_material_supply_rate_id"
+    t.index ["supplier_id"], name: "index_material_supply_rates_on_supplier_id"
+  end
+
+  create_table "monthly_material_supply_rates", force: :cascade do |t|
+    t.date "effective_from"
+    t.date "effective_to"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "projects", force: :cascade do |t|
     t.string "rsb_number", null: false
     t.bigint "tender_id", null: false
@@ -245,6 +272,12 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_11_162245) do
     t.index ["project_status"], name: "index_projects_on_project_status"
     t.index ["rsb_number"], name: "index_projects_on_rsb_number", unique: true
     t.index ["tender_id"], name: "index_projects_on_tender_id"
+  end
+
+  create_table "suppliers", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "tenders", force: :cascade do |t|
@@ -314,6 +347,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_11_162245) do
   add_foreign_key "fabrication_records", "projects"
   add_foreign_key "flow_metrics", "flows"
   add_foreign_key "flows", "users"
+  add_foreign_key "material_supply_rates", "material_supplies"
+  add_foreign_key "material_supply_rates", "monthly_material_supply_rates"
+  add_foreign_key "material_supply_rates", "suppliers"
   add_foreign_key "projects", "tenders"
   add_foreign_key "projects", "users", column: "created_by_id"
   add_foreign_key "tenders", "projects", column: "awarded_project_id"
