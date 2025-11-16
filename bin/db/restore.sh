@@ -1,10 +1,15 @@
 #!/bin/bash
-# Save as ~/llamapress/restore.sh
+# Database restore script for Leonardo/LlamaPress
 
 set -e  # Exit on any error
 
-BACKUP_DIR="/home/ubuntu/llamapress/backups"
-COMPOSE_FILE="/home/ubuntu/llamapress/docker-compose.yml"
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Get the project root (two levels up from bin/db/)
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+BACKUP_DIR="$PROJECT_ROOT/backups"
+COMPOSE_FILE="$PROJECT_ROOT/docker-compose.yml"
 DB_NAME="llamapress_production"
 DB_USER="postgres"
 LOG_FILE="$BACKUP_DIR/restore.log"
