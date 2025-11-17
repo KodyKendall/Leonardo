@@ -486,12 +486,12 @@
 
         <!-- Input Area -->
         <div class="border-t border-gray-200 bg-white p-4 flex gap-2">
-          <input 
+          <textarea 
             data-llamabot="message-input" 
-            type="text" 
             placeholder="Ask the AI to parse the BOQ..." 
-            class="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-          />
+            class="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none"
+            rows="4"
+          ></textarea>
           <button 
             data-llamabot="send-button" 
             class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
@@ -508,22 +508,11 @@
         <div class="text-xs font-semibold text-gray-600 mb-3 uppercase tracking-wide">Quick Actions</div>
         <div class="flex flex-wrap gap-2">
           <button 
+            id="analyze-structure-btn"
             data-llamabot="suggested-prompt"
             class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
           >
-            <i class="fas fa-search mr-1"></i> Analyze Structure
-          </button>
-          <button 
-            data-llamabot="suggested-prompt"
-            class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
-          >
-            <i class="fas fa-wand-magic-2 mr-1"></i> Auto-Parse All Items
-          </button>
-          <button 
-            data-llamabot="suggested-prompt"
-            class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
-          >
-            <i class="fas fa-tags mr-1"></i> Categorize Items
+            <i class="fas fa-search mr-1"></i> Parse BOQ
           </button>
         </div>
       </div>
@@ -813,5 +802,41 @@
   } else {
     initializeChat();
   }
+</script>
+
+<script>
+  // Handle "Analyze Structure" button click
+  document.addEventListener('DOMContentLoaded', function() {
+    const analyzeBtn = document.getElementById('analyze-structure-btn');
+    if (analyzeBtn) {
+      analyzeBtn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        const boqId = window.location.pathname.split('/').pop();
+        const headerRowIdx = parseInt(document.getElementById('header-row-input').value, 10) || 0;
+        
+        try {
+          // Fetch the CSV as JSON
+          const response = await fetch(`/boqs/${boqId}/csv_as_json?header_row_index=${headerRowIdx}`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          
+          const jsonArray = await response.json();
+          const jsonString = JSON.stringify(jsonArray, null, 2);
+          
+          // Set the input field with the message template
+          const inputField = document.querySelector('[data-llamabot="message-input"]');
+          if (inputField) {
+            inputField.value = `Please parse this for the BOQ with ID = ${boqId}, Here is the raw CSV data: <CSV> ${jsonString} </CSV>`;
+            inputField.focus();
+          }
+        } catch (error) {
+          console.error('Error fetching CSV data:', error);
+          showToast('Failed to fetch CSV data for parsing', 'error');
+        }
+      });
+    }
+  });
 </script>
 
