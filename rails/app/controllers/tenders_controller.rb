@@ -13,10 +13,12 @@ class TendersController < ApplicationController
   # GET /tenders/new
   def new
     @tender = Tender.new
+    @clients = Client.all
   end
 
   # GET /tenders/1/edit
   def edit
+    @clients = Client.all
   end
 
   # POST /tenders or /tenders.json
@@ -65,6 +67,6 @@ class TendersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def tender_params
-      params.require(:tender).permit(:e_number, :status, :client_name, :tender_value, :project_type, :notes, :awarded_project_id)
+      params.require(:tender).permit(:tender_name, :status, :client_id, :submission_deadline, :tender_value, :project_type, :notes, :awarded_project_id, :qob_file)
     end
 end

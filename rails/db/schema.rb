@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_14_171138) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_14_194443) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -192,6 +192,14 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_14_171138) do
     t.index ["submitted_by_id"], name: "index_claims_on_submitted_by_id"
   end
 
+  create_table "clients", force: :cascade do |t|
+    t.string "business_name"
+    t.string "contact_name"
+    t.string "contact_email"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "fabrication_records", force: :cascade do |t|
     t.bigint "project_id", null: false
     t.date "record_month", null: false
@@ -291,7 +299,11 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_14_171138) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "qob_file"
+    t.string "tender_name"
+    t.bigint "client_id"
+    t.date "submission_deadline"
     t.index ["awarded_project_id"], name: "index_tenders_on_awarded_project_id"
+    t.index ["client_id"], name: "index_tenders_on_client_id"
     t.index ["e_number"], name: "index_tenders_on_e_number", unique: true
     t.index ["status"], name: "index_tenders_on_status"
   end
@@ -352,6 +364,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_14_171138) do
   add_foreign_key "material_supply_rates", "suppliers"
   add_foreign_key "projects", "tenders"
   add_foreign_key "projects", "users", column: "created_by_id"
+  add_foreign_key "tenders", "clients"
   add_foreign_key "tenders", "projects", column: "awarded_project_id"
   add_foreign_key "variation_orders", "projects"
   add_foreign_key "variation_orders", "users", column: "approved_by_id"

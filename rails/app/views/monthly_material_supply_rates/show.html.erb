@@ -41,7 +41,7 @@
                   <span class="text-gray-700 font-medium">R</span>
                   <input
                     type="number"
-                    class="rate-input w-16 text-center px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="rate-input w-28 text-center px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     value="<%= existing_rate&.rate %>"
                     placeholder="-"
                     step="0.01"
@@ -62,6 +62,8 @@
 
   <div class="mt-6 flex gap-3">
     <%= link_to "Back to Monthly Rates", monthly_material_supply_rates_path, class: "rounded-md px-6 py-2.5 bg-gray-100 hover:bg-gray-50 text-gray-900 font-medium" %>
+    <%= link_to "Add New Material Supply", material_supplies_path, class: "rounded-md px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium" %>
+    <%= link_to "Add New Supplier", suppliers_path, class: "rounded-md px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium" %>
   </div>
 </div>
 
