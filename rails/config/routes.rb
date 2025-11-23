@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     end
   end
   resources :boq_items
+  resources :clients
   resources :fabrication_records
   resources :budget_allowances
   resources :budget_categories

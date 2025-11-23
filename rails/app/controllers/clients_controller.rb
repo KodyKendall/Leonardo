@@ -4,6 +4,13 @@ class ClientsController < ApplicationController
   # GET /clients or /clients.json
   def index
     @clients = Client.all
+    
+    # API endpoint for searchable dropdown
+    if request.xhr? || params[:format] == 'json'
+      query = params[:q].to_s.strip.downcase
+      clients = query.present? ? Client.where("LOWER(business_name) LIKE ?", "%#{query}%").limit(10) : Client.limit(10)
+      render json: clients.map { |c| { id: c.id, text: c.business_name } }
+    end
   end
 
   # GET /clients/1 or /clients/1.json
@@ -26,7 +33,7 @@ class ClientsController < ApplicationController
     respond_to do |format|
       if @client.save
         format.html { redirect_to @client, notice: "Client was successfully created." }
-        format.json { render :show, status: :created, location: @client }
+        format.json { render json: { id: @client.id, text: @client.business_name }, status: :created }
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @client.errors, status: :unprocessable_entity }

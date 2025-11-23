@@ -35,17 +35,22 @@
     <% end %>
   </div>
 
-  <!-- Client Selection -->
+  <!-- Client Selection with Search & Add Modal -->
   <div class="form-control">
     <%= form.label :client_id, "Client *", class: "label" %>
-    <select name="tender[client_id]" class="select select-bordered w-full #{tender.errors[:client_id].any? ? 'select-error' : ''}">
-      <option value="">-- Select a Client --</option>
-      <% @clients.each do |client| %>
-        <option value="<%= client.id %>" <%= 'selected' if tender.client_id == client.id %>>
-          <%= client.business_name %>
-        </option>
-      <% end %>
-    </select>
+    <div class="flex gap-2">
+      <select id="client_select" name="tender[client_id]" class="select select-bordered flex-1 #{tender.errors[:client_id].any? ? 'select-error' : ''}">
+        <option value="">-- Search or Create Client --</option>
+        <% @clients.each do |client| %>
+          <option value="<%= client.id %>" <%= 'selected' if tender.client_id == client.id %>>
+            <%= client.business_name %>
+          </option>
+        <% end %>
+      </select>
+      <button type="button" class="btn btn-outline" onclick="document.getElementById('add_client_modal').showModal()">
+        <i class="fas fa-plus"></i> Add
+      </button>
+    </div>
     <% if tender.errors[:client_id].any? %>
       <div class="label">
         <span class="label-text-alt text-error"><%= tender.errors[:client_id].first %></span>
@@ -110,3 +115,86 @@
     <%= link_to "Cancel", tenders_path, class: "btn btn-ghost flex-1" %>
   </div>
 <% end %>
+
+<!-- Add Client Modal -->
+<dialog id="add_client_modal" class="modal">
+  <div class="modal-box w-full max-w-md">
+    <h3 class="font-bold text-lg">Add New Client</h3>
+    <form id="add_client_form" class="space-y-4 py-4">
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Business Name *</span>
+        </label>
+        <input type="text" id="client_business_name" placeholder="Enter business name" class="input input-bordered w-full" required>
+      </div>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Contact Name</span>
+        </label>
+        <input type="text" id="client_contact_name" placeholder="Enter contact name" class="input input-bordered w-full">
+      </div>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Contact Email</span>
+        </label>
+        <input type="email" id="client_contact_email" placeholder="Enter email" class="input input-bordered w-full">
+      </div>
+      <div class="modal-action">
+        <button type="button" class="btn" onclick="document.getElementById('add_client_modal').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Client</button>
+      </div>
+    </form>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+
+<script>
+document.getElementById('add_client_form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const data = {
+    client: {
+      business_name: document.getElementById('client_business_name').value,
+      contact_name: document.getElementById('client_contact_name').value,
+      contact_email: document.getElementById('client_contact_email').value
+    }
+  };
+  
+  try {
+    const response = await fetch('/clients.json', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+      },
+      body: JSON.stringify(data)
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok) {
+      // Add new option to select
+      const select = document.getElementById('client_select');
+      const option = document.createElement('option');
+      option.value = result.id;
+      option.text = result.text;
+      option.selected = true;
+      select.appendChild(option);
+      
+      // Reset form and close modal
+      document.getElementById('add_client_form').reset();
+      document.getElementById('add_client_modal').close();
+      
+      // Show success message
+      alert('Client added successfully!');
+    } else {
+      alert('Error: ' + (result.errors?.[Object.keys(result.errors)[0]]?.[0] || 'Failed to create client'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error creating client: ' + error.message);
+  }
+});
+</script>
