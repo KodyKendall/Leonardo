@@ -50,6 +50,17 @@ class TendersController < ApplicationController
     end
   end
 
+  # POST /tenders/quick_create
+  def quick_create
+    @tender = Tender.new(status: 'Draft', tender_name: "New Tender")
+    
+    if @tender.save
+      redirect_to @tender, notice: "Draft tender created. Complete the details below."
+    else
+      redirect_to tenders_path, alert: "Unable to create tender."
+    end
+  end
+
   # DELETE /tenders/1 or /tenders/1.json
   def destroy
     @tender.destroy!

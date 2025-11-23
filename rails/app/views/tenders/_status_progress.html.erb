@@ -1,0 +1,46 @@
+<div class="my-8 px-4">
+  <% 
+    statuses = ['Draft', 'In Progress', 'Submitted', 'Awarded']
+    current_index = statuses.index(tender.status) || 0
+  %>
+  
+  <div class="flex items-center justify-between max-w-2xl">
+    <% statuses.each_with_index do |status, index| %>
+      <div class="flex flex-col items-center flex-1">
+        <!-- Dot -->
+        <div class="mb-2">
+          <% if index <= current_index %>
+            <div class="w-4 h-4 bg-blue-600 rounded-full"></div>
+          <% else %>
+            <div class="w-4 h-4 bg-gray-300 rounded-full"></div>
+          <% end %>
+        </div>
+        
+        <!-- Label -->
+        <span class="text-xs font-medium text-gray-600 text-center">
+          <%= status %>
+        </span>
+      </div>
+      
+      <!-- Line between dots (not after last) -->
+      <% if index < statuses.length - 1 %>
+        <div class="flex-1 mb-6 h-0.5 mx-1">
+          <% if index < current_index %>
+            <div class="h-full bg-blue-600"></div>
+          <% else %>
+            <div class="h-full bg-gray-300"></div>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+  
+  <!-- Special handling for "Not Awarded" state -->
+  <% if tender.status == "Not Awarded" %>
+    <div class="mt-4 text-center">
+      <span class="inline-block px-3 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-full">
+        Not Awarded
+      </span>
+    </div>
+  <% end %>
+</div>

@@ -17,7 +17,11 @@ Rails.application.routes.draw do
   resources :claim_line_items
   resources :claims
   resources :projects
-  resources :tenders
+  resources :tenders do
+    collection do
+      post :quick_create
+    end
+  end
   resources :suppliers
   resources :material_supplies
   resources :monthly_material_supply_rates do
