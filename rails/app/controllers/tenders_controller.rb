@@ -4,6 +4,7 @@ class TendersController < ApplicationController
   # GET /tenders or /tenders.json
   def index
     @tenders = Tender.all
+    @tenders = @tenders.where(status: params[:status]) if params[:status].present?
   end
 
   # GET /tenders/1 or /tenders/1.json
