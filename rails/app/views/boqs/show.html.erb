@@ -592,6 +592,7 @@
               <thead>
                 <tr>
                   <th>#</th>
+                  <th>Page</th>
                   <th>Item Number</th>
                   <th>Description</th>
                   <th>Category</th>
@@ -603,6 +604,7 @@
                 <% @boq_items.each_with_index do |item, idx| %>
                   <tr>
                     <td><%= idx + 1 %></td>
+                    <td class="font-mono text-sm"><%= item.page_number || "—" %></td>
                     <td class="font-mono text-sm"><%= item.item_number || "—" %></td>
                     <td>
                       <div class="text-sm"><%= truncate(item.item_description, length: 60) %></div>
@@ -667,6 +669,7 @@
                 <thead>
                   <tr>
                     <th>#</th>
+                    <th>Page</th>
                     <th>Item Number</th>
                     <th>Description</th>
                     <th>Category</th>
@@ -682,6 +685,7 @@
             tableHTML += `
               <tr>
                 <td>${idx + 1}</td>
+                <td class="font-mono text-sm">${item.page_number || "—"}</td>
                 <td class="font-mono text-sm">${item.item_number || "—"}</td>
                 <td>
                   <div class="text-sm">${item.item_description ? item.item_description.substring(0, 60) : "—"}</div>
