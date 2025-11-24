@@ -16,6 +16,7 @@
         <thead>
           <tr class="bg-gray-100 border-b border-gray-300">
             <th class="px-4 py-3 text-left font-semibold text-gray-700">E-Number</th>
+            <th class="px-4 py-3 text-left font-semibold text-gray-700">Tender Name</th>
             <th class="px-4 py-3 text-left font-semibold text-gray-700">Client Name</th>
             <th class="px-4 py-3 text-left font-semibold text-gray-700">Tender Value</th>
             <th class="px-4 py-3 text-left font-semibold text-gray-700">Project Type</th>
@@ -29,6 +30,7 @@
           <% @tenders.order(created_at: :desc).each do |tender| %>
             <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
               <td class="px-4 py-3 text-blue-600 font-medium"><%= link_to tender.e_number, tender_path(tender), class: "hover:underline" %></td>
+              <td class="px-4 py-3"><%= tender.tender_name %></td>
               <td class="px-4 py-3"><%= tender.client_name %></td>
               <td class="px-4 py-3"><%= number_to_currency(tender.tender_value) if tender.tender_value %></td>
               <td class="px-4 py-3"><%= tender.project_type %></td>
