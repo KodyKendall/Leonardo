@@ -25,11 +25,19 @@ class BoqsController < ApplicationController
   end
 
   def create
+    # Determine if this is a nested create under a tender
+    @tender = Tender.find(params[:tender_id]) if params[:tender_id].present?
+    
     # Check if file is present first
     unless params[:boq][:csv_file].present?
       @boq = Boq.new
       @boq.errors.add(:csv_file, "can't be blank")
-      render :new, status: :unprocessable_entity
+      
+      if @tender
+        render :new, status: :unprocessable_entity
+      else
+        render :new, status: :unprocessable_entity
+      end
       return
     end
 
@@ -39,7 +47,12 @@ class BoqsController < ApplicationController
     unless file.original_filename.ends_with?('.csv')
       @boq = Boq.new
       @boq.errors.add(:csv_file, "must be a CSV file")
-      render :new, status: :unprocessable_entity
+      
+      if @tender
+        render :new, status: :unprocessable_entity
+      else
+        render :new, status: :unprocessable_entity
+      end
       return
     end
 
@@ -49,12 +62,21 @@ class BoqsController < ApplicationController
     @boq.file_name = file.original_filename
     @boq.file_path = "active_storage"  # Placeholder for Active Storage
     @boq.status = "uploaded"
+    @boq.tender = @tender if @tender
     @boq.csv_file.attach(file)
 
     if @boq.save
-      redirect_to @boq, notice: "BOQ uploaded successfully. Ready to parse."
+      if @tender
+        redirect_to tender_path(@tender), notice: "BOQ uploaded successfully."
+      else
+        redirect_to @boq, notice: "BOQ uploaded successfully. Ready to parse."
+      end
     else
-      render :new, status: :unprocessable_entity
+      if @tender
+        render :new, status: :unprocessable_entity
+      else
+        render :new, status: :unprocessable_entity
+      end
     end
   end
 

@@ -1,6 +1,7 @@
 class Tender < ApplicationRecord
   belongs_to :awarded_project, class_name: 'Project', optional: true
   belongs_to :client, optional: true
+  has_many :boqs, dependent: :destroy
   
   # File attachment for QOB (Quote of Business)
   has_one_attached :qob_file

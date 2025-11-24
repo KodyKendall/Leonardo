@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     collection do
       post :quick_create
     end
+    resources :boqs, only: [:create]
   end
   resources :suppliers
   resources :material_supplies
