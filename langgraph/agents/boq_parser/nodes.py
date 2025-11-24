@@ -25,7 +25,7 @@ YOUR WORKFLOW:
 1. Extract the BOQ ID from the user message (e.g., "BOQ with id = 4")
 2. Call get_boq_items(boq_id) to retrieve existing BOQ items (understanding current state)
 3. DIRECTLY PARSE the CSV content from the user's messages
-   - Identify the CSV header row (contains: RECORD, DESCRIPTION, UNIT, QUANTITY, etc.)
+   - Identify the CSV header row (contains: RECORD, DESCRIPTION, UNIT, QUANTITY, PAGE, etc.)
    - Extract rows AFTER the header with numeric QUANTITY values
    - Filter out rows where QUANTITY is empty, zero, or non-numeric
    - Filter out preamble/instructional text rows (ignore rows with long descriptions that look like terms/conditions)
@@ -35,13 +35,14 @@ YOUR WORKFLOW:
    - item_description: from DESCRIPTION column (trim quotes if present)
    - unit_of_measure: from UNIT column (standardize: m², kg, pieces, m, l, etc.)
    - quantity: from QUANTITY column (must be numeric)
+   - page_number: from PAGE or PAGE# column (can be numeric like "1", "2" or alphanumeric like "5-3", "3F", "Cover Page", etc.) - OPTIONAL but IMPORTANT
    - section_category: infer from section headers or DESCRIPTION text using the valid enum values (see VALID SECTION CATEGORIES below)
 5. Show preview to user with:
    - Count of items found
-   - Sample of first 3-5 items with all details
+   - Sample of first 3-5 items with all details including page numbers
    - Any items that were filtered out and why
 6. Ask for confirmation: "Ready to create X items. Should I proceed?"
-7. Upon confirmation, call create_boq_item() for EACH valid line item with all required parameters
+7. Upon confirmation, call create_boq_item() for EACH valid line item with all required parameters (including page_number if available)
 8. Report final summary:
    - ✅ Items successfully created
    - ❌ Items that failed
@@ -232,6 +233,7 @@ async def create_boq_line_items(
     - quantity: Quantity as a number
     - section_category: Category or section (optional)
     - notes: Additional notes (optional)
+    - page_number: Page number from the source document (optional, can be numeric like "3" or alphanumeric like "3F")
     
     Args:
         boq_id (int): ID of the BOQ to add items to
@@ -265,6 +267,8 @@ async def create_boq_line_items(
             "section_category": item.get("section_category", ""),
             "notes": item.get("notes", ""),
         }
+        if item.get("page_number"):
+            cleaned_item["page_number"] = item.get("page_number")
         cleaned_items.append(cleaned_item)
     
     if not cleaned_items:
@@ -404,6 +408,7 @@ async def create_boq_item(
     state: Annotated[dict, InjectedState],
     section_category: Optional[str] = None,
     notes: Optional[str] = None,
+    page_number: Optional[str] = None,
 ) -> str:
     """Create a new BOQ line item.
     
@@ -417,6 +422,7 @@ async def create_boq_item(
         quantity (float): Quantity as a number
         section_category (Optional[str]): Category or section for the item
         notes (Optional[str]): Additional notes about the item
+        page_number (Optional[str]): Page number from the source document (can be numeric like "3" or alphanumeric like "3F")
     """
     logger.info(f"Creating BOQ item for BOQ {boq_id}")
     
@@ -442,6 +448,8 @@ async def create_boq_item(
         boq_item_data["boq_item"]["section_category"] = section_category
     if notes:
         boq_item_data["boq_item"]["notes"] = notes
+    if page_number:
+        boq_item_data["boq_item"]["page_number"] = page_number
     
     result = await make_api_request_to_llamapress(
         method="POST",
@@ -455,7 +463,7 @@ async def create_boq_item(
     
     return str({
         'tool_name': 'create_boq_item',
-        'tool_args': {'item_number': item_number, 'item_description': item_description},
+        'tool_args': {'item_number': item_number, 'item_description': item_description, 'page_number': page_number},
         'tool_output': result,
         'message': 'BOQ item created successfully'
     })
