@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_24_183142) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_25_172731) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -54,16 +54,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_24_183142) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
-  end
-
-  create_table "activities", force: :cascade do |t|
-    t.bigint "flow_id", null: false
-    t.string "activity_type"
-    t.string "description"
-    t.datetime "activity_time"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["flow_id"], name: "index_activities_on_flow_id"
   end
 
   create_table "boq_items", force: :cascade do |t|
@@ -216,31 +206,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_24_183142) do
     t.index ["project_id"], name: "index_fabrication_records_on_project_id"
   end
 
-  create_table "flow_metrics", force: :cascade do |t|
-    t.bigint "flow_id", null: false
-    t.string "week_label"
-    t.integer "sends"
-    t.integer "opens"
-    t.integer "clicks"
-    t.date "metric_date"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["flow_id"], name: "index_flow_metrics_on_flow_id"
-  end
-
-  create_table "flows", force: :cascade do |t|
-    t.string "name"
-    t.integer "sends"
-    t.decimal "open_rate"
-    t.decimal "click_rate"
-    t.decimal "revenue"
-    t.string "status"
-    t.bigint "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_flows_on_user_id"
-  end
-
   create_table "material_supplies", force: :cascade do |t|
     t.string "name"
     t.decimal "waste_percentage"
@@ -351,7 +316,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_24_183142) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "activities", "flows"
   add_foreign_key "boq_items", "boqs"
   add_foreign_key "boqs", "tenders"
   add_foreign_key "boqs", "users", column: "uploaded_by_id"
@@ -361,8 +325,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_24_183142) do
   add_foreign_key "claims", "projects"
   add_foreign_key "claims", "users", column: "submitted_by_id"
   add_foreign_key "fabrication_records", "projects"
-  add_foreign_key "flow_metrics", "flows"
-  add_foreign_key "flows", "users"
   add_foreign_key "material_supply_rates", "material_supplies"
   add_foreign_key "material_supply_rates", "monthly_material_supply_rates"
   add_foreign_key "material_supply_rates", "suppliers"
