@@ -1071,37 +1071,37 @@
 </script>
 
 <script>
-  // Handle "Analyze Structure" button click
-  document.addEventListener('DOMContentLoaded', function() {
-    const analyzeBtn = document.getElementById('analyze-structure-btn');
-    if (analyzeBtn) {
-      analyzeBtn.addEventListener('click', async function(e) {
-        e.preventDefault();
-        
-        const boqId = window.location.pathname.split('/').pop();
-        const headerRowIdx = parseInt(document.getElementById('header-row-input').value, 10) || 0;
-        
-        try {
-          // Fetch the CSV as JSON
-          const response = await fetch(`/boqs/${boqId}/csv_as_json?header_row_index=${headerRowIdx}`);
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          
-          const jsonArray = await response.json();
-          const jsonString = JSON.stringify(jsonArray, null, 2);
-          
-          // Set the input field with the message template
-          const inputField = document.querySelector('[data-llamabot="message-input"]');
-          if (inputField) {
-            inputField.value = `Please parse this for the BOQ with ID = ${boqId}, Here is the raw CSV data: <CSV> ${jsonString} </CSV>`;
-            inputField.focus();
-          }
-        } catch (error) {
-          console.error('Error fetching CSV data:', error);
-          showToast('Failed to fetch CSV data for parsing', 'error');
-        }
-      });
+  // Handle "Parse BOQ" Quick Action button click
+  // Use event delegation to avoid timing issues with dynamic page navigation
+  document.addEventListener('click', async function(e) {
+    const analyzeBtn = e.target.closest('#analyze-structure-btn');
+    if (!analyzeBtn) return;
+    
+    e.preventDefault();
+    
+    const boqId = window.location.pathname.split('/').pop();
+    const headerRowInput = document.getElementById('header-row-input');
+    const headerRowIdx = headerRowInput ? parseInt(headerRowInput.value, 10) || 0 : 0;
+    
+    try {
+      // Fetch the CSV as JSON
+      const response = await fetch(`/boqs/${boqId}/csv_as_json?header_row_index=${headerRowIdx}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const jsonArray = await response.json();
+      const jsonString = JSON.stringify(jsonArray, null, 2);
+      
+      // Set the input field with the message template
+      const inputField = document.querySelector('[data-llamabot="message-input"]');
+      if (inputField) {
+        inputField.value = `Please parse this for the BOQ with ID = ${boqId}, Here is the raw CSV data: <CSV> ${jsonString} </CSV>`;
+        inputField.focus();
+      }
+    } catch (error) {
+      console.error('Error fetching CSV data:', error);
+      showToast('Failed to fetch CSV data for parsing', 'error');
     }
   });
 </script>
