@@ -66,7 +66,7 @@ class MonthlyMaterialSupplyRatesController < ApplicationController
     )
     
     material_supply_rate.rate = params[:rate]
-    material_supply_rate.unit = "ton"
+    material_supply_rate.unit = "tonne"
     
     if material_supply_rate.save
       render json: { success: true, id: material_supply_rate.id }
@@ -100,7 +100,7 @@ class MonthlyMaterialSupplyRatesController < ApplicationController
           )
           
           material_supply_rate.rate = rate
-          material_supply_rate.unit = "ton"
+          material_supply_rate.unit = "tonne"
           material_supply_rate.save
         end
       end

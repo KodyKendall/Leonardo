@@ -1,7 +1,7 @@
 # Monthly Material Supply Rates — MVP Handover
 
 ## Overview & Goals
-Create a bulk material supply rate entry page where users can enter pricing data for all 22 materials across 6 suppliers for a given month. The form presents a grid with materials as rows and suppliers as columns, allowing the user to fill in price-per-ton values in a single view. Rates **auto-save as you type**—no manual save button needed. The month is selected once at the start, then the user enters rates instantly.
+Create a bulk material supply rate entry page where users can enter pricing data for all 22 materials across 6 suppliers for a given month. The form presents a grid with materials as rows and suppliers as columns, allowing the user to fill in price-per-tonne values in a single view. Rates **auto-save as you type**—no manual save button needed. The month is selected once at the start, then the user enters rates instantly.
 
 ### Out of Scope
 - Editing rates for past months (view only)
@@ -14,7 +14,7 @@ Create a bulk material supply rate entry page where users can enter pricing data
 - ✅ New form shows **month selector** (not date pickers)
 - ✅ Month auto-sets `effective_from` to first day, `effective_to` to last day of month
 - ✅ Show page displays a 22×6 grid (materials × suppliers)
-- ✅ User can enter price-per-ton values for any cell
+- ✅ User can enter price-per-tonne values for any cell
 - ✅ **Rates auto-save 500ms after user stops typing** (AJAX)
 - ✅ Cell highlights green briefly when saved; status indicator shows "✅ Saved"
 - ✅ Blank cells are skipped (not saved)
@@ -111,7 +111,7 @@ bundle exec rails db:seed
 - A table appears with:
   - **Rows**: 22 materials (e.g., Steel Sections, Bolts, Paint, Gutter, etc.)
   - **Columns**: 6 suppliers
-  - **Cells**: Input fields for price per ton
+  - **Cells**: Input fields for price per tonne
 - **Start typing a price** in any cell (e.g., 150.00 for Steel × Supplier A)
 - **As you type**, the field shows:
   - "💾 Saving..." (while sending to server)
@@ -148,7 +148,7 @@ bundle exec rails db:seed
 ### Validations
 - `MonthlyMaterialSupplyRate#effective_to_after_effective_from`: Ensures end date is after start date
 - `MaterialSupplyRate#rate`: Must be numeric and >= 0
-- `MaterialSupplyRate#unit`: Must be exactly "ton"
+- `MaterialSupplyRate#unit`: Must be exactly "tonne"
 - Foreign keys: All references are required and cascade-deleted if parent deleted
 
 ### CSRF Protection
@@ -170,7 +170,7 @@ bundle exec rails runner "
   mmsr = MonthlyMaterialSupplyRate.last
   puts \"Total rates for this month: #{mmsr.material_supply_rates.count}\"
   mmsr.material_supply_rates.each do |rate|
-    puts \"  #{rate.material_supply.name} × #{rate.supplier.name} = #{rate.rate}/ton\"
+    puts \"  #{rate.material_supply.name} × #{rate.supplier.name} = #{rate.rate}/tonne\"
   end
 "
 ```
