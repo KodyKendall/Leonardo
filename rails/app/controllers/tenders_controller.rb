@@ -11,6 +11,11 @@ class TendersController < ApplicationController
   def show
   end
 
+  # GET /tenders/1/builder
+  def builder
+    @tender = Tender.find(params[:id])
+  end
+
   # GET /tenders/new
   def new
     @tender = Tender.new

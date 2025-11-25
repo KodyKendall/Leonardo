@@ -18,10 +18,14 @@ Rails.application.routes.draw do
   resources :claims
   resources :projects
   resources :tenders do
+    member do
+      get :builder
+    end
     collection do
       post :quick_create
     end
     resources :boqs, only: [:create]
+    resources :tender_line_items
   end
   resources :suppliers
   resources :material_supplies

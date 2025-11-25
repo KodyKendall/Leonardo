@@ -1,0 +1,488 @@
+<% content_for :title, "Tender Builder - #{@tender.tender_name}" %>
+
+<div class="container mx-auto p-6">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-3xl font-bold"><%= @tender.tender_name %></h1>
+      <p class="text-gray-600 mt-1">
+        <span class="inline-flex items-center gap-2">
+          <i class="fa-solid fa-file-contract text-blue-600"></i>
+          <%= @tender.e_number %>
+          <span class="badge badge-sm"><%= @tender.status %></span>
+        </span>
+      </p>
+    </div>
+    <%= link_to "Back to Tender", tender_path(@tender), class: "btn btn-ghost" %>
+  </div>
+
+  <!-- Tender Line Items Section - Styled like BOQ Line Items -->
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="card-title mb-0">
+          <i class="fas fa-list"></i>
+          Tender Line Items
+          <span id="items-count" class="badge badge-lg"><%= @tender.tender_line_items.count %></span>
+        </h2>
+        <div class="flex gap-2">
+          <button 
+            id="add-new-row-btn"
+            class="btn btn-sm btn-primary gap-2"
+            onclick="addNewTenderLineItem()"
+          >
+            <i class="fas fa-plus"></i>
+            Add Line Item
+          </button>
+          <button 
+            id="refresh-items-btn" 
+            class="btn btn-sm btn-outline gap-2"
+            onclick="refreshTenderItems()"
+          >
+            <i class="fas fa-refresh"></i>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <div id="items-container">
+        <% if @tender.tender_line_items.any? %>
+          <div class="overflow-x-auto">
+            <table class="table table-sm w-full">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Quantity</th>
+                  <th>Rate (₹)</th>
+                  <th class="text-right">Total Amount (₹)</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="items-tbody">
+                <% @tender.tender_line_items.each_with_index do |item, idx| %>
+                  <tr class="tender-line-item-row" data-item-id="<%= item.id %>">
+                    <td><%= idx + 1 %></td>
+                    <td class="font-semibold editable-cell" data-field="quantity" title="Click to edit"><%= number_with_precision(item.quantity, precision: 2) %></td>
+                    <td class="font-semibold editable-cell" data-field="rate" title="Click to edit"><%= number_with_precision(item.rate, precision: 2) %></td>
+                    <td class="text-right font-bold" data-field="total_amount"><%= number_with_precision(item.total_amount, precision: 2) %></td>
+                    <td class="text-center">
+                      <button class="btn btn-xs btn-ghost edit-row-btn" onclick="editRow(this, <%= item.id %>)" title="Edit this row">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="btn btn-xs btn-ghost delete-row-btn hidden" onclick="deleteRow(this, <%= item.id %>)" title="Delete this row">
+                        <i class="fas fa-trash text-red-600"></i>
+                      </button>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Summary Row -->
+          <div class="mt-6 pt-4 border-t border-gray-200">
+            <div class="grid grid-cols-3 gap-4">
+              <div class="stat bg-base-100">
+                <div class="stat-title text-sm">Total Line Items</div>
+                <div class="stat-value text-lg" id="total-items"><%= @tender.tender_line_items.count %></div>
+              </div>
+              <div class="stat bg-base-100">
+                <div class="stat-title text-sm">Total Quantity</div>
+                <div class="stat-value text-lg" id="total-quantity"><%= number_with_precision(@tender.tender_line_items.sum(:quantity), precision: 2) %></div>
+              </div>
+              <div class="stat bg-base-100">
+                <div class="stat-title text-sm">Grand Total (₹)</div>
+                <div class="stat-value text-lg text-green-600" id="grand-total"><%= number_with_precision(@tender.tender_line_items.sum { |li| li.total_amount }, precision: 2) %></div>
+              </div>
+            </div>
+          </div>
+        <% else %>
+          <div id="empty-state" class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <div>No line items yet. Click "Add Line Item" to create one.</div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6 flex gap-2">
+    <%= link_to "Edit Tender Details", edit_tender_path(@tender), class: "btn btn-ghost" %>
+    <%= link_to "Back to Tenders", tenders_path, class: "btn btn-ghost" %>
+  </div>
+</div>
+
+<script>
+  const TENDER_ID = '<%= @tender.id %>';
+
+  function showToast(message, type = 'success') {
+    const toastContainer = document.getElementById('toast-container') || createToastContainer();
+    const toast = document.createElement('div');
+    toast.className = `alert alert-${type} shadow-lg fixed top-4 right-4 z-50 flex items-center gap-2 max-w-sm`;
+    toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i><span>${message}</span>`;
+    toastContainer.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  function createToastContainer() {
+    const container = document.createElement('div');
+    container.id = 'toast-container';
+    document.body.appendChild(container);
+    return container;
+  }
+
+  async function addNewTenderLineItem() {
+    try {
+      const response = await fetch(`/tenders/${TENDER_ID}/tender_line_items.json`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ tender_line_item: { quantity: 1, rate: 0 } })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        showToast('Failed to create line item: ' + (errorData.error || 'Unknown error'), 'error');
+        return;
+      }
+
+      showToast('Line item created successfully!', 'success');
+      refreshTenderItems();
+    } catch (error) {
+      console.error('Error creating line item:', error);
+      showToast('Failed to create line item', 'error');
+    }
+  }
+
+  function editRow(button, itemId) {
+    const row = button.closest('tr');
+    const isEditing = row.classList.contains('editing-mode');
+    
+    if (isEditing) {
+      cancelEdit(row);
+    } else {
+      enableEditMode(row, itemId);
+    }
+  }
+
+  function enableEditMode(row, itemId) {
+    row.classList.add('editing-mode');
+    
+    const editBtn = row.querySelector('.edit-row-btn');
+    const deleteBtn = row.querySelector('.delete-row-btn');
+    editBtn.innerHTML = '<i class="fas fa-times"></i>';
+    editBtn.classList.add('btn-error');
+    editBtn.classList.remove('btn-ghost');
+    editBtn.title = 'Cancel editing';
+    deleteBtn.classList.remove('hidden');
+    
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'btn btn-xs btn-success ml-1';
+    saveBtn.innerHTML = '<i class="fas fa-check"></i>';
+    saveBtn.title = 'Save changes';
+    saveBtn.onclick = () => saveRowChanges(row, itemId);
+    editBtn.parentElement.appendChild(saveBtn);
+    
+    const editableCells = row.querySelectorAll('.editable-cell');
+    editableCells.forEach(cell => {
+      const field = cell.getAttribute('data-field');
+      const currentValue = parseFloat(cell.textContent.trim());
+      
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.step = '0.01';
+      input.min = '0';
+      input.value = currentValue;
+      input.className = 'input input-bordered input-sm w-full';
+      input.setAttribute('data-field', field);
+      
+      cell.innerHTML = '';
+      cell.appendChild(input);
+    });
+  }
+
+  function cancelEdit(row) {
+    row.classList.remove('editing-mode');
+    const saveBtn = row.querySelector('.btn-success');
+    if (saveBtn) saveBtn.remove();
+    
+    const editBtn = row.querySelector('.edit-row-btn');
+    const deleteBtn = row.querySelector('.delete-row-btn');
+    editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+    editBtn.classList.remove('btn-error');
+    editBtn.classList.add('btn-ghost');
+    editBtn.title = 'Edit this row';
+    deleteBtn.classList.add('hidden');
+    
+    const itemId = row.getAttribute('data-item-id');
+    reloadRow(row, itemId);
+  }
+
+  async function saveRowChanges(row, itemId) {
+    const editBtn = row.querySelector('.edit-row-btn');
+    const saveBtn = row.querySelector('.btn-success');
+    const originalEditHTML = editBtn.innerHTML;
+    const originalSaveHTML = saveBtn.innerHTML;
+    
+    editBtn.disabled = true;
+    saveBtn.disabled = true;
+    editBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+    
+    try {
+      const updateData = {};
+      row.querySelectorAll('.editable-cell').forEach(cell => {
+        const field = cell.getAttribute('data-field');
+        const input = cell.querySelector('input');
+        if (input) {
+          updateData[field] = parseFloat(input.value);
+        }
+      });
+      
+      const response = await fetch(`/tenders/${TENDER_ID}/tender_line_items/${itemId}.json`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ tender_line_item: updateData })
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        showToast('Failed to save changes: ' + (errorData.error || 'Unknown error'), 'error');
+        editBtn.disabled = false;
+        saveBtn.disabled = false;
+        editBtn.innerHTML = originalEditHTML;
+        saveBtn.innerHTML = originalSaveHTML;
+        return;
+      }
+      
+      showToast('Changes saved successfully!', 'success');
+      row.classList.remove('editing-mode');
+      saveBtn.remove();
+      editBtn.innerHTML = originalEditHTML;
+      editBtn.classList.remove('btn-error');
+      editBtn.classList.add('btn-ghost');
+      editBtn.title = 'Edit this row';
+      editBtn.disabled = false;
+      row.querySelector('.delete-row-btn').classList.add('hidden');
+      
+      reloadRow(row, itemId);
+    } catch (error) {
+      console.error('Error saving changes:', error);
+      showToast('Failed to save changes', 'error');
+      editBtn.disabled = false;
+      saveBtn.disabled = false;
+      editBtn.innerHTML = originalEditHTML;
+      saveBtn.innerHTML = originalSaveHTML;
+    }
+  }
+
+  async function reloadRow(row, itemId) {
+    try {
+      const response = await fetch(`/tenders/${TENDER_ID}/tender_line_items/${itemId}.json`);
+      
+      if (!response.ok) throw new Error('Failed to fetch item');
+      
+      const item = await response.json();
+      
+      const quantity = parseFloat(item.quantity).toFixed(2);
+      const rate = parseFloat(item.rate).toFixed(2);
+      const total = (parseFloat(item.quantity) * parseFloat(item.rate)).toFixed(2);
+      
+      row.querySelector('[data-field="quantity"]').textContent = quantity;
+      row.querySelector('[data-field="rate"]').textContent = rate;
+      row.querySelector('[data-field="total_amount"]').textContent = total;
+      
+      // Update summary stats immediately with new values
+      setTimeout(() => updateSummaryStatsFromTable(), 10);
+    } catch (error) {
+      console.error('Error reloading row:', error);
+      showToast('Error reloading row data', 'error');
+    }
+  }
+
+  function updateSummaryStatsFromTable() {
+    // Get all rows in the table
+    const rows = document.querySelectorAll('.tender-line-item-row');
+    let totalItems = rows.length;
+    let totalQuantity = 0;
+    let grandTotal = 0;
+
+    console.log('📊 Calculating from', totalItems, 'rows');
+
+    // Calculate totals from all visible rows
+    rows.forEach((row, idx) => {
+      const quantityCell = row.querySelector('[data-field="quantity"]');
+      const rateCell = row.querySelector('[data-field="rate"]');
+      
+      if (quantityCell && rateCell) {
+        const quantity = parseFloat(quantityCell.textContent.trim()) || 0;
+        const rate = parseFloat(rateCell.textContent.trim()) || 0;
+        const rowTotal = quantity * rate;
+        
+        console.log(`Row ${idx + 1}: Qty=${quantity}, Rate=${rate}, Total=${rowTotal}`);
+        
+        totalQuantity += quantity;
+        grandTotal += rowTotal;
+      }
+    });
+
+    console.log('💰 Final: Qty Total=', totalQuantity.toFixed(2), ', Grand Total=', grandTotal.toFixed(2));
+
+    // Update the summary stat elements with IDs
+    const totalItemsElem = document.querySelector('div#total-items');
+    const totalQtyElem = document.querySelector('div#total-quantity');
+    const grandTotalElem = document.querySelector('div#grand-total');
+
+    if (totalItemsElem) {
+      totalItemsElem.textContent = totalItems;
+      console.log('✅ Updated total-items to', totalItems);
+    }
+    if (totalQtyElem) {
+      totalQtyElem.textContent = totalQuantity.toFixed(2);
+      console.log('✅ Updated total-quantity to', totalQuantity.toFixed(2));
+    }
+    if (grandTotalElem) {
+      grandTotalElem.textContent = grandTotal.toFixed(2);
+      console.log('✅ Updated grand-total to', grandTotal.toFixed(2));
+    }
+  }
+
+
+
+  async function deleteRow(button, itemId) {
+    if (!confirm('Are you sure you want to delete this line item?')) return;
+    
+    try {
+      const response = await fetch(`/tenders/${TENDER_ID}/tender_line_items/${itemId}.json`, {
+        method: 'DELETE',
+        headers: {
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+          'Accept': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        showToast('Failed to delete line item', 'error');
+        return;
+      }
+      
+      showToast('Line item deleted successfully!', 'success');
+      refreshTenderItems();
+    } catch (error) {
+      console.error('Error deleting line item:', error);
+      showToast('Failed to delete line item', 'error');
+    }
+  }
+
+  async function refreshTenderItems() {
+    const btn = document.getElementById('refresh-items-btn');
+    const originalHTML = btn.innerHTML;
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+    
+    try {
+      const response = await fetch(`/tenders/${TENDER_ID}/tender_line_items.json`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+      
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      
+      const items = await response.json();
+      
+      const totalQty = items.reduce((sum, item) => sum + parseFloat(item.quantity), 0);
+      const grandTotal = items.reduce((sum, item) => sum + (parseFloat(item.quantity) * parseFloat(item.rate)), 0);
+      
+      // Update header badge
+      const itemsCountBadge = document.getElementById('items-count');
+      if (itemsCountBadge) itemsCountBadge.textContent = items.length;
+      
+      if (items.length === 0) {
+        document.getElementById('items-container').innerHTML = `
+          <div id="empty-state" class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <div>No line items yet. Click "Add Line Item" to create one.</div>
+          </div>
+        `;
+      } else {
+        let tableHTML = `
+          <div class="overflow-x-auto">
+            <table class="table table-sm w-full">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Quantity</th>
+                  <th>Rate (₹)</th>
+                  <th class="text-right">Total Amount (₹)</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="items-tbody">
+        `;
+        
+        items.forEach((item, idx) => {
+          const total = parseFloat(item.quantity) * parseFloat(item.rate);
+          tableHTML += `
+            <tr class="tender-line-item-row" data-item-id="${item.id}">
+              <td>${idx + 1}</td>
+              <td class="font-semibold editable-cell" data-field="quantity" title="Click to edit">${parseFloat(item.quantity).toFixed(2)}</td>
+              <td class="font-semibold editable-cell" data-field="rate" title="Click to edit">${parseFloat(item.rate).toFixed(2)}</td>
+              <td class="text-right font-bold" data-field="total_amount">${total.toFixed(2)}</td>
+              <td class="text-center">
+                <button class="btn btn-xs btn-ghost edit-row-btn" onclick="editRow(this, ${item.id})" title="Edit this row">
+                  <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-xs btn-ghost delete-row-btn hidden" onclick="deleteRow(this, ${item.id})" title="Delete this row">
+                  <i class="fas fa-trash text-red-600"></i>
+                </button>
+              </td>
+            </tr>
+          `;
+        });
+        
+        tableHTML += `
+              </tbody>
+            </table>
+          </div>
+          <div class="mt-6 pt-4 border-t border-gray-200">
+            <div class="grid grid-cols-3 gap-4">
+              <div class="stat bg-base-100">
+                <div class="stat-title text-sm">Total Line Items</div>
+                <div class="stat-value text-lg" id="total-items">${items.length}</div>
+              </div>
+              <div class="stat bg-base-100">
+                <div class="stat-title text-sm">Total Quantity</div>
+                <div class="stat-value text-lg" id="total-quantity">${totalQty.toFixed(2)}</div>
+              </div>
+              <div class="stat bg-base-100">
+                <div class="stat-title text-sm">Grand Total (₹)</div>
+                <div class="stat-value text-lg text-green-600" id="grand-total">${grandTotal.toFixed(2)}</div>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        document.getElementById('items-container').innerHTML = tableHTML;
+        updateSummaryStatsFromTable();
+      }
+      
+      showToast(`Loaded ${items.length} line items`, 'success');
+    } catch (error) {
+      console.error('Error refreshing items:', error);
+      showToast('Failed to refresh items', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalHTML;
+    }
+  }
+</script>

@@ -3,12 +3,10 @@ module TendersHelper
     content_tag :div, class: "space-y-1" do
       concat content_tag(:div, client.business_name || "Business Name Not Set", class: "font-semibold")
       if client.contact_name.present? || client.contact_email.present?
-        concat content_tag(:div, class: "text-sm text-gray-600") do
-          contact_parts = []
-          contact_parts << client.contact_name if client.contact_name.present?
-          contact_parts << client.contact_email if client.contact_email.present?
-          concat contact_parts.join(" • ")
-        end
+        contact_parts = []
+        contact_parts << client.contact_name if client.contact_name.present?
+        contact_parts << client.contact_email if client.contact_email.present?
+        concat content_tag(:div, contact_parts.join(" • "), class: "text-sm text-gray-600")
       end
     end
   end
