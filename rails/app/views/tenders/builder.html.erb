@@ -105,6 +105,172 @@
     </div>
   </div>
 
+  <!-- Inclusions & Exclusions Section -->
+  <div class="card bg-base-100 shadow mt-6">
+    <div class="card-body">
+      <h2 class="card-title mb-6">
+        <i class="fas fa-check-square"></i>
+        Inclusions & Exclusions
+      </h2>
+
+      <div id="inclusions-container" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Fabrication Included -->
+          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
+            <input 
+              type="checkbox" 
+              class="checkbox checkbox-lg inclusion-checkbox"
+              data-field="fabrication_included"
+              <%= @tender.tender_inclusions_exclusion&.fabrication_included ? 'checked' : '' %>
+            >
+            <span class="flex-1">
+              <span class="font-semibold block">Fabrication Included?</span>
+              <span class="text-xs text-gray-500">Labour and manufacturing</span>
+            </span>
+          </label>
+
+          <!-- Overheads Included -->
+          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
+            <input 
+              type="checkbox" 
+              class="checkbox checkbox-lg inclusion-checkbox"
+              data-field="overheads_included"
+              <%= @tender.tender_inclusions_exclusion&.overheads_included ? 'checked' : '' %>
+            >
+            <span class="flex-1">
+              <span class="font-semibold block">Overheads Included?</span>
+              <span class="text-xs text-gray-500">Administrative and indirect costs</span>
+            </span>
+          </label>
+
+          <!-- Primer Included -->
+          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
+            <input 
+              type="checkbox" 
+              class="checkbox checkbox-lg inclusion-checkbox"
+              data-field="primer_included"
+              <%= @tender.tender_inclusions_exclusion&.primer_included ? 'checked' : '' %>
+            >
+            <span class="flex-1">
+              <span class="font-semibold block">Primer Included in Line Item Rate?</span>
+              <span class="text-xs text-gray-500">Base coating</span>
+            </span>
+          </label>
+
+          <!-- Final Paint Included -->
+          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
+            <input 
+              type="checkbox" 
+              class="checkbox checkbox-lg inclusion-checkbox"
+              data-field="final_paint_included"
+              <%= @tender.tender_inclusions_exclusion&.final_paint_included ? 'checked' : '' %>
+            >
+            <span class="flex-1">
+              <span class="font-semibold block">Final Paint Included in Line Item Rate?</span>
+              <span class="text-xs text-gray-500">Finish coating</span>
+            </span>
+          </label>
+
+          <!-- Delivery Included -->
+          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
+            <input 
+              type="checkbox" 
+              class="checkbox checkbox-lg inclusion-checkbox"
+              data-field="delivery_included"
+              <%= @tender.tender_inclusions_exclusion&.delivery_included ? 'checked' : '' %>
+            >
+            <span class="flex-1">
+              <span class="font-semibold block">Delivery Included?</span>
+              <span class="text-xs text-gray-500">Transportation to site</span>
+            </span>
+          </label>
+
+          <!-- Bolts Included -->
+          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
+            <input 
+              type="checkbox" 
+              class="checkbox checkbox-lg inclusion-checkbox"
+              data-field="bolts_included"
+              <%= @tender.tender_inclusions_exclusion&.bolts_included ? 'checked' : '' %>
+            >
+            <span class="flex-1">
+              <span class="font-semibold block">Bolts Included in Line Item Rate?</span>
+              <span class="text-xs text-gray-500">Fasteners and hardware</span>
+            </span>
+          </label>
+
+          <!-- Erection Included -->
+          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
+            <input 
+              type="checkbox" 
+              class="checkbox checkbox-lg inclusion-checkbox"
+              data-field="erection_included"
+              <%= @tender.tender_inclusions_exclusion&.erection_included ? 'checked' : '' %>
+            >
+            <span class="flex-1">
+              <span class="font-semibold block">Erection Included in Line Item Rate?</span>
+              <span class="text-xs text-gray-500">Assembly and installation</span>
+            </span>
+          </label>
+
+          <!-- Crainage Included -->
+          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
+            <input 
+              type="checkbox" 
+              class="checkbox checkbox-lg inclusion-checkbox"
+              data-field="crainage_included"
+              <%= @tender.tender_inclusions_exclusion&.crainage_included ? 'checked' : '' %>
+            >
+            <span class="flex-1">
+              <span class="font-semibold block">Crainage Included in Line Item Rate?</span>
+              <span class="text-xs text-gray-500">Crane operations</span>
+            </span>
+          </label>
+
+          <!-- Cherry Pickers Included -->
+          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
+            <input 
+              type="checkbox" 
+              class="checkbox checkbox-lg inclusion-checkbox"
+              data-field="cherry_pickers_included"
+              <%= @tender.tender_inclusions_exclusion&.cherry_pickers_included ? 'checked' : '' %>
+            >
+            <span class="flex-1">
+              <span class="font-semibold block">Cherry Pickers Included in Line Item Rate?</span>
+              <span class="text-xs text-gray-500">Aerial work platforms</span>
+            </span>
+          </label>
+
+          <!-- Steel Galvanized -->
+          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
+            <input 
+              type="checkbox" 
+              class="checkbox checkbox-lg inclusion-checkbox"
+              data-field="steel_galvanized"
+              <%= @tender.tender_inclusions_exclusion&.steel_galvanized ? 'checked' : '' %>
+            >
+            <span class="flex-1">
+              <span class="font-semibold block">Is the Steel Galvanized?</span>
+              <span class="text-xs text-gray-500">Hot-dip galvanized finish</span>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-gray-200 flex justify-between items-center">
+        <span id="save-status" class="text-sm text-gray-500"></span>
+        <button 
+          id="save-ie-btn" 
+          class="btn btn-sm btn-primary gap-2"
+          onclick="saveInclusionsExclusions()"
+        >
+          <i class="fas fa-save"></i>
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="mt-6 flex gap-2">
     <%= link_to "Edit Tender Details", edit_tender_path(@tender), class: "btn btn-ghost" %>
     <%= link_to "Back to Tenders", tenders_path, class: "btn btn-ghost" %>
@@ -485,4 +651,73 @@
       btn.innerHTML = originalHTML;
     }
   }
+
+  // Inclusions & Exclusions Auto-Save
+  function setupInclusionsExclusionsListeners() {
+    const checkboxes = document.querySelectorAll('.inclusion-checkbox');
+    checkboxes.forEach(checkbox => {
+      checkbox.addEventListener('change', (e) => {
+        e.preventDefault();
+        saveInclusionsExclusions();
+      });
+    });
+  }
+
+  async function saveInclusionsExclusions() {
+    const checkboxes = document.querySelectorAll('.inclusion-checkbox');
+    const data = {};
+    
+    checkboxes.forEach(checkbox => {
+      const field = checkbox.getAttribute('data-field');
+      data[field] = checkbox.checked;
+    });
+
+    const saveBtn = document.getElementById('save-ie-btn');
+    const saveStatus = document.getElementById('save-status');
+    const originalHTML = saveBtn.innerHTML;
+
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    saveStatus.textContent = 'Saving...';
+    saveStatus.classList.remove('text-success', 'text-error');
+
+    try {
+      const response = await fetch(`/tenders/${TENDER_ID}/update_inclusions_exclusions.json`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ tender_inclusions_exclusion: data })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to save');
+      }
+
+      saveStatus.textContent = '✓ Saved successfully';
+      saveStatus.classList.add('text-success');
+      showToast('Inclusions & Exclusions saved!', 'success');
+      
+      setTimeout(() => {
+        saveStatus.textContent = '';
+        saveStatus.classList.remove('text-success');
+      }, 3000);
+    } catch (error) {
+      console.error('Error saving inclusions/exclusions:', error);
+      saveStatus.textContent = 'Error saving. Try again.';
+      saveStatus.classList.add('text-error');
+      showToast('Failed to save inclusions & exclusions', 'error');
+    } finally {
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = originalHTML;
+    }
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', () => {
+    setupInclusionsExclusionsListeners();
+  });
 </script>

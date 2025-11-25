@@ -1,5 +1,5 @@
 class TendersController < ApplicationController
-  before_action :set_tender, only: %i[ show edit update destroy ]
+  before_action :set_tender, only: %i[ show edit update destroy update_inclusions_exclusions ]
 
   # GET /tenders or /tenders.json
   def index
@@ -67,6 +67,19 @@ class TendersController < ApplicationController
     end
   end
 
+  # PATCH /tenders/1/update_inclusions_exclusions
+  def update_inclusions_exclusions
+    # Find or create the inclusions_exclusions record
+    ie = @tender.tender_inclusions_exclusion || @tender.build_tender_inclusions_exclusion
+    
+    # Update with permitted parameters
+    if ie.update(inclusions_exclusions_params)
+      render json: { success: true, data: ie }, status: :ok
+    else
+      render json: { success: false, errors: ie.errors }, status: :unprocessable_entity
+    end
+  end
+
   # DELETE /tenders/1 or /tenders/1.json
   def destroy
     @tender.destroy!
@@ -86,5 +99,20 @@ class TendersController < ApplicationController
     # Only allow a list of trusted parameters through.
     def tender_params
       params.require(:tender).permit(:tender_name, :status, :client_id, :submission_deadline, :tender_value, :project_type, :notes, :awarded_project_id, :qob_file)
+    end
+
+    def inclusions_exclusions_params
+      params.require(:tender_inclusions_exclusion).permit(
+        :fabrication_included,
+        :overheads_included,
+        :primer_included,
+        :final_paint_included,
+        :delivery_included,
+        :bolts_included,
+        :erection_included,
+        :crainage_included,
+        :cherry_pickers_included,
+        :steel_galvanized
+      )
     end
 end

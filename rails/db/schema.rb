@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_25_174801) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_25_181712) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -256,6 +256,23 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_25_174801) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "tender_inclusions_exclusions", force: :cascade do |t|
+    t.bigint "tender_id", null: false
+    t.boolean "fabrication_included"
+    t.boolean "overheads_included"
+    t.boolean "primer_included"
+    t.boolean "final_paint_included"
+    t.boolean "delivery_included"
+    t.boolean "bolts_included"
+    t.boolean "erection_included"
+    t.boolean "crainage_included"
+    t.boolean "cherry_pickers_included"
+    t.boolean "steel_galvanized"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tender_id"], name: "index_tender_inclusions_exclusions_on_tender_id"
+  end
+
   create_table "tender_line_items", force: :cascade do |t|
     t.bigint "tender_id", null: false
     t.decimal "quantity", precision: 12, scale: 2, default: "0.0"
@@ -339,6 +356,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_25_174801) do
   add_foreign_key "material_supply_rates", "suppliers"
   add_foreign_key "projects", "tenders"
   add_foreign_key "projects", "users", column: "created_by_id"
+  add_foreign_key "tender_inclusions_exclusions", "tenders"
   add_foreign_key "tender_line_items", "tenders"
   add_foreign_key "tenders", "clients"
   add_foreign_key "tenders", "projects", column: "awarded_project_id"

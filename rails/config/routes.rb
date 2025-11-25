@@ -20,6 +20,7 @@ Rails.application.routes.draw do
   resources :tenders do
     member do
       get :builder
+      patch :update_inclusions_exclusions
     end
     collection do
       post :quick_create

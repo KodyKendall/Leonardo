@@ -3,6 +3,7 @@ class Tender < ApplicationRecord
   belongs_to :client, optional: true
   has_many :boqs, dependent: :destroy
   has_many :tender_line_items, dependent: :destroy
+  has_one :tender_inclusions_exclusion, dependent: :destroy
   
   # File attachment for QOB (Quote of Business)
   has_one_attached :qob_file
