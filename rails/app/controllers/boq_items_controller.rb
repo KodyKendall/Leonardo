@@ -74,6 +74,6 @@ class BoqItemsController < ApplicationController
   end
 
   def boq_item_params
-    params.require(:boq_item).permit(:boq_id, :item_number, :item_description, :unit_of_measure, :quantity, :section_category, :sequence_order, :notes)
+    params.require(:boq_item).permit(:boq_id, :item_number, :item_description, :unit_of_measure, :quantity, :section_category, :sequence_order, :notes, :page_number)
   end
 end
