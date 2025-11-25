@@ -33,8 +33,8 @@
             <i class="fas fa-file-contract text-3xl"></i>
           </div>
           <div class="stat-title text-slate-600">Total Tenders</div>
-          <div class="stat-value text-blue-600" id="tender-count">0</div>
-          <div class="stat-desc text-slate-500" id="tender-status">Loading...</div>
+          <div class="stat-value text-blue-600"><%= @total_tenders %></div>
+          <div class="stat-desc text-slate-500"><%= @draft_tenders > 0 ? "#{@draft_tenders} draft" : "All submitted" %></div>
         </div>
 
         <!-- Active Tenders Card -->
@@ -43,7 +43,7 @@
             <i class="fas fa-check-circle text-3xl"></i>
           </div>
           <div class="stat-title text-slate-600">Active Tenders</div>
-          <div class="stat-value text-emerald-600" id="active-tender-count">0</div>
+          <div class="stat-value text-emerald-600"><%= @active_tenders %></div>
           <div class="stat-desc text-slate-500">Currently in progress</div>
         </div>
 
@@ -53,7 +53,7 @@
             <i class="fas fa-edit text-3xl"></i>
           </div>
           <div class="stat-title text-slate-600">Draft Tenders</div>
-          <div class="stat-value text-amber-600" id="draft-tender-count">0</div>
+          <div class="stat-value text-amber-600"><%= @draft_tenders %></div>
           <div class="stat-desc text-slate-500">Awaiting submission</div>
         </div>
       </div>
@@ -96,47 +96,4 @@
   </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', async function() {
-  try {
-    // Fetch dashboard data from API
-    const response = await fetch('/api/dashboard_metrics', {
-      headers: {
-        'Accept': 'application/json',
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || ''
-      }
-    });
 
-    if (!response.ok) {
-      console.warn('Dashboard metrics endpoint not available, showing placeholder data');
-      populatePlaceholderMetrics();
-      return;
-    }
-
-    const data = await response.json();
-    populateMetrics(data);
-  } catch (error) {
-    console.error('Error loading dashboard metrics:', error);
-    populatePlaceholderMetrics();
-  }
-
-  function populateMetrics(data) {
-    // Update Tender Metrics
-    document.getElementById('tender-count').textContent = data.total_tenders || 0;
-    document.getElementById('active-tender-count').textContent = data.active_tenders || 0;
-    document.getElementById('draft-tender-count').textContent = data.draft_tenders || 0;
-    
-    const draftTenders = data.draft_tenders || 0;
-    document.getElementById('tender-status').textContent = draftTenders > 0 ? `${draftTenders} draft` : 'All submitted';
-  }
-
-  function populatePlaceholderMetrics() {
-    // Show placeholder data when API is not available
-    document.getElementById('tender-count').textContent = '—';
-    document.getElementById('tender-status').textContent = 'No data';
-    
-    document.getElementById('active-tender-count').textContent = '—';
-    document.getElementById('draft-tender-count').textContent = '—';
-  }
-});
-</script>

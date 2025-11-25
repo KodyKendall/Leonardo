@@ -1,5 +1,8 @@
 class DashboardsController < ApplicationController
   def index
+    @total_tenders = Tender.count
+    @active_tenders = Tender.where(status: 'active').count
+    @draft_tenders = Tender.where(status: 'draft').count
   end
 
   def old_dashboard

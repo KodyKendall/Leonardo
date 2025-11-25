@@ -598,23 +598,29 @@
                   <th>Category</th>
                   <th>UOM</th>
                   <th>Quantity</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="items-tbody">
                 <% @boq_items.each_with_index do |item, idx| %>
-                  <tr>
+                  <tr class="boq-item-row" data-item-id="<%= item.id %>" data-category-key="<%= item.section_category || "" %>" data-category-display="<%= BoqItem.section_categories[item.section_category] || "" %>">
                     <td><%= idx + 1 %></td>
-                    <td class="font-mono text-sm"><%= item.page_number || "—" %></td>
-                    <td class="font-mono text-sm"><%= item.item_number || "—" %></td>
-                    <td>
+                    <td class="font-mono text-sm editable-cell" data-field="page_number" title="Click to edit"><%= item.page_number || "—" %></td>
+                    <td class="font-mono text-sm editable-cell" data-field="item_number" title="Click to edit"><%= item.item_number || "—" %></td>
+                    <td class="editable-cell" data-field="item_description" title="Click to edit">
                       <div class="text-sm"><%= truncate(item.item_description, length: 60) %></div>
                       <% if item.notes %>
                         <div class="text-xs text-gray-500 mt-1"><%= item.notes %></div>
                       <% end %>
                     </td>
-                    <td><span class="badge badge-sm"><%= item.section_category || "—" %></span></td>
-                    <td><%= item.unit_of_measure || "—" %></td>
-                    <td class="text-right font-semibold"><%= item.quantity || "—" %></td>
+                    <td class="editable-cell" data-field="section_category" title="Click to edit"><span class="badge badge-sm"><%= item.section_category || "—" %></span></td>
+                    <td class="editable-cell" data-field="unit_of_measure" title="Click to edit"><%= item.unit_of_measure || "—" %></td>
+                    <td class="text-right font-semibold editable-cell" data-field="quantity" title="Click to edit"><%= item.quantity || "—" %></td>
+                    <td class="text-center">
+                      <button class="btn btn-xs btn-ghost edit-row-btn" onclick="editRow(this, <%= item.id %>)" title="Edit this row">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                    </td>
                   </tr>
                 <% end %>
               </tbody>
@@ -631,6 +637,221 @@
   </div>
 
   <script>
+    // Editable table functionality
+    function editRow(button, itemId) {
+      const row = button.closest('tr');
+      const isEditing = row.classList.contains('editing-mode');
+      
+      if (isEditing) {
+        // Cancel edit mode
+        cancelEdit(row);
+      } else {
+        // Enter edit mode
+        enableEditMode(row, itemId);
+      }
+    }
+
+    function enableEditMode(row, itemId) {
+      row.classList.add('editing-mode');
+      
+      // Get the edit button and change it to show cancel/save
+      const editBtn = row.querySelector('.edit-row-btn');
+      editBtn.innerHTML = '<i class="fas fa-times"></i>';
+      editBtn.classList.add('btn-error');
+      editBtn.classList.remove('btn-ghost');
+      editBtn.title = 'Cancel editing';
+      
+      // Add save button next to cancel button
+      const saveBtn = document.createElement('button');
+      saveBtn.className = 'btn btn-xs btn-success ml-1';
+      saveBtn.innerHTML = '<i class="fas fa-check"></i>';
+      saveBtn.title = 'Save changes';
+      saveBtn.onclick = () => saveRowChanges(row, itemId);
+      editBtn.parentElement.appendChild(saveBtn);
+      
+      // Make cells editable
+      const editableCells = row.querySelectorAll('.editable-cell');
+      editableCells.forEach(cell => {
+        const field = cell.getAttribute('data-field');
+        let currentValue = cell.textContent.trim().replace('—', '');
+        
+        // Create appropriate input based on field type
+        let input;
+        if (field === 'section_category') {
+          // For category, get the display value from row data attribute
+          const categoryDisplay = row.getAttribute('data-category-display') || currentValue;
+          input = createCategorySelect(field, categoryDisplay);
+        } else if (field === 'quantity' || field === 'page_number') {
+          input = document.createElement('input');
+          input.type = 'number';
+          input.step = field === 'quantity' ? '0.01' : '1';
+          input.value = currentValue;
+          input.className = 'input input-bordered input-sm w-full';
+        } else {
+          input = document.createElement('input');
+          input.type = field === 'item_description' ? 'text' : 'text';
+          input.value = currentValue;
+          input.className = 'input input-bordered input-sm w-full';
+        }
+        
+        input.setAttribute('data-field', field);
+        cell.innerHTML = '';
+        cell.appendChild(input);
+      });
+    }
+
+    function createCategorySelect(field, currentValue) {
+      const select = document.createElement('select');
+      select.className = 'select select-bordered select-sm w-full';
+      select.setAttribute('data-field', field);
+      
+      const categories = [
+        'Blank',
+        'Steel Sections',
+        'Paintwork',
+        'Bolts',
+        'Gutter Meter',
+        'M16 Mechanical Anchor',
+        'M16 Chemical',
+        'M20 Chemical',
+        'M24 Chemical',
+        'M16 HD Bolt',
+        'M20 HD Bolt',
+        'M24 HD Bolt',
+        'M30 HD Bolt',
+        'M36 HD Bolt',
+        'M42 HD Bolt'
+      ];
+      
+      categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        option.selected = cat === currentValue;
+        select.appendChild(option);
+      });
+      
+      return select;
+    }
+
+    function cancelEdit(row) {
+      row.classList.remove('editing-mode');
+      
+      // Remove save button
+      const saveBtn = row.querySelector('.btn-success');
+      if (saveBtn) saveBtn.remove();
+      
+      // Reset edit button
+      const editBtn = row.querySelector('.edit-row-btn');
+      editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+      editBtn.classList.remove('btn-error');
+      editBtn.classList.add('btn-ghost');
+      editBtn.title = 'Edit this row';
+      
+      // Reload the row from the server to restore original values
+      const itemId = row.getAttribute('data-item-id');
+      reloadRow(row, itemId);
+    }
+
+    async function saveRowChanges(row, itemId) {
+      const editBtn = row.querySelector('.edit-row-btn');
+      const saveBtn = row.querySelector('.btn-success');
+      const originalEditHTML = editBtn.innerHTML;
+      const originalSaveHTML = saveBtn.innerHTML;
+      
+      // Show loading state
+      editBtn.disabled = true;
+      saveBtn.disabled = true;
+      editBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      
+      try {
+        // Collect form data
+        const formData = new FormData();
+        const editableCells = row.querySelectorAll('.editable-cell');
+        const updateData = {};
+        
+        editableCells.forEach(cell => {
+          const field = cell.getAttribute('data-field');
+          const input = cell.querySelector('input, select');
+          if (input) {
+            updateData[field] = input.value;
+          }
+        });
+        
+        // Send update request to boq_items controller
+        const response = await fetch(`/boq_items/${itemId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+          },
+          body: JSON.stringify({ boq_item: updateData })
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          showToast('Failed to save changes: ' + (errorData.error || 'Unknown error'), 'error');
+          editBtn.disabled = false;
+          saveBtn.disabled = false;
+          editBtn.innerHTML = originalEditHTML;
+          saveBtn.innerHTML = originalSaveHTML;
+          return;
+        }
+        
+        const updatedItem = await response.json();
+        showToast('Changes saved successfully!', 'success');
+        
+        // Exit edit mode
+        row.classList.remove('editing-mode');
+        saveBtn.remove();
+        editBtn.innerHTML = originalEditHTML;
+        editBtn.classList.remove('btn-error');
+        editBtn.classList.add('btn-ghost');
+        editBtn.title = 'Edit this row';
+        editBtn.disabled = false;
+        
+        // Reload the row to display updated values
+        reloadRow(row, itemId);
+      } catch (error) {
+        console.error('Error saving changes:', error);
+        showToast('Failed to save changes', 'error');
+        editBtn.disabled = false;
+        saveBtn.disabled = false;
+        editBtn.innerHTML = originalEditHTML;
+        saveBtn.innerHTML = originalSaveHTML;
+      }
+    }
+
+    async function reloadRow(row, itemId) {
+      try {
+        const boqId = window.location.pathname.split('/').pop();
+        const response = await fetch(`/boq_items/${itemId}.json`);
+        
+        if (!response.ok) throw new Error('Failed to fetch item');
+        
+        const item = await response.json();
+        
+        // Update cells with new values
+        const cells = {
+          'page_number': item.page_number || '—',
+          'item_number': item.item_number || '—',
+          'item_description': item.item_description ? item.item_description.substring(0, 60) : '—',
+          'section_category': `<span class="badge badge-sm">${item.section_category || '—'}</span>`,
+          'unit_of_measure': item.unit_of_measure || '—',
+          'quantity': item.quantity || '—'
+        };
+        
+        row.querySelectorAll('.editable-cell').forEach(cell => {
+          const field = cell.getAttribute('data-field');
+          cell.innerHTML = cells[field];
+        });
+      } catch (error) {
+        console.error('Error reloading row:', error);
+        showToast('Error reloading row data', 'error');
+      }
+    }
+
     async function refreshBoqItems() {
       const btn = document.getElementById('refresh-items-btn');
       const originalHTML = btn.innerHTML;
