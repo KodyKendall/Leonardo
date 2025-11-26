@@ -15,8 +15,224 @@
     <%= link_to "Back to Tender", tender_path(@tender), class: "btn btn-ghost" %>
   </div>
 
-  <!-- Tender Line Items Section - Styled like BOQ Line Items -->
+  <!-- Inclusions & Exclusions Section -->
   <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <h2 class="card-title mb-6">
+        <i class="fas fa-check-square"></i>
+        Inclusions & Exclusions
+      </h2>
+
+      <div id="inclusions-container" class="space-y-3">
+        <!-- Fabrication Included -->
+        <label class="flex items-center justify-between gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition border border-gray-200">
+          <span class="flex-1">
+            <span class="font-semibold block">Fabrication Included?</span>
+            <span class="text-xs text-gray-500">Labour and manufacturing</span>
+          </span>
+          <input 
+            type="checkbox" 
+            class="checkbox checkbox-lg inclusion-checkbox"
+            data-field="fabrication_included"
+            <%= @tender.tender_inclusions_exclusion&.fabrication_included ? 'checked' : '' %>
+          >
+        </label>
+
+        <!-- Overheads Included -->
+        <label class="flex items-center justify-between gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition border border-gray-200">
+          <span class="flex-1">
+            <span class="font-semibold block">Overheads Included?</span>
+            <span class="text-xs text-gray-500">Administrative and indirect costs</span>
+          </span>
+          <input 
+            type="checkbox" 
+            class="checkbox checkbox-lg inclusion-checkbox"
+            data-field="overheads_included"
+            <%= @tender.tender_inclusions_exclusion&.overheads_included ? 'checked' : '' %>
+          >
+        </label>
+
+        <!-- Primer Included -->
+        <label class="flex items-center justify-between gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition border border-gray-200">
+          <span class="flex-1">
+            <span class="font-semibold block">Primer Included in Line Item Rate?</span>
+            <span class="text-xs text-gray-500">Base coating</span>
+          </span>
+          <input 
+            type="checkbox" 
+            class="checkbox checkbox-lg inclusion-checkbox"
+            data-field="primer_included"
+            <%= @tender.tender_inclusions_exclusion&.primer_included ? 'checked' : '' %>
+          >
+        </label>
+
+        <!-- Final Paint Included -->
+        <label class="flex items-center justify-between gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition border border-gray-200">
+          <span class="flex-1">
+            <span class="font-semibold block">Final Paint Included in Line Item Rate?</span>
+            <span class="text-xs text-gray-500">Finish coating</span>
+          </span>
+          <input 
+            type="checkbox" 
+            class="checkbox checkbox-lg inclusion-checkbox"
+            data-field="final_paint_included"
+            <%= @tender.tender_inclusions_exclusion&.final_paint_included ? 'checked' : '' %>
+          >
+        </label>
+
+        <!-- Delivery Included -->
+        <label class="flex items-center justify-between gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition border border-gray-200">
+          <span class="flex-1">
+            <span class="font-semibold block">Delivery Included?</span>
+            <span class="text-xs text-gray-500">Transportation to site</span>
+          </span>
+          <input 
+            type="checkbox" 
+            class="checkbox checkbox-lg inclusion-checkbox"
+            data-field="delivery_included"
+            <%= @tender.tender_inclusions_exclusion&.delivery_included ? 'checked' : '' %>
+          >
+        </label>
+
+        <!-- Bolts Included -->
+        <label class="flex items-center justify-between gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition border border-gray-200">
+          <span class="flex-1">
+            <span class="font-semibold block">Bolts Included in Line Item Rate?</span>
+            <span class="text-xs text-gray-500">Fasteners and hardware</span>
+          </span>
+          <input 
+            type="checkbox" 
+            class="checkbox checkbox-lg inclusion-checkbox"
+            data-field="bolts_included"
+            <%= @tender.tender_inclusions_exclusion&.bolts_included ? 'checked' : '' %>
+          >
+        </label>
+
+        <!-- Erection Included -->
+        <label class="flex items-center justify-between gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition border border-gray-200">
+          <span class="flex-1">
+            <span class="font-semibold block">Erection Included in Line Item Rate?</span>
+            <span class="text-xs text-gray-500">Assembly and installation</span>
+          </span>
+          <input 
+            type="checkbox" 
+            class="checkbox checkbox-lg inclusion-checkbox"
+            data-field="erection_included"
+            <%= @tender.tender_inclusions_exclusion&.erection_included ? 'checked' : '' %>
+          >
+        </label>
+
+        <!-- Crainage Included -->
+        <label class="flex items-center justify-between gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition border border-gray-200">
+          <span class="flex-1">
+            <span class="font-semibold block">Crainage Included in Line Item Rate?</span>
+            <span class="text-xs text-gray-500">Crane operations</span>
+          </span>
+          <input 
+            type="checkbox" 
+            class="checkbox checkbox-lg inclusion-checkbox"
+            data-field="crainage_included"
+            <%= @tender.tender_inclusions_exclusion&.crainage_included ? 'checked' : '' %>
+          >
+        </label>
+
+        <!-- Cherry Pickers Included -->
+        <label class="flex items-center justify-between gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition border border-gray-200">
+          <span class="flex-1">
+            <span class="font-semibold block">Cherry Pickers Included in Line Item Rate?</span>
+            <span class="text-xs text-gray-500">Aerial work platforms</span>
+          </span>
+          <input 
+            type="checkbox" 
+            class="checkbox checkbox-lg inclusion-checkbox"
+            data-field="cherry_pickers_included"
+            <%= @tender.tender_inclusions_exclusion&.cherry_pickers_included ? 'checked' : '' %>
+          >
+        </label>
+
+        <!-- Steel Galvanized -->
+        <label class="flex items-center justify-between gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition border border-gray-200">
+          <span class="flex-1">
+            <span class="font-semibold block">Is the Steel Galvanized?</span>
+            <span class="text-xs text-gray-500">Hot-dip galvanized finish</span>
+          </span>
+          <input 
+            type="checkbox" 
+            class="checkbox checkbox-lg inclusion-checkbox"
+            data-field="steel_galvanized"
+            <%= @tender.tender_inclusions_exclusion&.steel_galvanized ? 'checked' : '' %>
+          >
+        </label>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-gray-200 flex justify-between items-center">
+        <span id="save-status" class="text-sm text-gray-500"></span>
+        <button 
+          id="save-ie-btn" 
+          class="btn btn-sm btn-primary gap-2"
+          onclick="saveInclusionsExclusions()"
+        >
+          <i class="fas fa-save"></i>
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Linked BOQ Section -->
+  <% if @tender.boqs.any? %>
+    <div class="card bg-base-100 shadow mt-6">
+      <div class="card-body">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="card-title mb-0">
+            <i class="fas fa-cube"></i>
+            Linked BOQ Items
+            <span id="boq-items-count" class="badge badge-lg"><%= @tender.boqs.first.boq_items.count %></span>
+          </h2>
+          <button 
+            id="mirror-boq-btn"
+            class="btn btn-sm btn-success gap-2"
+            onclick="mirrorBoqItemsToLineItems()"
+          >
+            <i class="fas fa-copy"></i>
+            Mirror to Line Items
+          </button>
+        </div>
+
+        <div id="boq-items-container">
+          <div class="overflow-x-auto">
+            <table class="table table-sm w-full">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Item Number</th>
+                  <th>Description</th>
+                  <th>Unit</th>
+                  <th>Quantity</th>
+                  <th>Category</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @tender.boqs.first.boq_items.order(:sequence_order).each_with_index do |item, idx| %>
+                  <tr>
+                    <td><%= idx + 1 %></td>
+                    <td class="font-semibold"><%= item.item_number %></td>
+                    <td><%= truncate(item.item_description, length: 50) %></td>
+                    <td><%= item.unit_of_measure %></td>
+                    <td class="font-semibold"><%= number_with_precision(item.quantity, precision: 3) %></td>
+                    <td><span class="badge"><%= item.section_category %></span></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Tender Line Items Section - Styled like BOQ Line Items -->
+  <div class="card bg-base-100 shadow mt-6">
     <div class="card-body">
       <div class="flex justify-between items-center mb-4">
         <h2 class="card-title mb-0">
@@ -51,6 +267,11 @@
               <thead>
                 <tr>
                   <th>#</th>
+                  <th>Page</th>
+                  <th>Item Number</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th>UOM</th>
                   <th>Quantity</th>
                   <th>Rate (₹)</th>
                   <th class="text-right">Total Amount (₹)</th>
@@ -59,10 +280,20 @@
               </thead>
               <tbody id="items-tbody">
                 <% @tender.tender_line_items.each_with_index do |item, idx| %>
-                  <tr class="tender-line-item-row" data-item-id="<%= item.id %>">
+                  <tr class="tender-line-item-row" data-item-id="<%= item.id %>" data-category-key="<%= item.section_category || "" %>" data-category-display="<%= item.section_category || "" %>">
                     <td><%= idx + 1 %></td>
-                    <td class="font-semibold editable-cell" data-field="quantity" title="Click to edit"><%= number_with_precision(item.quantity, precision: 2) %></td>
-                    <td class="font-semibold editable-cell" data-field="rate" title="Click to edit"><%= number_with_precision(item.rate, precision: 2) %></td>
+                    <td class="font-mono text-sm editable-cell" data-field="page_number" title="Click to edit"><%= item.page_number || "—" %></td>
+                    <td class="font-mono text-sm editable-cell" data-field="item_number" title="Click to edit"><%= item.item_number || "—" %></td>
+                    <td class="editable-cell" data-field="item_description" title="Click to edit">
+                      <div class="text-sm"><%= truncate(item.item_description, length: 60) %></div>
+                      <% if item.notes %>
+                        <div class="text-xs text-gray-500 mt-1"><%= item.notes %></div>
+                      <% end %>
+                    </td>
+                    <td class="editable-cell" data-field="section_category" title="Click to edit"><span class="badge badge-sm"><%= item.section_category || "—" %></span></td>
+                    <td class="editable-cell" data-field="unit_of_measure" title="Click to edit"><%= item.unit_of_measure || "—" %></td>
+                    <td class="text-right font-semibold editable-cell" data-field="quantity" title="Click to edit"><%= number_with_precision(item.quantity, precision: 2) %></td>
+                    <td class="text-right font-semibold editable-cell" data-field="rate" title="Click to edit"><%= number_with_precision(item.rate, precision: 2) %></td>
                     <td class="text-right font-bold" data-field="total_amount"><%= number_with_precision(item.total_amount, precision: 2) %></td>
                     <td class="text-center">
                       <button class="btn btn-xs btn-ghost edit-row-btn" onclick="editRow(this, <%= item.id %>)" title="Edit this row">
@@ -105,172 +336,6 @@
     </div>
   </div>
 
-  <!-- Inclusions & Exclusions Section -->
-  <div class="card bg-base-100 shadow mt-6">
-    <div class="card-body">
-      <h2 class="card-title mb-6">
-        <i class="fas fa-check-square"></i>
-        Inclusions & Exclusions
-      </h2>
-
-      <div id="inclusions-container" class="space-y-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Fabrication Included -->
-          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
-            <input 
-              type="checkbox" 
-              class="checkbox checkbox-lg inclusion-checkbox"
-              data-field="fabrication_included"
-              <%= @tender.tender_inclusions_exclusion&.fabrication_included ? 'checked' : '' %>
-            >
-            <span class="flex-1">
-              <span class="font-semibold block">Fabrication Included?</span>
-              <span class="text-xs text-gray-500">Labour and manufacturing</span>
-            </span>
-          </label>
-
-          <!-- Overheads Included -->
-          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
-            <input 
-              type="checkbox" 
-              class="checkbox checkbox-lg inclusion-checkbox"
-              data-field="overheads_included"
-              <%= @tender.tender_inclusions_exclusion&.overheads_included ? 'checked' : '' %>
-            >
-            <span class="flex-1">
-              <span class="font-semibold block">Overheads Included?</span>
-              <span class="text-xs text-gray-500">Administrative and indirect costs</span>
-            </span>
-          </label>
-
-          <!-- Primer Included -->
-          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
-            <input 
-              type="checkbox" 
-              class="checkbox checkbox-lg inclusion-checkbox"
-              data-field="primer_included"
-              <%= @tender.tender_inclusions_exclusion&.primer_included ? 'checked' : '' %>
-            >
-            <span class="flex-1">
-              <span class="font-semibold block">Primer Included in Line Item Rate?</span>
-              <span class="text-xs text-gray-500">Base coating</span>
-            </span>
-          </label>
-
-          <!-- Final Paint Included -->
-          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
-            <input 
-              type="checkbox" 
-              class="checkbox checkbox-lg inclusion-checkbox"
-              data-field="final_paint_included"
-              <%= @tender.tender_inclusions_exclusion&.final_paint_included ? 'checked' : '' %>
-            >
-            <span class="flex-1">
-              <span class="font-semibold block">Final Paint Included in Line Item Rate?</span>
-              <span class="text-xs text-gray-500">Finish coating</span>
-            </span>
-          </label>
-
-          <!-- Delivery Included -->
-          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
-            <input 
-              type="checkbox" 
-              class="checkbox checkbox-lg inclusion-checkbox"
-              data-field="delivery_included"
-              <%= @tender.tender_inclusions_exclusion&.delivery_included ? 'checked' : '' %>
-            >
-            <span class="flex-1">
-              <span class="font-semibold block">Delivery Included?</span>
-              <span class="text-xs text-gray-500">Transportation to site</span>
-            </span>
-          </label>
-
-          <!-- Bolts Included -->
-          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
-            <input 
-              type="checkbox" 
-              class="checkbox checkbox-lg inclusion-checkbox"
-              data-field="bolts_included"
-              <%= @tender.tender_inclusions_exclusion&.bolts_included ? 'checked' : '' %>
-            >
-            <span class="flex-1">
-              <span class="font-semibold block">Bolts Included in Line Item Rate?</span>
-              <span class="text-xs text-gray-500">Fasteners and hardware</span>
-            </span>
-          </label>
-
-          <!-- Erection Included -->
-          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
-            <input 
-              type="checkbox" 
-              class="checkbox checkbox-lg inclusion-checkbox"
-              data-field="erection_included"
-              <%= @tender.tender_inclusions_exclusion&.erection_included ? 'checked' : '' %>
-            >
-            <span class="flex-1">
-              <span class="font-semibold block">Erection Included in Line Item Rate?</span>
-              <span class="text-xs text-gray-500">Assembly and installation</span>
-            </span>
-          </label>
-
-          <!-- Crainage Included -->
-          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
-            <input 
-              type="checkbox" 
-              class="checkbox checkbox-lg inclusion-checkbox"
-              data-field="crainage_included"
-              <%= @tender.tender_inclusions_exclusion&.crainage_included ? 'checked' : '' %>
-            >
-            <span class="flex-1">
-              <span class="font-semibold block">Crainage Included in Line Item Rate?</span>
-              <span class="text-xs text-gray-500">Crane operations</span>
-            </span>
-          </label>
-
-          <!-- Cherry Pickers Included -->
-          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
-            <input 
-              type="checkbox" 
-              class="checkbox checkbox-lg inclusion-checkbox"
-              data-field="cherry_pickers_included"
-              <%= @tender.tender_inclusions_exclusion&.cherry_pickers_included ? 'checked' : '' %>
-            >
-            <span class="flex-1">
-              <span class="font-semibold block">Cherry Pickers Included in Line Item Rate?</span>
-              <span class="text-xs text-gray-500">Aerial work platforms</span>
-            </span>
-          </label>
-
-          <!-- Steel Galvanized -->
-          <label class="flex items-center gap-3 cursor-pointer p-3 rounded-lg hover:bg-base-200 transition">
-            <input 
-              type="checkbox" 
-              class="checkbox checkbox-lg inclusion-checkbox"
-              data-field="steel_galvanized"
-              <%= @tender.tender_inclusions_exclusion&.steel_galvanized ? 'checked' : '' %>
-            >
-            <span class="flex-1">
-              <span class="font-semibold block">Is the Steel Galvanized?</span>
-              <span class="text-xs text-gray-500">Hot-dip galvanized finish</span>
-            </span>
-          </label>
-        </div>
-      </div>
-
-      <div class="mt-6 pt-4 border-t border-gray-200 flex justify-between items-center">
-        <span id="save-status" class="text-sm text-gray-500"></span>
-        <button 
-          id="save-ie-btn" 
-          class="btn btn-sm btn-primary gap-2"
-          onclick="saveInclusionsExclusions()"
-        >
-          <i class="fas fa-save"></i>
-          Save Changes
-        </button>
-      </div>
-    </div>
-  </div>
-
   <div class="mt-6 flex gap-2">
     <%= link_to "Edit Tender Details", edit_tender_path(@tender), class: "btn btn-ghost" %>
     <%= link_to "Back to Tenders", tenders_path, class: "btn btn-ghost" %>
@@ -305,7 +370,7 @@
           'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
           'Accept': 'application/json'
         },
-        body: JSON.stringify({ tender_line_item: { quantity: 1, rate: 0 } })
+        body: JSON.stringify({ tender_line_item: { quantity: 1, rate: 0, page_number: '', item_number: '', item_description: '', unit_of_measure: '', section_category: null, notes: '' } })
       });
 
       if (!response.ok) {
@@ -354,19 +419,66 @@
     const editableCells = row.querySelectorAll('.editable-cell');
     editableCells.forEach(cell => {
       const field = cell.getAttribute('data-field');
-      const currentValue = parseFloat(cell.textContent.trim());
+      let currentValue = cell.textContent.trim().replace('—', '');
       
-      const input = document.createElement('input');
-      input.type = 'number';
-      input.step = '0.01';
-      input.min = '0';
-      input.value = currentValue;
-      input.className = 'input input-bordered input-sm w-full';
+      // Create appropriate input based on field type
+      let input;
+      if (field === 'section_category') {
+        // For category, get the display value from row data attribute
+        const categoryDisplay = row.getAttribute('data-category-display') || currentValue;
+        input = createCategorySelect(field, categoryDisplay);
+      } else if (field === 'quantity' || field === 'rate' || field === 'page_number') {
+        input = document.createElement('input');
+        input.type = 'number';
+        input.step = field === 'quantity' ? '0.01' : (field === 'rate' ? '0.01' : '1');
+        input.min = '0';
+        input.value = currentValue;
+        input.className = 'input input-bordered input-sm w-full';
+      } else {
+        input = document.createElement('input');
+        input.type = 'text';
+        input.value = currentValue;
+        input.className = 'input input-bordered input-sm w-full';
+      }
+      
       input.setAttribute('data-field', field);
-      
       cell.innerHTML = '';
       cell.appendChild(input);
     });
+  }
+
+  function createCategorySelect(field, currentValue) {
+    const select = document.createElement('select');
+    select.className = 'select select-bordered select-sm w-full';
+    select.setAttribute('data-field', field);
+    
+    const categories = [
+      'Blank',
+      'Steel Sections',
+      'Paintwork',
+      'Bolts',
+      'Gutter Meter',
+      'M16 Mechanical Anchor',
+      'M16 Chemical',
+      'M20 Chemical',
+      'M24 Chemical',
+      'M16 HD Bolt',
+      'M20 HD Bolt',
+      'M24 HD Bolt',
+      'M30 HD Bolt',
+      'M36 HD Bolt',
+      'M42 HD Bolt'
+    ];
+    
+    categories.forEach(cat => {
+      const option = document.createElement('option');
+      option.value = cat;
+      option.textContent = cat;
+      option.selected = cat === currentValue;
+      select.appendChild(option);
+    });
+    
+    return select;
   }
 
   function cancelEdit(row) {
@@ -456,13 +568,22 @@
       
       const item = await response.json();
       
-      const quantity = parseFloat(item.quantity).toFixed(2);
-      const rate = parseFloat(item.rate).toFixed(2);
-      const total = (parseFloat(item.quantity) * parseFloat(item.rate)).toFixed(2);
+      // Update cells with new values
+      const cells = {
+        'page_number': item.page_number || '—',
+        'item_number': item.item_number || '—',
+        'item_description': item.item_description ? item.item_description.substring(0, 60) : '—',
+        'section_category': `<span class="badge badge-sm">${item.section_category || '—'}</span>`,
+        'unit_of_measure': item.unit_of_measure || '—',
+        'quantity': parseFloat(item.quantity).toFixed(2),
+        'rate': parseFloat(item.rate).toFixed(2),
+        'total_amount': (parseFloat(item.quantity) * parseFloat(item.rate)).toFixed(2)
+      };
       
-      row.querySelector('[data-field="quantity"]').textContent = quantity;
-      row.querySelector('[data-field="rate"]').textContent = rate;
-      row.querySelector('[data-field="total_amount"]').textContent = total;
+      row.querySelectorAll('.editable-cell').forEach(cell => {
+        const field = cell.getAttribute('data-field');
+        cell.innerHTML = cells[field];
+      });
       
       // Update summary stats immediately with new values
       setTimeout(() => updateSummaryStatsFromTable(), 10);
@@ -587,6 +708,11 @@
               <thead>
                 <tr>
                   <th>#</th>
+                  <th>Page</th>
+                  <th>Item Number</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th>UOM</th>
                   <th>Quantity</th>
                   <th>Rate (₹)</th>
                   <th class="text-right">Total Amount (₹)</th>
@@ -598,11 +724,20 @@
         
         items.forEach((item, idx) => {
           const total = parseFloat(item.quantity) * parseFloat(item.rate);
+          const notes = item.notes ? `<div class="text-xs text-gray-500 mt-1">${item.notes}</div>` : '';
           tableHTML += `
-            <tr class="tender-line-item-row" data-item-id="${item.id}">
+            <tr class="tender-line-item-row" data-item-id="${item.id}" data-category-key="${item.section_category || ""}" data-category-display="${item.section_category || ""}">
               <td>${idx + 1}</td>
-              <td class="font-semibold editable-cell" data-field="quantity" title="Click to edit">${parseFloat(item.quantity).toFixed(2)}</td>
-              <td class="font-semibold editable-cell" data-field="rate" title="Click to edit">${parseFloat(item.rate).toFixed(2)}</td>
+              <td class="font-mono text-sm editable-cell" data-field="page_number" title="Click to edit">${item.page_number || "—"}</td>
+              <td class="font-mono text-sm editable-cell" data-field="item_number" title="Click to edit">${item.item_number || "—"}</td>
+              <td class="editable-cell" data-field="item_description" title="Click to edit">
+                <div class="text-sm">${item.item_description ? item.item_description.substring(0, 60) : "—"}</div>
+                ${notes}
+              </td>
+              <td class="editable-cell" data-field="section_category" title="Click to edit"><span class="badge badge-sm">${item.section_category || "—"}</span></td>
+              <td class="editable-cell" data-field="unit_of_measure" title="Click to edit">${item.unit_of_measure || "—"}</td>
+              <td class="text-right font-semibold editable-cell" data-field="quantity" title="Click to edit">${parseFloat(item.quantity).toFixed(2)}</td>
+              <td class="text-right font-semibold editable-cell" data-field="rate" title="Click to edit">${parseFloat(item.rate).toFixed(2)}</td>
               <td class="text-right font-bold" data-field="total_amount">${total.toFixed(2)}</td>
               <td class="text-center">
                 <button class="btn btn-xs btn-ghost edit-row-btn" onclick="editRow(this, ${item.id})" title="Edit this row">
@@ -713,6 +848,48 @@
     } finally {
       saveBtn.disabled = false;
       saveBtn.innerHTML = originalHTML;
+    }
+  }
+
+  // Mirror BOQ Items to Tender Line Items
+  async function mirrorBoqItemsToLineItems() {
+    const btn = document.getElementById('mirror-boq-btn');
+    const originalHTML = btn.innerHTML;
+    
+    if (!confirm('This will create Tender Line Items from all Linked BOQ items. Continue?')) {
+      return;
+    }
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mirroring...';
+    
+    try {
+      const response = await fetch(`/tenders/${TENDER_ID}/mirror_boq_items.json`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+          'Accept': 'application/json'
+        }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        showToast('Failed to mirror items: ' + (errorData.error || 'Unknown error'), 'error');
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+        return;
+      }
+      
+      const data = await response.json();
+      showToast(`Successfully created ${data.count} line items!`, 'success');
+      refreshTenderItems();
+    } catch (error) {
+      console.error('Error mirroring BOQ items:', error);
+      showToast('Failed to mirror BOQ items', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalHTML;
     }
   }
 

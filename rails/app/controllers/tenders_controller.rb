@@ -80,6 +80,60 @@ class TendersController < ApplicationController
     end
   end
 
+  # POST /tenders/1/mirror_boq_items
+  def mirror_boq_items
+    @tender = Tender.find(params[:id])
+    
+    # Get the first linked BOQ
+    boq = @tender.boqs.first
+    
+    if !boq
+      render json: { error: "No linked BOQ found" }, status: :unprocessable_entity
+      return
+    end
+    
+    # Mapping from BoqItem enum keys to TenderLineItem enum display names
+    category_mapping = {
+      "blank" => "Blank",
+      "steel_sections" => "Steel Sections",
+      "paintwork" => "Paintwork",
+      "bolts" => "Bolts",
+      "gutter_meter" => "Gutter Meter",
+      "m16_mechanical_anchor" => "M16 Mechanical Anchor",
+      "m16_chemical" => "M16 Chemical",
+      "m20_chemical" => "M20 Chemical",
+      "m24_chemical" => "M24 Chemical",
+      "m16_hd_bolt" => "M16 HD Bolt",
+      "m20_hd_bolt" => "M20 HD Bolt",
+      "m24_hd_bolt" => "M24 HD Bolt",
+      "m30_hd_bolt" => "M30 HD Bolt",
+      "m36_hd_bolt" => "M36 HD Bolt",
+      "m42_hd_bolt" => "M42 HD Bolt"
+    }
+    
+    # Create Tender Line Items from BOQ items
+    count = 0
+    boq.boq_items.each do |boq_item|
+      category_value = boq_item.section_category.present? ? category_mapping[boq_item.section_category] : nil
+      
+      @tender.tender_line_items.create(
+        quantity: boq_item.quantity,
+        rate: 0,
+        item_number: boq_item.item_number,
+        item_description: boq_item.item_description,
+        unit_of_measure: boq_item.unit_of_measure,
+        section_category: category_value,
+        page_number: boq_item.page_number,
+        notes: boq_item.notes
+      )
+      count += 1
+    end
+    
+    render json: { success: true, count: count }, status: :created
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
   # DELETE /tenders/1 or /tenders/1.json
   def destroy
     @tender.destroy!

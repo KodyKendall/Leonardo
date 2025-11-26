@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     member do
       get :builder
       patch :update_inclusions_exclusions
+      post :mirror_boq_items
     end
     collection do
       post :quick_create

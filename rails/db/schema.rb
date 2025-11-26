@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_25_181712) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_26_171658) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -279,6 +279,12 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_25_181712) do
     t.decimal "rate", precision: 12, scale: 2, default: "0.0"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "page_number"
+    t.string "item_number"
+    t.text "item_description"
+    t.string "unit_of_measure"
+    t.enum "section_category", enum_type: "section_category_enum"
+    t.text "notes"
     t.index ["tender_id"], name: "index_tender_line_items_on_tender_id"
   end
 
