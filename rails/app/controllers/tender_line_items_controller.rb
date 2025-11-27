@@ -72,7 +72,7 @@ class TenderLineItemsController < ApplicationController
     end
 
     def set_tender_line_item
-      @tender_line_item = TenderLineItem.find(params[:id])
+      @tender_line_item = @tender.tender_line_items.find(params[:id])
     end
 
     def tender_line_item_params
