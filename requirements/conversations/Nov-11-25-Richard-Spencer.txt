@@ -1,0 +1,662 @@
+Darren Spencer  0:00  
+Just to show like a proof of concept, almost.
+
+RichardSpencer  0:03  
+Yeah, I'm impressed that you Sorry. How's it, Kody?
+
+Darren Spencer  0:09  
+Don't be impressed yet. Maybe it's bad.
+
+RichardSpencer  0:14  
+Well, I'm not. I'm impressed that you're able to do anything without really talking to me.
+
+Kody Kendall  0:23  
+Darren's very, very helpful.
+
+Darren Spencer  0:26  
+Okay, we've been chatting as well,
+
+RichardSpencer  0:28  
+yeah, as well, because he's too expensive. I think all
+
+Darren Spencer  0:32  
+your documentation helped, Rick, that you had that chat with the other guys.
+
+RichardSpencer  0:36  
+Absolutely. Okay, those s4 people?
+
+Darren Spencer  0:41  
+Yeah, yeah.
+
+RichardSpencer  0:43  
+So just, okay, yeah, I don't know. I can't remember if I added in those link those link maps that I created and all that stuff. I don't know if any of that.
+
+Darren Spencer  0:53  
+Well, let's This is so just to go on those first four steps, it's basically receive the BOQ, upload it and kind of normalize it to be in RSB is kind of, you know, standard way so that it becomes easy to multi, so it becomes easy to multiply with the rate sheet. So at the moment, it's receiving the BOQ. It must be a CSV, receiving the BOQ like extracting all the information from the BOQ and placing the important information in a table that can be easily multiplied with the rate sheet to get the tender stuff, basically up to, up to number four on this list.
+
+Kody Kendall  1:29  
+Yeah, can you see that's okay? So, yeah. So looking,
+
+RichardSpencer  1:35  
+if you oh yeah, if you bring that, if you get that BOQ file, and it's a PDF, which is quite often the case. How do you manipulate that?
+
+Darren Spencer  1:43  
+At the moment, not designed for that. Kody and I were chatting about it the other day. A couple of options. One is there's potentially, like, a special AI thing we could potentially sign up to, but we don't know the cost, which is apparently pretty good at doing that, converting it from PDF to CSV. That's actually the main potential solution, but no solution right now.
+
+Kody Kendall  2:07  
+Okay, Richard, how often are you getting these BOQ and kind of running this process?
+
+RichardSpencer  2:14  
+I think we do on average. Yes, I told our IC guys the other day, I think we do about two a day. I was
+
+Darren Spencer  2:28  
+more like two a week.
+
+RichardSpencer  2:31  
+No, no, it's probably averages, probably averages out at about two a day. I'd guess that's great.
+
+Kody Kendall  2:36  
+Okay, okay, and this is more. Is this Maria that's doing all of this?
+
+RichardSpencer  2:42  
+No, this, no, so at the moment. So Maria is our buyer. She so she's not involved with that. She's our buying lady. Okay, if you want to zoom in there, let me see the material. So the material supply rates. That's the only portion that Maria does,
+
+Darren Spencer  3:02  
+who does receive
+
+RichardSpencer  3:03  
+the BOQ? So myself, or run will receive the BOQ. We then send it on to Demi and elmarie, yeah. Elmar is like our PA, okay,
+
+Darren Spencer  3:12  
+I think Denny would probably do this kind of thing, or Elmar.
+
+RichardSpencer  3:17  
+Elmar even sets it up, so like what Sheldon used to do where he used to set it up, and then it would get passed on to Demi, who's our quantity surveyor. And then she goes through line for line to make sure that the sort of whatever scenarios have been selected are correct, and the sort of whatever the allowances are put into the into the right spots. And then we tackle, tackle the last bit together and just sort of fine tune the rates,
+
+Darren Spencer  3:46  
+great, Kody, let's go through that little that for the demo, just to show Richard the process. Because also, you know, maybe we've slightly misunderstood, and things are not exact, you know. So it'll be good to go through that and check. So go for Kody, you take it away.
+
+Kody Kendall  3:59  
+So basically, we just have a little little fill that they put in a specific fact.
+
+Darren Spencer  4:05  
+Let's, let's grab a login page as well, which isn't super important, but, you know, so it's track, yes, by login. So this is obviously just for RSB,
+
+RichardSpencer  4:13  
+okay, so
+
+Kody Kendall  4:15  
+this is, so right here, there's like a sign in. So we can, we can create different user accounts. We could have one for you, for Ron, for Demi, for Emery. And then we can also set different I mean, we have one for Maria. We could set different permissions and things just so that they can only see certain parts of the app or enter certain parts of like, you know, one view might be read, only one might be just putting data in, etc. There's a lot of flexibility, you know,
+
+Darren Spencer  4:37  
+as you would understand, I'm sure, rich, but basically, like, only one person or two people can update the rates, not everybody can update the rates.
+
+RichardSpencer  4:43  
+Yes, yes, yes. So like Maria's as an example, her access would be limited to only updating supply rates, but she wouldn't be able to do anything else with exactly with the system. Yeah, that's perfect,
+
+Kody Kendall  4:57  
+very cool. But once they're signed in, then we just have this kind of BOQ. Let's do an actual example. These are some that I think were exchanged in the emails. Let's go BOQ examples. And the one we were looking at yesterday, Darren, was this?
+
+Darren Spencer  5:12  
+Yeah, I think that one.
+
+Kody Kendall  5:13  
+So this one, right? Yeah, this is one of them we so there's two different examples we had done. Then the process would be that you come in and you, oh, Darren, do you need to turn it
+
+Darren Spencer  5:24  
+into resolve that we solve that? That should work. Okay,
+
+Kody Kendall  5:27  
+yeah. So you come in, you download this. We're gonna download as a CSV, and from here we just go back to our interface. We basically put in this would be like BOQ. Let's do 1111, client name. Let's see what was this one, suzduki they received.
+
+Kody Kendall  5:53  
+Upload equal any additional notes, and if there's like, maybe specific information in the email whatever, here, you just adjust the header row to make sure that it's
+
+Darren Spencer  6:03  
+jumping. So basically, sometimes, you know, the BOQ guys put in a bit of information before the actual headings. You just need to update a rows number, just so that the proper headings are at the top.
+
+Kody Kendall  6:12  
+Okay, we have this prompt in here. Let me grab this out really quick. Yeah. And this
+
+Darren Spencer  6:19  
+is just to add some color here. This is the kind of thing that we would do a bit would do a bit more in an automated way for now, we've just got this kind of prompt that we it's basically like, a little bit like a conversation with chat GPT. But instead of the chat GPT interface, we hit the model directly with this, this other stuff you don't see here, but then also this message, and then the AI kind of figures out what needs to be done and with, with the processing to take it from the CSV file, basically the BOQ to this kind of table with just identifies all the most important items.
+
+Kody Kendall  6:55  
+I seem, to make sure that we have the right, the right ID in here. This is, so, yeah, this is a little bit, I mean, we spent, we've pushed on this to this very kind of quick prototype. So there's a little bit of things will make a little bit easier. Again, nine, yeah, for example, make this be like a little button that you would press. I didn't happen to copy and paste a whole prompting. Then this sends it to the AI. And the AI is going to take all the data from the actual CSV, and then it's basically going to parse it all out into like a standard kind of format. And then we'll give it the Go ahead, so we'll do a little check. It'll say, Hey, here's what we have. Here's what I found so far in the CSV. Here's all the items. And then from there, you basically just say, yes, that looks good. And then you'll see here in a minute, but it's going to parse them out into, like this very nice. This very nice kind of standard format, okay? And then from the standard format, we'll basically be able to either download it as another kind of spreadsheet that you could then input into a different thing. But as the system gets built out, we could actually have this automatically kind of calculate the like against the material rates and etc.
+
+RichardSpencer  8:03  
+Very nice.
+
+Kody Kendall  8:04  
+Yeah, so here's the, here's the kind of intermediary message. They found, 29 BOQ line items from the CSV. It's like seeing that we have still columns and beams that has, like the unit and tons, the quantity is all these. Then we just say, let's come down here and say yes. Please put these, or we'll just say yes, please proceed. And this is using heavy do you use chat GPT?
+
+RichardSpencer  8:26  
+Richard, I do. I do. Very cool. I do. I used a bit of chat GPT to try and actually upgrade our just our tender working document, the Excel document, of putting a bit of VBA in there and whatever, just from, from that. I think you guys have got that tender Excel sheet
+
+Darren Spencer  8:49  
+thing. I'm pretty sure we've got some of your tender excels, yeah, like, there's a few, actually, I think each per project is, it is a tender there. Let's see,
+
+RichardSpencer  8:56  
+oh yeah, and just see which of the What have we got? The Elmar we grab, yeah, I think that we buy cars. One is probably our it seems
+
+Kody Kendall  9:06  
+like ours. Let's see, I did see that one. I think it's, I didn't know 20 talking about,
+
+RichardSpencer  9:14  
+I saw it. I saw the one
+
+Kody Kendall  9:16  
+back. There's MLC.
+
+RichardSpencer  9:20  
+Just got there, 3e, 3801, bottom right, there's a little Excel, I think tender data. Ja, so at the moment, what would happen is we would paste everything in our tender data
+
+Darren Spencer  9:39  
+the second there. Kody,
+
+RichardSpencer  9:41  
+yeah, we'd paste it and then so all of these little things. So that little yellow drop down, and whatever I created to if you click on that, you can choose. So if you just click on one, you'll see you can choose a different section, bulks, blah, blah, blah. Those are different costing scenarios, and then that would change how the setup is on the costing sheet itself for those specific items. Okay, so you'll see there. If you go down that first one, now you see the little yellow there. It says steel sections. I think if you click and change it to bolts or whatever it should change doesn't maybe the macros are not enabled. It
+
+Darren Spencer  10:25  
+might be because it's on a Google Sheet, as opposed to,
+
+RichardSpencer  10:30  
+yeah, so in there we've got code, so then you should be able to change it, and then that whole little but, yeah, I use that for chat GPT. And now I think I use chat GPT like, maybe the way all the old people use it, which is almost like an advanced internet browser, yeah,
+
+Kody Kendall  10:49  
+access to someone like Darren 24/7
+
+Darren Spencer  10:55  
+anyway. So this is the process, and now, as you can see, it's got the output here, and it's isolated all the item numbers, all the descriptions by their category, at units and quantities. So then obviously the next so this, and this is kind of where the demo is kind of finished. It'll obviously do run the rest. I think it's still got a few more to go. But then the next step would be this multiplied by the rate sheet.
+
+RichardSpencer  11:21  
+Yes. One now, so, yeah, yeah. Now I
+
+Darren Spencer  11:26  
+was gonna just ask one question from my side is, let's say how? Let's say this 120 times 55, times 13.4 kilograms per meter channel column. Is there a in the rate sheet? Is there a one to one mapping for whatever could be in here to what is in there? Or, like, could you know if you said to chat, GPT, hey, here's what we've got. Find me something that looks as close to this as possible. Is that kind of what we would want? Or how is, how does that process happen in real life right now?
+
+RichardSpencer  11:55  
+So that okay? So if we look at that 120, 55, I can, I can show you on that other if you open up that other sheet of mine, I'll sort of show you what it would be. That other one we had for, we buy cars.
+
+Kody Kendall  12:10  
+Okay, we buy cars. Okay, the dinner sheet, yeah.
+
+RichardSpencer  12:15  
+So now, if you go into that rates page tab at the bottom there, and you scroll down a little bit. So what we would be doing that you see, the only real link is honestly, it doesn't even link the name. So we might have to update some of the names in those material supply rates. Because what we would do is PFC stands for parallel flange channel. So we we know that the material rate needs to come from there. And then we would obviously apply that. So if you're going to your costing sheet tab, and you see on the right hand side there, we've got material supply, PFC, blah, blah, blah. So there we would click one of those and say, Okay, maybe we want the the PFC, and then we'd make it 100% and the others are zero. And that's only because we know that that 150 by whatever channel is a PFC where you're there, yeah, you say, Yeah.
+
+Darren Spencer  13:19  
+Basically, we would need to from for the system, it would need to do one of two things, either it needs to be an exact match, or it needs to be relatively straightforward, well, relatively straightforward as a second option, like, you know, if it's a slight spelling difference, that's fine. Or we need to tell, or we need to tell. We could potentially do it with an with a prompt. Obviously, every time we do a prompt, it costs a few cents, so that obviously not ideal, but we could do to the prompt, but then we have to tell it how to think about mapping these things, and obviously, then there's more room for
+
+RichardSpencer  13:49  
+error on that. Yes, yeah. So I mean, so if in our in our library, if I can call all of our steel sections that we use, we've got pretty much like an Excel library of it, and I think maybe you could use that as a database for it to tie back and say, Okay, if, if it's this range, it falls under PFCs or local UBS or imported UBS or whatever. Yeah, there's an option to possibly do that, where it would then in your in your sheet, it will pick up that size because I think I don't have it on my saved. It's on my server. But there is a way where you could, where you could specify a range of items like that, 152 by 76 or whatever. And then that must maybe recognize that it forms part of the PFC sections or
+
+Darren Spencer  14:49  
+plates or whatever. 50 by 55 items go with material supply. PFC, sorry, yes, just to check so that, let's say you could say everything that's 150 by 25 is the same as a material supply PFC. It could be some kind of look up,
+
+RichardSpencer  15:03  
+something like that, yeah, yeah,
+
+Kody Kendall  15:08  
+rich, I'm curious.
+
+Darren Spencer  15:09  
+Thinking about, yeah, no, Kody, girlfriend.
+
+Kody Kendall  15:11  
+So in terms of just operationally, like, how, how, like your workers that you have in your office all that, like, what is, what is this like? How much time are you guys spending on these types of I know you said you're getting roughly two BOQ a day. I'm guessing the flow is a lot of kind of looking at one spreadsheet, moving data into the other one, you know, up making sure that the supply rates are updated. I know that's a once a month kind of deal. Like, how much time would you say your organization spending kind of just the nuts and bolts of trying to keep these spreadsheets all accurate and these checkers, yeah, yeah. Quite
+
+RichardSpencer  15:48  
+a bit, quite a bit. So I mean, if we take we've got our first step lady who's our who sets it all up. And I think setting up something like this would probably take her at least. Let's call it an hour per one, so an hour or two per day. Then it will go on to the Quantity Surveyor, and she will serve through it and sort of make the necessary changes to ensure it's all good. And that probably also takes her an hour per one per doc. And then we get into the fine tuning after so it's an hour, an hour, two hours, and then probably fine tuning another one or two hours. It could be overall man hours, three to four hours, depending on look. Obviously, not all tenders we pay like we you know, if we've got too much work, we don't spend a lot of time on each tender, then it'll be okay. Let's generate it, put in some generic rates, and submit it to the client. Then it's maybe the setup time is still an hour. And then step two, with the quantity survey, is maybe another hour, but then that would be it. So then shortest would probably be two hours of tender, two main hours, and longest could be four hours, five hours, depending on how, how much, how desperate we are for the work, and how much we want to fine tune it.
+
+Darren Spencer  17:09  
+And especially 40 or 40 a month, right? If it's two a day. So, yeah, like 8250 hours, ish,
+
+RichardSpencer  17:18  
+probably man hours, yeah. So I mean, 40 of those would come from from step one, another 40 from step two, that would be your So, minimum, 80 hours a month.
+
+Kody Kendall  17:28  
+Okay, okay, maybe Okay. So what's rule of thumb? We could say roughly 80 hours, maybe 100 it just kind of depends how many tenders you're putting out. How many people each tender is a little bit unique. There's little hang ups and things,
+
+RichardSpencer  17:39  
+yeah, there's little things here in there. So 8200
+
+Kody Kendall  17:43  
+hours, and then your staff, I know that you and, I think you said you and RON are Ruan are kind of in this mix a little bit, maybe more in the fine tuning stage.
+
+RichardSpencer  17:51  
+Yes, we in the last step. Yeah. Okay.
+
+Kody Kendall  17:54  
+And so I know it's hard to, like clump or kind of estimate an exact kind of hourly rate, especially if, if you and Ruan are like, how much, how much would you say approximately per hour? You would you can maybe say, you know, do this as like, how much you bill a client per hour. Or you could say what you're paying your, you know, maybe the your first two workers, like hourly, but trying to get, like, $1 amount of how much it's costing you.
+
+RichardSpencer  18:19  
+So our first step, Lady costs, what is her Cere? Let's say it's, I don't know. Let's say 30, 30,000 a month, divided by 106 72 hours on 70 hours a month. 176 that's Rand. So I don't know what. What's the RAND? Dollar, $10
+
+Darren Spencer  18:48  
+an hour, about,
+
+RichardSpencer  18:51  
+okay, also, that's elmarie. And then Demi is costing us 85,000 divided by the 172, 495, ran about 20,
+
+Darren Spencer  19:03  
+$23 a month, $23 an hour, I would guess
+
+Kody Kendall  19:07  
+for Demi. Yeah.
+
+RichardSpencer  19:08  
+Is that for Demi?
+
+Darren Spencer  19:09  
+Yeah? Because I mean, 32 30,000 to 85 is it, you know, X, about two and a half times. So if the first one's on 10, then she's probably 25 ish,
+
+RichardSpencer  19:19  
+Okay, makes sense? Okay, okay, and then
+
+Kody Kendall  19:26  
+you're worth a lot of money, man, you're already more than theirs.
+
+RichardSpencer  19:30  
+I wish it's probably like 2700 ish an hours. I don't know what that is, in dollars,
+
+Darren Spencer  19:40  
+100 and 40.
+
+RichardSpencer  19:46  
+Yeah, so and I mean, we would probably spend, between the two of us, probably not more than
+
+RichardSpencer  20:04  
+a six to eight hours on it in a month. A lot of the time I'll go to Demi and say, Okay, open it up for me. Let me see okay, this, I'm not happy with change this. Change that changes, and that will take like, 30 minutes, and then I'll walk away.
+
+Kody Kendall  20:19  
+Okay, makes sense. So if we're doing roughly, if everyone's equal, sorry, go for
+
+Darren Spencer  20:24  
+it. Darren, some kind of, you know, when you're talking to other clients, yeah, definitely talk about the man hours, because of the rates not being, you know, quite the same as it would be in the US.
+
+RichardSpencer  20:37  
+Yeah, the rates, I'm sure, are very different in the US. To that get to get to us equivalents,
+
+Darren Spencer  20:40  
+you're probably going to times by about two and a half. To times by about two and a half. Yeah.
+
+Kody Kendall  20:44  
+Okay, sure makes sense.
+
+Darren Spencer  20:46  
+Because, I mean, minimum wage in most US states, legit is probably about $20 an hour, which is what Marie would be on. So if
+
+Kody Kendall  20:55  
+we, if we did a bit more, if we did just rich and Ruan, your your your guys's time. Because if we do roughly 1/3 let's say everyone's about 1/3 of the time of the 80 hours, and that's about 26 hours. And then if you're, if you're, well, I don't know if you
+
+Darren Spencer  21:09  
+heard Kody Richard said that they Richard and Ruan probably spend six to eight hours a month total combined on the Oh, I see.
+
+Kody Kendall  21:15  
+So not 1/3 of, okay, okay, okay. So this is, this is definitely not, you know, little bit of, you know, envelope calculation
+
+Darren Spencer  21:24  
+for a case study. You might as well call it a third. Yeah,
+
+Kody Kendall  21:27  
+right, right, right.
+
+Darren Spencer  21:28  
+No one's gonna be asking you if they're spending six hours.
+
+Kody Kendall  21:32  
+This would be, let's say this for or Demie so 614, roughly. Okay,
+
+Darren Spencer  21:46  
+Kody, while you're doing that, Richard, on the rates sheet, stuff, how would what would be the best like just thinking about what's the easiest way to get some kind of, you know, look up table or library or something that just can make that step to convert it from, you know, just identifying the cool rates multiplied by the rate sheet. Like, how could we speak to Demie for that?
+
+RichardSpencer  22:11  
+Sorry, just explain that. Just explain that one to me
+
+Darren Spencer  22:14  
+again, sort of like 1/5 remember those beams that we looked at? The 150 Yes,
+
+RichardSpencer  22:19  
+yes, yes, yes, knowing
+
+Darren Spencer  22:20  
+that that's material supply. PFC,
+
+RichardSpencer  22:22  
+yes, where,
+
+Darren Spencer  22:24  
+how can you Is there a way we can codify that knowledge that says, you know this? This is the rule that says, if you see a 150 times 22 it must be material supply. PFC, yeah,
+
+RichardSpencer  22:39  
+that would be sort of So, Channel, Channel, the word channel would shit, you see, you get some things that are Lipped channels, but channel would normally like the SHS. I'm just looking at what we've got specifically on this one. SHS is pretty easy to tie back that we've got as hollow sections. So like that code would be fine, I section or H section. There you see your item, four, it's got 2541, 4631, I section. So I section could be tied back. IPE could be tied back. There you see Item six says PFC. So that links directly to our like PFC forms with PFC got you
+
+Darren Spencer  23:31  
+maybe, maybe one thing Rish, what I'm just thinking about now is what could potentially work is if we gave the if we said to the AI model, listen. Here's an example from a previous or three previous tenders. This was the description that was given in the BOQ. This was what we mapped it to, like, use similar logic when you're looking up these new ones. So, you know, this 120 times 55, times 13.4 is in the current tender document that we were looking at the we buy cars. One is that somehow linked, you know, is there a link that shows that is linked with this somewhere? Yes, if you would, where would that be?
+
+RichardSpencer  24:12  
+Well, this, you mean, if you open, if you open that tender that you've got there, but that's not, you mean, would it be able to learn from it and say, Okay, in this tender, we've allocated it to this and our all future tenders you allocate to the same
+
+Darren Spencer  24:30  
+subjects, kind of, yep. So basically, we would, I mean, if, ideally, we give it, you know, 310, three boqs and three, and mapped to three different three tenders. So it's got a lot of, you know, like examples. And then we say, what would you do with this 120 times 55 PFC thing? And it's, it goes and looks at the table before, and it says, oh, in the past, there were four times that there was this 120 times 55 PFC, and every time it was linked to this, so therefore I must link it to this. That's kind of the how it would work, okay? So, just Yeah. So in the in this one, where is it? Is there some kind of place that says, okay, because the BOQ asked for 120 times 55 we did this just so that we can have some kind of, is there some kind of one to one table mapping?
+
+RichardSpencer  25:22  
+No, we'd have to know, okay, what,
+
+Kody Kendall  25:29  
+what we might be able to do Darren, is we could maybe, if we had some sort of BOQ and rate supplier sheet, we could maybe do some sort of like loom video, where either rich or Ruan or someone at the company goes through and starts, like, basically just recording themselves, talking about, here's why we map this to this, here's why we map this to this, this to this. And yes, and also, in the large language, models are pretty smart. Like, they're pretty shockingly, like, they have a lot of they
+
+Darren Spencer  25:57  
+just know, yeah,
+
+Kody Kendall  25:58  
+sometimes they just know. And so like, and then probably what we could do is just start building up a set of kind of transcriptions, and then we can kind of like, give it to the AI to kind of parse it out, and start kind of creating those mappings and different things. But you would still maybe want to have someone double check it, at least in the early days, right? And then Richard, maybe, if you guys are checking it and you notice things, then you could do another like, voice recording. Hey, this actually maps to this, like, basically, we just have to find a way to, like, get all the information of, like, the exact, you know, real world mappings. But then again, the LLM might be able to go get quite far even without that stuff.
+
+Darren Spencer  26:37  
+Rish, so just
+
+RichardSpencer  26:41  
+in the in that kind of thing. I mean, we, I'd be happy to do that kind of recording if you open with one of those, if you open that we buy cars on I'll just show you the kind of, the kind of talking. So if you go into that rates page, there you are, and you just scroll a little bit up, you'll see there. So you'll see on the right hand side there, there's that little window. You're pretty much there by your cursor the weather with the ones and the zeros. And that's the kind of thing. Fabrication included over it's included is primer, is this, is that, and that kind of stuff. We would look at the BOQ and say, Okay, our bolts measured separately, yes or no. Is this measured separately? Yes or no? And then that will determine the one where we put the ones in the zeros. And then that little those ones and zeros again, just pull back to that costing sheet in each little breakdown. So, so if you click on the cost here, you'll see that the 1100111000, if you click on the costing sheet, you'll see that the ones and the zeros on the left there are underneath there, you see the that matches. So a lot of that, that kind of thing, we look at the bill and say, okay, is this there is this? There is this there? Yes, no, yes, no, okay, let me put 101010 okay. And then pretty much the general format will that breakdown will remain the same for 85% of the BOQ got you,
+
+Darren Spencer  28:13  
+but it might change on some some of them, maybe they do fabrication included somewhere and not somewhere else.
+
+RichardSpencer  28:19  
+Correct, correct. So, like with Lipped channels, you would then manually go and remove it or whatever. Sorry, could
+
+Darren Spencer  28:26  
+you just go back to the other one, the costing sheet? So Rico this, this row 35 to row 49 this, these I section columns. Where is that in the BOQ? Is that one item that says I section columns. T 10,
+
+RichardSpencer  28:42  
+your so that when you
+
+Darren Spencer  28:44  
+build this table based on that information,
+
+RichardSpencer  28:46  
+yes, yes. So in this, in the we buy cars bill, they had called it I section columns. But in that other bill that you guys had pulled into your, into your I don't know what to call it Mapping System, or you'll see there it says on Item four, I section beam. So sometimes I call it, I section column. Sometimes they call it, yeah.
+
+Darren Spencer  29:10  
+You could figure that out. That's fine. I think
+
+RichardSpencer  29:12  
+that would not be very difficult for that to so you see, there's one Yeah, and then for that specific kind now that would tie back to our local UBS and UCs, because there's a certain product range that's local, and then a certain product range which is imported, which I have an Excel document off. So I could give you that and say these, this range falls into this sort of material supply. This range falls into that one, and this falls into that one.
+
+Darren Spencer  29:43  
+But so, just to make just to make sure I'm understanding. So each of these items in the BOQ gets its own little table in that in the we buy in an equivalent of the document.
+
+RichardSpencer  29:54  
+Yes, each line that you're looking at here, each item has its own little breakdown on the left and the right.
+
+Darren Spencer  30:00  
+Got it just go back there. Please. Got it one sheet, right? Yeah. Okay. So that first row, let's say, comes to here, and then we've got, is it? Are these things included, which often lead from that main sheet, but not always. Sometimes they just interface things, total amount, and then on the right hand side that you just add, this kind of are these percents pretty stable. The 7.5 7.5 10 zero, 12.5
+
+RichardSpencer  30:24  
+those wastage percentages are pretty stable. We would, if you really wanted to, we would just change it on the rates page, the the wastage, that's just our material wastage allowance, the percentage that you see there, the 85 000, and the 15 that stems from a question that we'd look at the bill and say, okay, are plates measured separately in this bill? If yes, then that plate that you've got there is 15% would actually land up being a zero so, and on mining work and on, you know, it would that material build up. Would change, okay? Percentages would change.
+
+Darren Spencer  31:07  
+Yeah, in my mind, it's, in my mind, it's a little bit similar to Column D, where you're choosing ones and zeros, right? It's like, if it's if the information is found in the BOQ, then give it a one or give it a fifth, and these certain rules are met, then give it a one or give it a 15% or whatever the case may be, and
+
+RichardSpencer  31:24  
+yeah, and if the rules are not met, go red or something, then you can easily just make our own little like, if it says, I think if you go to your there should be something here which is called trusses. Well, you just go to page one that we just, I just wanted to show you, and then just slow down. So they what is that item six? So if you go in the costing sheet to item six, then I'll show you, we've probably got a slightly different if you scroll down, okay, now that one is the same, go is good. Just Okay, I'll go one down to seven. So now go to the material allowance on the right, the breakdown, so you'll see now, in this case, it's got a 65 and then a 20 and then a 15. And that's based on the drawings that we've looked at. And sort of decided, okay, of these members in the in the building, we need to slightly change the material breakup, because there's some of these angles, some of those angles, and then plates. So every now and then that breakdown will vary depending on what we see in the drawing or whatever we know from sort of historic knowledge. Will just adjust that little so, I mean, that could be a rule where now this thing will come up as read, because there isn't actually a rule that it ties to, and it will require a bit of thinking, which is, like, very basic. It's not, yeah,
+
+Darren Spencer  32:52  
+I think in the ideal world, you give the LLM a whole bunch of rules, and it can probably give you a pretty good job, probably make, potentially, you know, as accurate or more accurate than a post, like than a Demie or a Maria or whatever. But it will take time, because there's a lot of different rules, and there's a lot of different things that it could be,
+
+RichardSpencer  33:10  
+and every structural engineer designs slightly differently. So, yeah, sometimes, sometimes it's a bit of a moving, moving target.
+
+Darren Spencer  33:21  
+Yeah, cool. Okay, brilliant. That's now I've got a very good understanding. Thanks. That was awful. Cool.
+
+Kody Kendall  33:27  
+Yeah, probably, probably the stuff with with you Rish and with Ruan, that's like the last stuff that we'd be able to because I'm guessing you're the ones looking at the actual drawings, the actual more kind of but you know, for Marie and Demie, that might be some of the initial stuff that's a little bit easier to kind of make it simpler, make it faster, correct?
+
+RichardSpencer  33:47  
+And I'm from their side, they will just sort of put in, like generic things there for those kinds of breakdowns. They'll look at whatever's historic and just plug it in. And if we're really keen for the work, then we'll go in and say, Okay, let's have a look at that breakdown. Let's check that one. Those are the kinds of things we'll look at. Is what material has been allowed. Because if we're doing a generic price, I mean, the economy is so shit, if we just add like, a two and a half percent to our pricing, then you know you're not going to win it. So, I mean, you would, you'd put in a generic thing at two and a half percent and send it off, and you you'd have no chance of winning the work
+
+Darren Spencer  34:30  
+if you want to be sharp on the price, then you go through it manually and takes if we
+
+RichardSpencer  34:34  
+want to be sharp, then we go in there and we fine tune it. And because the material supply prices can vary drastically, and that can be the make or break.
+
+Darren Spencer  34:48  
+One actually one last thing, reach the those things in column K do they? Are they the same for every single item? Or do they change?
+
+RichardSpencer  34:57  
+They will change. So if you click on the drop down box there on any of them, you'll see it gives you a whole bunch of options, which obviously reads from the rates page. Yeah, that will change
+
+Darren Spencer  35:11  
+on which.
+
+RichardSpencer  35:15  
+So if you that, okay, so that if you look at your other, your other one that you had, which is just more simply. Well, we can just go to page one. I can suppose I can just show you on page one, because it's pretty simplified in there, so the cold form Lipped channels the item nine or row 27 that we'll know. Okay, we got to choose from the rates PAG, you got to choose the pre galvanized Lipped channel right which you then go into the casting sheet, click it and manually select that. You click over there on one of those drop downs, and you say you scroll down to is the CFLC METEC or Metsec alternative, the CFLC pre Galv says, and that. And then you would, that's what it would come up as, and then it would spit out the material. You'd make it 100% and the other zero, although, in theory, it'll start at zero, but then you'd make that 100 and it'll pull through. That's also looking at it. Okay, this is what it is. That's the breakdown. But I said there you could definitely set rules. Okay, that's, that's just ja and each, each. That's part of the initial setup that elmarie would do.
+
+Darren Spencer  36:38  
+Yeah, just to check that page one is that is that basically an identical copy of the from the items in the BOQ,
+
+RichardSpencer  36:47  
+pretty much not 100% identical, because the shop drawings at the top there, row 14 and row just above it, row 12, yeah, those we normally play with, but The rest of it should match the BOQ that we've received with its sort of breakdown. And this page one we land up saving as a PDF, and that gets sent off to the client.
+
+Darren Spencer  37:11  
+Got it? Okay? Yeah, I was just thinking a kind of easy win, is that it we translate our, you know, that little program that comes with the output from the BOQ, and we just, we could put it here on a page like this. So, you know, the structure is already there in place.
+
+RichardSpencer  37:25  
+Yeah, that that that is exactly that that needs to talk back, because they send us this. So everything, besides those two that you've got highlighted in in blue there, all the rest, needs to tie up with what they've sent. We maybe just shorten the description so that it fits in the in that sort of column width, yeah, but, but the rest of it data must go, yeah, brilliant.
+
+Darren Spencer  37:51  
+I was just thinking, you know, that saves Marie or Demie five minutes of their time every time, because it could be potentially like in this format already in a CSV, as just an easy win. I was just thinking about that. Okay, cool,
+
+RichardSpencer  38:02  
+yeah, so I think so. So the way our process works currently on this document, you've got here, in that tender data sheet or tab, we would copy and paste whatever onto there, and then those descriptions, whatever you've got in that tender data line for line description pull through to the costing sheet. So once you paste it, if you'll just click on the Kody on that tender Data tab at the bottom, yeah. So that I section columns. So we copy and paste there's all the descriptions that the unit, the core, the quantity, yeah. And then on the right, we select what kind of a breakdown we'd like. Would we like it to be chemical anchors or steel sections or blah, blah, blah, yeah. And then that builds the little breakdown in the costing Sheeet tab, yeah. That translates to that you see steel section, steel section, or chemical anchor or whatever.
+
+Darren Spencer  38:58  
+And I think we could kind of do that as well, because it's given, it gives those headings right on each BOQ. So we as as already stepped in those sections, we would just have to match the sections to these sections,
+
+RichardSpencer  39:08  
+yeah, and then that, and then those lines are linked to page one. So in theory, once you've pasted it intender data it should
+
+Darren Spencer  39:20  
+carry, it's going to be here some
+
+RichardSpencer  39:22  
+kind of form. Format, yeah, yeah,
+
+Darren Spencer  39:23  
+understood, okay, cool,
+
+RichardSpencer  39:29  
+yeah. So this, this, there's a lot of moving things, and it's like getting this right. But then, you know, in our big scheme of things, once this thing is right, everything pulls from here, our budgets and our everything comes from what we've allowed in this document.
+
+Darren Spencer  39:46  
+Yeah, yeah, okay, sweet, thanks. That was helpful.
+
+RichardSpencer  39:53  
+I hope so sorry. I know it's all super new to you guys.
+
+Darren Spencer  39:59  
+It's experts.
+
+RichardSpencer  40:01  
+I can talk to you guys about it all day, because it's
+
+Darren Spencer  40:05  
+what you do all day.
+
+Unknown Speaker  40:06  
+Job, flip.
+
+Kody Kendall  40:08  
+So Darren, so we can, we can kind of make a game plan. It sounds like, it sounds like this, yeah, this tender data sheets, very key input. And then seems there's, you know, setting these. And so there's, I mean, there's I mean, there's definitely some translation, though, because, or I guess this is a question for you Rish, like, there is a little bit of, is it always as simple as just copy and pasting, or are they having to very carefully? I mean, obviously, if it's a pF, it's a PDF, they can't copy and paste, but that's the thing I see, okay, and you've got
+
+RichardSpencer  40:38  
+to type it. And that then becomes a little bit more time consuming. I suppose they could copy the text from the PDF and paste, copy just this description, and then the quantity and then, but just that, and does happen, I don't even know. I don't even I haven't even asked. I don't really care, as long as it gets done. But some
+
+Darren Spencer  40:57  
+PDFs, they don't even allow you to copy, so you have to type it in, but yeah, depends on the PDF.
+
+RichardSpencer  41:01  
+Yeah, yeah, yeah.
+
+Kody Kendall  41:04  
+And they're trained to know what sections to select, like Marie, and I think it's me right memory, Demie,
+
+RichardSpencer  41:13  
+it's elmarie. Elmarie is the first lady.
+
+Darren Spencer  41:18  
+But Kody, I would, I would guess, like with steel sections that you know when we if you go back to our the demo, to the page, it's got the steel columns and beams. And I think an LLM could quite easily link steel columns and beams to steel
+
+RichardSpencer  41:31  
+sections, yeah. And look there you see your item. So item eight, nine and 10. It says the chemical anchors, yeah. That would obviously then read to our breakdown for a chemical anchor.
+
+Kody Kendall  41:45  
+Okay, that makes sense, yeah, because these, and so these really seem to be because these are, oh, I guess, I mean, probably mapping exactly what, because I know there's, like, like, probably any drop downs in the spreadsheet, like we could map those into, because there's, I know there's, there's those drop downs we're just looking at, and then there's, yeah, these ones right here. Yeah, here, I guess these are Yeah. These are the material sheath input prices. So these labels, though, these specific sections, these are stable across like, this is kind of your standardized way, or, I guess your supplier. So these are pretty stable. These don't change. Okay, so those are super important. We can kind of build into it. These are super important. These don't change either. I'm guessing
+
+RichardSpencer  42:25  
+they don't. They don't really change either.
+
+Kody Kendall  42:29  
+There's this waste, though, and you said this waste does sometimes change.
+
+RichardSpencer  42:33  
+Yeah, the waste each factor, every now and then will change, but very, very seldomly, we've tried to build the way we do it to sort of suit our system, which I suppose, if our system could be upgraded, we wouldn't need to really work around, sort of change the way we do it to just keep it inside this little box. Okay,
+
+Kody Kendall  42:56  
+yeah, but
+
+RichardSpencer  42:57  
+where we are now we've we built everything to fit within that, okay?
+
+Kody Kendall  43:06  
+And we have let me see you're looking at the material supply rates. So those drop those and are these? Are these? The actual drop does this? Is this? What populates the drop down?
+
+RichardSpencer  43:15  
+Correct? So our drop down reads from that range. And then if, if, obviously, you select whatever unequal angles that very top one, then it will carry over the next cell, which is the 7.5 and it will carry over that. Okay.
+
+Kody Kendall  43:31  
+And these are, okay, very cool. Okay, yeah, no, I'm seeing the, seeing how we can fit this all together. But yeah, Darren, let's and then, yeah, these, okay, yeah. So what we'll, we'll kind of think through some stuff and make a game plan. I know the other company had, like, I mean, they were, like, this big dev shop kind of thing. It was funny looking at their process, because, I mean, they seemed like a pretty, I mean, yeah, just a lot of moving parts in the company. But what was like, what was kind of the thing that led you to wanting to try and streamline some of this is just kind of the repeated friction and, like, is it, were there any particular event, or is it just kind of, you know, you're kind of, like, we've grown to the point where it's just a matter of time, like we just need to get a better system in place.
+
+RichardSpencer  44:14  
+Are we it's to eliminate a bit of human error. And I think the big thing is to be able to have something that would carry through from from this into the rest. So once this setup, once this 10 days, is there, that's like the brain, we could call it, or the heart, or whatever, for when we start the next phase, which would be actually doing the work, producing claims, and then from that, tracking budgets that are because, I mean, all of this stuff will relate back to a budget and an allowance to carry out the project, whether it be in the workshop or on site, with with the mobile cranes and the labor and all that kind of stuff. So it's to, it was to try and get that into a database so that we don't have to then, or so that we then can draw from that knowledge in phase 2345, of the of the business, because otherwise it becomes a thing for me where I must, now we get awarded the project. Then I need to sit down with the project managers, and I need to say, Okay, this is your budget based on this, this and this way, ideally, the information you would just generate a budget from what you've already plugged in here, and then once they're spending the money on site, I'd have to go back and track the budget. We based on the quantities that the quantity surveyor is claiming, but that's now all further down the line, but it's all linked to the information that's put in here. So it's just to try and get a central system for the whole company.
+
+Kody Kendall  45:56  
+Oh, you can, you can take off on vacation, right? And everything doesn't grind to a halt.
+
+RichardSpencer  46:02  
+You well, so that I don't have to spend the hours, so the hour I don't spend the big hours on, maybe necessarily setting up the tender, but it's all the tracking afterwards, once we've successfully been awarded, which comes from the tender and the next. But all I mean this is, this is where it all comes from, and also drink, I would add something else,
+
+Darren Spencer  46:24  
+Reg, and maybe let me know if I'm wrong. But Kody, just to give you a bit of context. So my grandfather started this company, RSB, like, you know, 40 years ago, whenever it was, and then my brother had been working. And, you know, it started out as a very small company, just my grandfather and then they, you know, took over. A couple of things. Grew. It grew it grew it. And it was, you know, like 50 people. And then my brother took over, and that was, you know, let's say, 10 years ago, and he's now built it to, like 150 people. But the So, there's been, like, a bit of, a bit of an, like, a increase in growth. And, you know, these, these processes that have been in place. Excel was around 20 years ago, and people were using Excel and like, Wow, that's amazing. We're using Excel, but then, oh, let's use another Excel. Let's use another Excel that use another Excel. And so now we've got, you know, budget Excel and some programming on the finance software side, but still a lot of Excel stuff. And now it's like, flip this Excel stuff takes up so much time. And let's unify this one process, which is super important, and it would be great to have one source of truth for everything and track everything, and that is like the core, as the heart or the mind of the business that kind of flows out into everything else. So let's fix the core of this, and then, you know, hopefully the rest is also better off, save time, save money, eliminate human error. That would also be That's exactly it.
+
+RichardSpencer  47:41  
+And having so many different sheets, and I'll show you when we have another chat in my budget tracking, you've got this whole Excel sheet. So we've got one Excel for the for the tender, then we got another Excel for the claim, which, every month gets updated, so it becomes claim one is one Excel sheet. In claim two is an updated version of claim one, but it's a separate file saved in a separate location, and then that you can have 20 of those. And then you've got a budget tracker, which is another sheet, and then you've got a plant tracker. It's that's all. That's the thing. That's just so many different sheets and documents, which it would just be nice if it was one database, and, you know, it's all sort of just saved together.
+
+Kody Kendall  48:28  
+Okay, very cool. That's super helpful. Thank you for that, that context and everything, and and I am curious to the one company they came back with the like, and, you know, they're kind of running a little bit of an older business model, a little bit of an older paradigm with how they develop software, and it's very human heavy, and even some of the tech they were using is a little bit, you know, very Microsoft heavy kind of SQL, SQL Server stuff. But I'm curious what kind of led to you not wanting to go through with the plan as it was kind of estimated. And, you know, I know they had a big requirement sheet, and they've given you, like a quote, but what was kind of the deciding factor with you when you didn't decide to move forward on that.
+
+RichardSpencer  49:03  
+So there were a couple of things. One of the things was the the price was astronomical, so that that sort of nice, it was like 20,000
+
+Kody Kendall  49:16  
+US dollars. Or would the
+
+RichardSpencer  49:18  
+there's different there's different modules. So I'd have to be because my partner, Ruan, he's also got a module that he wants to build, which, yeah, but then we also, at the same time, landed up wanting to buy out and kicking out one of our business partners. So that also actually just drew away from we, I think we were super far advanced, and we were at a point we were going to say, okay, shit, this might just be the best thing to do. But then, yeah, things got a bit complicated. So we that all went on hold. What date, just for interest sake, what date was this? What was the date of this mail that came from these guys or or the date of their document, I believe
+
+Kody Kendall  50:05  
+is in the summer. I think it was June, either June or July. I have to go find the exact find it.
+
+RichardSpencer  50:13  
+We, we told our business partner the third oak on the first of August, that we've had enough. So I don't know what the date was of this?
+
+Kody Kendall  50:21  
+Yeah, it was very emails are
+
+Darren Spencer  50:23  
+from June. Good, good day. Edward, in June, end of June, yeah,
+
+RichardSpencer  50:28  
+just like, in a month. So we were still back and forthing, and then that was just nah. So, yeah, that also, that also stunted it, and that's cost us a bit of money. Yeah. So one
+
+Darren Spencer  50:41  
+of the, one of the potential problems, so Kody, obviously price the biggest one. But also, like, who's going to take quite a lot of time and hand holding with these guys sort of, you know that they didn't really have,
+
+RichardSpencer  50:54  
+yeah, and, I mean, look for myself and Ruan to get to the end goal and the big scheme of things, and the bigger picture to spend the time and get it done right is, you know, that's fine. That's, yeah, timing and costing was a bit of, a bit of an issue at that point.
+
+Kody Kendall  51:15  
+Yeah, very cool. That's very, very helpful. Well, cool. I really think that there's, I mean, we're kind of starting to get in the foundational parts, you know, pulling in this data's super essential. We need to, like, we'll create the kind of the mappings, I guess, of the things that don't change. So like, that column G's see this column G, we could, like, automatically, kind of set this. We'll play around. The first step might be just doing, like, some sort of, like, copy format, where they can literally formats it in these exact same thing. So it's as simple as a copy and paste, and then from there we can start pulling in, like, the material supply rates, because these don't change as well. So we could maybe have something that can have these in the database. We have these be fields that are, you know, basically input fields that, I think you said, Well, yeah, whoever needs to, they go in, they just have access, just to, you know, putting in these specific values. And then from there, maybe we, like, have another format that can kind of be copied, and you can, like, paste in, I'm not exactly, I mean, once we get to that stage, there'll be probably a little bit of, you know, back and forth and discussion and stuff. But like, just, if we just get these little wins, and we can kind of get this initial process in, even, like, I know, in the quote that they've given you originally, I was like, reading through some of it, and they basically said, you know, a human is going to have to enter in all of this data manually every time. And so even even with that, though, I know that's like work, but having it in that kind of central database structure, you can still start to, like, even if that was the case, which you know, if it's, if it's a PDF, that probably will be the case for a minute. But if it's like a an Excel sheet, we can automate that a little bit better. But even if that is, how does it first, you still do get that benefit of having it in this kind of truth, database structure, and then from there, like kind of just that's like our foothold, like our little, our little wedge that we can start to build on from there. So how does all that sound to you?
+
+RichardSpencer  53:12  
+Yeah, that sounds very cool. And I mean, like that, that material rates, or material supply rate, kind of piece just on its own. So where every month that Maria updates that stuff, you know, then just the fact that you don't have to go back and make sure that you're working to the latest rates that it will read from. If we November, it will read she can update the November rates. And if you then setting up a 10 day in November, all those rates are already the correct and current rates, you don't have to go back and double check and make sure that that's sort of correct. And whatever that would be, that's already just, you know, eliminates a bit of human error,
+
+Kody Kendall  53:55  
+sweet like, that'll probably, that'll probably be our next step is the material race, material rates. And then this section, G making sure that we have these mapping to the right, like, making sure that we can easily copy and paste, get this stuff in here. And then also, yeah, making sure material rates are, like, have a little place where they can update those monthly. And then kind of just expanding from there. And then me and Darren. I'm sure we'll talk Darren and see, see what you think, as well, makes sense, like some of the next steps,
+
+Darren Spencer  54:21  
+yeah, for sure. You can even chat a bit off to college, yeah, for sure.
+
+RichardSpencer  54:26  
+Cool, if you guys want to chat to me most
+
+Darren Spencer  54:29  
+of the time.
+
+Kody Kendall  54:32  
+Oh yeah, WhatsApp, yeah, that sounds good.
+
+RichardSpencer  54:36  
+And I mean, like I say you guys, when you guys are available, I'm already done working, so I'll be available to chat if you need a jet.
+
+Kody Kendall  54:44  
+Okay, very cool. Um, Rich. Do you have any questions or thoughts for for me,
+
+RichardSpencer  54:52  
+I don't think so. I think I might have overloaded you with some information already.
+
+Kody Kendall  54:56  
+No, that's why we have our AI note takers too, right? And I've got, we got Darren here and but also so I, I mean, I don't, I don't have experience with the steel industry, but my background is, I grew up with my dad. He was running a furnace and air conditioning repair and replacement company, so it was more residential, small scale. But definitely we have, you know, I built software for him, and we did have, like, supplier prices that we'd have to pull in to create quotes. And these were smaller scale quotes. You're a lot more kind of this is more large scale quotes. But Sheaths like this isn't, isn't completely novel to me, although each person sheet is usually unique and different and takes a lot of training. And I'm sure when you lose an employee or for whatever reason, it's very painful, right? Got to retrain them on all sorts of, yeah, the
+
+RichardSpencer  55:41  
+training is a flip. And that's, oh yeah. Training is the worst part. We put spend so much time into training someone and then they go, and then you have to, know, retrain someone new. That's a flipping nightmare,
+
+Kody Kendall  55:55  
+yeah? And that's, that's where software can be really nice, because even though there's still some training with, like, software type stuff, it's still usually, you know, 10% of what it is when it's like the spreadsheets and every specific cell has to be very like, meticulously worked out. And so I'm pretty confident we can find some stuff to alleviate some some pain and get some quick wins, and then kind of build from there.
+
+RichardSpencer  56:20  
+So now that'd be great. Kody, really, it's been something I've wanted to do for ages. Of I mean, I've gone to the extent of spending, I don't know how long it took me, probably two or three weeks to try and do those little VBA things with chat GPT, just to try and get the sheet to save us a little bit of time. But yeah, it's can't. Unfortunately, can't spend that kind of time anymore doing it.
+
+Kody Kendall  56:48  
+Yeah, it makes sense. It makes sense, okay, but
+
+RichardSpencer  56:52  
+it's something we'd really like to have done. Yeah,
+
+Kody Kendall  56:55  
+cool. Well, I'm excited. Let's keep let's keep the conversations going, and we'll keep making progress and keeping you updated as we go, and I'm sure we'll have tons of questions. Yeah, cool.
+
+Darren Spencer  57:06  
+Enjoy dinner that side.
+
+RichardSpencer  57:09  
+Okay, boys, yeah, I enjoy hopefully
+
+Darren Spencer  57:11  
+Nicole made something nice.
+
+RichardSpencer  57:14  
+I hope so too. All right, James, have a good evening for you guys. Yeah. Cheers, man, you too. Bye.
+
+Darren Spencer  57:31  
+It doesn't have
+
+Kody Kendall  57:33  
+to leave all answer note takers. Our note takers have a clean break, and then Darren, we can jump back on. Okay,
+
+RichardSpencer  57:39  
+cool. All right. Cheers, just see you.
+
+Transcribed by https://otter.ai
+https://otter.ai/u/YDkR7R0tl8x9J2IB45jhrWX4pLw?tab=chat&view=transcript

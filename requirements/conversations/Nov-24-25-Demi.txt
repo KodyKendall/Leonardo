@@ -1,0 +1,584 @@
+Darren Spencer  0:00  
+Yeah, that's one potential, one option, or, you know, worst case, we can delete them or something. But I think we there'll be solutions for that. But that's good to know as a potential
+
+Demi Swanepoel  0:08  
+problem, is there also an option while we tendering, we normally phone the suppliers, especially for the cflcs, for their prices, and say, Listen, here is 800 tons of CFL sees will give you this order, but give us a better price, so we will be able to to manually type in the within the negotiated rate, if it makes sense,
+
+Darren Spencer  0:33  
+definitely. Yeah. Each item will look it will be quite similar to the costing sheet. At the moment, to look, we'll try and make it, you know, similar, so it's not too different. Of a process. But in there you'll be able to type in, you know, I want to change the material supply, CFL, see pre Gulf, from 20,000 to 19,000 you just manually put in 19,000 Yeah. So that will be the that's totally fine, yeah. We want to make it quite flexible, you know. So there's some edits. It almost anything can be edited, if, if it needs to, because that's how it kind of works. Seems like everything can be edited. Yeah, okay, maybe Demi, maybe go back to the process you were saying, which was, which was very good. So you were saying that you some depending on, you know, if it's a cflc pre, then, you know, you're going to put zero for fabrication. As I said, we might either be able to build that in automatically, but the option will be there to, you know, make fabrication,
+
+Demi Swanepoel  1:22  
+if not FCS is fabrication is zero.
+
+Darren Spencer  1:26  
+Got it? Yeah? A couple of other things. Let me see what I said in my notes, yeah, alternatives, basically anything called
+
+Demi Swanepoel  1:33  
+Yes, anything cold world, the fabrication is zero. Then another thing that you need to take note of all the CLCs is, even if the bill, I don't know how you're going to do that, but normally the bill will call and say, All the steel is hot dip galvanized. So then hot dip galvanized, we mark in our rates page, we then go and click and say, so then it applies that rate to all the stuff, galvanized that's included in our rate builder. But painting is obviously a separate paint line item that's something different. But the thing is, was, if it says all the steel is hot, that galvanized, let's say we do a project at this on the coastline, then obviously it needs to be hot that galvanized. Then there must be some sort of setting, but I'm sure you guys are going to incorporate that way. Okay, we select everything is hot that galvanized, then it must pull through, like it's currently doing on all the steel, but it mustn't pull through on hot, on cold, rolled all CLCs and metic, because the material is too thin. It can't be, it can't be hot tip galvanized. So then it must basically keep those items and not select them as hot that galvanized
+
+Darren Spencer  2:52  
+currently work if, let's say you selected on the rate, on the costing, on the rates page, you select one for the Hot Tip galvanized. Yeah.
+
+Demi Swanepoel  3:02  
+So then it sorry, then it automatically pulls through to all the all the steel members. But that is that editing is hard to galvanize. Let's say there's only a small portion in the bill that's hard to galvanize. Then we won't go and select that one, because then it's more an unset individually in each item to go and make it zero. So if everything is hard to go nice, we go and click the one, and then it would put it through. And then wherever there's Cold Rolled, or CFL sees, which is not a lot of the pro
+
+Darren Spencer  3:35  
+manually, go and make it zero. And then the or if it's the other way where there's a lot of cold rolled, then you'd rather just leave it zero and go find the hot tipped ones and make them once.
+
+Demi Swanepoel  3:46  
+But it's very be. It's very seldom that your your cold world will be more than your heart rolled.
+
+Darren Spencer  3:52  
+Gotcha makes sense? Okay? Yeah. Then Demi, can you tell me now quickly, because maybe we can potentially build this in. Is why I'm thinking about it. So all the CFL sees will never be hot rolled, no,
+
+Demi Swanepoel  4:06  
+they Yeah.
+
+Darren Spencer  4:07  
+And what else here in this, in this great page, let me actually share my screen quick, share the whole thing. Okay, can you see, I guess I'm looking at these ones. So all of these cflcs Never get
+
+Demi Swanepoel  4:23  
+black up until black.
+
+Darren Spencer  4:25  
+Yeah, perfect. All of these never get a hot world.
+
+Demi Swanepoel  4:31  
+Instead, sometimes the client, client do request for that, but that is like a one project per year. But then we'll do that manually, because you don't normally do that, because it wobbles to steel. You have to galvanize it, if it makes sense,
+
+Darren Spencer  4:45  
+yeah, basically, what I was thinking is, how we'll set it up. Is there supposed to be some table where you say that it's galvanizes should be included everywhere, but I don't see it on this sheet right, but maybe it's in some of the other ones,
+
+Demi Swanepoel  4:55  
+so they go up there just before png start. I think that's line item, 26
+
+Darren Spencer  5:09  
+now you 2526 row, 26 Oh, got it. Yes. Okay, yeah, okay, so this 11,000 so you would put a zero here if there's no, if there's not,
+
+Demi Swanepoel  5:23  
+okay, is that? Is this the only work one you have? Don't you have the one where we select the options?
+
+Darren Spencer  5:29  
+Maybe this is an older one. Yeah, we've got some other ones. We've got some other ones. Maybe
+
+Demi Swanepoel  5:33  
+there's some, I was just don't change anything there.
+
+Darren Spencer  5:36  
+Yeah, that's what I thought. There should be, like a zero and one, right?
+
+Demi Swanepoel  5:40  
+Yeah, you should be a newer document.
+
+Darren Spencer  5:44  
+Cool, yeah, let me check if. I mean, do
+
+Demi Swanepoel  5:47  
+we buy cars? We buy cars
+
+Darren Spencer  5:49  
+that one, okay, RSB.
+
+Darren Spencer  6:01  
+We buy CO as Montana, yes, yes, I think it's Yeah, but let me show just to confirm. But yeah, these right, yeah.
+
+Demi Swanepoel  6:15  
+So then we go and select those.
+
+Darren Spencer  6:17  
+Select is still galvanized. And you would, if there was a lot of hot rolled ones that are galvanized, you would click one. Ackeneasesmoveroaenertscenereamearoa andeavulanisehedasemoa, nerhedipearoaenenaisea,
+
+Darren Spencer  6:42  
+kahen Cool, cool, cool, cool. Let me go wrong. We buy cars there, you know. Okay, yeah. So this zero and one, ideally, what I would what I would think, is similar to how it's built in the Excel. You can choose this in the beginning, if these are yes, included or not included, and then do manual overrides for some, and we can build in some rules for some, like the steel galvanized one, as we just discussed. Yeah, so those. So once we've, once we've done this first part, which is basically the fabrication included, this kind of thing, it would be helpful to go through some of these rules, like the galvanized steel one. So just to get a like, you know, list, I'm sure there's more of those kind of ones that we can just build in. So does it automatically? Automatically puts the Cold Rolled as zeros, all the cflcs as zeros. And then you can still manually override if you want cool this. So, yeah, do you mostly do this? Hey, Demi, this. This deciding which ones are zero and which ones
+
+Demi Swanepoel  7:42  
+are ones, yes. So Amari doesn't normally, she doesn't select that. She basically just set, not set it up, but just pull in all the data, and then I take it from there. Take it
+
+Darren Spencer  7:53  
+from there. So this one is obviously super important, deciding what's included, if ovates are included, fabrication included, etc. After you read the the BOQ and put in yesterday,
+
+Demi Swanepoel  8:03  
+the same, like I mentioned with the plates. Yeah, that's the same for the bolts. For bolts, then bolts should be then a zero in your rate build up for the steel,
+
+Darren Spencer  8:19  
+yes, but like so this one is a bolt, right? That's kind of true. I think this was when I was sitting around. But yes, if bolts are separate, then you have them separate and you put zero for the bolts. Well, in this case, you have one for the bolts. But then sometimes you'd have them separate as separate line items, just for the bolts.
+
+Demi Swanepoel  8:40  
+And then, I don't know if you can do this. This is, this is this helps us with tenders. Okay, so normally, we look at the bill, and then we'll see what is the ratio of the bulk the bolt tonnage that they've given in their bill compared to the overall tonnage of the of the project. Makes sense more than 2.5% of bolts that they've allowed for. Then we don't price the bolts. We make bolt zero, and we say bolt is included in the rate. So even though the bolt line item is separately then at the bolt rate is very high. Then we include it in the rates, and then we go and adjust that bolt rate in our build up rate to win as a tender. Okay? Because, instance, they'll have five tons of bolts. Now, one ton of bolts is 70,000 per time. Yeah, yeah. Yeah.
+
+Darren Spencer  9:41  
+So that's that can make a big difference, okay, but just hold on, let me make sure I'm understanding you here. So let's say that the project is 100 tons, and they've allowed both of 5% you guys, if that happens, which is five times, yes, if you, if you see that you tell them, we're going to include bolts in our normal rates with it's included in the items like the columns and whatever, yes, and then let's let me just understand that. So is in a case like that, does that mean that they they actually put bolts as a separate line item, but you're going to change it in your tender and put it included in the in the supply.
+
+Demi Swanepoel  10:24  
+Yes. And if the bulk tonnage is high, more than only
+
+Darren Spencer  10:28  
+if it's above 2.5% of total, yes, okay, so yes.
+
+Demi Swanepoel  10:34  
+So then we just put next to their item of both, say, included in rates.
+
+Darren Spencer  10:39  
+Yeah, okay, makes sense. I mean, the worst case, what we can do is obviously just build a thing that says, If that's true, you know, you can click it that says, Yes, Bolts is above 2.5 Yes, include, and then we can, you know, make those zero option. But that makes sense. Okay, we just take a note before I forget.
+
+Kody Kendall  10:56  
+And Demi, this is, this helps you win the tender. This helps RSB win the tender over competitors. Is that the main
+
+Demi Swanepoel  11:03  
+Yes, I see Yeah,
+
+Darren Spencer  11:05  
+you can come in at a slightly lower cost Demi, because basically the the person asking for the tender is has priced bolts too high. Yes.
+
+Demi Swanepoel  11:14  
+And even though, let's say the bolts is actually five tons or whatever, then it would just as the bowl would increase, then we'll have our money still in built in rates, but it would never be 5% of the of the tender, even though the bill of quantities is re measurable at the at The at the end of the day, your tenderers would be at the disadvantage, because now they pricing the bolts at five five tons, giving them, let's say it's 500,000 that they've passed for bolts. But at the end of the project, the tons is only two tons. Then obviously they their contract value is now less, but it doesn't, it doesn't guarantee them to be have appointed in the beginning of the project, if it makes sense,
+
+Darren Spencer  12:10  
+yes, yes. Because they come in at a higher price, because they've allowed for that extra two and a half percent essentially. So then you, even if you, if you price on the same, on everything, then you're going to be two and a half percent lower price wise. Is that a five and you leave it at two and a half? Okay? Okay, that's helpful. Yeah, something about that in the in the Excel two and a half percent bulbs. But I was like, and seems complicated, and just ignore
+
+Demi Swanepoel  12:35  
+it, but that's how it's just one of our ways to to see where we can be more competitive, where other guys would say, Okay, listen, we'll price our u beans much less for this project. We'll take the the heat and just to win this tender. So that's just one of our
+
+Darren Spencer  12:55  
+Yeah, your ways of winning tenders.
+
+Kody Kendall  12:57  
+Yes. Okay, brilliant.
+
+Demi Swanepoel  13:00  
+Is it just a shortcut? Yes.
+
+Darren Spencer  13:03  
+Okay, great. That's helpful. Okay, let's go to the red sheet. Should we buy cars? We buy cars. Okay, then, yeah. So just to make sure I'm understanding this, you, what you'll typically do is you, I want to ask you about the PNG as well. But let's say on a normal item, let's say this one you've got, you choose steel sections, or they or steel section? Ja, is this steel sections already determined? Or do you choose? This is a steel sections one.
+
+Demi Swanepoel  13:32  
+So that's what el Marie determines in the data sheet. But she doesn't always know what members what. So then I'd go and reselect
+
+Darren Spencer  13:40  
+and be, override, and then that provides these. And these, yeah, and then, and then these. Do you ever change these waste numbers? Are they always just the standard ones that you get from
+
+Demi Swanepoel  13:53  
+the just a standard one. It depends on what the program what the drawings look like, but we very seldomly change those percentages. Yeah, it also just depends on the engineer and so go, Well, there's a lot of waste. Normally on these projects will increase the rate, but we normally don't change it. On the right, if we want to allow more for waste, we're going change it on the left side, next to that material supply, there's a percentage there, this one? No, go back to yeah,
+
+Darren Spencer  14:24  
+sorry, just jumping my computer's a bit slow. These ones.
+
+Demi Swanepoel  14:30  
+No, that that percentage, you know that percentage you are referring to there. That is the percentage on the right. I'm referring to percentage on the left. That one?
+
+Darren Spencer  14:41  
+Okay, add, add a chair, add an extra percent here, yes, yeah, please, Demi, don't cough, don't die on the call. Please wait till after the call.
+
+Demi Swanepoel  14:56  
+Sorry, man,
+
+Darren Spencer  14:57  
+yo, no, no, all good. You're right. We must be cool. Must we call 10111?
+
+Demi Swanepoel  15:04  
+All the police. Now, when there's like an itch in your throat,
+
+Darren Spencer  15:07  
+yeah, yeah, just as ghost goes the wrong way, the air goes the wrong or the spit goes the wrong way, or something.
+
+Kody Kendall  15:16  
+Darren, yeah, yeah, one thing I'm thinking is, in fact, for me, I'm gonna steal your creature for a second, which, obviously this isn't like, just for our own internal thing called Demi. Okay, so I was thinking, which, I know you're because these are kind of scattered across. I know we have that one requirements document, like, yeah, just, I mean, I don't even know we'd call it just tendering logic rules. And I think it's like, this is just very, very company specific type, type stuff, yeah, so a big list of this. And then I
+
+Darren Spencer  15:51  
+think I think this is we can do it in here, but I think we could also do it in our Word doc, in our, in our, in our sheet, where we have those, the
+
+Kody Kendall  15:58  
+requirements, the
+
+Darren Spencer  15:59  
+requirements for each section, yeah,
+
+Kody Kendall  16:03  
+it's this one, right? Yeah, I
+
+Darren Spencer  16:04  
+think it'd be fine to, I can, I can build those one, the ones we've discussed in here as well, because you've
+
+Kody Kendall  16:08  
+already, I think you've already been putting things,
+
+Darren Spencer  16:10  
+yeah, some of the stuff right here, yeah. And ideally, when we just then, we can add a tick for all of these things. So,
+
+Kody Kendall  16:16  
+okay, so maybe, maybe two, we add, like, a, maybe just, there's just a section that's business logic rules, or we just, like, label the specific. Okay, that sounds good. We can
+
+Darren Spencer  16:25  
+give a little. I can maybe at the minimum, I can give it a little, like a special kind of
+
+Kody Kendall  16:29  
+bullet or something, okay, oh, right,
+
+Darren Spencer  16:31  
+yeah, like that. Okay, cool, but yeah, we'll do I'll add them in there.
+
+Kody Kendall  16:35  
+Okay, I'll let you screen. Share again. I just stopped sharing. That's cool.
+
+Darren Spencer  16:38  
+Actually, I think, I mean, maybe just, are you okay?
+
+Demi Swanepoel  16:42  
+Yes, for now.
+
+Darren Spencer  16:46  
+Okay, so basically, they're on the on the costing sheet that that main page. So you would some, you would change each item you would look at it, let's say it's, you know, square, hollow section columns. And then there's the material supply, which you don't often change the waste, but sometimes you condition overhead shop priming, all of that, that stuff you've done already in the rates page, but some of them you would manually override here, right? You wouldn't, you wouldn't, just out of interest, would you ever change the the the actual amount, like, you know, the overheads is, let's say four and five, oh, at the at the rates page level. Would you ever change the overheads on a specific line item? Or would that always be done at the rates page level?
+
+Demi Swanepoel  17:34  
+So sometimes, yeah, some cases, we do change the fabrication rate. It depends if it's CASTELLATING beams. I don't know if you know it's a CASTELLATING beam. No. So that's like, when they have a normal IB, you know IBM look like, yeah. And then they will, like, cut like, zigzags in on the side of the IB and then they will weld two i beams onto one another. So then you will have your gaps inside so it it forms a bigger beam, but it's lighter because they've now gotten rid of some of the steel in between, just to make it lighter and stronger. So there we will have, we'll multiply our fabrication with 1.25 or depends. Yes, there
+
+Darren Spencer  18:23  
+will be some times when there's a manual change there as well. That's good to know for us, if we can make sure that it's possible to manually update those ones.
+
+Demi Swanepoel  18:29  
+And then the same with the Galvanizing. So if the steel is hotter galvanized, then we normally change our transport and we make it a factor of two.
+
+Darren Spencer  18:43  
+Oh, interesting. Okay,
+
+Demi Swanepoel  18:45  
+yes, because we could Yes. But then the chick comes in if the if the site is in Durban, obviously you can't multiply your transport, which is three are done times two, because, yeah, so it becomes a bit yeah,
+
+Darren Spencer  19:03  
+that, yeah, that, all that, all the thinking stuff you're still gonna have to do only gonna hopefully
+
+Demi Swanepoel  19:10  
+make the process a bit easier. Yeah?
+
+Darren Spencer  19:12  
+So you that's you're gonna have to keep, yeah, those those rules, you're gonna have to know, you're gonna have to do those. But yeah, that's okay. Cool. One last, let me share quick. You know, one other thing I would ask about is this. So these, you know, you mentioned this, 85 and 15 or whatever. But is I section, castellated beams? Is it basically always going to be this material supply, UB and UC, or are there some, you know, rules on when it's going to be something else, you know, maybe it's going to be, no,
+
+Demi Swanepoel  19:39  
+it's always going to be a U beam. Or, you see, the other beams aren't big enough to form a CASTELLATING beam.
+
+Darren Spencer  19:47  
+Okay? And is that the same for all of these? You know, square, hollow, all of them is generally, you know, then you know it's going to be this, for example, like, you know which one it's going to be, yeah? Okay, there's no yeah. Okay, cool.
+
+Demi Swanepoel  20:00  
+Change the CASTELLATING beam, I just want to see something. What does it say? Next to the CASTELLATING beam,
+
+Darren Spencer  20:06  
+where's the CASTELLATING one? Where's the CASTELLATING
+
+Demi Swanepoel  20:09  
+one? On the Green, where your green is, see? So then we don't have an extra item for CASTELLATING. Maybe you can add an extra item, cos we normally they replace the Hot Tip galvanized item, like you see at the top row 87 you'll see that Galvanizing. So normally, we'll just overwrite the Galvanizing and just type in CASTELLATING. And then we'll because it's obviously not the same rate, then we'll just manually type in that rate. Yeah, how
+
+Darren Spencer  20:40  
+we're thinking about doing it, which, I think answers, what, which, what is the same as what you're saying is, we'll have all of these ones, obviously, but then we'll also have a few extras, like a CASTELLATING one and maybe, and you'll be able to add your own, like as a that are standard. And then when you get to the like, a specific tender, they'll all be marked as, let's say, start at zero. And then you can choose which ones you want as ones. Want as once, and you choose
+
+Demi Swanepoel  21:04  
+and another one you can add on that side. Together with the CASTELLATING, you can also add curving. Okay, so curving is that's when they when we bend the steel. So there's obviously more work. You bend I beam to a certain degree. So that's also an extra overcast.
+
+Darren Spencer  21:25  
+Got it? Yeah, we'll have a, you'll basically have a table like this where you can add items. So we'll start it off with these ones, and then you can add, you know, and, and you could be able to, yeah, so you can add all the items you need to add here, and then say included or not included on the specific
+
+Demi Swanepoel  21:39  
+tender. Yes. Are you guys with your model? Are you going to include rates from the start, like shop, drawing rates, fabrication, basic rates? This is
+
+Darren Spencer  21:47  
+something I really need to speak to you about. Demi, I don't understand this, PNGs and shock drawing stuff. Can you please explain how you
+
+Demi Swanepoel  21:57  
+calculate these and how you do these, the
+
+Darren Spencer  22:00  
+PNGs? Yeah. Let's start with PJC.
+
+Demi Swanepoel  22:03  
+Okay, so peace and G's, if you go back to the costing sheet, is this the we this is the we buy cars. Okay, so if you look at this on site breakdown, this green block below the options on your right go down, yes, yes, yes, this block because so where we start is I go and I'll measure the drawing. I measure the total roof area. Okay, it would give me, okay, let's say the 17,000 squares. Okay. Then if it's a warehouse, we'll, we can do 300 squares a day. Then I type in 300 where you see the 300 if it's a shopping mall, it's 125 squares a day. It goes much lower. So warehouse goes very fast. And then shopping malls and offices, your residential goes much lower. So then that, then if you click on the 58 at the bottom,
+
+Darren Spencer  22:56  
+yeah,
+
+Demi Swanepoel  22:58  
+you'll see that formula, if you double click on it, that is a total square meters of the entire building divided by how many we are doing per day, to give us the total duration of the project.
+
+Darren Spencer  23:10  
+Makes sense. 58 days.
+
+Demi Swanepoel  23:12  
+Yes, okay. Then next to additional splicing crane line item 41 we select Yes, and then we go to under the mobile crane, yeah, that's yes. And then go one one row, right. Then we click down, and then we say, Okay, we're going to use an extra 10 ton crane as an extra Yes. And then under the number of days that first zero you see there, we say, Okay, we're going to also use it to 58 days. Okay, that's just your your your rate build up. So the name here at the bottom, it's not supposed to show name. So it's supposed to do your total calculation. Let's say it's 1.3 million. Then that divides it by the total tonnage, to give you a rate per ton on your left, on this the site, if you scroll, if it makes sense,
+
+Darren Spencer  24:11  
+I'm not following that last part. So where's the 1.3 you said 1.3 where's that 1.3
+
+Demi Swanepoel  24:16  
+something is wrong here with the formula that it says Name, okay, so it's this one, yes, okay,
+
+Darren Spencer  24:25  
+let's see what's wrong here. What's this supposed to this is supposed to look up in the data sheet locked.
+
+Demi Swanepoel  24:32  
+Okay. So what it does is, if you go to the data sheet, locked, yes, if you zoom a bit inside, I can also see this. This shouldn't be named, so this should be values, a weight, rate per day, average rate per time, etc. Just type in 1234, going down. Just for Yeah, just do that all the way down.
+
+Darren Spencer  24:57  
+Yes, brilliant. Now everything's working.
+
+Demi Swanepoel  25:01  
+Okay, so then that would be, so if you go back, it doesn't see So, yeah, this day spicing crane should come from somewhere. It should come from up here. So just select equals,
+
+Darren Spencer  25:18  
+yeah, maybe if I, if I go to this rates page, and I choose another kind of thing, like the owner of these all 10 Titan, okay. But anyway, I can also put a number. Is this a number normally here? So I can put in, like, a three,
+
+Demi Swanepoel  25:31  
+yeah, just do that. Okay. So then that would then be 347, and for the total project, for total duration, and that would be divided by the total tonnage. Go to your left, next to the Craneage here at the top, we'll see there's a crane item. See that 20 rent there? Yes, so it took that 300 and something rent divided by the total tons of the project, which is the 311 tons, and it would give you that rate per ton.
+
+Darren Spencer  26:07  
+Got it, okay? And then that you put in your PNGs, yeah.
+
+Demi Swanepoel  26:13  
+So then, so we leave that there. So automatically, you just go and select your one under the P's and G's in your casting sheet, so that it knows it needs to include that. See, there's a one next 20 Rand and then the Chery Pickers. The same exercise. If you go to the plant sheet at the bottom, I think it's access something, equipment, the other one, that other big table, which one? This one? No. It says plant. Yes, this one. So then we'll go and select our Chery Pickers that we're going to use, and we're going to put in the the number of units we're going to use, and then the period required. Then that would also draw down, if you scroll a bit down. So then that would give you a total rate per ton. That 2199 Rand, right? But no, the one at the top, this one is actually not applicable. This bottom part should be deleted, yes. And then the 311 should pull through to the job mass. It's normally not linked to our link it. And then it divides that total cost, that 373,000 divide by 311 gives you 1200 Rand per ton. Yes, got it. That's how we determine our plant, and then what we add under the P's and G's. So this top portion you're looking at, we normally don't yeah, sorry, Demi, sorry to
+
+Darren Spencer  27:52  
+interrupt. I have to jump for another call. Kody. You can you just carry on listening to Demi. Just makes you understand this PNG section. And sorry for sorry for dropping for dropping off now, but I just have something that I have to take care of. Kody, you can bring this one up. You've got the Okay, great. We buy cars. Demi, thank you very much for your time. Thank
+
+Demi Swanepoel  28:11  
+you, Darren, very helpful. I was just starting to enjoy this.
+
+Kody Kendall  28:17  
+That's right, we can. We can pick up from here. I'm not as smart as Darren, but I'll do
+
+Demi Swanepoel  28:21  
+my best. Bye,
+
+Kody Kendall  28:22  
+easy. Thanks, Sarah, see you. Okay. So this is we buy cars. Let me pull this up. I also, I'm using Google Sheets, so it's gonna have, it might even have more broken formulas than Darren, but we'll just try to get through as much as we can, and then if we need to, we can schedule a follow up call with Darren, can we find we buy cars? Let's see where that gets this. There we go. Okay, very cool. Okay, we were on the, remind me, Where were you on the costing sheet?
+
+Demi Swanepoel  28:58  
+Yeah, we were on the casting sheet. If you go, scroll up to the PJs and cheese portion. Okay, here we go. So that portion, we don't normally type anything in there, because that is linked to our cost to our rates page. Okay, so if you click on, on row E, on one of the items, if you click Yeah, go just a bit down to, let's say row 13. E 13, you'll see it's linked to the rates page at the top. You see their rates page, yeah. So we don't do anything there. It's normally we work on the PNGs on the casting sheet. So we do everything in the casting sheet. Okay, okay, yeah. So if you go to the casting sheet, then, okay, but that's something we will do ourselves. Do you have this sheet at the bottom?
+
+Kody Kendall  29:49  
+You said casting sheet. So I'm on the casting sheet right here.
+
+Demi Swanepoel  29:55  
+I'm sorry. Race page, right page, okay. Race page, yes, so see at the bottom, yes, peas and G's left. So these items are black, so we normally fill in these extra items. But obviously you don't have to worry about that, because you're not going to know that. So that's normally, if the project is full, we need to allow for our staff accommodation, staff traveling, staff stay out. Site is established and de established. And then when we fill in the values at the in RW B, then that automatically pulls through onto the casting sheet and the PNGs,
+
+Kody Kendall  30:41  
+okay, that makes sense. Very cool.
+
+Demi Swanepoel  30:43  
+Nanette makes a builder, a rate build up.
+
+Kody Kendall  30:47  
+Okay, very cool. Sweet. Very, very cool.
+
+Demi Swanepoel  30:54  
+One thing that is not working on this on the sheet, if you go to the shop drawings, line item, 24
+
+Kody Kendall  31:02  
+see 24 Okay, very cool.
+
+Demi Swanepoel  31:05  
+That's 311 if you click on that. I just want to see what does it link to? You see, she normally manually types that in. But what if we, throughout the project, change the tunnels, and that's not going to be updated, so that formula actually needs to be where it selects all the steel weights. Only selects all the tonnage items. Okay, to bring? Yes. So this, I don't know if you understand. So the shop drawings is the total tons that are drawing. Office needs to draw this project on, and then that's a rate per hour.
+
+Kody Kendall  31:40  
+Okay, that makes sense.
+
+Demi Swanepoel  31:42  
+So that's not, yeah, so that's not linked to something, and it would be nice if it can be a formula that it automatically adds all the tonnage items,
+
+Kody Kendall  31:54  
+okay, and just out of curiosities, you know, just for curiosity sake, is there not somewhere in the spreadsheet that just has the total tonnage that you could then just do a formula in the Excel sheet. Or is there something I'm missing there that's not able to allow you to do that?
+
+Demi Swanepoel  32:10  
+So you say again, is there? What is there? Like?
+
+Kody Kendall  32:15  
+Why couldn't you just, and this is, yeah, just purely curiosity sake. Why couldn't you just create a formula in Excel that's that's already doing. That is that just something your company hasn't
+
+Demi Swanepoel  32:26  
+done. So what, what we normally did is, I used to say equal and then I would scroll down and just manually select all the tonnages, because remember, not everything is tiny. Just some of it is square meters, some of it is number. So you can't have an automatic formula, because then it's going to add all of it, and then when you have like 48 bolts, it's going to say, now it's 48 times. There's a huge difference between those two items. So then that's a manually calculation. We have to select you
+
+Kody Kendall  32:57  
+come in, and you come in like this, and but then if there was a square footage unit, for example, then you'd have to make sure to not accidentally include
+
+Demi Swanepoel  33:05  
+that, yeah. So then we don't select that one, only the tonnage items
+
+Kody Kendall  33:10  
+I see, I see, okay, right. Okay.
+
+Demi Swanepoel  33:13  
+So what I do now is I don't do this formally inside yet, because sometimes the book can become very long, and I don't have time to scroll down 3000 cells to go manually select. So I go then on the front sheet, and then I go and highlight all the tonnages, and then add them together. Then we manually type it in.
+
+Kody Kendall  33:36  
+Okay, that makes that makes perfect sense. Let me just
+
+Demi Swanepoel  33:39  
+so that would be great if it can manually add all the tonnage items. Yeah, because if you look at the P's and G's, the P's and G's is linked to the sharp drawings. If you look at that, 311 that red figure and the P's and G's, if you click on it,
+
+Unknown Speaker  33:59  
+311 RW, E, row e,
+
+Demi Swanepoel  34:02  
+okay, row e5,
+
+Kody Kendall  34:05  
+ah, right, right, right. So
+
+Demi Swanepoel  34:08  
+that is linked to E, 24 so if your shock drawing tonnage is incorrect, then your P's and G's calculation is going to be based on the wrong tonnage of project.
+
+Kody Kendall  34:18  
+Right, right, okay, that makes sense. If tonnage correct, then all downstream PGS get or are inaccurate. Have you ran into problems in the past where this has not been updated accurately, and then you, or Richard or someone has to you basically tell, oh, something got changed. We have to go find this and recalculate this, because this is El Marie that's responsible for
+
+Demi Swanepoel  34:46  
+keeping this up to date. Yeah, this, she's still learning, but the main responsibility is with me, because I need to make sure that it is correct so I see okay, what? Sometimes we've missed it, but it is what it is, because your tender price is your tender price. So
+
+Kody Kendall  35:03  
+right, right, right. And then that can cause problems, because then if you win the tender, you could have accidentally underbid it, but if you overbid it, then now it's, you know, yeah, right, right, right. Okay, that makes
+
+Demi Swanepoel  35:15  
+sense. So just keep in mind your formula, even though, if it's going to add up all the tonnage items, you must make sure that it doesn't include the paint tonnage, because the paint is also they're measured in tonnage, but the paint is based on the steel tonnage. So then if you include the pain, then it's going to be a double up, if it makes sense.
+
+Kody Kendall  35:38  
+Yeah, it makes sense. So do not include you call it the paint, just the paint tonnage, yes, and final tonnage, because it will get double counted. Essentially, yes. End up double counting the Yeah, that makes sense. Double counting the tonnage for that specific item, right? That makes total sense. Okay, very cool. Let's put that at 35 Um, okay, very cool. And then here's, here's another question, just to make sure that I'm understanding the because, yeah, when we go to name this, there's certain, yeah, certain things we name this, but when we talk to Richard, Richard basically calls this specific portion. We were trying to basically understand exactly what the bill of materials includes, and kind of my mental model of it, after Richard responded to our message was, you know, we would call this specific section, let's say call it 35 you know, line 35 this would be like a just a line item cost breakdown, as opposed to like and then this part is almost like the bill of materials. That's just kind of gets fed into this line 39 is that the accurate way to think about the bill of materials? Yes. Okay, so this, right here, this section specifically is the bill of materials. But not this, not this section, because you don't want to accidentally include, like labor and other things into into that bill of materials. Is that an accurate way to think about it?
+
+Demi Swanepoel  37:07  
+Yeah, so the information on your right, your bill of material rates, comes from that section you're gonna input now with Macsteel BSI,
+
+Kody Kendall  37:19  
+monthly, material, yeah.
+
+Demi Swanepoel  37:21  
+So this just determines the current rate at that point in time for tender, okay, and then the left side is your rate build up. That includes other involved items,
+
+Kody Kendall  37:32  
+yeah, okay, the material supply, plus all the Okay, very cool. That's good. I think that so, so we'll call this in our because we have, like, a database, and we have to, like, name, name, certain things. So I think, yeah, we'll probably call this is, like, tender, tender line item cost breakdown. And this
+
+Demi Swanepoel  37:50  
+is going to be right, build up
+
+Kody Kendall  37:52  
+a rate. Build up, okay, that's okay, that's good.
+
+Demi Swanepoel  37:53  
+We're building up the rate of different items.
+
+Kody Kendall  37:57  
+Okay, let's go find where we did that line item cost. See, Demi says, call this, you said a rate, a rate build up, yes, like we
+
+Demi Swanepoel  38:11  
+refer to it, yes,
+
+Kody Kendall  38:12  
+okay, so internally, so if you call it a rate build up, but that's like kind of for, I guess, I guess this entire page is kind of
+
+Demi Swanepoel  38:23  
+everything on your left case,
+
+Kody Kendall  38:25  
+so each, so all, so all of these components are a single kind of rate build up for the 10 years. Okay, okay, so in that case, these specific things, we'd probably, yeah, we'll call this like a, maybe, like a rate build up item, or something to that effect, like the individual components of it, let's see. So we might call it, yeah, like a rate build up, or a line item, rate build up, okay, okay, very cool. Something to that effect. Okay, that's very helpful. Thank you very much. Okay, very cool. Um, let's see here. So probably, yeah, probably, probably what we'll do over time is we're kind of collecting a set of these rules. Darren has a much, I mean, he's, he's put a bunch of rules into this sheet already, and so me and him are going to, we'll, we'll touch base and kind of aggregate all these rules. And what will happen to is, we won't, we're not going to nail it like on the very, very first try, but our goal is each week to on Friday, to do demos to Richard, and maybe you'll be included on those. We'll have to figure out the exact kind of flow and how we do that. But the idea is, each week we want to, you know, develop the software, you know, program it, and then, you know, I think it would
+
+Demi Swanepoel  39:44  
+be better if I can sit in most of them, because essentially, I am doing the tenders. Which of them aren't really that involved with the tenders anymore.
+
+Kody Kendall  39:53  
+Okay, very cool, yeah, let's see. But
+
+Demi Swanepoel  39:57  
+he would obviously like to sit in if he can and if he has time,
+
+Kody Kendall  40:01  
+okay, very cool. So you're probably, yeah, you're more important one
+
+Demi Swanepoel  40:08  
+of my response job responsibilities, for sure,
+
+Kody Kendall  40:13  
+for sure. Okay, yeah, you know Demi's main, the main, yeah, it's her main, main job responsibility. Yeah, you'll be okay. You'll be our first line of defense. So, okay, so we'll plan, so maybe, yes, maybe we'll do the, let's, let's just kind of default to doing the weekly demos with you. Then, okay, how is this time, normally for you? Is this, I know it's, let me see, it's like 530 or, sorry, right now, it's, let's see, is it 643 your time? Right now? What?
+
+Demi Swanepoel  40:46  
+Yeah, six Yeah. 643 what other times can suit six o'clock is not, it's not a train Smash, but it can become a bit difficult because I have like, a three year old,
+
+Kody Kendall  40:57  
+yeah, yeah. And on Fridays, that's tough too, right? So probably the earlier, the better for you, right?
+
+Demi Swanepoel  41:02  
+Yeah, like Fridays at six o'clock in the afternoon. Not gonna work, because we finished at one.
+
+Kody Kendall  41:10  
+Okay, okay, so maybe and maybe two, maybe even we switch that to them, like Thursdays or something.
+
+Demi Swanepoel  41:14  
+How does it obviously, Darren can't probably do lunch time, because I know my time in your time are very similar,
+
+Kody Kendall  41:24  
+yeah, kind of I mean, I'm in, Yeah, us, so it's 9:45am here. Are
+
+Demi Swanepoel  41:29  
+you okay? So your time?
+
+Kody Kendall  41:32  
+No, yes, I'd be waking up early, which I'm okay to wake up, you know. So
+
+Demi Swanepoel  41:38  
+what's the time difference? What time do you start working? Um,
+
+Kody Kendall  41:41  
+so I usually am starting to jump on meetings around 8am is pretty early, so that's like 5pm your time, you know. So you know, like for me, even like Thursdays at 5pm your time, that's like Thursday, 8am my time. I know that's, yeah, what time do you usually get off on Thursday?
+
+Demi Swanepoel  42:02  
+Which time do I get off on Thursday? Yeah, yeah. So, so normally, so we work until four, but otherwise, this is obviously not gonna go on forever, so we can keep it at six o'clock for now. Okay, it's fine, okay, yeah, we can keep it for now. Just, yeah, it's not like, it's gonna be like every week for a year or two years, you know, right? Is it you guys are very gonna nail this first, first attempt? Well, we're
+
+Kody Kendall  42:34  
+also flexible too, so even if we started with that and it continued to go on, the other thing too is this, this tendering part is only, you know, the beginning of the project. So we're hoping to have this part figured out within the first, you know, six weeks. So that's that's kind of our timeline where we're hoping to have all this tendering stuff nailed down. Okay, but the other thing too is, so this is flexible. This isn't going to be a forever thing, but let me just set this as a recurring thing for Thursdays at 6pm your time, and we'll just plan to do this for the next handful of weeks. And then also there's, like I said, there's flexibility as well. Like, you know, we you're the you're the client in this case, and we want to make sure that you and Richard and RSB is the client. We want to try to here, so let me just put this on, and this is a placeholder as well. Like I said, if we need to put rich, sorry,
+
+Demi Swanepoel  43:28  
+what is this? What you do for a living? Like, do you write programs?
+
+Kody Kendall  43:32  
+Or, Yes, I'm a software engineer, so my background is very deep. Kind of programming stuff,
+
+Demi Swanepoel  43:40  
+nice. But you work for yourself.
+
+Kody Kendall  43:43  
+Yes, yes. So, yeah, this is part of my company that Darren's, you know, kind of, you know, me and Darren have partnered up. And basically we were helping companies build these software tools to make things easier for them, which, you know, it's very hard to buy software that works perfectly immediately, right? Like, I don't know if you if your team has ever tried to look at purchasing software, but it can be pretty expensive, and usually it doesn't fit, like, how your company thinks about things and the processes that your
+
+Demi Swanepoel  44:18  
+company. So this job, this is very interesting and very cool, because not every program is flexible, or how can you say adaptive to each type of job that you get, or how you do things? So this is pretty cool that you can custom it to our needs.
+
+Kody Kendall  44:37  
+Absolutely. Yeah, that's, that's the goal here. So we've Okay, so me, so I have you on there. I've Darren on there, and then I don't let me just put this in here. Now, save, send this, and then let me grab Rich's, Richard's, okay, R Spencer, that's what. He's very, very cool. And also, you know, software, software is tricky to get perfect. And, you know, spreadsheets are super versatile because, you know, but
+
+Demi Swanepoel  45:09  
+I think what makes it more challenging is your, your guys's knowledge. You obviously not specialist in the steel industry. So right, when we say something or explain something, and obviously we automatically think, okay, you understand exactly what we are saying, but obviously you need to wrap your head around on how it works to understand what needs to be done
+
+Kody Kendall  45:32  
+absolutely. And that's where, that's where this is, you know, critical our meetings and talking and Darren's this is, you know, Darren is also very smart, and he's getting up to speed very quick. He's, he's much more up to speed on the specifics of the steel industry and this type of process. I'm still wrapping my head around it, but, and, you know, I'm learning a ton, and also, but, yeah, Darren. Darren is kind of the main point of, you know, he's becoming the expert. And then me and him talk after these meetings, and we, like, figure out I translate exactly what he's saying into the actual software, and then that's, that's kind of how we're how we're doing it. Cool, very cool. Anything else that you can think of, like any other questions or things that we might want to talk through, this is, I mean, we've covered a lot today, so this gives me and Darren a lot to think about. And then, yeah, we're going to be trying to move very fast. We're going to try to do weekly, weekly demos where we can show you good, measurable progress. We also want to get you a sign in. So I'm going to get you a specific sign in to our application, to this specific application, and then on the calls as we're demoing to you, we're actually going to have you share your screen, and then we will show you exactly where to click, exactly the process. And then you'll tell us, hey, this is confusing, or we'll watch you be confused and be like, Wait, where do I click? Or where do i is? We want to make this as similar as possible in ways to looking just like this, because that's exactly what you're used to. But there's just always, there's always a little bit of friction, confusing, confusing things, etc, and us going through that process together helps us realize and move faster and be like, Okay, we want to what happens with other with a lot of software projects is the developers and engineers that are building the software, they'll build for three months, and they won't even show it to the, you know, to the users, and then all of a sudden they go to do it, and they've, like, totally had the wrong mental model, and they've been doing things in a weird way. So doing the weekly meetings is is extremely important, and also having you have your own sign in, and having you be the one that's like clicking around and kind of driving, and then we're pointing and showing you how it works. That kind of doubles just training and just kind of helps us get on the same page. Does that make sense?
+
+Demi Swanepoel  47:53  
+Yes, completely.
+
+Kody Kendall  47:56  
+Very cool. Um, okay,
+
+Demi Swanepoel  47:58  
+I think that is, I think that is enough for tonight? Yeah, I agree. And then work on that. And if you have more questions, we can sit again,
+
+Kody Kendall  48:09  
+okay, very, very cool, and we can, I'm sure we can send you emails as well if we have any questions in the meantime.
+
+Demi Swanepoel  48:15  
+Yes, sure you can anytime. Okay,
+
+Kody Kendall  48:18  
+very cool. Well, thank you, Demi. I appreciate you meeting, even though it's late, I'm sure you're eager to all good.
+
+Demi Swanepoel  48:27  
+Thank you, Katie, appreciate your time.
+
+Kody Kendall  48:29  
+Okay, thanks, Demi, talk to you soon.
+
+Demi Swanepoel  48:30  
+You too. Okay, bye. You.
+
+Transcribed by https://otter.ai
+https://otter.ai/u/BvoKEgDbWbuzdl13O7tvaQAweH4?tab=chat&view=transcript
