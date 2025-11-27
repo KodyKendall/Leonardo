@@ -157,7 +157,7 @@ RSB Contracts is a 40-year-old family-owned structural steel fabrication company
 |----|-----------|-------------------|----------|
 | US-010 | As Maria, I want to update material supply rates monthly so that tenders use current pricing | Rate update UI; effective date tracking; version history | High |
 | US-011 | As Richard, I want rate changes to be versioned with format `rates_YYYYMMDDxx` so that I can track when rates changed | Automatic version numbering on save | High |
-| US-012 | As Demi, I want to see the second-cheapest supplier rate as the default for each material so that we remain competitive | Automatic supplier rate comparison and selection | Medium |
+| US-012 | As Demi, I want to see the second-cheapest supplier rate as the default for each material supply so that we remain competitive | Automatic supplier rate comparison and selection | Medium |
 | US-013 | As Richard, I want processing rates (fabrication, erection, etc.) updated annually so that they reflect current labor costs | Admin-only rate update with effective dates | High |
 | US-014 | As Demi, I want to manually override supplier rates for specific tenders so that I can use negotiated pricing | Per-tender rate override capability | High |
 | US-015 | As Maria, I want to add new suppliers and their rates so that we can compare pricing across vendors | Supplier management UI | Medium |
@@ -517,22 +517,22 @@ Stores information about material suppliers.
 | phone | Contact phone | "+27 11 555 1234" |
 | is_active | Whether supplier is active | true |
 
-#### 5.1.2 materials
+#### 5.1.2 material_supplies
 
-Stores the catalog of material types with their base rates.
+Stores the catalog of material supply types with their base rates.
 
 | Field | Description | Example |
 |-------|-------------|---------|
 | id | Unique identifier | 1 |
-| code | Short code for material | "UB_UC_LOCAL" |
+| code | Short code for material supply | "UB_UC_LOCAL" |
 | name | Display name | "Local UB & UC Sections" |
-| category | Material category | "sections" |
+| category | Material supply category | "sections" |
 | base_rate_per_tonne | Current rate in Rand | 15900.00 |
-| waste_factor | Waste percentage (decimal) | 0.075 (7.5%) |
+| waste_percentage | Waste percentage (decimal) | 0.075 (7.5%) |
 | effective_from | Date rate became active | 2024-01-01 |
-| is_active | Whether material is active | true |
+| is_active | Whether material supply is active | true |
 
-**Current Material Types (22):**
+**Current Material Supply Types (22):**
 - Unequal Angles, Equal Angles, Large Equal Angles
 - Local UB & UC Sections, Import UB & UC Sections
 - PFC Sections, Heavy PFC Sections, IPE Sections
@@ -544,12 +544,12 @@ Stores the catalog of material types with their base rates.
 
 #### 5.1.3 material_supply_rates
 
-Links materials to suppliers with supplier-specific pricing.
+Links material_supplies to suppliers with supplier-specific pricing.
 
 | Field | Description | Example |
 |-------|-------------|---------|
 | id | Unique identifier | 1 |
-| material_id | Reference to material | 1 |
+| material_supply_id | Reference to material_supply | 1 |
 | supplier_id | Reference to supplier | 2 |
 | rate_per_tonne | Supplier's rate | 15750.00 |
 | effective_from | Date rate became active | 2024-11-01 |
@@ -814,13 +814,13 @@ Detailed cost breakdown for each line item.
 
 #### 5.2.7 line_item_materials
 
-Material composition for each line item (for blended material costs).
+Material supply composition for each line item (for blended material costs).
 
 | Field | Description | Example |
 |-------|-------------|---------|
 | id | Unique identifier | 1 |
 | tender_line_item_id | Reference to line item | 1 |
-| material_id | Reference to material | 4 (UB_UC_LOCAL) |
+| material_supply_id | Reference to material_supply | 4 (UB_UC_LOCAL) |
 | proportion | Percentage (decimal) | 0.85 (85%) |
 
 #### 5.2.8 line_item_extra_overs
@@ -890,8 +890,8 @@ P&G (Preliminaries & General) items.
 
 **Master Data Relationships:**
 - suppliers has many material_supply_rates
-- materials has many material_supply_rates
-- materials has many line_item_materials
+- material_supplies has many material_supply_rates
+- material_supplies has many line_item_materials
 - equipment_types has many tender_equipment_selections
 - crane_rates has many tender_crane_selections
 - extra_over_types has many line_item_extra_overs
@@ -922,12 +922,12 @@ P&G (Preliminaries & General) items.
 
 ### 6.1 Ephemeral Calculations
 
-#### 6.1.1 Material Cost Calculation
+#### 6.1.1 Material Supply Cost Calculation
 
-For each line item, material cost is calculated based on material type and waste factor:
+For each line item, material supply cost is calculated based on material supply type and waste percentage:
 
 ```
-material_rate_with_waste = base_rate_per_tonne  (1 + waste_factor)  proportion
+material_supply_rate_with_waste = base_rate_per_tonne  (1 + waste_percentage)  proportion
 
 Example for UB_UC_LOCAL at 100% proportion:
 = 15,900  (1 + 0.075)  1.0
@@ -935,9 +935,9 @@ Example for UB_UC_LOCAL at 100% proportion:
 = R17,092.50 per tonne
 ```
 
-For blended materials:
+For blended material supplies:
 ```
-total_material_rate =  (material_rate_with_waste  proportion)
+total_material_supply_rate =  (material_supply_rate_with_waste  proportion)
 
 Example with 85% UB/UC and 15% Plate:
 = (17,092.50  0.85) + (17,775.00  0.15)
@@ -1075,7 +1075,7 @@ line_amount = R326,067
 | BR-001 | Rate Rounding | All line item rates rounded up to nearest R50 | `CEILING(rate, 50)` |
 | BR-002 | Crainage Rounding | Crainage rate rounded to nearest R20 | `CEILING(rate, 20)` |
 | BR-003 | Cherry Picker Rounding | Cherry picker rate rounded to nearest R10 | `CEILING(rate, 10)` |
-| BR-004 | Waste Application | Waste factor applied to base material rate before aggregation | `base_rate  (1 + waste_factor)` |
+| BR-004 | Waste Application | Waste percentage applied to base material supply rate before aggregation | `base_rate  (1 + waste_percentage)` |
 | BR-005 | Toggle Application | Boolean flags multiply rate by 0 or 1 | `rate  include_flag` |
 | BR-006 | Margin Calculation | Applied to subtotal before rounding | `subtotal  (1 + margin_pct)` |
 | BR-007 | Bolts Inclusion | Standard line items include bolts in rate (not priced separately) | Default behavior for steel sections |
