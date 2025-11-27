@@ -1,0 +1,1 @@
+json.partial! "monthly_material_supply_rates/monthly_material_supply_rate", monthly_material_supply_rate: @monthly_material_supply_rate
