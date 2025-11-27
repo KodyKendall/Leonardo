@@ -7,6 +7,8 @@ class TenderLineItem < ApplicationRecord
   validates :quantity, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :rate, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
+  after_create :create_line_item_rate_build_up
+
   enum section_category: {
     "Blank" => "Blank",
     "Steel Sections" => "Steel Sections",
@@ -28,5 +30,11 @@ class TenderLineItem < ApplicationRecord
   # Calculate the total amount for this line item
   def total_amount
     quantity * rate
+  end
+
+  private
+
+  def create_line_item_rate_build_up
+    LineItemRateBuildUp.create!(tender_line_item_id: id)
   end
 end

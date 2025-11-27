@@ -296,6 +296,14 @@
                     <td class="text-right font-semibold editable-cell" data-field="rate" title="Click to edit"><%= number_with_precision(item.rate, precision: 2) %></td>
                     <td class="text-right font-bold" data-field="total_amount"><%= number_with_precision(item.total_amount, precision: 2) %></td>
                     <td class="text-center">
+                      <% if item.line_item_rate_build_up %>
+                        <%= link_to line_item_rate_build_up_path(item.line_item_rate_build_up), class: "btn btn-xs btn-info gap-1", title: "View rate buildup" do %>
+                          <i class="fas fa-chart-bar"></i>
+                          Buildup
+                        <% end %>
+                      <% else %>
+                        <span class="text-xs text-gray-400">No buildup</span>
+                      <% end %>
                       <button class="btn btn-xs btn-ghost edit-row-btn" onclick="editRow(this, <%= item.id %>)" title="Edit this row">
                         <i class="fas fa-edit"></i>
                       </button>
@@ -514,8 +522,18 @@
       row.querySelectorAll('.editable-cell').forEach(cell => {
         const field = cell.getAttribute('data-field');
         const input = cell.querySelector('input');
+        const select = cell.querySelector('select');
+        
         if (input) {
-          updateData[field] = parseFloat(input.value);
+          // For numeric fields, parse as float; for text fields, keep as string
+          const value = input.value;
+          if (field === 'quantity' || field === 'rate' || field === 'page_number') {
+            updateData[field] = parseFloat(value);
+          } else {
+            updateData[field] = value;
+          }
+        } else if (select) {
+          updateData[field] = select.value;
         }
       });
       
@@ -740,6 +758,7 @@
               <td class="text-right font-semibold editable-cell" data-field="rate" title="Click to edit">${parseFloat(item.rate).toFixed(2)}</td>
               <td class="text-right font-bold" data-field="total_amount">${total.toFixed(2)}</td>
               <td class="text-center">
+                ${item.line_item_rate_build_up_id ? `<a href="/line_item_rate_build_ups/${item.line_item_rate_build_up_id}" class="btn btn-xs btn-info gap-1" title="View rate buildup"><i class="fas fa-chart-bar"></i>Buildup</a>` : '<span class="text-xs text-gray-400">No buildup</span>'}
                 <button class="btn btn-xs btn-ghost edit-row-btn" onclick="editRow(this, ${item.id})" title="Edit this row">
                   <i class="fas fa-edit"></i>
                 </button>

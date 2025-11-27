@@ -39,7 +39,7 @@ class LineItemRateBuildUpsController < ApplicationController
     respond_to do |format|
       if @line_item_rate_build_up.update(line_item_rate_build_up_params)
         format.html { redirect_to @line_item_rate_build_up, notice: "Line item rate build up was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @line_item_rate_build_up }
+        format.json { render json: @line_item_rate_build_up, status: :ok }
       else
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @line_item_rate_build_up.errors, status: :unprocessable_entity }

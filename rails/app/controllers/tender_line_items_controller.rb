@@ -8,7 +8,7 @@ class TenderLineItemsController < ApplicationController
     @tender_line_items = @tender.tender_line_items.all
     respond_to do |format|
       format.html
-      format.json { render json: @tender_line_items }
+      format.json { render json: @tender_line_items.map { |item| item.as_json.merge(line_item_rate_build_up_id: item.line_item_rate_build_up&.id) } }
     end
   end
 
@@ -76,6 +76,6 @@ class TenderLineItemsController < ApplicationController
     end
 
     def tender_line_item_params
-      params.require(:tender_line_item).permit(:quantity, :rate)
+      params.require(:tender_line_item).permit(:page_number, :item_number, :item_description, :section_category, :unit_of_measure, :quantity, :rate)
     end
 end
