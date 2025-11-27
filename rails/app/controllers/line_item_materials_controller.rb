@@ -13,6 +13,8 @@ class LineItemMaterialsController < ApplicationController
   # GET /line_item_materials/new
   def new
     @line_item_material = LineItemMaterial.new
+    @line_item_material.tender_line_item_id = params[:tender_line_item_id] if params[:tender_line_item_id].present?
+    @line_item_material.line_item_material_breakdown_id = params[:line_item_material_breakdown_id] if params[:line_item_material_breakdown_id].present?
   end
 
   # GET /line_item_materials/1/edit
@@ -25,7 +27,11 @@ class LineItemMaterialsController < ApplicationController
 
     respond_to do |format|
       if @line_item_material.save
-        format.html { redirect_to @line_item_material, notice: "Line item material was successfully created." }
+        # Redirect to breakdown show page if breakdown_id is present, otherwise to material show
+        redirect_path = @line_item_material.line_item_material_breakdown ? 
+          line_item_material_breakdown_path(@line_item_material.line_item_material_breakdown) : 
+          @line_item_material
+        format.html { redirect_to redirect_path, notice: "Line item material was successfully created." }
         format.json { render :show, status: :created, location: @line_item_material }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -65,6 +71,6 @@ class LineItemMaterialsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def line_item_material_params
-      params.require(:line_item_material).permit(:tender_line_item_id, :material_supply_id, :proportion)
+      params.require(:line_item_material).permit(:tender_line_item_id, :material_supply_id, :proportion, :line_item_material_breakdown_id)
     end
 end

@@ -1,15 +1,50 @@
-<% content_for :title, "Showing line item material" %>
+<% content_for :title, "Material - #{@line_item_material.material_supply.name}" %>
 
-<div class="md:w-2/3 w-full">
+<div class="container mx-auto p-6">
   <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
+    <div class="alert alert-success mb-6">
+      <i class="fas fa-check-circle"></i>
+      <span><%= notice %></span>
+    </div>
   <% end %>
 
-  <h1 class="font-bold text-4xl">Showing line item material</h1>
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <h2 class="text-2xl font-bold mb-4">Material Details</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <p class="text-sm font-semibold text-gray-600">Material Supply</p>
+          <p class="text-lg"><%= @line_item_material.material_supply.name %></p>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-gray-600">Waste Percentage</p>
+          <p class="text-lg"><%= number_with_precision(@line_item_material.material_supply.waste_percentage, precision: 2) %>%</p>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-gray-600">Proportion</p>
+          <p class="text-lg"><%= number_with_precision(@line_item_material.proportion * 100, precision: 2) %>%</p>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-gray-600">Material Rate</p>
+          <p class="text-lg">₹ <%= number_with_precision(@line_item_material.material_supply.material_supply_rates.last&.rate || 0, precision: 2) %></p>
+        </div>
+      </div>
 
-  <%= render @line_item_material %>
+      <div class="mt-6 pt-6 border-t">
+        <p class="text-sm font-semibold text-gray-600">Breakdown</p>
+        <p class="text-lg font-bold text-green-600">
+          ₹ <%= number_with_precision((@line_item_material.material_supply.material_supply_rates.last&.rate || 0) * @line_item_material.proportion, precision: 2) %>
+        </p>
+      </div>
+    </div>
+  </div>
 
-  <%= link_to "Edit this line item material", edit_line_item_material_path(@line_item_material), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= link_to "Back to line item materials", line_item_materials_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= button_to "Destroy this line item material", @line_item_material, method: :delete, form_class: "sm:inline-block mt-2 sm:mt-0 sm:ml-2", class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+  <!-- Action Buttons -->
+  <div class="mt-6 flex gap-2 flex-wrap">
+    <%= link_to "View Full Breakdown", line_item_material_breakdown_path(@line_item_material.line_item_material_breakdown), class: "btn btn-primary" %>
+    <%= link_to "Edit", edit_line_item_material_path(@line_item_material), class: "btn btn-ghost" %>
+    <%= button_to "Delete", @line_item_material, method: :delete, class: "btn btn-error", data: { turbo_confirm: "Are you sure?" } %>
+    <%= link_to "Back to Materials", line_item_materials_path, class: "btn btn-ghost" %>
+  </div>
 </div>

@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :line_item_material_breakdowns
   resources :line_item_materials
   resources :line_item_rate_build_ups
   resources :boqs do

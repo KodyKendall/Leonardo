@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_27_165544) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_27_180912) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -206,14 +206,23 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_27_165544) do
     t.index ["project_id"], name: "index_fabrication_records_on_project_id"
   end
 
-  create_table "line_item_materials", force: :cascade do |t|
+  create_table "line_item_material_breakdowns", force: :cascade do |t|
     t.bigint "tender_line_item_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tender_line_item_id"], name: "index_line_item_material_breakdowns_on_tender_line_item_id"
+  end
+
+  create_table "line_item_materials", force: :cascade do |t|
+    t.bigint "tender_line_item_id", null: falsee
     t.bigint "material_supply_id", null: false
     t.decimal "proportion", precision: 5, scale: 4, default: "0.0"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "line_item_material_breakdown_id", null: false
+    t.index ["line_item_material_breakdown_id"], name: "index_line_item_materials_on_line_item_material_breakdown_id"
     t.index ["material_supply_id"], name: "index_line_item_materials_on_material_supply_id"
-    t.index ["tender_line_item_id", "material_supply_id"], name: "idx_on_tender_line_item_id_material_supply_id_beb386dde4", unique: true
+    t.index ["tender_line_item_id", "material_supply_id"], name: "idx_on_tender_line_item_id_material_supply_id_beb386dde4"
     t.index ["tender_line_item_id"], name: "index_line_item_materials_on_tender_line_item_id"
   end
 
@@ -400,6 +409,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_27_165544) do
   add_foreign_key "claims", "projects"
   add_foreign_key "claims", "users", column: "submitted_by_id"
   add_foreign_key "fabrication_records", "projects"
+  add_foreign_key "line_item_material_breakdowns", "tender_line_items"
+  add_foreign_key "line_item_materials", "line_item_material_breakdowns"
   add_foreign_key "line_item_materials", "material_supplies"
   add_foreign_key "line_item_materials", "tender_line_items"
   add_foreign_key "line_item_rate_build_ups", "tender_line_items"

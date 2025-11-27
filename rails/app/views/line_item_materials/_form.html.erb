@@ -11,19 +11,28 @@
     </div>
   <% end %>
 
-  <div class="my-5">
-    <%= form.label :tender_line_item_id %>
-    <%= form.text_field :tender_line_item_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_material.errors[:tender_line_item_id].none?, "border-red-400 focus:outline-red-600": line_item_material.errors[:tender_line_item_id].any?}] %>
-  </div>
+  <% if line_item_material.tender_line_item_id.present? || params[:tender_line_item_id].present? %>
+    <%= form.hidden_field :tender_line_item_id, value: line_item_material.tender_line_item_id.presence || params[:tender_line_item_id] %>
+  <% else %>
+    <div class="my-5">
+      <%= form.label :tender_line_item_id %>
+      <%= form.collection_select :tender_line_item_id, TenderLineItem.all, :id, :item_description, { prompt: "Select a tender line item" }, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_material.errors[:tender_line_item_id].none?, "border-red-400 focus:outline-red-600": line_item_material.errors[:tender_line_item_id].any?}] %>
+    </div>
+  <% end %>
+
+  <% if line_item_material.line_item_material_breakdown_id.present? || params[:line_item_material_breakdown_id].present? %>
+    <%= form.hidden_field :line_item_material_breakdown_id, value: line_item_material.line_item_material_breakdown_id.presence || params[:line_item_material_breakdown_id] %>
+  <% end %>
 
   <div class="my-5">
     <%= form.label :material_supply_id %>
-    <%= form.text_field :material_supply_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_material.errors[:material_supply_id].none?, "border-red-400 focus:outline-red-600": line_item_material.errors[:material_supply_id].any?}] %>
+    <%= form.collection_select :material_supply_id, MaterialSupply.all, :id, :name, { prompt: "Select a material supply" }, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_material.errors[:material_supply_id].none?, "border-red-400 focus:outline-red-600": line_item_material.errors[:material_supply_id].any?}] %>
   </div>
 
   <div class="my-5">
     <%= form.label :proportion %>
-    <%= form.text_field :proportion, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_material.errors[:proportion].none?, "border-red-400 focus:outline-red-600": line_item_material.errors[:proportion].any?}] %>
+    <p class="text-sm text-gray-600 mt-1 mb-2">Enter as decimal (e.g., 0.25 for 25%, 0.80 for 80%, 1.0 for 100%)</p>
+    <%= form.text_field :proportion, placeholder: "0.00", class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_material.errors[:proportion].none?, "border-red-400 focus:outline-red-600": line_item_material.errors[:proportion].any?}] %>
   </div>
 
   <div class="inline">
