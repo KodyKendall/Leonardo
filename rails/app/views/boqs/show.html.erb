@@ -1,15 +1,47 @@
+<!-- Required LlamaBot Imports -->
+<% if defined?(javascript_importmap_tags) %> <!-- Rails 7+ -->
+  <%= javascript_importmap_tags %>
+<% else %> <!-- Rails 6 -->
+  <%= javascript_include_tag "application" %>
+<% end %>
+
+<%= javascript_include_tag "llama_bot_rails/application" %>
+<% if defined?(action_cable_meta_tag) %>
+  <%= action_cable_meta_tag %>
+<% end %>
+
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- marked.js for Markdown parsing (REQUIRED!) -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 <div class="container mx-auto p-6">
   <div class="flex justify-between items-center mb-6">
     <div>
       <h1 class="text-3xl font-bold"><%= @boq.boq_name %></h1>
       <p class="text-gray-600 mt-1">
-        <% if @boq.client_name %>
+        <% if @boq.tender %>
+          <span class="inline-flex items-center gap-2">
+            <i class="fa-solid fa-folder text-orange-600"></i>
+            <%= link_to @boq.tender.tender_name, tender_path(@boq.tender), class: "text-blue-600 hover:text-blue-800 font-medium" %>
+          </span>
+        <% elsif @boq.client_name %>
           <%= @boq.client_name %> 
           <% if @boq.client_reference %> · <%= @boq.client_reference %><% end %>
         <% end %>
       </p>
     </div>
-    <%= link_to "Back to BOQs", boqs_path, class: "btn btn-ghost" %>
+    <div class="flex gap-2">
+      <% if @boq.tender %>
+        <%= link_to "Back to Tender", tender_path(@boq.tender), class: "btn btn-ghost" %>
+      <% else %>
+        <%= link_to "Back to BOQs", boqs_path, class: "btn btn-ghost" %>
+      <% end %>
+    </div>
   </div>
 
   <!-- BOQ Metadata -->
@@ -61,46 +93,400 @@
         <% end %>
       </div>
 
+      <!-- Header Row Selector -->
+      <% if @boq.csv_file.attached? %>
+        <div class="mb-4 flex items-end gap-3">
+          <div class="form-control w-32">
+            <label class="label">
+              <span class="label-text font-semibold text-sm">Header Row</span>
+            </label>
+            <input 
+              type="number" 
+              id="header-row-input" 
+              min="0" 
+              value="<%= @boq.header_row_index || 0 %>"
+              class="input input-sm input-bordered"
+              placeholder="Row number"
+            />
+            <label class="label">
+              <span class="label-text-alt text-xs text-gray-500">Which row contains column headers?</span>
+            </label>
+          </div>
+          <button 
+            id="update-header-btn" 
+            class="btn btn-sm btn-primary gap-2"
+            onclick="updateHeaderRow()"
+          >
+            <i class="fas fa-refresh"></i>
+            Apply
+          </button>
+        </div>
+      <% end %>
+
       <!-- CSV Preview -->
       <% if @boq.csv_file.attached? %>
-        <div class="bg-gray-50 rounded border border-gray-200 p-4 overflow-x-auto" style="max-height: 400px; overflow-y: auto;">
-          <table class="table table-sm text-xs">
-            <% 
-              csv_content = @boq.csv_file.download
-              csv_lines = csv_content.split("\n").first(20)
-              csv_lines.each_with_index do |line, idx|
-                columns = line.strip.split(',').map(&:strip)
-            %>
-              <% if idx == 0 %>
+        <div id="csv-container" data-show-all="false">
+          <div id="csv-preview" class="bg-gray-50 rounded border border-gray-200 p-4 overflow-x-auto" style="max-height: 400px; overflow-y: auto;">
+            <table class="table table-sm text-xs">
+              <% 
+                require 'csv'
+                begin
+                  csv_content = @boq.csv_file.download.force_encoding('UTF-8')
+                  # Try parsing with liberal_parsing first for complex CSVs
+                  all_rows = CSV.parse(csv_content, liberal_parsing: true) rescue CSV.parse(csv_content)
+                  header_row_idx = @boq.header_row_index || 0
+                  
+                  # Get headers from the specified row
+                  headers = all_rows[header_row_idx] || [] rescue []
+                  
+                  # Get preview rows (starting after header row, max 20)
+                  preview_rows = []
+                  all_rows.each_with_index do |row, idx|
+                    next if idx <= header_row_idx || preview_rows.length >= 20
+                    next if row.compact.empty?
+                    preview_rows << row
+                  end
+                  csv_parse_error = false
+                rescue => e
+                  csv_parse_error = true
+                  csv_error_message = e.message
+                  headers = []
+                  preview_rows = []
+                end
+              %>
+                <% if csv_parse_error %>
+                  <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                      <p class="font-semibold mb-1">Unable to parse CSV preview</p>
+                      <p class="text-sm"><%= csv_error_message %></p>
+                      <p class="text-sm mt-2">This file may have a complex format. You can still download it or adjust the header row number above to help the parser.</p>
+                    </div>
+                  </div>
+                <% elsif headers.any? %>
                 <thead>
                   <tr>
-                    <% columns.each do |col| %>
+                    <% headers.each do |col| %>
                       <th><%= col %></th>
                     <% end %>
                   </tr>
                 </thead>
-              <% else %>
-                <% if idx == 1 %>
-                  <tbody>
-                <% end %>
-                <tr>
-                  <% columns.each do |col| %>
-                    <td><%= col %></td>
+                <tbody>
+                  <% preview_rows.each do |row| %>
+                    <tr>
+                      <% row.each do |col| %>
+                        <td><%= col %></td>
+                      <% end %>
+                    </tr>
                   <% end %>
-                </tr>
-              <% end %>
-            <% end %>
-            </tbody>
-          </table>
+                </tbody>
+                <% else %>
+                  <tr><td colspan="10" class="text-center text-gray-500 py-4">No data to display</td></tr>
+                <% end %>
+            </table>
+          </div>
+
+          <div id="csv-full" class="bg-gray-50 rounded border border-gray-200 p-4 overflow-x-auto hidden" style="max-height: 600px; overflow-y: auto;">
+            <table class="table table-sm text-xs">
+              <% 
+                # Use same logic for full view
+                unless csv_parse_error
+                  full_rows = []
+                  all_rows.each_with_index do |row, idx|
+                    next if idx <= header_row_idx || row.compact.empty?
+                    full_rows << row
+                  end
+                else
+                  full_rows = []
+                end
+              %>
+                <% if headers.any? %>
+                <thead>
+                  <tr>
+                    <% headers.each do |col| %>
+                      <th><%= col %></th>
+                    <% end %>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% full_rows.each do |row| %>
+                    <tr>
+                      <% row.each do |col| %>
+                        <td><%= col %></td>
+                      <% end %>
+                    </tr>
+                  <% end %>
+                </tbody>
+                <% else %>
+                  <tr><td colspan="10" class="text-center text-gray-500 py-4">No data to display</td></tr>
+                <% end %>
+            </table>
+          </div>
+
           <% 
-            total_rows = csv_content.split("\n").count
-            if total_rows > 20
+            total_rows = csv_parse_error ? 0 : (all_rows.count - header_row_idx - 1)
+            if !csv_parse_error && total_rows > 20
           %>
-            <div class="text-xs text-gray-500 mt-3 text-center">
-              Showing first 20 rows of <%= total_rows %> total rows
+            <div class="flex justify-between items-center mt-3">
+              <div class="text-xs text-gray-500">
+                <span id="row-count">Showing first 20 rows of <%= total_rows %> total data rows</span>
+              </div>
+              <div class="flex gap-2">
+                <button id="copy-all-btn" class="btn btn-sm btn-ghost" onclick="copyAllToClipboard()">
+                  <i class="fas fa-copy"></i> Copy All
+                </button>
+                <button id="view-all-btn" class="btn btn-sm btn-ghost" onclick="toggleViewAll()">
+                  <i class="fas fa-expand"></i> View All
+                </button>
+              </div>
             </div>
           <% end %>
         </div>
+
+        <script>
+          function copyAllToClipboard() {
+            const boqId = window.location.pathname.split('/').pop();
+            const headerRowIdx = parseInt(document.getElementById('header-row-input').value, 10) || 0;
+            
+            // Show loading state
+            const btn = document.getElementById('copy-all-btn');
+            const originalHTML = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Copying...';
+            
+            try {
+              // Fetch complete CSV data from API with header row offset
+              fetch(`/boqs/${boqId}/csv_as_json?header_row_index=${headerRowIdx}`)
+                .then(response => {
+                  if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                  }
+                  return response.json();
+                })
+                .then(jsonArray => {
+                  // Convert to formatted JSON string
+                  const jsonString = JSON.stringify(jsonArray, null, 2);
+                  
+                  // Copy to clipboard
+                  navigator.clipboard.writeText(jsonString).then(() => {
+                    showToast(`JSON copied to clipboard! (${jsonArray.length} rows)`, 'success');
+                  }).catch(err => {
+                    console.error('Clipboard API failed:', err);
+                    copyJSONAsText(jsonString);
+                  });
+                })
+                .catch(err => {
+                  console.error('Failed to fetch CSV data:', err);
+                  showToast('Failed to fetch CSV data', 'error');
+                })
+                .finally(() => {
+                  btn.disabled = false;
+                  btn.innerHTML = originalHTML;
+                });
+            } catch (err) {
+              console.error('Error:', err);
+              showToast('Failed to copy CSV data', 'error');
+              btn.disabled = false;
+              btn.innerHTML = originalHTML;
+            }
+          }
+
+          function copyJSONAsText(jsonString) {
+            const textarea = document.createElement('textarea');
+            textarea.value = jsonString;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            
+            try {
+              textarea.select();
+              document.execCommand('copy');
+              showToast('JSON copied to clipboard!', 'success');
+            } catch (err) {
+              console.error('Fallback copy failed:', err);
+              showToast('Failed to copy to clipboard', 'error');
+            } finally {
+              document.body.removeChild(textarea);
+            }
+          }
+
+          function showToast(message, type = 'success') {
+            const toastContainer = document.getElementById('toast-container') || createToastContainer();
+            
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type} shadow-lg fixed top-4 right-4 z-50 flex items-center gap-2 animate-fade-in max-w-sm`;
+            toast.innerHTML = `
+              <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+              <span>${message}</span>
+            `;
+            
+            toastContainer.appendChild(toast);
+            
+            setTimeout(() => {
+              toast.classList.add('animate-fade-out');
+              setTimeout(() => toast.remove(), 300);
+            }, 3000);
+          }
+
+          function createToastContainer() {
+            const container = document.createElement('div');
+            container.id = 'toast-container';
+            document.body.appendChild(container);
+            return container;
+          }
+        </script>
+
+        <style>
+          @keyframes fadeIn {
+            from {
+              opacity: 0;
+              transform: translateY(10px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          
+          @keyframes fadeOut {
+            from {
+              opacity: 1;
+              transform: translateY(0);
+            }
+            to {
+              opacity: 0;
+              transform: translateY(10px);
+            }
+          }
+          
+          .animate-fade-in {
+            animation: fadeIn 0.3s ease-out;
+          }
+          
+          .animate-fade-out {
+            animation: fadeOut 0.3s ease-out;
+          }
+        </style>
+
+        <script>
+          function toggleViewAll() {
+            const container = document.getElementById('csv-container');
+            const preview = document.getElementById('csv-preview');
+            const full = document.getElementById('csv-full');
+            const btn = document.getElementById('view-all-btn');
+            const rowCount = document.getElementById('row-count');
+            const showAll = container.getAttribute('data-show-all') === 'true';
+            
+            if (showAll) {
+              // Hide all, show preview
+              preview.classList.remove('hidden');
+              full.classList.add('hidden');
+              container.setAttribute('data-show-all', 'false');
+              btn.innerHTML = '<i class="fas fa-expand"></i> View All';
+              rowCount.textContent = 'Showing first 20 rows of <%= total_rows %> total data rows';
+            } else {
+              // Show all
+              preview.classList.add('hidden');
+              full.classList.remove('hidden');
+              container.setAttribute('data-show-all', 'true');
+              btn.innerHTML = '<i class="fas fa-compress"></i> View Less';
+              rowCount.textContent = 'Showing all <%= total_rows %> data rows';
+            }
+          }
+
+          async function updateHeaderRow() {
+            const headerInput = document.getElementById('header-row-input');
+            const headerRowIdx = parseInt(headerInput.value, 10);
+            const boqId = window.location.pathname.split('/').pop();
+            const btn = document.getElementById('update-header-btn');
+            const originalHTML = btn.innerHTML;
+
+            // Show loading state
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
+
+            try {
+              const response = await fetch(`/boqs/${boqId}/update_header_row`, {
+                method: 'PATCH',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({ header_row_index: headerRowIdx })
+              });
+
+              if (!response.ok) {
+                const errorData = await response.json();
+                showToast(errorData.error || 'Failed to update header row', 'error');
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+                return;
+              }
+
+              const data = await response.json();
+              
+              // Update the table with new headers and preview
+              updateCSVPreview(data.headers, data.preview_rows, data.total_rows);
+              
+              showToast('Header row updated successfully!', 'success');
+            } catch (error) {
+              console.error('Error updating header row:', error);
+              showToast('Failed to update header row', 'error');
+            } finally {
+              btn.disabled = false;
+              btn.innerHTML = originalHTML;
+            }
+          }
+
+          function updateCSVPreview(headers, previewRows, totalRows) {
+            const previewTable = document.querySelector('#csv-preview table');
+            const fullTable = document.querySelector('#csv-full table');
+            const rowCountSpan = document.getElementById('row-count');
+
+            if (!previewTable) return;
+
+            // Build header row HTML
+            let headerHTML = '<thead><tr>';
+            headers.forEach(header => {
+              headerHTML += `<th>${escapeHtml(header)}</th>`;
+            });
+            headerHTML += '</tr></thead>';
+
+            // Build preview rows HTML
+            let previewBodyHTML = '<tbody>';
+            previewRows.forEach(row => {
+              previewBodyHTML += '<tr>';
+              row.columns.forEach(col => {
+                previewBodyHTML += `<td>${escapeHtml(col)}</td>`;
+              });
+              previewBodyHTML += '</tr>';
+            });
+            previewBodyHTML += '</tbody>';
+
+            // Update preview table
+            previewTable.innerHTML = headerHTML + previewBodyHTML;
+
+            // Update full table if it exists
+            if (fullTable) {
+              fullTable.innerHTML = headerHTML + previewBodyHTML;
+            }
+
+            // Update row count
+            if (rowCountSpan) {
+              if (totalRows > 20) {
+                rowCountSpan.textContent = `Showing first 20 rows of ${totalRows} total data rows`;
+              } else {
+                rowCountSpan.textContent = `Showing all ${totalRows} data rows`;
+              }
+            }
+          }
+
+          function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+          }
+        </script>
       <% else %>
         <div class="alert alert-info">
           <i class="fas fa-info-circle"></i>
@@ -141,12 +527,12 @@
 
         <!-- Input Area -->
         <div class="border-t border-gray-200 bg-white p-4 flex gap-2">
-          <input 
+          <textarea 
             data-llamabot="message-input" 
-            type="text" 
             placeholder="Ask the AI to parse the BOQ..." 
-            class="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"
-          />
+            class="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none"
+            rows="4"
+          ></textarea>
           <button 
             data-llamabot="send-button" 
             class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
@@ -163,22 +549,11 @@
         <div class="text-xs font-semibold text-gray-600 mb-3 uppercase tracking-wide">Quick Actions</div>
         <div class="flex flex-wrap gap-2">
           <button 
+            id="analyze-structure-btn"
             data-llamabot="suggested-prompt"
             class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
           >
-            <i class="fas fa-search mr-1"></i> Analyze Structure
-          </button>
-          <button 
-            data-llamabot="suggested-prompt"
-            class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
-          >
-            <i class="fas fa-wand-magic-2 mr-1"></i> Auto-Parse All Items
-          </button>
-          <button 
-            data-llamabot="suggested-prompt"
-            class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
-          >
-            <i class="fas fa-tags mr-1"></i> Categorize Items
+            <i class="fas fa-search mr-1"></i> Parse BOQ
           </button>
         </div>
       </div>
@@ -188,52 +563,383 @@
   <!-- BOQ Items -->
   <div class="card bg-base-100 shadow">
     <div class="card-body">
-      <h2 class="card-title mb-4">
-        <i class="fas fa-list"></i>
-        BOQ Line Items
-        <span class="badge badge-lg"><%= @boq_items.count %></span>
-      </h2>
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="card-title mb-0">
+          <i class="fas fa-list"></i>
+          BOQ Line Items
+          <span id="items-count" class="badge badge-lg"><%= @boq_items.count %></span>
+        </h2>
+        <div class="flex gap-2">
+          <%= link_to export_boq_csv_boq_path(@boq, format: :csv), class: "btn btn-sm btn-outline gap-2" do %>
+            <i class="fas fa-download"></i>
+            Download CSV
+          <% end %>
+          <button 
+            id="refresh-items-btn" 
+            class="btn btn-sm btn-outline gap-2"
+            onclick="refreshBoqItems()"
+          >
+            <i class="fas fa-refresh"></i>
+            Refresh
+          </button>
+        </div>
+      </div>
 
-      <% if @boq_items.any? %>
-        <div class="overflow-x-auto">
-          <table class="table table-sm w-full">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Item Number</th>
-                <th>Description</th>
-                <th>Category</th>
-                <th>UOM</th>
-                <th>Quantity</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% @boq_items.each_with_index do |item, idx| %>
+      <div id="items-container">
+        <% if @boq_items.any? %>
+          <div class="overflow-x-auto">
+            <table class="table table-sm w-full">
+              <thead>
                 <tr>
-                  <td><%= idx + 1 %></td>
-                  <td class="font-mono text-sm"><%= item.item_number || "—" %></td>
-                  <td>
-                    <div class="text-sm"><%= truncate(item.item_description, length: 60) %></div>
-                    <% if item.notes %>
-                      <div class="text-xs text-gray-500 mt-1"><%= item.notes %></div>
-                    <% end %>
-                  </td>
-                  <td><span class="badge badge-sm"><%= item.section_category || "—" %></span></td>
-                  <td><%= item.unit_of_measure || "—" %></td>
-                  <td class="text-right font-semibold"><%= item.quantity || "—" %></td>
+                  <th>#</th>
+                  <th>Page</th>
+                  <th>Item Number</th>
+                  <th>Description</th>
+                  <th>Category</th>
+                  <th>UOM</th>
+                  <th>Quantity</th>
+                  <th>Actions</th>
                 </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
-      <% else %>
-        <div class="alert alert-info">
-          <i class="fas fa-info-circle"></i>
-          <div>No line items yet. Parse the BOQ to extract items.</div>
-        </div>
-      <% end %>
+              </thead>
+              <tbody id="items-tbody">
+                <% @boq_items.each_with_index do |item, idx| %>
+                  <tr class="boq-item-row" data-item-id="<%= item.id %>" data-category-key="<%= item.section_category || "" %>" data-category-display="<%= BoqItem.section_categories[item.section_category] || "" %>">
+                    <td><%= idx + 1 %></td>
+                    <td class="font-mono text-sm editable-cell" data-field="page_number" title="Click to edit"><%= item.page_number || "—" %></td>
+                    <td class="font-mono text-sm editable-cell" data-field="item_number" title="Click to edit"><%= item.item_number || "—" %></td>
+                    <td class="editable-cell" data-field="item_description" title="Click to edit">
+                      <div class="text-sm"><%= truncate(item.item_description, length: 60) %></div>
+                      <% if item.notes %>
+                        <div class="text-xs text-gray-500 mt-1"><%= item.notes %></div>
+                      <% end %>
+                    </td>
+                    <td class="editable-cell" data-field="section_category" title="Click to edit"><span class="badge badge-sm"><%= item.section_category || "—" %></span></td>
+                    <td class="editable-cell" data-field="unit_of_measure" title="Click to edit"><%= item.unit_of_measure || "—" %></td>
+                    <td class="text-right font-semibold editable-cell" data-field="quantity" title="Click to edit"><%= item.quantity || "—" %></td>
+                    <td class="text-center">
+                      <button class="btn btn-xs btn-ghost edit-row-btn" onclick="editRow(this, <%= item.id %>)" title="Edit this row">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <div id="empty-state" class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <div>No line items yet. Parse the BOQ to extract items.</div>
+          </div>
+        <% end %>
+      </div>
     </div>
   </div>
+
+  <script>
+    // Editable table functionality
+    function editRow(button, itemId) {
+      const row = button.closest('tr');
+      const isEditing = row.classList.contains('editing-mode');
+      
+      if (isEditing) {
+        // Cancel edit mode
+        cancelEdit(row);
+      } else {
+        // Enter edit mode
+        enableEditMode(row, itemId);
+      }
+    }
+
+    function enableEditMode(row, itemId) {
+      row.classList.add('editing-mode');
+      
+      // Get the edit button and change it to show cancel/save
+      const editBtn = row.querySelector('.edit-row-btn');
+      editBtn.innerHTML = '<i class="fas fa-times"></i>';
+      editBtn.classList.add('btn-error');
+      editBtn.classList.remove('btn-ghost');
+      editBtn.title = 'Cancel editing';
+      
+      // Add save button next to cancel button
+      const saveBtn = document.createElement('button');
+      saveBtn.className = 'btn btn-xs btn-success ml-1';
+      saveBtn.innerHTML = '<i class="fas fa-check"></i>';
+      saveBtn.title = 'Save changes';
+      saveBtn.onclick = () => saveRowChanges(row, itemId);
+      editBtn.parentElement.appendChild(saveBtn);
+      
+      // Make cells editable
+      const editableCells = row.querySelectorAll('.editable-cell');
+      editableCells.forEach(cell => {
+        const field = cell.getAttribute('data-field');
+        let currentValue = cell.textContent.trim().replace('—', '');
+        
+        // Create appropriate input based on field type
+        let input;
+        if (field === 'section_category') {
+          // For category, get the display value from row data attribute
+          const categoryDisplay = row.getAttribute('data-category-display') || currentValue;
+          input = createCategorySelect(field, categoryDisplay);
+        } else if (field === 'quantity' || field === 'page_number') {
+          input = document.createElement('input');
+          input.type = 'number';
+          input.step = field === 'quantity' ? '0.01' : '1';
+          input.value = currentValue;
+          input.className = 'input input-bordered input-sm w-full';
+        } else {
+          input = document.createElement('input');
+          input.type = field === 'item_description' ? 'text' : 'text';
+          input.value = currentValue;
+          input.className = 'input input-bordered input-sm w-full';
+        }
+        
+        input.setAttribute('data-field', field);
+        cell.innerHTML = '';
+        cell.appendChild(input);
+      });
+    }
+
+    function createCategorySelect(field, currentValue) {
+      const select = document.createElement('select');
+      select.className = 'select select-bordered select-sm w-full';
+      select.setAttribute('data-field', field);
+      
+      const categories = [
+        'Blank',
+        'Steel Sections',
+        'Paintwork',
+        'Bolts',
+        'Gutter Meter',
+        'M16 Mechanical Anchor',
+        'M16 Chemical',
+        'M20 Chemical',
+        'M24 Chemical',
+        'M16 HD Bolt',
+        'M20 HD Bolt',
+        'M24 HD Bolt',
+        'M30 HD Bolt',
+        'M36 HD Bolt',
+        'M42 HD Bolt'
+      ];
+      
+      categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        option.selected = cat === currentValue;
+        select.appendChild(option);
+      });
+      
+      return select;
+    }
+
+    function cancelEdit(row) {
+      row.classList.remove('editing-mode');
+      
+      // Remove save button
+      const saveBtn = row.querySelector('.btn-success');
+      if (saveBtn) saveBtn.remove();
+      
+      // Reset edit button
+      const editBtn = row.querySelector('.edit-row-btn');
+      editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+      editBtn.classList.remove('btn-error');
+      editBtn.classList.add('btn-ghost');
+      editBtn.title = 'Edit this row';
+      
+      // Reload the row from the server to restore original values
+      const itemId = row.getAttribute('data-item-id');
+      reloadRow(row, itemId);
+    }
+
+    async function saveRowChanges(row, itemId) {
+      const editBtn = row.querySelector('.edit-row-btn');
+      const saveBtn = row.querySelector('.btn-success');
+      const originalEditHTML = editBtn.innerHTML;
+      const originalSaveHTML = saveBtn.innerHTML;
+      
+      // Show loading state
+      editBtn.disabled = true;
+      saveBtn.disabled = true;
+      editBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+      
+      try {
+        // Collect form data
+        const formData = new FormData();
+        const editableCells = row.querySelectorAll('.editable-cell');
+        const updateData = {};
+        
+        editableCells.forEach(cell => {
+          const field = cell.getAttribute('data-field');
+          const input = cell.querySelector('input, select');
+          if (input) {
+            updateData[field] = input.value;
+          }
+        });
+        
+        // Send update request to boq_items controller
+        const response = await fetch(`/boq_items/${itemId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+          },
+          body: JSON.stringify({ boq_item: updateData })
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          showToast('Failed to save changes: ' + (errorData.error || 'Unknown error'), 'error');
+          editBtn.disabled = false;
+          saveBtn.disabled = false;
+          editBtn.innerHTML = originalEditHTML;
+          saveBtn.innerHTML = originalSaveHTML;
+          return;
+        }
+        
+        const updatedItem = await response.json();
+        showToast('Changes saved successfully!', 'success');
+        
+        // Exit edit mode
+        row.classList.remove('editing-mode');
+        saveBtn.remove();
+        editBtn.innerHTML = originalEditHTML;
+        editBtn.classList.remove('btn-error');
+        editBtn.classList.add('btn-ghost');
+        editBtn.title = 'Edit this row';
+        editBtn.disabled = false;
+        
+        // Reload the row to display updated values
+        reloadRow(row, itemId);
+      } catch (error) {
+        console.error('Error saving changes:', error);
+        showToast('Failed to save changes', 'error');
+        editBtn.disabled = false;
+        saveBtn.disabled = false;
+        editBtn.innerHTML = originalEditHTML;
+        saveBtn.innerHTML = originalSaveHTML;
+      }
+    }
+
+    async function reloadRow(row, itemId) {
+      try {
+        const boqId = window.location.pathname.split('/').pop();
+        const response = await fetch(`/boq_items/${itemId}.json`);
+        
+        if (!response.ok) throw new Error('Failed to fetch item');
+        
+        const item = await response.json();
+        
+        // Update cells with new values
+        const cells = {
+          'page_number': item.page_number || '—',
+          'item_number': item.item_number || '—',
+          'item_description': item.item_description ? item.item_description.substring(0, 60) : '—',
+          'section_category': `<span class="badge badge-sm">${item.section_category || '—'}</span>`,
+          'unit_of_measure': item.unit_of_measure || '—',
+          'quantity': item.quantity || '—'
+        };
+        
+        row.querySelectorAll('.editable-cell').forEach(cell => {
+          const field = cell.getAttribute('data-field');
+          cell.innerHTML = cells[field];
+        });
+      } catch (error) {
+        console.error('Error reloading row:', error);
+        showToast('Error reloading row data', 'error');
+      }
+    }
+
+    async function refreshBoqItems() {
+      const btn = document.getElementById('refresh-items-btn');
+      const originalHTML = btn.innerHTML;
+      
+      // Show loading state
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+      
+      try {
+        const boqId = window.location.pathname.split('/').pop();
+        const response = await fetch(`/boqs/${boqId}.json`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        const items = data.boq_items || [];
+        
+        // Update count badge
+        document.getElementById('items-count').textContent = items.length;
+        
+        if (items.length === 0) {
+          // Show empty state
+          document.getElementById('items-container').innerHTML = `
+            <div id="empty-state" class="alert alert-info">
+              <i class="fas fa-info-circle"></i>
+              <div>No line items yet. Parse the BOQ to extract items.</div>
+            </div>
+          `;
+        } else {
+          // Build table HTML
+          let tableHTML = `
+            <div class="overflow-x-auto">
+              <table class="table table-sm w-full">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Page</th>
+                    <th>Item Number</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>UOM</th>
+                    <th>Quantity</th>
+                  </tr>
+                </thead>
+                <tbody id="items-tbody">
+          `;
+          
+          items.forEach((item, idx) => {
+            const notes = item.notes ? `<div class="text-xs text-gray-500 mt-1">${item.notes}</div>` : '';
+            tableHTML += `
+              <tr>
+                <td>${idx + 1}</td>
+                <td class="font-mono text-sm">${item.page_number || "—"}</td>
+                <td class="font-mono text-sm">${item.item_number || "—"}</td>
+                <td>
+                  <div class="text-sm">${item.item_description ? item.item_description.substring(0, 60) : "—"}</div>
+                  ${notes}
+                </td>
+                <td><span class="badge badge-sm">${item.section_category || "—"}</span></td>
+                <td>${item.unit_of_measure || "—"}</td>
+                <td class="text-right font-semibold">${item.quantity || "—"}</td>
+              </tr>
+            `;
+          });
+          
+          tableHTML += `
+                </tbody>
+              </table>
+            </div>
+          `;
+          
+          document.getElementById('items-container').innerHTML = tableHTML;
+        }
+        
+        // Show success toast
+        showToast(`Loaded ${items.length} line items`, 'success');
+      } catch (error) {
+        console.error('Error refreshing items:', error);
+        showToast('Failed to refresh items', 'error');
+      } finally {
+        // Restore button
+        btn.disabled = false;
+        btn.innerHTML = originalHTML;
+      }
+    }
+  </script>
 </div>
 
 <script type="module">
@@ -362,5 +1068,41 @@
   } else {
     initializeChat();
   }
+</script>
+
+<script>
+  // Handle "Parse BOQ" Quick Action button click
+  // Use event delegation to avoid timing issues with dynamic page navigation
+  document.addEventListener('click', async function(e) {
+    const analyzeBtn = e.target.closest('#analyze-structure-btn');
+    if (!analyzeBtn) return;
+    
+    e.preventDefault();
+    
+    const boqId = window.location.pathname.split('/').pop();
+    const headerRowInput = document.getElementById('header-row-input');
+    const headerRowIdx = headerRowInput ? parseInt(headerRowInput.value, 10) || 0 : 0;
+    
+    try {
+      // Fetch the CSV as JSON
+      const response = await fetch(`/boqs/${boqId}/csv_as_json?header_row_index=${headerRowIdx}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const jsonArray = await response.json();
+      const jsonString = JSON.stringify(jsonArray, null, 2);
+      
+      // Set the input field with the message template
+      const inputField = document.querySelector('[data-llamabot="message-input"]');
+      if (inputField) {
+        inputField.value = `Please parse this for the BOQ with ID = ${boqId}, Here is the raw CSV data: <CSV> ${jsonString} </CSV>`;
+        inputField.focus();
+      }
+    } catch (error) {
+      console.error('Error fetching CSV data:', error);
+      showToast('Failed to fetch CSV data for parsing', 'error');
+    }
+  });
 </script>
 

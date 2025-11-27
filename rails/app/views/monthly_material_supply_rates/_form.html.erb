@@ -1,0 +1,24 @@
+<%= form_with(model: monthly_material_supply_rate, class: "contents", local: true) do |form| %>
+  <% if monthly_material_supply_rate.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(monthly_material_supply_rate.errors.count, "error") %> prohibited this monthly_material_supply_rate from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% monthly_material_supply_rate.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :effective_from, "Select Month" %>
+    <% current_month = monthly_material_supply_rate.effective_from&.strftime("%Y-%m") || Date.today.strftime("%Y-%m") %>
+    <%= form.month_field :effective_from, value: current_month, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": monthly_material_supply_rate.errors[:effective_from].none?, "border-red-400 focus:outline-red-600": monthly_material_supply_rate.errors[:effective_from].any?}] %>
+    <p class="text-sm text-gray-500 mt-1">Rates for the entire selected month</p>
+  </div>
+
+  <div class="inline">
+    <%= form.submit monthly_material_supply_rate.new_record? ? "Create & Enter Rates" : "Update Month", class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

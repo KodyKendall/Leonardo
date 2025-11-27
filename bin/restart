@@ -1,0 +1,1 @@
+docker compose down llamapress && docker compose down llamabot && docker compose up -d 

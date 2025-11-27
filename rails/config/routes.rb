@@ -3,8 +3,13 @@ Rails.application.routes.draw do
     member do
       post :parse
       get :csv_download
+      get :csv_as_json
+      patch :update_header_row
+      get :export_boq_csv
     end
   end
+  resources :boq_items
+  resources :clients
   resources :fabrication_records
   resources :budget_allowances
   resources :budget_categories
@@ -12,7 +17,26 @@ Rails.application.routes.draw do
   resources :claim_line_items
   resources :claims
   resources :projects
-  resources :tenders
+  resources :tenders do
+    member do
+      get :builder
+      patch :update_inclusions_exclusions
+      post :mirror_boq_items
+    end
+    collection do
+      post :quick_create
+    end
+    resources :boqs, only: [:create]
+    resources :tender_line_items
+  end
+  resources :suppliers
+  resources :material_supplies
+  resources :monthly_material_supply_rates do
+    member do
+      post :save_rate
+    end
+  end
+  resources :material_supply_rates
   devise_for :users, controllers: { registrations: 'users/registrations' }
   resources :users do
     member do
@@ -35,6 +59,7 @@ Rails.application.routes.draw do
 
   root "dashboards#index"
   get "dashboard" => "dashboards#index"
+  get "old_dashboard" => "dashboards#old_dashboard"
   post "upload_tender_qob" => "dashboards#upload_tender_qob"
   get "api/dashboard_metrics" => "dashboards#metrics"
   # root "prototypes#show", page: "home"

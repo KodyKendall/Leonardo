@@ -2,390 +2,98 @@
   <!-- Main Content -->
   <div class="p-6 max-w-7xl mx-auto">
     <!-- Welcome Section -->
-    <div class="mb-8">
-      <h1 class="text-4xl font-bold text-slate-900 mb-2">
-        Welcome back, <%= current_user.email.split('@')[0].capitalize %>! 👋
+    <div class="mb-12">
+      <h1 class="text-5xl font-bold text-slate-900 mb-3">
+        Tenders
       </h1>
-      <p class="text-slate-600">Manage your contracts, projects, and budgets</p>
+      <p class="text-lg text-slate-600">Manage and track all your tenders in one place</p>
     </div>
 
-    <!-- Upload Tender QOB Section -->
+    <!-- Primary CTA Section -->
     <div class="mb-12">
-      <div class="card bg-gradient-to-br from-blue-50 to-indigo-50 shadow-md border border-blue-200">
-        <div class="card-body">
-          <div class="flex items-center gap-3 mb-4">
-            <i class="fas fa-cloud-upload-alt text-blue-600 text-2xl"></i>
-            <h2 class="card-title text-slate-900">Upload Tender QOB</h2>
-          </div>
-          <p class="text-slate-700 mb-6">Upload your Tender Quote of Business (QOB) file. Only CSV files are accepted.</p>
-          
-          <%= form_with url: upload_tender_qob_path, local: true, multipart: true, data: { turbo: false }, class: "space-y-4" do |form| %>
-            <div class="form-control">
-              <label class="label">
-                <span class="label-text font-medium text-slate-700">Select File</span>
-              </label>
-              <div class="file-input file-input-bordered file-input-primary w-full">
-                <%= form.file_field :qob_file, accept: ".csv,.xlsx", class: "w-full" %>
-              </div>
-              <label class="label">
-                <span class="label-text-alt text-slate-500">Accepted formats: CSV (.csv) or Excel (.xlsx)</span>
-              </label>
-            </div>
-            
-            <div class="flex gap-3">
-              <%= form.submit "Upload QOB", class: "btn btn-primary gap-2" %>
-              <%= link_to tenders_path, class: "btn btn-ghost gap-1" do %>
-                <i class="fas fa-list"></i>View Tenders
-              <% end %>
-            </div>
+      <div class="card bg-gradient-to-br from-blue-600 to-blue-700 shadow-lg border-0">
+        <div class="card-body items-center text-center py-12">
+          <i class="fas fa-file-contract text-white text-5xl mb-4"></i>
+          <h2 class="card-title text-white text-3xl mb-3">Ready to start a new tender?</h2>
+          <p class="text-blue-100 mb-6 max-w-md">Create a new tender and begin managing your quote of business</p>
+          <%= link_to new_tender_path, class: "btn btn-lg btn-warning gap-2 shadow-lg" do %>
+            <i class="fas fa-plus"></i>Start new Tender
           <% end %>
         </div>
       </div>
     </div>
 
-    <!-- Key Metrics Section -->
+    <!-- Tender Metrics Section -->
     <div class="mb-12">
-      <h2 class="text-2xl font-bold text-slate-900 mb-6">Key Metrics</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <h2 class="text-2xl font-bold text-slate-900 mb-6">Tender Overview</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <!-- Total Tenders Card -->
         <div class="stat bg-white shadow-md border border-slate-200 rounded-lg hover:shadow-lg transition">
           <div class="stat-figure text-blue-600">
             <i class="fas fa-file-contract text-3xl"></i>
           </div>
           <div class="stat-title text-slate-600">Total Tenders</div>
-          <div class="stat-value text-blue-600" id="tender-count">0</div>
-          <div class="stat-desc text-slate-500" id="tender-status">Loading...</div>
+          <div class="stat-value text-blue-600"><%= @total_tenders %></div>
+          <div class="stat-desc text-slate-500"><%= @draft_tenders > 0 ? "#{@draft_tenders} draft" : "All submitted" %></div>
         </div>
 
-        <!-- Active Projects Card -->
+        <!-- Active Tenders Card -->
         <div class="stat bg-white shadow-md border border-slate-200 rounded-lg hover:shadow-lg transition">
           <div class="stat-figure text-emerald-600">
-            <i class="fas fa-project-diagram text-3xl"></i>
+            <i class="fas fa-check-circle text-3xl"></i>
           </div>
-          <div class="stat-title text-slate-600">Active Projects</div>
-          <div class="stat-value text-emerald-600" id="project-count">0</div>
-          <div class="stat-desc text-slate-500" id="project-status">Loading...</div>
+          <div class="stat-title text-slate-600">Active Tenders</div>
+          <div class="stat-value text-emerald-600"><%= @active_tenders %></div>
+          <div class="stat-desc text-slate-500">Currently in progress</div>
         </div>
 
-        <!-- Pending Claims Card -->
+        <!-- Draft Tenders Card -->
         <div class="stat bg-white shadow-md border border-slate-200 rounded-lg hover:shadow-lg transition">
           <div class="stat-figure text-amber-600">
-            <i class="fas fa-clock text-3xl"></i>
+            <i class="fas fa-edit text-3xl"></i>
           </div>
-          <div class="stat-title text-slate-600">Pending Claims</div>
-          <div class="stat-value text-amber-600" id="claim-count">0</div>
-          <div class="stat-desc text-slate-500" id="claim-status">Loading...</div>
-        </div>
-
-        <!-- Budget Utilization Card -->
-        <div class="stat bg-white shadow-md border border-slate-200 rounded-lg hover:shadow-lg transition">
-          <div class="stat-figure text-rose-600">
-            <i class="fas fa-chart-pie text-3xl"></i>
-          </div>
-          <div class="stat-title text-slate-600">Total Budget</div>
-          <div class="stat-value text-rose-600 text-2xl" id="budget-total">$0</div>
-          <div class="stat-desc text-slate-500" id="budget-status">Loading...</div>
+          <div class="stat-title text-slate-600">Draft Tenders</div>
+          <div class="stat-value text-amber-600"><%= @draft_tenders %></div>
+          <div class="stat-desc text-slate-500">Awaiting submission</div>
         </div>
       </div>
     </div>
 
-    <!-- Risk Alerts Section -->
-    <div class="mb-12" id="alerts-section" style="display: none;">
-      <h2 class="text-2xl font-bold text-slate-900 mb-6">⚠️ Risk Alerts</h2>
-      <div id="alerts-container" class="space-y-4">
-        <!-- Alerts will be populated by JavaScript -->
-      </div>
-    </div>
-
-    <!-- Resource Navigation Cards -->
+    <!-- Quick Actions -->
     <div class="mb-12">
-      <h2 class="text-2xl font-bold text-slate-900 mb-6">Quick Access</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <!-- BOQs Card -->
+      <h2 class="text-2xl font-bold text-slate-900 mb-6">Quick Actions</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- View All Tenders -->
         <div class="card bg-white shadow-md border border-slate-200 hover:shadow-lg transition">
           <div class="card-body">
             <div class="flex items-center justify-between mb-3">
-              <h3 class="card-title text-lg text-slate-900">Bills of Quantity</h3>
+              <h3 class="card-title text-lg text-slate-900">View All Tenders</h3>
+              <i class="fas fa-list text-blue-500 text-2xl"></i>
+            </div>
+            <p class="text-slate-600 text-sm mb-4">Browse and manage all your tenders</p>
+            <%= link_to tenders_path, class: "btn btn-primary gap-2" do %>
+              <i class="fas fa-arrow-right"></i>View Tenders
+            <% end %>
+          </div>
+        </div>
+
+        <!-- View All BOQs -->
+        <div class="card bg-white shadow-md border border-slate-200 hover:shadow-lg transition">
+          <div class="card-body">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="card-title text-lg text-slate-900">View All BOQs</h3>
               <i class="fas fa-file-csv text-indigo-600 text-2xl"></i>
             </div>
-            <p class="text-slate-600 text-sm mb-4">Upload and parse BOQ documents</p>
-            <div class="card-actions justify-between">
-              <a href="<%= boqs_path %>" class="btn btn-sm btn-ghost gap-1">
-                <i class="fas fa-list"></i>View All
-              </a>
-              <a href="<%= new_boq_path %>" class="btn btn-sm btn-primary gap-1">
-                <i class="fas fa-plus"></i>Upload
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tenders Card -->
-        <div class="card bg-white shadow-md border border-slate-200 hover:shadow-lg transition">
-          <div class="card-body">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="card-title text-lg text-slate-900">Tenders</h3>
-              <i class="fas fa-file-invoice text-blue-500 text-2xl"></i>
-            </div>
-            <p class="text-slate-600 text-sm mb-4">Manage tender documents and details</p>
-            <div class="card-actions justify-between">
-              <a href="<%= tenders_path %>" class="btn btn-sm btn-ghost gap-1">
-                <i class="fas fa-list"></i>View All
-              </a>
-              <a href="<%= new_tender_path %>" class="btn btn-sm btn-primary gap-1">
-                <i class="fas fa-plus"></i>New
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Projects Card -->
-        <div class="card bg-white shadow-md border border-slate-200 hover:shadow-lg transition">
-          <div class="card-body">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="card-title text-lg text-slate-900">Projects</h3>
-              <i class="fas fa-project-diagram text-green-500 text-2xl"></i>
-            </div>
-            <p class="text-slate-600 text-sm mb-4">Track project status and budgets</p>
-            <div class="card-actions justify-between">
-              <a href="<%= projects_path %>" class="btn btn-sm btn-ghost gap-1">
-                <i class="fas fa-list"></i>View All
-              </a>
-              <a href="<%= new_project_path %>" class="btn btn-sm btn-primary gap-1">
-                <i class="fas fa-plus"></i>New
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Claims Card -->
-        <div class="card bg-white shadow-md border border-slate-200 hover:shadow-lg transition">
-          <div class="card-body">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="card-title text-lg text-slate-900">Claims</h3>
-              <i class="fas fa-receipt text-purple-500 text-2xl"></i>
-            </div>
-            <p class="text-slate-600 text-sm mb-4">Manage payment claims and tracking</p>
-            <div class="card-actions justify-between">
-              <a href="<%= claims_path %>" class="btn btn-sm btn-ghost gap-1">
-                <i class="fas fa-list"></i>View All
-              </a>
-              <a href="<%= new_claim_path %>" class="btn btn-sm btn-primary gap-1">
-                <i class="fas fa-plus"></i>New
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Variation Orders Card -->
-        <div class="card bg-white shadow-md border border-slate-200 hover:shadow-lg transition">
-          <div class="card-body">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="card-title text-lg text-slate-900">Variation Orders</h3>
-              <i class="fas fa-edit text-orange-500 text-2xl"></i>
-            </div>
-            <p class="text-slate-600 text-sm mb-4">Handle contract variations</p>
-            <div class="card-actions justify-between">
-              <a href="<%= variation_orders_path %>" class="btn btn-sm btn-ghost gap-1">
-                <i class="fas fa-list"></i>View All
-              </a>
-              <a href="<%= new_variation_order_path %>" class="btn btn-sm btn-primary gap-1">
-                <i class="fas fa-plus"></i>New
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Budget Categories Card -->
-        <div class="card bg-white shadow-md border border-slate-200 hover:shadow-lg transition">
-          <div class="card-body">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="card-title text-lg text-slate-900">Budget Categories</h3>
-              <i class="fas fa-list text-indigo-500 text-2xl"></i>
-            </div>
-            <p class="text-slate-600 text-sm mb-4">Define budget cost codes</p>
-            <div class="card-actions justify-between">
-              <a href="<%= budget_categories_path %>" class="btn btn-sm btn-ghost gap-1">
-                <i class="fas fa-list"></i>View All
-              </a>
-              <a href="<%= new_budget_category_path %>" class="btn btn-sm btn-primary gap-1">
-                <i class="fas fa-plus"></i>New
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Budget Allowances Card -->
-        <div class="card bg-white shadow-md border border-slate-200 hover:shadow-lg transition">
-          <div class="card-body">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="card-title text-lg text-slate-900">Budget Allowances</h3>
-              <i class="fas fa-chart-pie text-red-500 text-2xl"></i>
-            </div>
-            <p class="text-slate-600 text-sm mb-4">Allocate and track budgets</p>
-            <div class="card-actions justify-between">
-              <a href="<%= budget_allowances_path %>" class="btn btn-sm btn-ghost gap-1">
-                <i class="fas fa-list"></i>View All
-              </a>
-              <a href="<%= new_budget_allowance_path %>" class="btn btn-sm btn-primary gap-1">
-                <i class="fas fa-plus"></i>New
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Fabrication Records Card -->
-        <div class="card bg-white shadow-md border border-slate-200 hover:shadow-lg transition">
-          <div class="card-body">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="card-title text-lg text-slate-900">Fabrication Records</h3>
-              <i class="fas fa-industry text-cyan-500 text-2xl"></i>
-            </div>
-            <p class="text-slate-600 text-sm mb-4">Track fabrication outputs</p>
-            <div class="card-actions justify-between">
-              <a href="<%= fabrication_records_path %>" class="btn btn-sm btn-ghost gap-1">
-                <i class="fas fa-list"></i>View All
-              </a>
-              <a href="<%= new_fabrication_record_path %>" class="btn btn-sm btn-primary gap-1">
-                <i class="fas fa-plus"></i>New
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Claim Line Items Card -->
-        <div class="card bg-white shadow-md border border-slate-200 hover:shadow-lg transition">
-          <div class="card-body">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="card-title text-lg text-slate-900">Claim Line Items</h3>
-              <i class="fas fa-bars text-pink-500 text-2xl"></i>
-            </div>
-            <p class="text-slate-600 text-sm mb-4">Manage line item details</p>
-            <div class="card-actions justify-between">
-              <a href="<%= claim_line_items_path %>" class="btn btn-sm btn-ghost gap-1">
-                <i class="fas fa-list"></i>View All
-              </a>
-              <a href="<%= new_claim_line_item_path %>" class="btn btn-sm btn-primary gap-1">
-                <i class="fas fa-plus"></i>New
-              </a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Manage Users Card -->
-        <div class="card bg-white shadow-md border border-slate-200 hover:shadow-lg transition">
-          <div class="card-body">
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="card-title text-lg text-slate-900">Users</h3>
-              <i class="fas fa-users text-teal-500 text-2xl"></i>
-            </div>
-            <p class="text-slate-600 text-sm mb-4">Add and manage system users</p>
-            <div class="card-actions justify-between">
-              <a href="<%= users_path %>" class="btn btn-sm btn-ghost gap-1">
-                <i class="fas fa-list"></i>View All
-              </a>
-              <a href="<%= new_user_path %>" class="btn btn-sm btn-primary gap-1">
-                <i class="fas fa-plus"></i>New
-              </a>
-            </div>
+            <p class="text-slate-600 text-sm mb-4">Browse and manage Bills of Quantity documents</p>
+            <%= link_to boqs_path, class: "btn btn-primary gap-2" do %>
+              <i class="fas fa-arrow-right"></i>View BOQs
+            <% end %>
           </div>
         </div>
       </div>
     </div>
-
 
   </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', async function() {
-  try {
-    // Fetch dashboard data from API
-    const response = await fetch('/api/dashboard_metrics', {
-      headers: {
-        'Accept': 'application/json',
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || ''
-      }
-    });
 
-    if (!response.ok) {
-      console.warn('Dashboard metrics endpoint not available, showing placeholder data');
-      populatePlaceholderMetrics();
-      return;
-    }
-
-    const data = await response.json();
-    populateMetrics(data);
-  } catch (error) {
-    console.error('Error loading dashboard metrics:', error);
-    populatePlaceholderMetrics();
-  }
-
-  function populateMetrics(data) {
-    // Update Tenders
-    document.getElementById('tender-count').textContent = data.total_tenders || 0;
-    const draftTenders = data.draft_tenders || 0;
-    document.getElementById('tender-status').textContent = draftTenders > 0 ? `${draftTenders} draft` : 'All active';
-
-    // Update Projects
-    document.getElementById('project-count').textContent = data.active_projects || 0;
-    const inactiveProjects = data.inactive_projects || 0;
-    document.getElementById('project-status').textContent = inactiveProjects > 0 ? `${inactiveProjects} inactive` : 'All active';
-
-    // Update Claims
-    document.getElementById('claim-count').textContent = data.pending_claims || 0;
-    const approvedClaims = data.approved_claims || 0;
-    document.getElementById('claim-status').textContent = approvedClaims > 0 ? `${approvedClaims} approved` : 'No approved';
-
-    // Update Budget
-    const budgetTotal = parseFloat(data.total_budget || 0);
-    const budgetSpent = parseFloat(data.total_spent || 0);
-    document.getElementById('budget-total').textContent = '$' + budgetTotal.toLocaleString('en-US', {maximumFractionDigits: 0});
-    
-    const budgetPercent = budgetTotal > 0 ? Math.round((budgetSpent / budgetTotal) * 100) : 0;
-    document.getElementById('budget-status').textContent = `${budgetPercent}% spent`;
-
-    // Show Risk Alerts if any exist
-    if (data.alerts && data.alerts.length > 0) {
-      displayAlerts(data.alerts);
-    }
-  }
-
-  function populatePlaceholderMetrics() {
-    // Show placeholder data when API is not available
-    document.getElementById('tender-count').textContent = '—';
-    document.getElementById('tender-status').textContent = 'No data';
-    
-    document.getElementById('project-count').textContent = '—';
-    document.getElementById('project-status').textContent = 'No data';
-    
-    document.getElementById('claim-count').textContent = '—';
-    document.getElementById('claim-status').textContent = 'No data';
-    
-    document.getElementById('budget-total').textContent = '$—';
-    document.getElementById('budget-status').textContent = 'No data';
-  }
-
-  function displayAlerts(alerts) {
-    const alertsSection = document.getElementById('alerts-section');
-    const alertsContainer = document.getElementById('alerts-container');
-    
-    if (alerts.length === 0) return;
-    
-    alertsContainer.innerHTML = alerts.map(alert => `
-      <div class="alert alert-${alert.type === 'danger' ? 'error' : 'warning'} shadow-lg border-l-4">
-        <div class="flex items-start gap-4">
-          <i class="fas fa-exclamation-triangle text-xl flex-shrink-0 mt-1"></i>
-          <div class="flex-1">
-            <h3 class="font-bold">${alert.title}</h3>
-            <p class="text-sm">${alert.message}</p>
-          </div>
-          <a href="${alert.link}" class="btn btn-sm btn-ghost">View</a>
-        </div>
-      </div>
-    `).join('');
-    
-    alertsSection.style.display = 'block';
-  }
-});
-</script>

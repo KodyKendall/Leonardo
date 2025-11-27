@@ -1,0 +1,241 @@
+Elmarie is the Receptionist and Office worker at RSB Construction (Steel Construction Company)
+
+Kody Kendall  0:01  
+Good morning, elmarie, how are you doing? Good
+
+Speaker 1  5:06  
+in Good day, sir. There's a there's a the first link on this invite is a Google meet link. So I'm going to jump on that link and just wait on there, just in case. I'll read just text me if she comes in. I'll text you if she
+
+Kody Kendall  5:45  
+comes There. Okay, yeah, good idea. Thanks.
+
+Kody Kendall  6:01  
+Um,
+
+Kody Kendall  7:17  
+I think when you're here, right, Elmer, you jumped on Zoom, I think, Oh, amazing. Okay, sweet. Do
+
+Kody Kendall  7:43  
+here's Darren, here's Emery. Hi, omarie, how are you doing career?
+
+Speaker 1  7:53  
+Marie, how's it going? Good. Thanks to you. Very good. Thank you. Omri, I don't know if we've met, but do you know who I am?
+
+Unknown Speaker  8:02  
+No, no,
+
+Speaker 1  8:03  
+I am Richard's younger brother and obviously grandson of Richard's diamonds. And have have been involved in some capacity with RSB a little bit over the past few years. I even actually did a little bit of work in the in the what's the in the like, you know, welding part of 10 years ago, just in the school
+
+Speaker 2  8:28  
+holidays. But anyway, so nice to meet you. Nice to meet you too.
+
+Speaker 1  8:33  
+And I'll actually be in South Africa in a couple of weeks, so I'll probably come into the office and reach meet you in person as well. Cool looking for it cool. I think let's actually turn the videos off, just because the signal is not amazing from my side. So if there's less video coming in and out, that would be helpful to me off. Please all Maria. And then this is Kody. Kody is my business partner, basically, and he lives in the US, and he's a very programming, software kind of guy, and I'm not sure how much his how much context Richard gave you, but basically, we're building a little system for RSB, which will hopefully make your life easier with the Tendering process and so and for generally, RSB to have kind of a more central database of everything and a bit more clarity into how everything works, and all a bit of a smoother process. And so we've built a little, just a small little demo, but it would be great to kind of understand if this is you know, fulfills what helps would help you, and would be useful to you, and would be and follows the correct process so that people, so far is basically just uploading a BOQ, getting some information about that, and then creating the tender. We haven't fully completed the process, but we're kind of in the in the process of it. And so if you have any comments, any thoughts, anything that would make your life easier when seeing all this stuff, please let us know, and we'll improve that maybe. Maybe a first question would be, how in the current process, from what I understand it is, you basically receive the BOQ, put them all in those basically identify what are the line items in there, and then come up with basically a price for each line item using those tables, the material supply tables and the kind of internal rates tables, and get a price, is that kind of at a very high level, what the process looks like?
+
+Speaker 2  10:37  
+Yes, yeah. We get the tender invites from whoever, and then we just check sorry. I'm just moving my laptop because my dogs is barking and sorry.
+
+Unknown Speaker  10:51  
+Oh, good, all good.
+
+Speaker 2  10:55  
+Sorry, um Yeah. So then when we receive the BOQ, I usually just quickly go through it and then check the line items, delete, obviously, the blank lines, or I actually make a copy. Rather, I would say, make a copy, delete the blank lines, and then I copied that to our tender template document. Yes, makes sense? Yeah. From there on, we we select, you know, is it steel or is it bolts, or is it paint work, or whatever the case might be,
+
+Speaker 1  11:33  
+yeah. And then those rates like, you know, when it's selecting, let's say it's you selected, it's Steelwork. And then there's like, okay, 15% this input and 85% this input. Do you also determine those numbers or, or how who decides that those numbers?
+
+Unknown Speaker  11:50  
+Um, so some of them, I do. Obviously, I've never done Tendering in my life, so,
+
+Speaker 2  11:58  
+yeah, with a little training, Demi and Sheldon gave me some of the items I know. Okay, this is like a 8515 split, or, for instance, any cold form Lipped channel would be 100% and fabrication would be zero, because we would get it from another supplier
+
+Kody Kendall  12:21  
+got you? Yeah,
+
+Speaker 1  12:24  
+okay, cool. That's very helpful. And then is the next step kind of to give it to Demi after that? Or what's
+
+Speaker 2  12:30  
+the what's the next? Yeah, usually I try and do most of it. I also ask for the quotes for the paints, and then as soon as I get the quotes, I just let her know it's been saved on the server, and then she will check it and make the amendments and all of that brilliant
+
+Speaker 1  12:47  
+with the quote for the paint. How does that work? Do you quote? Do you like, say for a specific job to somebody and get quotes for that? Or how does that process work?
+
+Speaker 2  12:57  
+Yeah, yeah. So we use DRAM coatings. So I usually just Ender BOQ, whatever paint spec they give with either the tonnage or the square meters or whatever, I will copy that with the quantities and just ask them to please quote Interesting.
+
+Speaker 1  13:19  
+Okay, that's very helpful. Thank you. Okay, great. So Kody, if you can maybe just show show, el Marie, the work we've done so far. Elmory, but from what you've said now, I would, it sounds like we would, you know, be able to do some of the stuff that you're currently doing with with the program, but you will still need to check it, because obviously, sometimes these, you know, these computers are not they're smart, but they sometimes have little things we needed so, so we're hoping this process will kind of make this, this job easier for you, but you will still need to do some checks and
+
+Kody Kendall  13:55  
+whatever go for Kody and are most of these? Would you say? Like, like, how many of this are coming in as PDF files versus, like, like a spreadsheet format. Look.
+
+Speaker 2  14:08  
+They are some companies that do send PDF, but we usually request them to send us in an Excel version. Okay, so mainly we work from the Excel
+
+Speaker 1  14:19  
+ones. Okay, so that's great news for us, because the PDFs are such a pain.
+
+Speaker 2  14:23  
+Yeah, no, it makes it very difficult.
+
+Kody Kendall  14:27  
+Richard had sent us a handful of examples, but usually it's a format that looks pretty close to this. Is that? Right? Yes, okay, perfect. So kind of what we have so far is a client would give you a BOQ, you would come there's still a little bit of stuff that you'd enter in. So for example, this is, you know, Suzuki, let's just copy this out. I don't know how to pronounce this wrong, course, right. Come in. You put in some of the names of the client. You would know more probably what to put in, and we can change what you get saved.
+
+Speaker 1  15:04  
+Yeah, maybe a quick question here, What kind of fields are generally the most important when, when saving this kind of information?
+
+Speaker 2  15:12  
+So usually in the tender document, the rates page at the top, it kind of just gives, they put in the project name, the client name, obviously the date. And then I think that usually the prices are valid for 30 days, so it will give you, like, an expiry date. And then there's just one space where we can put in our reference number for the for the tender got it,
+
+Speaker 1  15:39  
+and that reference number is a unique number every time, right? It's like,
+
+Unknown Speaker  15:45  
+all of them would start with E, and then it's like, what was today?
+
+Speaker 1  15:54  
+Okay, got it? Okay, so maybe, yeah, just out of interest, that project name is that project name? Kind of the thing that people, when people talk about the documents, do they always reference the project name? Or, how do they generally, okay, yeah, that's kind of like, what people will say, okay, yeah, we're talking about Suzuki bronkhorstsp, yeah, helpful. Thank you.
+
+Kody Kendall  16:17  
+We do have, we do have, like, so there's like, there's a tender, and then there's a BOQ. So the BOQ is, let me see, okay, so this is okay, so this is where. So the BOQ is, like, what the client, or, I guess potential client, sends, sorry, go forward.
+
+Speaker 1  16:36  
+Maybe a question for you this, I think Kody is asking a question to you, but I just, I think I have a little bit more context. So do you when you what we calling a BOQ? Do you sometimes call being invited to tender, like that initial document that the client sends out? What do you call that?
+
+Unknown Speaker  16:50  
+Yeah, they will, mostly, they will say invite to tender.
+
+Speaker 1  16:56  
+And the invite to tender is basically the same as this BOQ, right? It's, it's got all behind
+
+Kody Kendall  17:00  
+items. Okay, yeah, gotcha. Okay, sweet. Okay, well, I guess so we can go through this process, and we probably, what we'll do is we'll show you kind of what we have so far, get a little bit of feedback, and then probably is the project advances. We'll, we'll make this meeting that you know, we'll show you our progress, but then we'll even have you start to try to do the process yourself. I don't know if we'll get to that point on this meeting or not, but a good starting point is kind of the process is, you take the BOQ that they gave you download it as a CSV file, which should be able to, do you use Google Drive, or do you use Excel on your computer? Just Excel, Excel.
+
+Speaker 1  17:49  
+Okay, perfect for Excel. You just go File Save As format to CFIC, and then it's that's done. So that'll be super easy. I can even, I can show you some pictures with some steps, but it's, yeah, very easy. Yeah,
+
+Unknown Speaker  18:01  
+no, it's easy. It's okay.
+
+Kody Kendall  18:04  
+And then, and then he would come, you would upload the downloaded CSV. You could add any notes or anything that you need to and like we were saying, we can add additional fields or remove fields as it makes sense. You upload it, this saves it into the system, and it keeps the file attached to this specific record. And then get to this next page, you can see, this is like you looking at the BOQ. There's a little there's a little adjustment here, just to make sure that we're getting the correct row. But basically, you're looking for the row that has all of these, you know, record, task, code, page, description, unity, quantity, and you're just bumping up to try to match that. So you this looks about four or five. You just bump this up. You hit Apply. And then, okay, and then that you see how it moved. It removed those, yeah, okay, cool, yeah. And that's, that's just helpful, just for the AI to kind of know. And then the process right now is, once you do that, you can come down here and just click this. You can click this parse BOQ button. Let's see here.
+
+Speaker 1  19:10  
+Try refreshing feature. Also, I'm really don't worry about taking notes about all the buttons to push and stuff we'll we'll write out for you, download CSV. Click this, push, yeah, yeah. So don't worry about that. We just wanted to show you for now.
+
+Kody Kendall  19:26  
+Okay, but essentially, essentially what we're going to do is we're going to tell the, oh, here we go. Okay, so put the it just formats a little message that has all of the information in there, and then we send it. And then what it's going to do is this going to go and it's basically just going to pull out each line item, one which, right now this is, this is basically like you're going through and you're just reading, and you're copy and pasting from this into that Ender worksheet. Is that right? Yeah, okay, so hopefully, hopefully this will save you a little bit of time, but that's, that's, that's what we'll kind of figure out as we as we go into this and it does, it does take a minute the AI just takes a minute to kind of read through it and through it. And so kind of, as we're maybe we can talk a little bit more while we're here we go. They'll tell us that it found 29 items. And then basically we're just giving it like a yes or no, if it should proceed, yes, we'll hit send, and then now what it's going to do, yeah.
+
+Speaker 1  20:33  
+So, so just a couple of things on that. So obviously this, especially in the beginning, but even later on, it would be great and super important that you just check that, that once this process is done, that the numbers are right. So for example, are there 29 items? And then you check the thing and see, okay, yes, there are 29 items. Cool. And then also there'll be an ability to override some of these categories, for example. So you'll see here, we've also kind of auto assigned the categories. But sometimes this little AI might make mistakes, so you just check and see, like, okay, no, I don't think that's a steel sections. I think that's another kind of one to override some of those, and especially in the beginning, would be also good just to check the quantities make sure it's getting the quantities right. But the plan over time is that, you know, we can trust this more and more, and it might give a few little red flags that you can check, but, you know, hopefully in a couple of months, we can trust it and say, Okay, no, it's it's good. We don't have to check every single little thing. And as you can see, some of these are blank because we don't have categories for them yet. So like, either you or Richard will have to give us some categories. And in the you know, if there's blank ones, we'll have to put them in manually, whatever those categories, yeah,
+
+Unknown Speaker  21:45  
+I think for the chemicals, it just,
+
+Speaker 1  21:48  
+there's no, yeah, there's no split for those, right? So probably, probably fine, yeah. But anyway, so this was kind of the obviously, when you're sitting here, you don't have to click refresh every time. You can just wait two minutes, go just like, do something else, and then come back and push refresh, and they should all be done. But as you can see, it's kind of it's loading all the items from the from the BOQ table, and then it's hopefully going to get to all, all 29 Yeah, so yeah, that's pretty much the that's pretty much this part of the process. The next thing we're working on is to convert the this, basically these line items, into those tables, using the supply the supply rate sheets, material, supply rate sheets and the internal rate sheets, which, which you've kind of spoken about that you do some of that work with, like, 15% 85% stuff. So we've, we've also going to, we're going to try and, you know, I think this, this little AI, is not as good with that kind of thing. But we're going to try and put in some rules, some software rules, that is okay, if you see, you know, this kind of thing, maybe an specific length or whatever, you know, it's 85 and 15% Yeah, we're definitely going to need some of your help and some of Demi's help with that, to kind of make those rules as we go, make them better. No, I think
+
+Unknown Speaker  23:14  
+Jamie would pretty much know more.
+
+Kody Kendall  23:18  
+Okay, cool.
+
+Speaker 1  23:20  
+But yeah, even, even that's good to know. We will speak to Demi about that. But would also be good to get some you know, if there's ones that you know that it's getting wrong immediately, and you can just tell us that it'd be great as well, but we'll understand that Demi's the more more person. And just to show you this, Kody, maybe show this is, I think this is Maria's job, as far as, as far as we understand Marie. But Kody,
+
+Unknown Speaker  23:41  
+yeah, she usually girts the rates every month.
+
+Speaker 1  23:46  
+So, yeah, this is, this is where the rate sheet will come. She'll be just, instead of putting them in an Excel, she'll, she'll put them in here, you know, the December ones, and then it will multiply that by the tasks that we're doing in the BOQ this stuff to come up with that initial price. Yeah, so that's, that's pretty much the demo. So Omri already told us something that was very helpful, which is around the paint stuff. So what we can, I don't know if it's even possible, but we can maybe try and isolate, like, just a little message that says, This is the most important stuff about paint, which might make it easier for you to copy that and paste it into the email you send to the people for the quote, so we can try and maybe do something around that, but I'm not sure actually, anything else that would make your life easier, that you know, that you think we might be able to do, or any other things that you do in this process, any other thoughts,
+
+Speaker 2  24:44  
+just thinking the steps that I go through, I think it's basically just because there's obviously the rights that you showed me now from Maria's side, and then there's another sheet in the tender document that kind of you have to select. Um Is bolts included, is erection, is delivery, is there's, like, quite a few things, is primer, you know, all of those kind of things where I have to say yes or no. Um, yes, however, I'm mostly the bolts are not included. As a separate line item. But there's also a few ticks that we have to just check, either zero or one. They don't calculate that, and then also on the rates pay, or on the so the pricing page, or whatever you might call it, at the top, there's like, shop drawings, yes, and the costing sheet, we put in the the size of the tons or whatever, and then that pulls through to the rates page to give us, like a total
+
+Speaker 1  25:58  
+got it? Okay? So, yes, that's a very good point. So you mentioned it about the ones and zeros. That's super important, yeah, which is basically, you just figure that out from reading the tender, the request for tender, right? Yeah, okay, yeah, that's we've we've actually worked on that a little bit, but still need to do some more work there. And is that, just, by the way, when that is that those rules that you see in that table. Are they generally true across the whole across the whole tender? You know, it's not like they'll say fabrication included for some times and not other times. Okay? So it's almost always a one or a zero,
+
+Speaker 2  26:38  
+yeah, yeah. Like sometimes you could only change. I mean, if everything needs to be primed, then you can put one in there. Sometimes, not all of the items need to be primed, so then I put a zero there, and then the primer is included in the paint.
+
+Speaker 1  26:54  
+Quote, got it? That makes sense? Yeah. And one other thing on this is, if it is bolt included in the line item rate? Let's say yes. Then it means in those line items you've got to add costs for bolts, but if they are not, then you add them as a separate line item.
+
+Unknown Speaker  27:09  
+Is that correct? Okay, yeah, cool.
+
+Speaker 1  27:13  
+That's great. And then just maybe just tell me exactly what you meant about the shop drawings again. So is the shop drawings from one of these, one and zeros or somewhere else.
+
+Speaker 2  27:22  
+So if you go to just want to see, I can actually view the whole screen at the bottom. There should be a tab at the bottom saying where your costing sheet is. So this one straight to the top. There's one, oh, so this just go down a little bit to row 24 I think row 24 Yeah. So there in that it will be tons. And then I just usually go and sum all the items that are to get the total time. Yeah,
+
+Unknown Speaker  28:09  
+okay. The total time 500 is the shop drawings number. Yeah.
+
+Speaker 2  28:16  
+Okay. Then it automatically, if you put it in that space there, it pulls through to the first sheet of the spreadsheet,
+
+Unknown Speaker  28:25  
+yes, to the to like the tender page,
+
+Unknown Speaker  28:28  
+yeah, okay, so then it pulls through to that, okay, great,
+
+Speaker 1  28:31  
+cool. And that's just the sum of all the tons. And I know for Richard, that's super important, the total tonnage. He talks about that all the time, yeah, if the project is a 40 ton project, or a 200 ton project, or whatever. Okay, okay, great, yeah, because I actually, I'd looked at a lot of these other ones, the steel columns and beams and all that stuff, but I hadn't really looked at the shop drawings. So thanks for explaining how that works.
+
+Speaker 2  28:55  
+Yeah, and I know, like the PNGs, um, I haven't really worked on that. I know, Demi and Ruan usually goes through all the preliminaries and stuff. Yeah, oh
+
+Speaker 1  29:06  
+yeah, I haven't looked at the PNGs at all, so definitely wanted maybe chat with Darren about, yeah. Okay, excellent. Then that, Omri, thank you very much. Any other, any other things you do you mentioned the like the ones and zeros. That was very helpful to know any other ones that you do in this, in this process?
+
+Speaker 2  29:29  
+Um, no, I think that's about it. Where those so obviously, those rates that we put in where the ones and zeros are. Um, if you can go back to that sheet
+
+Unknown Speaker  29:45  
+on the left hand side, that's top section. It says project rate build up.
+
+Speaker 2  29:55  
+So those ones Like usually I would go and change, for instance, the Galvanizing. Okay, I see you've got it at 11. That's the last rate I received for Galvanizing. But sometimes we do change that. Or what's the other one that I sometimes change? I think it's the overheads we change.
+
+Speaker 1  30:15  
+Interesting. Okay, so those overheads and Galvanizing, in a way, they're like the and I guess actually, all of these are kind of like, potentially can change at any time. Yeah, okay, cool, yeah. We think we'll Pro, do you and so, Ellen, do you sometimes log in and change this for this specific tender, sorry, not login just on this Excl, someone tell you, Okay, update that to 12,000 the Galvanizing, and then you just change it to 12,000 Yeah? No, not really. Or is it like a standard change? Like, okay, from now on, yeah.
+
+Speaker 2  30:48  
+Because I think the template we have, I think that the Galvanizing pricing there is, like, I think it's nine and a half, but then I know some of the previous ones Sheldon helped me with he said, Let's rather change it to 11, because the price has probably gone up or whatever. But I'm actually not sure who keeps track of the pricing for the Galvanizing and stuff. Excellent,
+
+Speaker 1  31:11  
+good. That's excellent to know. Thank you very much. I think what we'll have in place is similar to the material supply rates. We'll have the latest numbers in a table somewhere. And you know, if Richard, or whoever's in charge of the numbers, wants to update from 11 to 12 for all future tenders, then they can do that. So it'll be like So ideally, we won't have to change it, and it's set unless someone overrides it for a discount for whatever reason or whatever. Okay, yeah, that's good. That's good to know. Thanks. Cool. Then next, Kody, maybe anything else before we talk about getting el Marie login details and the steps so she can start testing out some stuff. Anything else you wanted to ask about? I don't
+
+Kody Kendall  31:52  
+think so. I think I think probably we'll just, we'll probably have frequent meetings. You're kind of the initial person. Yeah, you're the, you're the most important team member, you know, at the beginning, because you're putting all the data in and all that. So we'll play quite a bit with you, especially early on, you know, just just with the software process as we're building this, you know, this is a brand new system. So there's always going to be little quirks or little small things, but that's why it's good for us to start where as we're training you, we'll do it together on calls, but then also you'll have the ability to reach out to me or Darren at any point if there's any questions or things that you have, or even changes as well, like we want to really empower you to point out certain things and kind of shape the software in a way that's going to be helpful for you. So that's just kind of a general point that I wanted to make. But other than that, it's just, yeah, excited to be working with you. So that's all I have. Though, excellent. Thanks. And then
+
+Speaker 1  32:56  
+just one thing is, so we'll probably send you some I'll probably send you some login details and some steps on how to do some of these processes. And then next time you do a BOQ, even just as like a, you know, sort of practice, you can do it through here as well. I'll obviously speak to Richard as well and let him know. And it might be possible that, you know, we use that little system. And then, instead of having to, you can just kind of copy and paste the answers from the CFL from our that CSV output, instead of copying it into straight into the CSV and then deleting all the blank lines, etc. Yeah, and yeah. So then would be great to get feedback, if you have any while you're going through that process as well. Okay. Well, that's perfect. Excellent. Thank you very much. Thanks very much. Thanks very much for your time, and thanks especially for taking us after hours. It's for kody's in San Francisco
+
+Speaker 2  33:45  
+at the moment. So time zones? No, that's fine. Yeah, it's 8:30am now.
+
+Speaker 1  33:49  
+So we appreciate you taking it a little bit later so we didn't have to
+
+Unknown Speaker  33:53  
+start it at six. No, it's fine. It's a pleasure.
+
+Speaker 1  33:56  
+Thank you. Thanks. Thanks very much. Have a good evening.
+
+Unknown Speaker  33:59  
+Thank you. You too, have a good day. Thanks.
+
+Kody Kendall  34:01  
+Bye.
+
+Transcribed by https://otter.ai
+https://otter.ai/u/bN2XSsnDbNQLUmhSj6-P-vBK4O4?q=Elmarie&i=0&view=transcript&tab=chat

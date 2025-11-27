@@ -1,4 +1,5 @@
 class Boq < ApplicationRecord
+  belongs_to :tender, optional: true
   belongs_to :uploaded_by, class_name: "User", foreign_key: :uploaded_by_id, optional: true
   has_many :boq_items, dependent: :destroy
   has_one_attached :csv_file
