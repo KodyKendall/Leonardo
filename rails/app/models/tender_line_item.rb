@@ -1,5 +1,7 @@
 class TenderLineItem < ApplicationRecord
   belongs_to :tender
+  has_one :line_item_rate_build_up, dependent: :destroy
+  has_many :line_item_materials, dependent: :destroy
 
   validates :tender_id, presence: true
   validates :quantity, presence: true, numericality: { greater_than_or_equal_to: 0 }

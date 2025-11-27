@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_26_171658) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_27_165544) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -206,6 +206,49 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_26_171658) do
     t.index ["project_id"], name: "index_fabrication_records_on_project_id"
   end
 
+  create_table "line_item_materials", force: :cascade do |t|
+    t.bigint "tender_line_item_id", null: false
+    t.bigint "material_supply_id", null: false
+    t.decimal "proportion", precision: 5, scale: 4, default: "0.0"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["material_supply_id"], name: "index_line_item_materials_on_material_supply_id"
+    t.index ["tender_line_item_id", "material_supply_id"], name: "idx_on_tender_line_item_id_material_supply_id_beb386dde4", unique: true
+    t.index ["tender_line_item_id"], name: "index_line_item_materials_on_tender_line_item_id"
+  end
+
+  create_table "line_item_rate_build_ups", force: :cascade do |t|
+    t.bigint "tender_line_item_id", null: false
+    t.decimal "material_supply_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "fabrication_rate", precision: 12, scale: 2, default: "0.0"
+    t.boolean "fabrication_included", default: true
+    t.decimal "overheads_rate", precision: 12, scale: 2, default: "0.0"
+    t.boolean "overheads_included", default: true
+    t.decimal "shop_priming_rate", precision: 12, scale: 2, default: "0.0"
+    t.boolean "shop_priming_included", default: false
+    t.decimal "onsite_painting_rate", precision: 12, scale: 2, default: "0.0"
+    t.boolean "onsite_painting_included", default: false
+    t.decimal "delivery_rate", precision: 12, scale: 2, default: "0.0"
+    t.boolean "delivery_included", default: true
+    t.decimal "bolts_rate", precision: 12, scale: 2, default: "0.0"
+    t.boolean "bolts_included", default: true
+    t.decimal "erection_rate", precision: 12, scale: 2, default: "0.0"
+    t.boolean "erection_included", default: true
+    t.decimal "crainage_rate", precision: 12, scale: 2, default: "0.0"
+    t.boolean "crainage_included", default: false
+    t.decimal "cherry_picker_rate", precision: 12, scale: 2, default: "0.0"
+    t.boolean "cherry_picker_included", default: true
+    t.decimal "galvanizing_rate", precision: 12, scale: 2, default: "0.0"
+    t.boolean "galvanizing_included", default: false
+    t.decimal "subtotal", precision: 12, scale: 2, default: "0.0"
+    t.decimal "margin_amount", precision: 12, scale: 2, default: "0.0"
+    t.decimal "total_before_rounding", precision: 12, scale: 2, default: "0.0"
+    t.decimal "rounded_rate", precision: 12, scale: 2, default: "0.0"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tender_line_item_id"], name: "index_line_item_rate_build_ups_on_tender_line_item_id"
+  end
+
   create_table "material_supplies", force: :cascade do |t|
     t.string "name"
     t.decimal "waste_percentage"
@@ -357,6 +400,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_26_171658) do
   add_foreign_key "claims", "projects"
   add_foreign_key "claims", "users", column: "submitted_by_id"
   add_foreign_key "fabrication_records", "projects"
+  add_foreign_key "line_item_materials", "material_supplies"
+  add_foreign_key "line_item_materials", "tender_line_items"
+  add_foreign_key "line_item_rate_build_ups", "tender_line_items"
   add_foreign_key "material_supply_rates", "material_supplies"
   add_foreign_key "material_supply_rates", "monthly_material_supply_rates"
   add_foreign_key "material_supply_rates", "suppliers"
