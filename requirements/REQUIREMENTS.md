@@ -178,7 +178,7 @@ RSB Contracts is a 40-year-old family-owned structural steel fabrication company
 
 | ID | User Story | Acceptance Criteria | Priority |
 |----|-----------|-------------------|----------|
-| US-030 | As Demi, I want to enter the total roof area and erection rate (m²/day) so that crane requirements are calculated | Input fields with automatic crane complement lookup | High |
+| US-030 | As Demi, I want to enter the total roof area and erection rate (m/day) so that crane requirements are calculated | Input fields with automatic crane complement lookup | High |
 | US-031 | As Richard, I want to select RSB-owned cranes vs rental cranes so that we can use our own equipment when available | Crane ownership type selection per tender | High |
 | US-032 | As Demi, I want to manually adjust the crane complement so that I can account for project-specific requirements | Editable crane selections with recalculation | High |
 | US-033 | As Demi, I want to add multiple equipment selections (e.g., 3 booms for 1 month + 1 boom for 2 months) so that I can model complex equipment needs | Multiple equipment line items per type | High |
@@ -241,8 +241,8 @@ The current tendering process at RSB Contracts follows this general flow:
 - Reviews BOQ line items and assigns categories
 - Selects inclusions/exclusions for the tender (fabrication, erection, etc.)
 - Configures equipment requirements:
-  - Enters total roof area (m²)
-  - Enters erection rate (m²/day)
+  - Enters total roof area (m)
+  - Enters erection rate (m/day)
   - Selects crane complement (may override defaults)
   - Selects access equipment (cherry pickers, booms)
 - Sets material type proportions for each line item
@@ -313,11 +313,11 @@ The current Excel workbook follows this data flow:
 3. **ACCESS EQUIPMENT** calculates equipment costs:
    - Equipment catalog with base rates and damage waiver
    - Per-tender selections (units, period)
-   - Total equipment allowance ’ feeds B25 on Rates Page
+   - Total equipment allowance  feeds B25 on Rates Page
 
 4. **DATA SHEET LOCKED** provides lookup tables:
    - Mobile crane rates by size (10t through 90t)
-   - Crane complement by erection area (m²/day)
+   - Crane complement by erection area (m/day)
 
 5. **COSTING SHEET** performs the main calculations:
    - Pulls line items from Tender Data
@@ -376,8 +376,8 @@ The current Excel workbook follows this data flow:
 - Per-line-item overrides available later
 
 **Step 2.2: Configure On-Site Parameters**
-- User enters: Total Roof Area (m²)
-- User enters: Area to be Erected Per Day (m²)
+- User enters: Total Roof Area (m)
+- User enters: Area to be Erected Per Day (m)
 - System looks up default crane complement
 - User can override crane selections
 - User indicates if splicing crane required (Yes/No)
@@ -392,8 +392,8 @@ The current Excel workbook follows this data flow:
   - Period required (months)
   - Purpose (optional description)
 - Can add multiple lines for same equipment type with different periods
-- System calculates: Rate × (1 + 6% damage waiver) + diesel = Monthly cost
-- System calculates: Monthly cost × Units × Period = Total allowance
+- System calculates: Rate  (1 + 6% damage waiver) + diesel = Monthly cost
+- System calculates: Monthly cost  Units  Period = Total allowance
 
 **Step 2.4: Set Margin**
 - User enters tender-level margin percentage
@@ -409,8 +409,8 @@ The current Excel workbook follows this data flow:
 **Step 3.2: View/Edit Rate Build-up**
 - User expands line item to see rate build-up:
   - Material Supply (with material type and waste %)
-  - Fabrication (rate × inclusion toggle)
-  - Overheads (rate × inclusion toggle)
+  - Fabrication (rate  inclusion toggle)
+  - Overheads (rate  inclusion toggle)
   - Shop Priming, On-Site Painting, Delivery, Bolts, Erection
   - Crainage, Cherry Picker, Galvanizing
   - Extra Overs (castellating, curving, MPI, weld testing)
@@ -438,8 +438,8 @@ The current Excel workbook follows this data flow:
 - User adds P&G items with:
   - Description (free text)
   - Lump sum amount (R)
-  - Calculation notes (e.g., "20 people × 6 months × R5,000")
-- System calculates rate per tonne = Lump sum ÷ Total tonnage
+  - Calculation notes (e.g., "20 people  6 months  R5,000")
+- System calculates rate per tonne = Lump sum  Total tonnage
 - P&G rate rounds to nearest R50
 
 #### Flow 5: Generate Tender Output
@@ -631,8 +631,8 @@ Lookup table for default crane combinations based on erection area.
 | Field | Description | Example |
 |-------|-------------|---------|
 | id | Unique identifier | 1 |
-| area_min_sqm | Minimum m²/day | 250 |
-| area_max_sqm | Maximum m²/day | 350 |
+| area_min_sqm | Minimum m/day | 250 |
+| area_max_sqm | Maximum m/day | 350 |
 | complement_description | Crane combination | "1 x 10t + 2 x 25t" |
 | default_wet_rate_per_day | Combined daily rate | 8300.00 |
 
@@ -765,7 +765,7 @@ Bill of quantities line items.
 | line_type | Calculation type | "standard" |
 | section_header | Grouping header | "STEEL COLUMNS AND BEAMS" |
 | rate_per_unit | Calculated rate | 34700.00 |
-| line_amount | Qty × Rate | 388293.00 |
+| line_amount | Qty  Rate | 388293.00 |
 | margin_amount | Margin portion | 0.00 |
 | sort_order | Display order | 1 |
 
@@ -927,20 +927,20 @@ P&G (Preliminaries & General) items.
 For each line item, material cost is calculated based on material type and waste factor:
 
 ```
-material_rate_with_waste = base_rate_per_tonne × (1 + waste_factor) × proportion
+material_rate_with_waste = base_rate_per_tonne  (1 + waste_factor)  proportion
 
 Example for UB_UC_LOCAL at 100% proportion:
-= 15,900 × (1 + 0.075) × 1.0
-= 15,900 × 1.075
+= 15,900  (1 + 0.075)  1.0
+= 15,900  1.075
 = R17,092.50 per tonne
 ```
 
 For blended materials:
 ```
-total_material_rate = £ (material_rate_with_waste × proportion)
+total_material_rate =  (material_rate_with_waste  proportion)
 
 Example with 85% UB/UC and 15% Plate:
-= (17,092.50 × 0.85) + (17,775.00 × 0.15)
+= (17,092.50  0.85) + (17,775.00  0.15)
 = 14,528.63 + 2,666.25
 = R17,194.88 per tonne
 ```
@@ -951,38 +951,38 @@ For a standard steel section line item:
 ```
 line_rate_per_tonne =
     material_supply_rate                           -- e.g., 17,100
-  + (fabrication_rate × include_fabrication)       -- 8,000 × 1 = 8,000
-  + (overheads_rate × include_overheads)           -- 4,150 × 1 = 4,150
-  + (shop_priming_rate × include_shop_priming)     -- 1,380 × 0 = 0
-  + (onsite_paint_rate × include_onsite_paint)     -- 1,565 × 0 = 0
-  + (delivery_rate × include_delivery)             -- 700 × 1 = 700
-  + (bolts_rate × include_bolts)                   -- 1,500 × 1 = 1,500
-  + (erection_rate × include_erection)             -- 1,800 × 1 = 1,800
-  + (crainage_rate × include_crainage)             -- 1,080 × 0 = 0
-  + (cherry_picker_rate × include_cherry_picker)   -- 1,430 × 1 = 1,430
-  + (galvanizing_rate × include_galvanizing)       -- 11,000 × 0 = 0
+  + (fabrication_rate  include_fabrication)       -- 8,000  1 = 8,000
+  + (overheads_rate  include_overheads)           -- 4,150  1 = 4,150
+  + (shop_priming_rate  include_shop_priming)     -- 1,380  0 = 0
+  + (onsite_paint_rate  include_onsite_paint)     -- 1,565  0 = 0
+  + (delivery_rate  include_delivery)             -- 700  1 = 700
+  + (bolts_rate  include_bolts)                   -- 1,500  1 = 1,500
+  + (erection_rate  include_erection)             -- 1,800  1 = 1,800
+  + (crainage_rate  include_crainage)             -- 1,080  0 = 0
+  + (cherry_picker_rate  include_cherry_picker)   -- 1,430  1 = 1,430
+  + (galvanizing_rate  include_galvanizing)       -- 11,000  0 = 0
 
 subtotal = 34,680
-margin = subtotal × margin_pct = 34,680 × 0% = 0
+margin = subtotal  margin_pct = 34,680  0% = 0
 total = 34,680
 rounded_rate = CEILING(total, 50) = R34,700
-line_amount = rounded_rate × quantity = 34,700 × 11.19 = R388,293
+line_amount = rounded_rate  quantity = 34,700  11.19 = R388,293
 ```
 
 #### 6.1.3 Equipment Cost Calculation
 
 For each equipment selection:
 ```
-monthly_cost = base_rate_monthly × (1 + damage_waiver_pct) + diesel_allowance_monthly
+monthly_cost = base_rate_monthly  (1 + damage_waiver_pct) + diesel_allowance_monthly
 
 Example for 600AJ:
-= 38,195 × (1 + 0.06) + 19,500
-= 38,195 × 1.06 + 19,500
+= 38,195  (1 + 0.06) + 19,500
+= 38,195  1.06 + 19,500
 = 40,486.70 + 19,500
 = R59,986.70 per month
 
-total_equipment_cost = monthly_cost × units × months
-= 59,986.70 × 2 × 5
+total_equipment_cost = monthly_cost  units  months
+= 59,986.70  2  5
 = R599,867
 
 equipment_rate_per_tonne = total_equipment_allowance / total_tonnage
@@ -996,7 +996,7 @@ rounded = CEILING(1,428.41, 10) = R1,430 per tonne
 ```
 -- Step 1: Lookup crane complement based on erection rate
 crane_complement = LOOKUP(erection_rate_sqm_day, crane_complement_lookup)
-wet_rate_per_day = 8,300 (for 250-350 m²/day)
+wet_rate_per_day = 8,300 (for 250-350 m/day)
 
 -- Step 2: Calculate program duration
 program_duration = CEILING(total_roof_area / erection_rate_sqm_day, 1)
@@ -1004,14 +1004,14 @@ program_duration = CEILING(total_roof_area / erection_rate_sqm_day, 1)
 = 66 days (rounded up)
 
 -- Step 3: Calculate main crane cost
-main_crane_cost = wet_rate_per_day × program_duration
-= 8,300 × 100 = R830,000
+main_crane_cost = wet_rate_per_day  program_duration
+= 8,300  100 = R830,000
 
 -- Step 4: Add splicing crane if required
 splicing_crane_rate = LOOKUP(splicing_crane_size, crane_rates)
 = 2,450 (for 25t)
-splicing_cost = splicing_crane_rate × splicing_crane_days
-= 2,450 × 70 = R171,500
+splicing_cost = splicing_crane_rate  splicing_crane_days
+= 2,450  70 = R171,500
 
 -- Step 5: Total crane cost
 total_crane_cost = main_crane_cost + splicing_cost + misc_cost
@@ -1027,27 +1027,27 @@ crainage_rate_per_tonne = CEILING(total_crane_cost / total_tonnage, 20)
 #### 6.1.5 P&G Rate Calculation
 
 ```
-pg_rate_per_tonne = £(lump_sum_amount / total_tonnage) for all P&G items
+pg_rate_per_tonne = (lump_sum_amount / total_tonnage) for all P&G items
 
 Example:
 Safety File = 30,000 / 931.62 = R32.20
-Crainage (if in P&G) = 1,001,500 / 931.62 = R1,075.02 ’ R1,080
+Crainage (if in P&G) = 1,001,500 / 931.62 = R1,075.02  R1,080
 Cherry Picker (if in P&G) = 0
 Custom items = 0
 
 subtotal = 32.20 + 1,080 = R1,112.20
 rounded_rate = CEILING(1,112.20, 50) = R1,150
-pg_line_amount = rounded_rate × total_tonnage × 1
-= 1,150 × 931.62 × 1 = R1,071,363
+pg_line_amount = rounded_rate  total_tonnage  1
+= 1,150  931.62  1 = R1,071,363
 ```
 
 #### 6.1.6 Galvanizing Rate Build-up
 
 ```
-galvanizing_rate = base_dip_rate × (1 + zinc_mass_factor) + fettling + delivery
+galvanizing_rate = base_dip_rate  (1 + zinc_mass_factor) + fettling + delivery
 
-= 8,400 × (1 + 0.075) + 500 + 850
-= 8,400 × 1.075 + 1,350
+= 8,400  (1 + 0.075) + 500 + 850
+= 8,400  1.075 + 1,350
 = 9,030 + 1,350
 = R10,380 per tonne (rounded to ~R11,000 in practice)
 ```
@@ -1061,8 +1061,8 @@ shop_drawings_qty = total_tonnage (sum of all tonne items)
 shop_drawings_rate = shop_drawings_base_rate
 = R350 per tonne
 
-subtotal = 931.62 × 350 = R326,067
-margin = subtotal × margin_pct = 0
+subtotal = 931.62  350 = R326,067
+margin = subtotal  margin_pct = 0
 total = R326,067
 rounded_rate = CEILING(350, 50) = R350 (already on boundary)
 line_amount = R326,067
@@ -1075,13 +1075,13 @@ line_amount = R326,067
 | BR-001 | Rate Rounding | All line item rates rounded up to nearest R50 | `CEILING(rate, 50)` |
 | BR-002 | Crainage Rounding | Crainage rate rounded to nearest R20 | `CEILING(rate, 20)` |
 | BR-003 | Cherry Picker Rounding | Cherry picker rate rounded to nearest R10 | `CEILING(rate, 10)` |
-| BR-004 | Waste Application | Waste factor applied to base material rate before aggregation | `base_rate × (1 + waste_factor)` |
-| BR-005 | Toggle Application | Boolean flags multiply rate by 0 or 1 | `rate × include_flag` |
-| BR-006 | Margin Calculation | Applied to subtotal before rounding | `subtotal × (1 + margin_pct)` |
+| BR-004 | Waste Application | Waste factor applied to base material rate before aggregation | `base_rate  (1 + waste_factor)` |
+| BR-005 | Toggle Application | Boolean flags multiply rate by 0 or 1 | `rate  include_flag` |
+| BR-006 | Margin Calculation | Applied to subtotal before rounding | `subtotal  (1 + margin_pct)` |
 | BR-007 | Bolts Inclusion | Standard line items include bolts in rate (not priced separately) | Default behavior for steel sections |
 | BR-008 | Lump Sum Distribution | Fixed costs (safety file, etc.) divided by total tonnage | `lump_sum / total_tonnage` |
 | BR-009 | CFLC Fabrication | CFLC and cold-rolled items always have fabrication = 0 | Auto-set based on category |
-| BR-010 | Damage Waiver | Access equipment always includes 6% damage waiver | `base_rate × 1.06` |
+| BR-010 | Damage Waiver | Access equipment always includes 6% damage waiver | `base_rate  1.06` |
 | BR-011 | Bolt Threshold | If bolts > 2.5% of total tonnage, include in rates for competitiveness | Manual decision, system flags |
 | BR-012 | Crane Mutual Exclusion | Crainage included in line items OR P&G, not both | `include_crainage` toggle |
 | BR-013 | Cherry Picker Mutual Exclusion | Cherry picker included in line items OR P&G, not both | `include_cherry_picker` toggle |
@@ -1124,7 +1124,7 @@ The system calculates and stores the following for each line item:
 | unit | Unit of measure | "t" |
 | quantity | Quantity | 11.19 |
 | rate | Calculated rate (rounded) | 34,700.00 |
-| line_total | Qty × Rate | 388,293.00 |
+| line_total | Qty  Rate | 388,293.00 |
 
 #### 7.1.2 Tender Summary
 
@@ -1255,7 +1255,7 @@ Margin (0%)             |           |         |      0.00
 Total                   |           |         | 34,672.50
 Rounded Rate            |           |         | 34,700.00
 ------------------------|-----------|---------|----------
-Line Amount (11.19 × 34,700) =      |         | 388,293.00
+Line Amount (11.19  34,700) =      |         | 388,293.00
 ```
 
 ---
