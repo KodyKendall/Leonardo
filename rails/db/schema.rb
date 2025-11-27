@@ -10,9 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_09_184221) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_26_171658) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  # Custom types defined in this database.
+  # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum "section_category_enum", ["Blank", "Steel Sections", "Paintwork", "Bolts", "Gutter Meter", "M16 Mechanical Anchor", "M16 Chemical", "M20 Chemical", "M24 Chemical", "M16 HD Bolt", "M20 HD Bolt", "M24 HD Bolt", "M30 HD Bolt", "M36 HD Bolt", "M42 HD Bolt"]
 
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
@@ -52,27 +56,18 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_09_184221) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "activities", force: :cascade do |t|
-    t.bigint "flow_id", null: false
-    t.string "activity_type"
-    t.string "description"
-    t.datetime "activity_time"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["flow_id"], name: "index_activities_on_flow_id"
-  end
-
   create_table "boq_items", force: :cascade do |t|
     t.bigint "boq_id", null: false
     t.string "item_number"
     t.text "item_description"
     t.string "unit_of_measure"
     t.decimal "quantity", precision: 10, scale: 3, default: "0.0"
-    t.string "section_category"
+    t.enum "section_category", enum_type: "section_category_enum"
     t.integer "sequence_order"
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "page_number"
     t.index ["boq_id"], name: "index_boq_items_on_boq_id"
   end
 
@@ -90,7 +85,10 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_09_184221) do
     t.datetime "parsed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "header_row_index", default: 0
+    t.bigint "tender_id"
     t.index ["status"], name: "index_boqs_on_status"
+    t.index ["tender_id"], name: "index_boqs_on_tender_id"
     t.index ["uploaded_by_id"], name: "index_boqs_on_uploaded_by_id"
   end
 
@@ -187,6 +185,14 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_09_184221) do
     t.index ["submitted_by_id"], name: "index_claims_on_submitted_by_id"
   end
 
+  create_table "clients", force: :cascade do |t|
+    t.string "business_name"
+    t.string "contact_name"
+    t.string "contact_email"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "fabrication_records", force: :cascade do |t|
     t.bigint "project_id", null: false
     t.date "record_month", null: false
@@ -200,29 +206,31 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_09_184221) do
     t.index ["project_id"], name: "index_fabrication_records_on_project_id"
   end
 
-  create_table "flow_metrics", force: :cascade do |t|
-    t.bigint "flow_id", null: false
-    t.string "week_label"
-    t.integer "sends"
-    t.integer "opens"
-    t.integer "clicks"
-    t.date "metric_date"
+  create_table "material_supplies", force: :cascade do |t|
+    t.string "name"
+    t.decimal "waste_percentage"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["flow_id"], name: "index_flow_metrics_on_flow_id"
   end
 
-  create_table "flows", force: :cascade do |t|
-    t.string "name"
-    t.integer "sends"
-    t.decimal "open_rate"
-    t.decimal "click_rate"
-    t.decimal "revenue"
-    t.string "status"
-    t.bigint "user_id", null: false
+  create_table "material_supply_rates", force: :cascade do |t|
+    t.decimal "rate"
+    t.string "unit"
+    t.bigint "material_supply_id", null: false
+    t.bigint "supplier_id", null: false
+    t.bigint "monthly_material_supply_rate_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_flows_on_user_id"
+    t.index ["material_supply_id"], name: "index_material_supply_rates_on_material_supply_id"
+    t.index ["monthly_material_supply_rate_id"], name: "index_material_supply_rates_on_monthly_material_supply_rate_id"
+    t.index ["supplier_id"], name: "index_material_supply_rates_on_supplier_id"
+  end
+
+  create_table "monthly_material_supply_rates", force: :cascade do |t|
+    t.date "effective_from"
+    t.date "effective_to"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "projects", force: :cascade do |t|
@@ -242,6 +250,44 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_09_184221) do
     t.index ["tender_id"], name: "index_projects_on_tender_id"
   end
 
+  create_table "suppliers", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "tender_inclusions_exclusions", force: :cascade do |t|
+    t.bigint "tender_id", null: false
+    t.boolean "fabrication_included"
+    t.boolean "overheads_included"
+    t.boolean "primer_included"
+    t.boolean "final_paint_included"
+    t.boolean "delivery_included"
+    t.boolean "bolts_included"
+    t.boolean "erection_included"
+    t.boolean "crainage_included"
+    t.boolean "cherry_pickers_included"
+    t.boolean "steel_galvanized"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tender_id"], name: "index_tender_inclusions_exclusions_on_tender_id"
+  end
+
+  create_table "tender_line_items", force: :cascade do |t|
+    t.bigint "tender_id", null: false
+    t.decimal "quantity", precision: 12, scale: 2, default: "0.0"
+    t.decimal "rate", precision: 12, scale: 2, default: "0.0"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.text "page_number"
+    t.string "item_number"
+    t.text "item_description"
+    t.string "unit_of_measure"
+    t.enum "section_category", enum_type: "section_category_enum"
+    t.text "notes"
+    t.index ["tender_id"], name: "index_tender_line_items_on_tender_id"
+  end
+
   create_table "tenders", force: :cascade do |t|
     t.string "e_number", null: false
     t.string "status", default: "draft", null: false
@@ -253,7 +299,11 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_09_184221) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "qob_file"
+    t.string "tender_name"
+    t.bigint "client_id"
+    t.date "submission_deadline"
     t.index ["awarded_project_id"], name: "index_tenders_on_awarded_project_id"
+    t.index ["client_id"], name: "index_tenders_on_client_id"
     t.index ["e_number"], name: "index_tenders_on_e_number", unique: true
     t.index ["status"], name: "index_tenders_on_status"
   end
@@ -298,8 +348,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_09_184221) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "activities", "flows"
   add_foreign_key "boq_items", "boqs"
+  add_foreign_key "boqs", "tenders"
   add_foreign_key "boqs", "users", column: "uploaded_by_id"
   add_foreign_key "budget_allowances", "budget_categories"
   add_foreign_key "budget_allowances", "projects"
@@ -307,13 +357,16 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_09_184221) do
   add_foreign_key "claims", "projects"
   add_foreign_key "claims", "users", column: "submitted_by_id"
   add_foreign_key "fabrication_records", "projects"
-  add_foreign_key "flow_metrics", "flows"
-  add_foreign_key "flows", "users"
+  add_foreign_key "material_supply_rates", "material_supplies"
+  add_foreign_key "material_supply_rates", "monthly_material_supply_rates"
+  add_foreign_key "material_supply_rates", "suppliers"
   add_foreign_key "projects", "tenders"
   add_foreign_key "projects", "users", column: "created_by_id"
+  add_foreign_key "tender_inclusions_exclusions", "tenders"
+  add_foreign_key "tender_line_items", "tenders"
+  add_foreign_key "tenders", "clients"
   add_foreign_key "tenders", "projects", column: "awarded_project_id"
   add_foreign_key "variation_orders", "projects"
   add_foreign_key "variation_orders", "users", column: "approved_by_id"
   add_foreign_key "variation_orders", "users", column: "created_by_id"
 end
-Ste123123

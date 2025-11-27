@@ -1,4 +1,16 @@
 module TendersHelper
+  def tender_client_link_content(client)
+    content_tag :div, class: "space-y-1" do
+      concat content_tag(:div, client.business_name || "Business Name Not Set", class: "font-semibold")
+      if client.contact_name.present? || client.contact_email.present?
+        contact_parts = []
+        contact_parts << client.contact_name if client.contact_name.present?
+        contact_parts << client.contact_email if client.contact_email.present?
+        concat content_tag(:div, contact_parts.join(" • "), class: "text-sm text-gray-600")
+      end
+    end
+  end
+
   def preview_qob_file(tender, max_rows: 10)
     return nil unless tender.qob_file.attached?
 

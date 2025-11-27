@@ -9,7 +9,11 @@
   </div>
   <div>
     <strong class="block font-medium mb-1">Client name:</strong>
-    <%= tender.client_name %>
+    <% if tender.client %>
+      <%= link_to tender_client_link_content(tender.client), client_path(tender.client), class: "text-blue-600 hover:text-blue-800 hover:underline" %>
+    <% else %>
+      <span class="text-gray-500">No client assigned</span>
+    <% end %>
   </div>
   <div>
     <strong class="block font-medium mb-1">Tender value:</strong>

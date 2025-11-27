@@ -298,6 +298,52 @@ ClaimLineItem.find_or_create_by!(claim: claim3, line_item_description: 'Welding 
   cli.price_escalation = 0.00
 end
 
+# ===== SUPPLIERS =====
+suppliers_data = [
+  'BSI',
+  'MacSteel',
+  'Steelrode',
+  'S&L',
+  'BBD',
+  'Fast Flame'
+]
+
+suppliers = suppliers_data.map do |name|
+  Supplier.find_or_create_by!(name: name)
+end
+
+# ===== MATERIAL SUPPLIES =====
+material_supplies_data = [
+  { name: 'UnEqual Angles', waste_percentage: 7.50 },
+  { name: 'Equal Angles', waste_percentage: 7.50 },
+  { name: 'Large Equal Angles', waste_percentage: 7.50 },
+  { name: 'Local UB & UC Sections', waste_percentage: 7.50 },
+  { name: 'Import UB & UC Sections', waste_percentage: 7.50 },
+  { name: 'PFC Sections', waste_percentage: 7.50 },
+  { name: 'Heavy PFC Sections', waste_percentage: 7.50 },
+  { name: 'IPE Sections', waste_percentage: 7.50 },
+  { name: 'Sheets of Plate', waste_percentage: 12.50 },
+  { name: 'Cut to Size Plate', waste_percentage: 0.00 },
+  { name: 'Standard Hollow Sections', waste_percentage: 12.50 },
+  { name: 'Non-Standard Hollow Sections', waste_percentage: 10.00 },
+  { name: 'Gutters', waste_percentage: 0.00 },
+  { name: 'Round Bar', waste_percentage: 10.00 },
+  { name: 'CFLC - Black', waste_percentage: 0.00 },
+  { name: 'CFLC - Primed', waste_percentage: 0.00 },
+  { name: 'CFLC - Pregalv', waste_percentage: 0.00 },
+  { name: 'CFLC Metsec Alternative 1.6mm', waste_percentage: 0.00 },
+  { name: 'CFLC Metsec Alternative 2mm', waste_percentage: 0.00 },
+  { name: 'CFLC - Black 100mm Leg', waste_percentage: 0.00 },
+  { name: 'CFLC - Primed 100mm Leg', waste_percentage: 0.00 },
+  { name: 'CFLC - Pregalv 100mm Leg', waste_percentage: 0.00 }
+]
+
+material_supplies = material_supplies_data.map do |attrs|
+  MaterialSupply.find_or_create_by!(name: attrs[:name]) do |ms|
+    ms.waste_percentage = attrs[:waste_percentage]
+  end
+end
+
 puts "✅ Database seeded successfully!"
 puts ""
 puts "📊 SEEDED DATA SUMMARY:"
@@ -310,6 +356,10 @@ puts "  • Variation Orders: #{VariationOrder.count}"
 puts "  • Claims: #{Claim.count}"
 puts "  • Claim Line Items: #{ClaimLineItem.count}"
 puts "  • Fabrication Records: #{FabricationRecord.count}"
+puts "  • Suppliers: #{Supplier.count}"
+puts "  • Material Supplies: #{MaterialSupply.count}"
+puts "  • Monthly Material Supply Rates: #{MonthlyMaterialSupplyRate.count}"
+puts "  • Material Supply Rates: #{MaterialSupplyRate.count}"
 puts ""
 puts "🔑 LOGIN CREDENTIALS:"
 puts "  • Email: kody@llamapress.ai (Admin)"

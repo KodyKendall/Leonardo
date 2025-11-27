@@ -1,0 +1,49 @@
+<dialog id="boq_upload_modal" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg mb-4">Upload BOQ</h3>
+    
+    <%= form_with(model: [@tender, Boq.new], local: true, class: "space-y-4") do |form| %>
+      <% if form.object.errors.any? %>
+        <div id="error_explanation" class="alert alert-error">
+          <h4><%= pluralize(form.object.errors.count, "error") %> prohibited this boq from being saved:</h4>
+          <ul>
+            <% form.object.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="form-control">
+        <%= form.label :boq_name, "BOQ Name", class: "label" %>
+        <div class="label-text text-sm text-gray-600 mb-2">Give this BOQ a descriptive name</div>
+        <%= form.text_field :boq_name, placeholder: "e.g., Project XYZ - BOQ v1", class: "input input-bordered w-full" %>
+      </div>
+
+      <div class="form-control">
+        <%= form.label :csv_file, "CSV File", class: "label" %>
+        <div class="label-text text-sm text-gray-600 mb-2">Upload a CSV file with your BOQ data</div>
+        <%= form.file_field :csv_file, accept: ".csv", class: "file-input file-input-bordered w-full", required: true %>
+      </div>
+
+      <div class="form-control">
+        <%= form.label :client_name, "Client Name", class: "label" %>
+        <%= form.text_field :client_name, placeholder: "Optional", class: "input input-bordered w-full" %>
+      </div>
+
+      <div class="form-control">
+        <%= form.label :qs_name, "QS Name", class: "label" %>
+        <%= form.text_field :qs_name, placeholder: "Optional", class: "input input-bordered w-full" %>
+      </div>
+
+      <div class="modal-action">
+        <button type="button" class="btn" onclick="document.getElementById('boq_upload_modal').close()">Cancel</button>
+        <%= form.submit "Upload BOQ", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+    
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </div>
+</dialog>

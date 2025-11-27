@@ -1,5 +1,12 @@
 class DashboardsController < ApplicationController
   def index
+    @total_tenders = Tender.count
+    @active_tenders = Tender.where(status: 'active').count
+    @draft_tenders = Tender.where(status: 'draft').count
+  end
+
+  def old_dashboard
+    render :old_dashboard
   end
 
   def upload_tender_qob
@@ -39,6 +46,7 @@ class DashboardsController < ApplicationController
     render json: {
       # Tender metrics
       total_tenders: Tender.count,
+      active_tenders: Tender.where(status: 'active').count,
       draft_tenders: Tender.where(status: 'draft').count,
       
       # Project metrics

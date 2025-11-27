@@ -1,52 +1,200 @@
-<%= form_with(model: tender, class: "contents") do |form| %>
+<%= form_with(model: tender, class: "space-y-6") do |form| %>
   <% if tender.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
-      <h2><%= pluralize(tender.errors.count, "error") %> prohibited this tender from being saved:</h2>
-
-      <ul class="list-disc ml-6">
-        <% tender.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
+    <div role="alert" class="alert alert-error">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l-2-2m0 0l-2-2m2 2l2-2m-2 2l-2 2m2-2l2 2m0 0l2 2m-2-2l-2 2"></path>
+      </svg>
+      <div>
+        <h2><%= pluralize(tender.errors.count, "error") %> prohibited this tender from being saved:</h2>
+        <ul class="list-disc ml-6 mt-2">
+          <% tender.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
     </div>
   <% end %>
 
-  <div class="my-5">
-    <%= form.label :e_number %>
-    <%= form.text_field :e_number, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender.errors[:e_number].none?, "border-red-400 focus:outline-red-600": tender.errors[:e_number].any?}] %>
+  <!-- E-Number (Read-only, auto-generated) -->
+  <div class="form-control">
+    <%= form.label :e_number, "E-Number", class: "label" %>
+    <div class="input-group">
+      <%= form.text_field :e_number, readonly: true, placeholder: "Auto-generated", class: "input input-bordered w-full bg-gray-100", disabled: true %>
+      <span class="label-text-alt text-gray-500 mt-1">Will be auto-generated on save</span>
+    </div>
   </div>
 
-  <div class="my-5">
-    <%= form.label :status %>
-    <%= form.text_field :status, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender.errors[:status].none?, "border-red-400 focus:outline-red-600": tender.errors[:status].any?}] %>
+  <!-- Tender Name -->
+  <div class="form-control">
+    <%= form.label :tender_name, "Tender Name *", class: "label" %>
+    <%= form.text_field :tender_name, placeholder: "Enter tender name", class: "input input-bordered w-full #{tender.errors[:tender_name].any? ? 'input-error' : ''}" %>
+    <% if tender.errors[:tender_name].any? %>
+      <div class="label">
+        <span class="label-text-alt text-error"><%= tender.errors[:tender_name].first %></span>
+      </div>
+    <% end %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :client_name %>
-    <%= form.text_field :client_name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender.errors[:client_name].none?, "border-red-400 focus:outline-red-600": tender.errors[:client_name].any?}] %>
+  <!-- Client Selection with Search & Add Modal -->
+  <div class="form-control">
+    <%= form.label :client_id, "Client *", class: "label" %>
+    <div class="flex gap-2">
+      <select id="client_select" name="tender[client_id]" class="select select-bordered flex-1 #{tender.errors[:client_id].any? ? 'select-error' : ''}">
+        <option value="">-- Search or Create Client --</option>
+        <% @clients.each do |client| %>
+          <option value="<%= client.id %>" <%= 'selected' if tender.client_id == client.id %>>
+            <%= client.business_name %>
+          </option>
+        <% end %>
+      </select>
+      <button type="button" class="btn btn-outline" onclick="document.getElementById('add_client_modal').showModal()">
+        <i class="fas fa-plus"></i> Add
+      </button>
+    </div>
+    <% if tender.errors[:client_id].any? %>
+      <div class="label">
+        <span class="label-text-alt text-error"><%= tender.errors[:client_id].first %></span>
+      </div>
+    <% end %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :tender_value %>
-    <%= form.text_field :tender_value, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender.errors[:tender_value].none?, "border-red-400 focus:outline-red-600": tender.errors[:tender_value].any?}] %>
+  <!-- Submission Deadline -->
+  <div class="form-control">
+    <%= form.label :submission_deadline, "Submission Deadline", class: "label" %>
+    <%= form.date_field :submission_deadline, class: "input input-bordered w-full #{tender.errors[:submission_deadline].any? ? 'input-error' : ''}" %>
+    <% if tender.errors[:submission_deadline].any? %>
+      <div class="label">
+        <span class="label-text-alt text-error"><%= tender.errors[:submission_deadline].first %></span>
+      </div>
+    <% end %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :project_type %>
-    <%= form.text_field :project_type, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender.errors[:project_type].none?, "border-red-400 focus:outline-red-600": tender.errors[:project_type].any?}] %>
+  <!-- Status Dropdown -->
+  <div class="form-control">
+    <%= form.label :status, "Status *", class: "label" %>
+    <select name="tender[status]" class="select select-bordered w-full #{tender.errors[:status].any? ? 'select-error' : ''}">
+      <option value="">-- Select Status --</option>
+      <% Tender::STATUSES.each do |status| %>
+        <option value="<%= status %>" <%= 'selected' if tender.status == status %>>
+          <%= status %>
+        </option>
+      <% end %>
+    </select>
+    <% if tender.errors[:status].any? %>
+      <div class="label">
+        <span class="label-text-alt text-error"><%= tender.errors[:status].first %></span>
+      </div>
+    <% end %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :notes %>
-    <%= form.text_area :notes, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender.errors[:notes].none?, "border-red-400 focus:outline-red-600": tender.errors[:notes].any?}] %>
+  <!-- Tender Value -->
+  <div class="form-control">
+    <%= form.label :tender_value, "Tender Value", class: "label" %>
+    <%= form.number_field :tender_value, placeholder: "0.00", step: 0.01, class: "input input-bordered w-full #{tender.errors[:tender_value].any? ? 'input-error' : ''}" %>
+    <% if tender.errors[:tender_value].any? %>
+      <div class="label">
+        <span class="label-text-alt text-error"><%= tender.errors[:tender_value].first %></span>
+      </div>
+    <% end %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :awarded_project_id %>
-    <%= form.text_field :awarded_project_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender.errors[:awarded_project_id].none?, "border-red-400 focus:outline-red-600": tender.errors[:awarded_project_id].any?}] %>
+  <!-- Notes -->
+  <div class="form-control">
+    <%= form.label :notes, "Notes", class: "label" %>
+    <%= form.text_area :notes, rows: 4, placeholder: "Add any additional notes here...", class: "textarea textarea-bordered w-full #{tender.errors[:notes].any? ? 'textarea-error' : ''}" %>
+    <% if tender.errors[:notes].any? %>
+      <div class="label">
+        <span class="label-text-alt text-error"><%= tender.errors[:notes].first %></span>
+      </div>
+    <% end %>
   </div>
 
-  <div class="inline">
-    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  <!-- Submit Buttons -->
+  <div class="flex gap-4 pt-4">
+    <%= form.submit "Save Tender", class: "btn btn-primary flex-1" %>
+    <%= link_to "Cancel", tenders_path, class: "btn btn-ghost flex-1" %>
   </div>
 <% end %>
+
+<!-- Add Client Modal -->
+<dialog id="add_client_modal" class="modal">
+  <div class="modal-box w-full max-w-md">
+    <h3 class="font-bold text-lg">Add New Client</h3>
+    <form id="add_client_form" class="space-y-4 py-4">
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Business Name *</span>
+        </label>
+        <input type="text" id="client_business_name" placeholder="Enter business name" class="input input-bordered w-full" required>
+      </div>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Contact Name</span>
+        </label>
+        <input type="text" id="client_contact_name" placeholder="Enter contact name" class="input input-bordered w-full">
+      </div>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Contact Email</span>
+        </label>
+        <input type="email" id="client_contact_email" placeholder="Enter email" class="input input-bordered w-full">
+      </div>
+      <div class="modal-action">
+        <button type="button" class="btn" onclick="document.getElementById('add_client_modal').close()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Client</button>
+      </div>
+    </form>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+
+<script>
+document.getElementById('add_client_form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const data = {
+    client: {
+      business_name: document.getElementById('client_business_name').value,
+      contact_name: document.getElementById('client_contact_name').value,
+      contact_email: document.getElementById('client_contact_email').value
+    }
+  };
+  
+  try {
+    const response = await fetch('/clients.json', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('[name="csrf-token"]').content
+      },
+      body: JSON.stringify(data)
+    });
+    
+    const result = await response.json();
+    
+    if (response.ok) {
+      // Add new option to select
+      const select = document.getElementById('client_select');
+      const option = document.createElement('option');
+      option.value = result.id;
+      option.text = result.text;
+      option.selected = true;
+      select.appendChild(option);
+      
+      // Reset form and close modal
+      document.getElementById('add_client_form').reset();
+      document.getElementById('add_client_modal').close();
+      
+      // Show success message
+      alert('Client added successfully!');
+    } else {
+      alert('Error: ' + (result.errors?.[Object.keys(result.errors)[0]]?.[0] || 'Failed to create client'));
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    alert('Error creating client: ' + error.message);
+  }
+});
+</script>
