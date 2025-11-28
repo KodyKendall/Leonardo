@@ -1,0 +1,1 @@
+json.partial! "line_item_material_breakdowns/line_item_material_breakdown", line_item_material_breakdown: @line_item_material_breakdown

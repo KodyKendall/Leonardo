@@ -1,0 +1,147 @@
+<%= form_with(model: line_item_rate_build_up, class: "contents") do |form| %>
+  <% if line_item_rate_build_up.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(line_item_rate_build_up.errors.count, "error") %> prohibited this line_item_rate_build_up from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% line_item_rate_build_up.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :tender_line_item_id %>
+    <%= form.text_field :tender_line_item_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:tender_line_item_id].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:tender_line_item_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :material_supply_rate %>
+    <%= form.text_field :material_supply_rate, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:material_supply_rate].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:material_supply_rate].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :fabrication_rate %>
+    <%= form.text_field :fabrication_rate, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:fabrication_rate].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:fabrication_rate].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :fabrication_included %>
+    <%= form.check_box :fabrication_included, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:fabrication_included].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:fabrication_included].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :overheads_rate %>
+    <%= form.text_field :overheads_rate, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:overheads_rate].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:overheads_rate].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :overheads_included %>
+    <%= form.check_box :overheads_included, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:overheads_included].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:overheads_included].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :shop_priming_rate %>
+    <%= form.text_field :shop_priming_rate, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:shop_priming_rate].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:shop_priming_rate].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :shop_priming_included %>
+    <%= form.check_box :shop_priming_included, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:shop_priming_included].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:shop_priming_included].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :onsite_painting_rate %>
+    <%= form.text_field :onsite_painting_rate, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:onsite_painting_rate].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:onsite_painting_rate].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :onsite_painting_included %>
+    <%= form.check_box :onsite_painting_included, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:onsite_painting_included].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:onsite_painting_included].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :delivery_rate %>
+    <%= form.text_field :delivery_rate, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:delivery_rate].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:delivery_rate].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :delivery_included %>
+    <%= form.check_box :delivery_included, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:delivery_included].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:delivery_included].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :bolts_rate %>
+    <%= form.text_field :bolts_rate, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:bolts_rate].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:bolts_rate].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :bolts_included %>
+    <%= form.check_box :bolts_included, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:bolts_included].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:bolts_included].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :erection_rate %>
+    <%= form.text_field :erection_rate, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:erection_rate].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:erection_rate].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :erection_included %>
+    <%= form.check_box :erection_included, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:erection_included].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:erection_included].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :crainage_rate %>
+    <%= form.text_field :crainage_rate, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:crainage_rate].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:crainage_rate].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :crainage_included %>
+    <%= form.check_box :crainage_included, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:crainage_included].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:crainage_included].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :cherry_picker_rate %>
+    <%= form.text_field :cherry_picker_rate, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:cherry_picker_rate].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:cherry_picker_rate].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :cherry_picker_included %>
+    <%= form.check_box :cherry_picker_included, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:cherry_picker_included].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:cherry_picker_included].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :galvanizing_rate %>
+    <%= form.text_field :galvanizing_rate, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:galvanizing_rate].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:galvanizing_rate].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :galvanizing_included %>
+    <%= form.check_box :galvanizing_included, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:galvanizing_included].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:galvanizing_included].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :subtotal %>
+    <%= form.text_field :subtotal, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:subtotal].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:subtotal].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :margin_amount %>
+    <%= form.text_field :margin_amount, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:margin_amount].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:margin_amount].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :total_before_rounding %>
+    <%= form.text_field :total_before_rounding, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:total_before_rounding].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:total_before_rounding].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :rounded_rate %>
+    <%= form.text_field :rounded_rate, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_rate_build_up.errors[:rounded_rate].none?, "border-red-400 focus:outline-red-600": line_item_rate_build_up.errors[:rounded_rate].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>
