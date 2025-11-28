@@ -1,7 +1,8 @@
 # RSB Steel Fabrication Tender Costing System - Business Requirements
 
-**Document Version:** 1.0
-**Last Updated:** November 27, 2025
+**Document Version:** 1.01
+**Last Updated:** November 28, 2025
+**Last Editor:** Darren
 **Status:** Draft - Pending Stakeholder Review
 
 ---
@@ -157,7 +158,7 @@ RSB Contracts is a 40-year-old family-owned structural steel fabrication company
 |----|-----------|-------------------|----------|
 | US-010 | As Maria, I want to update material supply rates monthly so that tenders use current pricing | Rate update UI; effective date tracking; version history | High |
 | US-011 | As Richard, I want rate changes to be versioned with format `rates_YYYYMMDDxx` so that I can track when rates changed | Automatic version numbering on save | High |
-| US-012 | As Demi, I want to see the second-cheapest supplier rate as the default for each material so that we remain competitive | Automatic supplier rate comparison and selection | Medium |
+| US-012 | As Demi, I want to see the second-cheapest supplier rate as the default for each material supply so that we remain competitive | Automatic supplier rate comparison and selection | Medium |
 | US-013 | As Richard, I want processing rates (fabrication, erection, etc.) updated annually so that they reflect current labor costs | Admin-only rate update with effective dates | High |
 | US-014 | As Demi, I want to manually override supplier rates for specific tenders so that I can use negotiated pricing | Per-tender rate override capability | High |
 | US-015 | As Maria, I want to add new suppliers and their rates so that we can compare pricing across vendors | Supplier management UI | Medium |
@@ -173,6 +174,7 @@ RSB Contracts is a 40-year-old family-owned structural steel fabrication company
 | US-024 | As Richard, I want to apply a margin percentage at the tender level so that we can adjust profitability | Margin input with automatic recalculation | High |
 | US-025 | As Demi, I want to see the line item rate build-up (material supply, fabrication, overheads, etc.) so that I can verify each component | Expandable detail view per line item | High |
 | US-026 | As Demi, I want CFLC and cold-rolled items to automatically have fabrication set to zero so that I don't have to remember this rule | Automatic rule application based on category | High |
+| US-027 | As Richard, I want to apply a margin percentage for each iteam at the material rates build up level so that we can adjust profitability | Margin input with automatic recalculation | High |
 
 #### Equipment & Crane Selection
 
@@ -199,6 +201,7 @@ RSB Contracts is a 40-year-old family-owned structural steel fabrication company
 | US-050 | As Elmarie, I want to assign a tender to Demi when initial setup is complete so that she can review and finalize | Workflow status and assignment | Medium |
 | US-051 | As Demi, I want to mark a tender as "Ready for Review" so that Richard knows it needs his attention | Status workflow with notifications | Medium |
 | US-052 | As Richard, I want to approve tenders before they're submitted so that I have oversight of major quotes | Approval workflow for tenders above threshold | Low |
+| US-053 | As Richard, I want to send tenders back to Demi and Elmarie with notes when revisions are required | Approval workflow for tenders above threshold | Low |
 
 #### Reporting
 
@@ -347,7 +350,7 @@ The current Excel workbook follows this data flow:
 - User enters: Tender name, Client name, Contact person, Submission deadline, Notes
 
 **Step 1.2: Upload BOQ**
-- User uploads CSV file (Excel must be converted to CSV first)
+- User uploads CSV file (Excel must be converted to CSV first; option to enter items manually if BOQ is a PDF)
 - System stores original file for reference
 - System displays preview of parsed data
 - User adjusts header row if needed (skip introductory rows)
@@ -381,8 +384,9 @@ The current Excel workbook follows this data flow:
 - System looks up default crane complement
 - User can override crane selections
 - User indicates if splicing crane required (Yes/No)
-- User selects splicing crane type and duration
-- User indicates if miscellaneous crane required
+- User selects splicing crane type
+- User indicates if miscellaneous crane required (Yes/No)
+- User selects miscellaneous crane type
 
 **Step 2.3: Select Access Equipment**
 - User browses equipment catalog (scissors, booms, telehandlers)
@@ -397,7 +401,7 @@ The current Excel workbook follows this data flow:
 
 **Step 2.4: Set Margin**
 - User enters tender-level margin percentage
-- Margin applied to subtotal before rounding
+- Margin applied to subtotal of each line item build up before rounding
 
 #### Flow 3: Review Line Item Build-up
 
@@ -424,6 +428,9 @@ The current Excel workbook follows this data flow:
 - System recalculates weighted average rate
 - Default: 15% plate allocation (configurable at tender level)
 - Exception: CFLC items default to 0% plate
+- Default weight percentage applied per line, editable 
+- Editable margin per material breakdown item
+- Rounds up material breakdown figures to the nearest R50
 
 #### Flow 4: Configure P&G Items
 
@@ -517,22 +524,22 @@ Stores information about material suppliers.
 | phone | Contact phone | "+27 11 555 1234" |
 | is_active | Whether supplier is active | true |
 
-#### 5.1.2 materials
+#### 5.1.2 material_supplies
 
-Stores the catalog of material types with their base rates.
+Stores the catalog of material supply types with their base rates.
 
 | Field | Description | Example |
 |-------|-------------|---------|
 | id | Unique identifier | 1 |
-| code | Short code for material | "UB_UC_LOCAL" |
+| code | Short code for material supply | "UB_UC_LOCAL" |
 | name | Display name | "Local UB & UC Sections" |
-| category | Material category | "sections" |
+| category | Material supply category | "sections" |
 | base_rate_per_tonne | Current rate in Rand | 15900.00 |
-| waste_factor | Waste percentage (decimal) | 0.075 (7.5%) |
+| waste_percentage | Waste percentage (decimal) | 0.075 (7.5%) |
 | effective_from | Date rate became active | 2024-01-01 |
-| is_active | Whether material is active | true |
+| is_active | Whether material supply is active | true |
 
-**Current Material Types (22):**
+**Current Material Supply Types (22):**
 - Unequal Angles, Equal Angles, Large Equal Angles
 - Local UB & UC Sections, Import UB & UC Sections
 - PFC Sections, Heavy PFC Sections, IPE Sections
@@ -544,12 +551,12 @@ Stores the catalog of material types with their base rates.
 
 #### 5.1.3 material_supply_rates
 
-Links materials to suppliers with supplier-specific pricing.
+Links material_supplies to suppliers with supplier-specific pricing.
 
 | Field | Description | Example |
 |-------|-------------|---------|
 | id | Unique identifier | 1 |
-| material_id | Reference to material | 1 |
+| material_supply_id | Reference to material_supply | 1 |
 | supplier_id | Reference to supplier | 2 |
 | rate_per_tonne | Supplier's rate | 15750.00 |
 | effective_from | Date rate became active | 2024-11-01 |
@@ -814,13 +821,13 @@ Detailed cost breakdown for each line item.
 
 #### 5.2.7 line_item_materials
 
-Material composition for each line item (for blended material costs).
+Material supply composition for each line item (for blended material costs).
 
 | Field | Description | Example |
 |-------|-------------|---------|
 | id | Unique identifier | 1 |
 | tender_line_item_id | Reference to line item | 1 |
-| material_id | Reference to material | 4 (UB_UC_LOCAL) |
+| material_supply_id | Reference to material_supply | 4 (UB_UC_LOCAL) |
 | proportion | Percentage (decimal) | 0.85 (85%) |
 
 #### 5.2.8 line_item_extra_overs
@@ -890,8 +897,8 @@ P&G (Preliminaries & General) items.
 
 **Master Data Relationships:**
 - suppliers has many material_supply_rates
-- materials has many material_supply_rates
-- materials has many line_item_materials
+- material_supplies has many material_supply_rates
+- material_supplies has many line_item_materials
 - equipment_types has many tender_equipment_selections
 - crane_rates has many tender_crane_selections
 - extra_over_types has many line_item_extra_overs
@@ -922,12 +929,12 @@ P&G (Preliminaries & General) items.
 
 ### 6.1 Ephemeral Calculations
 
-#### 6.1.1 Material Cost Calculation
+#### 6.1.1 Material Supply Cost Calculation
 
-For each line item, material cost is calculated based on material type and waste factor:
+For each line item, material supply cost is calculated based on material supply type and waste percentage:
 
 ```
-material_rate_with_waste = base_rate_per_tonne  (1 + waste_factor)  proportion
+material_supply_rate_with_waste = base_rate_per_tonne  (1 + waste_percentage)  proportion
 
 Example for UB_UC_LOCAL at 100% proportion:
 = 15,900  (1 + 0.075)  1.0
@@ -935,9 +942,9 @@ Example for UB_UC_LOCAL at 100% proportion:
 = R17,092.50 per tonne
 ```
 
-For blended materials:
+For blended material supplies:
 ```
-total_material_rate =  (material_rate_with_waste  proportion)
+total_material_supply_rate =  (material_supply_rate_with_waste  proportion)
 
 Example with 85% UB/UC and 15% Plate:
 = (17,092.50  0.85) + (17,775.00  0.15)
@@ -1075,7 +1082,7 @@ line_amount = R326,067
 | BR-001 | Rate Rounding | All line item rates rounded up to nearest R50 | `CEILING(rate, 50)` |
 | BR-002 | Crainage Rounding | Crainage rate rounded to nearest R20 | `CEILING(rate, 20)` |
 | BR-003 | Cherry Picker Rounding | Cherry picker rate rounded to nearest R10 | `CEILING(rate, 10)` |
-| BR-004 | Waste Application | Waste factor applied to base material rate before aggregation | `base_rate  (1 + waste_factor)` |
+| BR-004 | Waste Application | Waste percentage applied to base material supply rate before aggregation | `base_rate  (1 + waste_percentage)` |
 | BR-005 | Toggle Application | Boolean flags multiply rate by 0 or 1 | `rate  include_flag` |
 | BR-006 | Margin Calculation | Applied to subtotal before rounding | `subtotal  (1 + margin_pct)` |
 | BR-007 | Bolts Inclusion | Standard line items include bolts in rate (not priced separately) | Default behavior for steel sections |
