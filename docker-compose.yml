@@ -16,6 +16,7 @@ services:
       - ./rails/config/environments/development.rb:/rails/config/environments/development.rb
       - ./rails/config/database.yml:/rails/config/database.yml
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:prepare && bundle exec rails s -b 0.0.0.0"
+    #TO DEBUG, comment the above command, uncomment the below command, restart the container, then run the docker compose exec command below.
     # command: tail -f /dev/null
     # docker compose exec -it llamapress bundle exec rails s -b 0.0.0.0
     ports:
@@ -30,7 +31,7 @@ services:
       - llama-network
 
   llamabot:
-    image: kody06/llamabot:0.2.19j
+    image: kody06/llamabot:0.2.19l
     env_file:
       - .env
     command: bash -c "python init_pg_checkpointer.py && uvicorn main:app --host 0.0.0.0 --port 8000"

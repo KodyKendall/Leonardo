@@ -1,0 +1,1 @@
+docker logs -f --tail 0 $(docker compose ps -q llamapress)
