@@ -1,7 +1,8 @@
 # RSB Steel Fabrication Tender Costing System - Business Requirements
 
-**Document Version:** 1.0
-**Last Updated:** November 27, 2025
+**Document Version:** 1.01
+**Last Updated:** November 28, 2025
+**Last Editor:** Darren
 **Status:** Draft - Pending Stakeholder Review
 
 ---
@@ -173,6 +174,7 @@ RSB Contracts is a 40-year-old family-owned structural steel fabrication company
 | US-024 | As Richard, I want to apply a margin percentage at the tender level so that we can adjust profitability | Margin input with automatic recalculation | High |
 | US-025 | As Demi, I want to see the line item rate build-up (material supply, fabrication, overheads, etc.) so that I can verify each component | Expandable detail view per line item | High |
 | US-026 | As Demi, I want CFLC and cold-rolled items to automatically have fabrication set to zero so that I don't have to remember this rule | Automatic rule application based on category | High |
+| US-027 | As Richard, I want to apply a margin percentage for each iteam at the material rates build up level so that we can adjust profitability | Margin input with automatic recalculation | High |
 
 #### Equipment & Crane Selection
 
@@ -199,6 +201,7 @@ RSB Contracts is a 40-year-old family-owned structural steel fabrication company
 | US-050 | As Elmarie, I want to assign a tender to Demi when initial setup is complete so that she can review and finalize | Workflow status and assignment | Medium |
 | US-051 | As Demi, I want to mark a tender as "Ready for Review" so that Richard knows it needs his attention | Status workflow with notifications | Medium |
 | US-052 | As Richard, I want to approve tenders before they're submitted so that I have oversight of major quotes | Approval workflow for tenders above threshold | Low |
+| US-053 | As Richard, I want to send tenders back to Demi and Elmarie with notes when revisions are required | Approval workflow for tenders above threshold | Low |
 
 #### Reporting
 
@@ -347,7 +350,7 @@ The current Excel workbook follows this data flow:
 - User enters: Tender name, Client name, Contact person, Submission deadline, Notes
 
 **Step 1.2: Upload BOQ**
-- User uploads CSV file (Excel must be converted to CSV first)
+- User uploads CSV file (Excel must be converted to CSV first; option to enter items manually if BOQ is a PDF)
 - System stores original file for reference
 - System displays preview of parsed data
 - User adjusts header row if needed (skip introductory rows)
@@ -381,8 +384,9 @@ The current Excel workbook follows this data flow:
 - System looks up default crane complement
 - User can override crane selections
 - User indicates if splicing crane required (Yes/No)
-- User selects splicing crane type and duration
-- User indicates if miscellaneous crane required
+- User selects splicing crane type
+- User indicates if miscellaneous crane required (Yes/No)
+- User selects miscellaneous crane type
 
 **Step 2.3: Select Access Equipment**
 - User browses equipment catalog (scissors, booms, telehandlers)
@@ -397,7 +401,7 @@ The current Excel workbook follows this data flow:
 
 **Step 2.4: Set Margin**
 - User enters tender-level margin percentage
-- Margin applied to subtotal before rounding
+- Margin applied to subtotal of each line item build up before rounding
 
 #### Flow 3: Review Line Item Build-up
 
@@ -424,6 +428,9 @@ The current Excel workbook follows this data flow:
 - System recalculates weighted average rate
 - Default: 15% plate allocation (configurable at tender level)
 - Exception: CFLC items default to 0% plate
+- Default weight percentage applied per line, editable 
+- Editable margin per material breakdown item
+- Rounds up material breakdown figures to the nearest R50
 
 #### Flow 4: Configure P&G Items
 
