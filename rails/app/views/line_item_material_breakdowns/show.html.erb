@@ -35,7 +35,7 @@
         </div>
         <div>
           <p class="text-sm font-semibold text-gray-600">Rate/Unit</p>
-          <p class="text-lg font-bold text-green-600">₹ <%= number_with_precision(total_material_cost, precision: 2) %></p>
+          <p class="text-lg font-bold text-green-600">R <%= number_with_precision(total_material_cost, precision: 2) %></p>
         </div>
       </div>
     </div>
@@ -63,9 +63,9 @@
               <tr class="material-row hover">
                 <td class="font-medium"><%= lim.material_supply.name %></td>
                 <td class="text-right"><%= number_with_precision(lim.material_supply.waste_percentage, precision: 2) %>%</td>
-                <td class="text-right">₹ <%= number_with_precision(lim.material_supply.material_supply_rates.last&.rate || 0, precision: 2) %></td>
+                <td class="text-right">R <%= number_with_precision(lim.material_supply.material_supply_rates.last&.rate || 0, precision: 2) %></td>
                 <td class="text-right"><%= number_with_precision(lim.proportion * 100, precision: 2) %>%</td>
-                <td class="text-right font-semibold">₹ <%= number_with_precision((lim.material_supply.material_supply_rates.last&.rate || 0) * lim.proportion, precision: 2) %></td>
+                <td class="text-right font-semibold">R <%= number_with_precision((lim.material_supply.material_supply_rates.last&.rate || 0) * lim.proportion, precision: 2) %></td>
                 <td class="text-center">
                   <%= link_to "✎", edit_line_item_material_path(lim), class: "btn btn-xs btn-ghost" %>
                   <%= button_to "✕", lim, method: :delete, class: "btn btn-xs btn-ghost text-red-500", data: { turbo_confirm: "Remove this material?" } %>
@@ -86,18 +86,18 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="flex justify-between items-center py-3 border-b">
             <span class="font-semibold text-lg">SUB TOTAL</span>
-            <span class="text-lg font-bold text-blue-600">₹ <%= number_with_precision(total_material_cost, precision: 2) %></span>
+            <span class="text-lg font-bold text-blue-600">R <%= number_with_precision(total_material_cost, precision: 2) %></span>
           </div>
           <div class="flex justify-between items-center py-3 border-b">
             <span class="font-semibold text-lg">Margin</span>
             <div class="flex gap-2">
               <input type="number" step="0.01" min="0" class="input input-sm input-bordered w-20" id="margin-input" value="0.00">
-              <span class="text-lg font-bold">₹ <span id="margin-amount">0.00</span></span>
+              <span class="text-lg font-bold">R <span id="margin-amount">0.00</span></span>
             </div>
           </div>
           <div class="flex justify-between items-center py-3 border-b border-2 border-green-500 bg-green-50 rounded">
             <span class="font-bold text-lg">TOTAL</span>
-            <span class="text-lg font-bold text-green-600">₹ <span id="total-amount"><%= number_with_precision(total_material_cost, precision: 2) %></span></span>
+            <span class="text-lg font-bold text-green-600">R <span id="total-amount"><%= number_with_precision(total_material_cost, precision: 2) %></span></span>
           </div>
         </div>
       </div>

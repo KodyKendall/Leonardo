@@ -18,7 +18,7 @@
     </div>
 
     <div>
-      <%= form.label :rate, "Rate (₹)", class: "block text-sm font-medium text-gray-700 mb-2" %>
+      <%= form.label :rate, "Rate (R)", class: "block text-sm font-medium text-gray-700 mb-2" %>
       <%= form.number_field :rate, step: 0.01, min: 0, class: "w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder: "Enter rate" %>
       <p class="text-xs text-gray-500 mt-1">Precision: 12 digits, 2 decimals</p>
     </div>
@@ -27,7 +27,7 @@
   <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
     <p class="text-sm text-blue-900">
       <strong>Total Amount:</strong> 
-      <span id="total_amount" class="font-bold text-lg">₹ 0.00</span>
+      <span id="total_amount" class="font-bold text-lg">R 0.00</span>
     </p>
   </div>
 
@@ -48,7 +48,7 @@
       const rate = parseFloat(rateInput.value) || 0;
       const total = quantity * rate;
       
-      totalAmountSpan.textContent = '₹ ' + total.toLocaleString('en-IN', {
+      totalAmountSpan.textContent = 'R ' + total.toLocaleString('en-IN', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       });

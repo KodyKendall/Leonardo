@@ -28,8 +28,8 @@
               <tr>
                 <th>Component / Material</th>
                 <th>Included?</th>
-                <th class="text-right">Price (₹)</th>
-                <th class="text-right">Subtotal (₹)</th>
+                <th class="text-right">Price (R)</th>
+                <th class="text-right">Subtotal (R)</th>
               </tr>
             </thead>
             <tbody id="buildup-tbody">
@@ -174,19 +174,19 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div class="stat bg-base-100">
             <div class="stat-title text-sm">Subtotal</div>
-            <div class="stat-value text-lg text-blue-600" id="display-subtotal">₹ <%= number_with_precision(@line_item_rate_build_up.subtotal, precision: 2) %></div>
+            <div class="stat-value text-lg text-blue-600" id="display-subtotal">R <%= number_with_precision(@line_item_rate_build_up.subtotal, precision: 2) %></div>
           </div>
           <div class="stat bg-base-100">
             <div class="stat-title text-sm">Margin</div>
-            <div class="stat-value text-lg text-orange-600" id="display-margin">₹ <%= number_with_precision(@line_item_rate_build_up.margin_amount, precision: 2) %></div>
+            <div class="stat-value text-lg text-orange-600" id="display-margin">R <%= number_with_precision(@line_item_rate_build_up.margin_amount, precision: 2) %></div>
           </div>
           <div class="stat bg-base-100">
             <div class="stat-title text-sm">Before Rounding</div>
-            <div class="stat-value text-lg text-purple-600" id="display-before-rounding">₹ <%= number_with_precision(@line_item_rate_build_up.total_before_rounding, precision: 2) %></div>
+            <div class="stat-value text-lg text-purple-600" id="display-before-rounding">R <%= number_with_precision(@line_item_rate_build_up.total_before_rounding, precision: 2) %></div>
           </div>
           <div class="stat bg-base-100 border-2 border-green-500">
             <div class="stat-title text-sm font-bold">Final Rate</div>
-            <div class="stat-value text-lg text-green-600" id="display-rounded-rate">₹ <%= number_with_precision(@line_item_rate_build_up.rounded_rate, precision: 2) %></div>
+            <div class="stat-value text-lg text-green-600" id="display-rounded-rate">R <%= number_with_precision(@line_item_rate_build_up.rounded_rate, precision: 2) %></div>
           </div>
         </div>
       </div>
@@ -275,16 +275,16 @@
       
       // Update summary display
       if (data && data.subtotal !== undefined) {
-        document.getElementById('display-subtotal').textContent = '₹ ' + parseFloat(data.subtotal).toFixed(2);
+        document.getElementById('display-subtotal').textContent = 'R ' + parseFloat(data.subtotal).toFixed(2);
       }
       if (data && data.margin_amount !== undefined) {
-        document.getElementById('display-margin').textContent = '₹ ' + parseFloat(data.margin_amount).toFixed(2);
+        document.getElementById('display-margin').textContent = 'R ' + parseFloat(data.margin_amount).toFixed(2);
       }
       if (data && data.total_before_rounding !== undefined) {
-        document.getElementById('display-before-rounding').textContent = '₹ ' + parseFloat(data.total_before_rounding).toFixed(2);
+        document.getElementById('display-before-rounding').textContent = 'R ' + parseFloat(data.total_before_rounding).toFixed(2);
       }
       if (data && data.rounded_rate !== undefined) {
-        document.getElementById('display-rounded-rate').textContent = '₹ ' + parseFloat(data.rounded_rate).toFixed(2);
+        document.getElementById('display-rounded-rate').textContent = 'R ' + parseFloat(data.rounded_rate).toFixed(2);
       }
 
       showToast('Changes saved successfully!', 'success');

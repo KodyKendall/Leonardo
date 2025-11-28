@@ -27,14 +27,14 @@
         </div>
         <div>
           <p class="text-sm font-semibold text-gray-600">Material Rate</p>
-          <p class="text-lg">₹ <%= number_with_precision(@line_item_material.material_supply.material_supply_rates.last&.rate || 0, precision: 2) %></p>
+          <p class="text-lg">R <%= number_with_precision(@line_item_material.material_supply.material_supply_rates.last&.rate || 0, precision: 2) %></p>
         </div>
       </div>
 
       <div class="mt-6 pt-6 border-t">
         <p class="text-sm font-semibold text-gray-600">Breakdown</p>
         <p class="text-lg font-bold text-green-600">
-          ₹ <%= number_with_precision((@line_item_material.material_supply.material_supply_rates.last&.rate || 0) * @line_item_material.proportion, precision: 2) %>
+          R <%= number_with_precision((@line_item_material.material_supply.material_supply_rates.last&.rate || 0) * @line_item_material.proportion, precision: 2) %>
         </p>
       </div>
     </div>

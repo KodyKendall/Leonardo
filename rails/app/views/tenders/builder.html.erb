@@ -273,8 +273,8 @@
                   <th>Category</th>
                   <th>UOM</th>
                   <th>Quantity</th>
-                  <th>Rate (₹)</th>
-                  <th class="text-right">Total Amount (₹)</th>
+                  <th>Rate (R)</th>
+                  <th class="text-right">Total Amount (R)</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -329,7 +329,7 @@
                 <div class="stat-value text-lg" id="total-quantity"><%= number_with_precision(@tender.tender_line_items.sum(:quantity), precision: 2) %></div>
               </div>
               <div class="stat bg-base-100">
-                <div class="stat-title text-sm">Grand Total (₹)</div>
+                <div class="stat-title text-sm">Grand Total (R)</div>
                 <div class="stat-value text-lg text-green-600" id="grand-total"><%= number_with_precision(@tender.tender_line_items.sum { |li| li.total_amount }, precision: 2) %></div>
               </div>
             </div>
@@ -732,8 +732,8 @@
                   <th>Category</th>
                   <th>UOM</th>
                   <th>Quantity</th>
-                  <th>Rate (₹)</th>
-                  <th class="text-right">Total Amount (₹)</th>
+                  <th>Rate (R)</th>
+                  <th class="text-right">Total Amount (R)</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -785,7 +785,7 @@
                 <div class="stat-value text-lg" id="total-quantity">${totalQty.toFixed(2)}</div>
               </div>
               <div class="stat bg-base-100">
-                <div class="stat-title text-sm">Grand Total (₹)</div>
+                <div class="stat-title text-sm">Grand Total (R)</div>
                 <div class="stat-value text-lg text-green-600" id="grand-total">${grandTotal.toFixed(2)}</div>
               </div>
             </div>
