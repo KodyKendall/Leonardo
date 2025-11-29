@@ -5,7 +5,8 @@
       <%= form_with(model: line_item_material, local: true, method: :patch) do |form| %>
         <%= form.collection_select :material_supply_id, MaterialSupply.all, :id, :name, 
             { prompt: "Select material" }, 
-            class: "select select-bordered select-sm w-full" %>
+            class: "select select-bordered select-sm w-full opacity-50 pointer-events-none",
+            data: { edit_input: true } %>
       <% end %>
     </div>
 
@@ -15,7 +16,8 @@
         <%= form.number_field :thickness, 
             placeholder: "Thickness", 
             step: 0.01,
-            class: "input input-bordered input-sm w-full text-right" %>
+            class: "input input-bordered input-sm w-full text-right opacity-50 pointer-events-none",
+            data: { edit_input: true } %>
       <% end %>
     </div>
 
@@ -25,7 +27,8 @@
         <%= form.number_field :rate, 
             placeholder: "Rate", 
             step: 0.01,
-            class: "input input-bordered input-sm w-full text-right" %>
+            class: "input input-bordered input-sm w-full text-right opacity-50 pointer-events-none",
+            data: { edit_input: true } %>
       <% end %>
     </div>
 
@@ -35,7 +38,8 @@
         <%= form.number_field :quantity, 
             placeholder: "Qty", 
             step: 0.01,
-            class: "input input-bordered input-sm w-full text-right" %>
+            class: "input input-bordered input-sm w-full text-right opacity-50 pointer-events-none",
+            data: { edit_input: true } %>
       <% end %>
     </div>
 

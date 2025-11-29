@@ -1,5 +1,5 @@
 <%= turbo_frame_tag "line_item_material_breakdown_#{line_item_material_breakdown.id}" do %>
-  <div class="card bg-base-100 shadow-md mb-4">
+  <div class="card bg-base-100 shadow-md mb-4" data-controller="breakdown-editor" data-breakdown-type="material-breakdown">
     <!-- Header -->
     <div class="card-body pb-3">
       <div class="flex items-center justify-between">
@@ -7,6 +7,9 @@
           <h3 class="card-title text-lg font-bold">Material Breakdown</h3>
           <span class="badge badge-primary">Light Structural Steel - Up to 25 kg/m</span>
         </div>
+        <button type="button" class="btn btn-sm btn-ghost" data-action="breakdown-editor#toggleEditMode" data-edit-button>
+          <i class="fas fa-edit"></i> Edit
+        </button>
       </div>
     </div>
 

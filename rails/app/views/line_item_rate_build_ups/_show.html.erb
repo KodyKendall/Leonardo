@@ -1,5 +1,5 @@
 <%= turbo_frame_tag "line_item_rate_build_up_#{line_item_rate_build_up.id}" do %>
-  <div class="card bg-base-100 shadow-md mb-4">
+  <div class="card bg-base-100 shadow-md mb-4" data-controller="breakdown-editor" data-breakdown-type="rate-build-up">
     <!-- Header -->
     <div class="card-body pb-3">
       <div class="flex items-center justify-between">
@@ -7,6 +7,9 @@
           <h3 class="card-title text-lg font-bold">Rate Build-Up</h3>
           <span class="badge badge-info">Steel Sections</span>
         </div>
+        <button type="button" class="btn btn-sm btn-ghost" data-action="breakdown-editor#toggleEditMode" data-edit-button>
+          <i class="fas fa-edit"></i> Edit
+        </button>
       </div>
     </div>
 
@@ -37,45 +40,16 @@
       ] %>
 
       <% rate_components.each do |component| %>
+        <% is_included = line_item_rate_build_up.send(component[:included_field]) %>
+        <% rate_value = line_item_rate_build_up.send(component[:rate_field]).to_f %>
         <%= turbo_frame_tag "rate_item_#{line_item_rate_build_up.id}_#{component[:label].parameterize}" do %>
-          <div class="grid grid-cols-12 gap-3 items-center py-3 px-6 bg-white border-b hover:bg-gray-50">
-            <!-- Component Name -->
-            <div class="col-span-5">
-              <span class="text-sm font-medium text-gray-900"><%= component[:label] %></span>
-            </div>
-
-            <!-- Rate Input -->
-            <div class="col-span-3">
-              <%= form_with(model: line_item_rate_build_up, local: true, method: :patch) do |form| %>
-                <%= form.number_field component[:rate_field], 
-                    placeholder: "0.00", 
-                    step: 0.01,
-                    class: "input input-bordered input-sm w-full text-right" %>
-              <% end %>
-            </div>
-
-            <!-- Included Checkbox -->
-            <div class="col-span-2">
-              <%= form_with(model: line_item_rate_build_up, local: true, method: :patch) do |form| %>
-                <%= form.check_box component[:included_field], { class: "checkbox checkbox-sm" } %>
-              <% end %>
-            </div>
-
-            <!-- Amount (Calculated) -->
-            <div class="col-span-2 text-right">
-              <% is_included = line_item_rate_build_up.send(component[:included_field]) %>
-              <% rate_value = line_item_rate_build_up.send(component[:rate_field]).to_f %>
-              <span class="text-sm font-semibold <%= 'text-gray-400' if !is_included %>">
-                <%= is_included ? "R" + number_with_precision(rate_value, precision: 2) : "—" %>
-              </span>
-            </div>
-          </div>
+          <%= render 'line_item_rate_build_ups/rate_item_row', line_item_rate_build_up: line_item_rate_build_up, component: component, is_included: is_included, rate_value: rate_value %>
         <% end %>
       <% end %>
     </div>
 
     <!-- Totals Section -->
-    <div class="px-6 py-4 bg-gray-50 border-t space-y-2">
+    <div id="rate_build_up_totals_<%= line_item_rate_build_up.id %>" class="px-6 py-4 bg-gray-50 border-t space-y-2">
       <div class="flex justify-between text-sm">
         <span class="font-semibold text-gray-700">SUBTOTAL:</span>
         <span class="font-semibold text-gray-900">R<%= number_with_precision(line_item_rate_build_up.subtotal, precision: 2) %></span>

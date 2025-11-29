@@ -1,0 +1,31 @@
+<div class="grid grid-cols-12 gap-3 items-center py-3 px-6 bg-white border-b hover:bg-gray-50">
+  <!-- Component Name -->
+  <div class="col-span-5">
+    <span class="text-sm font-medium text-gray-900"><%= component[:label] %></span>
+  </div>
+
+  <!-- Rate Input -->
+  <div class="col-span-3">
+    <%= form_with(model: line_item_rate_build_up, local: true, method: :patch, data: { turbo_frame: "rate_item_#{line_item_rate_build_up.id}_#{component[:label].parameterize}" }) do |form| %>
+      <%= form.number_field component[:rate_field], 
+          placeholder: "0.00", 
+          step: 0.01,
+          class: "input input-bordered input-sm w-full text-right opacity-50 pointer-events-none",
+          data: { edit_input: true } %>
+    <% end %>
+  </div>
+
+  <!-- Included Checkbox -->
+  <div class="col-span-2">
+    <%= form_with(model: line_item_rate_build_up, local: true, method: :patch, data: { turbo_frame: "rate_item_#{line_item_rate_build_up.id}_#{component[:label].parameterize}" }) do |form| %>
+      <%= form.check_box component[:included_field], { class: "checkbox checkbox-sm opacity-50 pointer-events-none", data: { edit_input: true } } %>
+    <% end %>
+  </div>
+
+  <!-- Amount (Calculated) -->
+  <div class="col-span-2 text-right">
+    <span class="text-sm font-semibold <%= 'text-gray-400' if !is_included %>">
+      <%= is_included ? "R" + number_with_precision(rate_value, precision: 2) : "—" %>
+    </span>
+  </div>
+</div>

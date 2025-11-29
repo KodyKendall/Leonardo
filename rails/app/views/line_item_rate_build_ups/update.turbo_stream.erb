@@ -1,0 +1,42 @@
+<% rate_components = [
+  { label: "Material Supply", rate_field: :material_supply_rate, included_field: :material_supply_included },
+  { label: "Fabrication", rate_field: :fabrication_rate, included_field: :fabrication_included },
+  { label: "Overheads", rate_field: :overheads_rate, included_field: :overheads_included },
+  { label: "Shop Priming", rate_field: :shop_priming_rate, included_field: :shop_priming_included },
+  { label: "Onsite Painting", rate_field: :onsite_painting_rate, included_field: :onsite_painting_included },
+  { label: "Delivery", rate_field: :delivery_rate, included_field: :delivery_included },
+  { label: "Bolts", rate_field: :bolts_rate, included_field: :bolts_included },
+  { label: "Erection", rate_field: :erection_rate, included_field: :erection_included },
+  { label: "Crainage", rate_field: :crainage_rate, included_field: :crainage_included },
+  { label: "Cherry Picker", rate_field: :cherry_picker_rate, included_field: :cherry_picker_included },
+  { label: "Galvanizing", rate_field: :galvanizing_rate, included_field: :galvanizing_included }
+] %>
+
+<% rate_components.each do |component| %>
+  <% is_included = @line_item_rate_build_up.send(component[:included_field]) %>
+  <% rate_value = @line_item_rate_build_up.send(component[:rate_field]).to_f %>
+  
+  <%= turbo_stream.update "rate_item_#{@line_item_rate_build_up.id}_#{component[:label].parameterize}" do %>
+    <%= render 'line_item_rate_build_ups/rate_item_row', line_item_rate_build_up: @line_item_rate_build_up, component: component, is_included: is_included, rate_value: rate_value %>
+  <% end %>
+<% end %>
+
+<!-- Update the totals section -->
+<%= turbo_stream.update "rate_build_up_totals_#{@line_item_rate_build_up.id}" do %>
+  <div class="space-y-2">
+    <div class="flex justify-between text-sm">
+      <span class="font-semibold text-gray-700">SUBTOTAL:</span>
+      <span class="font-semibold text-gray-900">R<%= number_with_precision(@line_item_rate_build_up.subtotal, precision: 2) %></span>
+    </div>
+
+    <div class="flex justify-between text-sm">
+      <span class="font-semibold text-gray-700">MARGIN %:</span>
+      <input type="number" placeholder="0%" step="0.1" class="input input-bordered input-xs w-24 text-right" />
+    </div>
+
+    <div class="flex justify-between text-lg font-bold border-t pt-2">
+      <span class="text-gray-900">TOTAL:</span>
+      <span class="text-blue-600">R<%= number_with_precision(@line_item_rate_build_up.rounded_rate, precision: 2) %></span>
+    </div>
+  </div>
+<% end %>

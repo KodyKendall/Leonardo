@@ -16,45 +16,24 @@
       [:cherry_picker_rate, "Cherry Picker"],
       [:galvanizing_rate, "Galvanizing"]
     ].each do |rate_field, label| %>
-      <% is_material_supply = rate_field == :material_supply_rate %>
-      <% included_field = "#{rate_field.to_s.sub('_rate', '')}_included" %>
-      
-      <div class="rate-row border border-gray-200 p-2 rounded" data-controller="<%= is_material_supply ? 'material-supply-toggle' : '' %>">
+      <div class="rate-row border border-gray-200 p-2 rounded">
         <div class="form-control mb-2">
           <label class="label py-1">
-            <span class="label-text text-xs font-semibold">
-              <%= label %>
-              <% if is_material_supply %>
-                <span class="text-red-500 ml-1">*</span>
-              <% end %>
-            </span>
+            <span class="label-text text-xs font-semibold"><%= label %></span>
           </label>
-          
           <%= form.number_field rate_field, step: 0.01,
                                 placeholder: "0.00",
                                 class: "input input-bordered input-xs w-full",
-                                data: { 
-                                  rate_calculator_target: "rate",
-                                  action: "input->rate-calculator#compute",
-                                  material_supply_toggle_target: is_material_supply ? "input" : nil
-                                },
-                                disabled: is_material_supply ? !form.object.send(included_field) : false %>
+                                data: { rate_calculator_target: "rate",
+                                        action: "input->rate-calculator#compute" } %>
         </div>
 
         <label class="label cursor-pointer py-1">
-          <span class="label-text text-xs">
-            <% if is_material_supply %>
-              Required
-            <% else %>
-              Include
-            <% end %>
-          </span>
-          
+          <span class="label-text text-xs">Include</span>
+          <% included_field = "#{rate_field.to_s.sub('_rate', '')}_included" %>
           <%= form.check_box included_field,
                              { class: "checkbox checkbox-xs",
-                               data: { 
-                                 action: "change->rate-calculator#compute" + (is_material_supply ? " change->material-supply-toggle#toggle" : "")
-                               } } %>
+                               data: { action: "change->rate-calculator#compute" } } %>
         </label>
       </div>
     <% end %>
