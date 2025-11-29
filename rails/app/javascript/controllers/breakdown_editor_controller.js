@@ -18,28 +18,42 @@ export default class extends Controller {
     
     console.log('Input changed:', input.name, 'Edit mode:', this.isEditMode)
     
-    if (this.isEditMode) {
-      this.handleInputChange(input)
-    } else {
+    if (!this.isEditMode) {
       // Prevent change if not in edit mode
       e.preventDefault()
       e.stopPropagation()
       if (input.type === 'checkbox') {
         input.checked = !input.checked
       }
+    } else {
+      // If checkbox changed in edit mode, update the amount display live
+      if (input.type === 'checkbox') {
+        this.updateAmountDisplay(input)
+      }
     }
   }
 
-  handleInputChange(input) {
-    console.log('Submitting form for:', input.name)
-    // Find the form that contains this input
-    const form = input.closest('form')
-    if (form) {
-      console.log('Form found, submitting...')
-      // Submit the form via Turbo
-      form.requestSubmit()
+  updateAmountDisplay(checkbox) {
+    // Find the parent row
+    const row = checkbox.closest('.grid')
+    if (!row) return
+
+    // Get the rate value from the rate input in this row
+    const rateInput = row.querySelector('input[type="number"]')
+    const amountSpan = row.querySelector('.col-span-2.text-right span')
+    
+    if (!rateInput || !amountSpan) return
+
+    const rateValue = parseFloat(rateInput.value) || 0
+    const isChecked = checkbox.checked
+
+    // Update the display
+    if (isChecked) {
+      amountSpan.textContent = 'R' + rateValue.toFixed(2)
+      amountSpan.classList.remove('text-gray-400')
     } else {
-      console.log('No form found for input')
+      amountSpan.textContent = '—'
+      amountSpan.classList.add('text-gray-400')
     }
   }
 
@@ -48,6 +62,19 @@ export default class extends Controller {
     this.updateInputStates()
     this.updateButtonState()
     console.log('Edit mode toggled:', this.isEditMode)
+    
+    // If exiting edit mode (clicking "Done"), submit all forms
+    if (!this.isEditMode) {
+      this.submitAllForms()
+    }
+  }
+
+  submitAllForms() {
+    console.log('Submitting all forms...')
+    const forms = this.element.querySelectorAll('form')
+    forms.forEach(form => {
+      form.requestSubmit()
+    })
   }
 
   updateInputStates() {
