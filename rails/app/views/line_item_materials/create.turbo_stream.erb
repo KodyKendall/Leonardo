@@ -1,0 +1,20 @@
+<% if @line_item_material.persisted? %>
+  <!-- Close the modal -->
+  <turbo-stream action="remove" target="modal">
+  </turbo-stream>
+
+  <!-- Update the breakdown if it exists on the page -->
+  <% if @breakdown %>
+    <turbo-stream action="replace" target="<%= dom_id(@breakdown) %>">
+      <template>
+        <%= render 'line_item_material_breakdowns/show', line_item_material_breakdown: @breakdown %>
+      </template>
+    </turbo-stream>
+  <% end %>
+<% else %>
+  <turbo-stream action="replace" target="modal">
+    <template>
+      <%= render 'line_item_materials/form', line_item_material: @line_item_material %>
+    </template>
+  </turbo-stream>
+<% end %>

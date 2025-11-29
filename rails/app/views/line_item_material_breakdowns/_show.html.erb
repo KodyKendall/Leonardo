@@ -1,5 +1,4 @@
-<%= turbo_frame_tag "line_item_material_breakdown_#{line_item_material_breakdown.id}" do %>
-  <div class="card bg-base-100 shadow-md mb-4" data-controller="breakdown-editor" data-breakdown-type="material-breakdown">
+<div class="card bg-base-100 shadow-md mb-4" data-controller="breakdown-editor" data-breakdown-type="material-breakdown">
     <!-- Header -->
     <div class="card-body pb-3">
       <div class="flex items-center justify-between">
@@ -41,10 +40,9 @@
     <!-- Add Material Button -->
     <div class="px-6 py-3 border-t bg-gray-50">
       <%= link_to "＋ Add Material", 
-          line_item_material_breakdowns_path(line_item_material_breakdown_id: line_item_material_breakdown.id), 
-          method: :post,
-          remote: true,
-          class: "btn btn-sm btn-outline" %>
+          new_line_item_material_path(line_item_material_breakdown_id: line_item_material_breakdown.id), 
+          class: "btn btn-sm btn-outline",
+          data: { turbo_frame: "modal" } %>
     </div>
 
     <!-- Totals Section -->
@@ -65,4 +63,3 @@
       </div>
     </div>
   </div>
-<% end %>

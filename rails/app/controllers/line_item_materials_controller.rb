@@ -27,13 +27,22 @@ class LineItemMaterialsController < ApplicationController
 
     respond_to do |format|
       if @line_item_material.save
-        # Redirect to breakdown show page if breakdown_id is present, otherwise to material show
-        redirect_path = @line_item_material.line_item_material_breakdown ? 
-          line_item_material_breakdown_path(@line_item_material.line_item_material_breakdown) : 
-          @line_item_material
-        format.html { redirect_to redirect_path, notice: "Line item material was successfully created." }
+        format.turbo_stream do
+          @breakdown = @line_item_material.line_item_material_breakdown
+          render :create
+        end
+        format.html do
+          redirect_path = @line_item_material.line_item_material_breakdown ? 
+            line_item_material_breakdown_path(@line_item_material.line_item_material_breakdown) : 
+            @line_item_material
+          redirect_to redirect_path, notice: "Line item material was successfully created."
+        end
         format.json { render :show, status: :created, location: @line_item_material }
       else
+        format.turbo_stream do
+          @breakdown = @line_item_material.line_item_material_breakdown
+          render :create
+        end
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @line_item_material.errors, status: :unprocessable_entity }
       end

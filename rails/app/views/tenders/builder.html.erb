@@ -72,6 +72,44 @@
   </div>
 </div>
 
+<!-- Modal Dialog using DaisyUI -->
+<dialog id="modal" class="modal">
+  <div class="modal-box w-11/12 max-w-2xl">
+    <form method="dialog">
+      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+    </form>
+    <%= turbo_frame_tag "modal" %>
+  </div>
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+
+<script>
+  document.addEventListener('turbo:load', () => {
+    const modal = document.getElementById('modal');
+    const modalFrame = document.getElementById('modal');
+    
+    // Show modal when content is loaded
+    const observer = new MutationObserver(() => {
+      if (modalFrame && modalFrame.innerHTML.trim()) {
+        modal.showModal();
+      }
+    });
+    
+    observer.observe(modalFrame, { childList: true, subtree: true });
+  });
+
+  // Close modal when frame is emptied (after successful submit)
+  document.addEventListener('turbo:submit-end', () => {
+    const modal = document.getElementById('modal');
+    const modalFrame = document.getElementById('modal');
+    if (modalFrame && !modalFrame.innerHTML.trim()) {
+      modal.close();
+    }
+  });
+</script>
+
 <!-- Stimulus Controller for Grand Total Calculation -->
 <script>
   document.addEventListener('turbo:load', function() {

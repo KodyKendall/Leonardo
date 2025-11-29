@@ -76,6 +76,24 @@
           </div>
         </div>
       <% end %>
+
+      <!-- Material Breakdown Accordion -->
+      <% if line_item.line_item_material_breakdown %>
+        <div class="pt-2 border-t border-gray-100">
+          <div class="collapse collapse-arrow border border-base-300 bg-base-100">
+            <input type="checkbox" />
+            <div class="collapse-title font-semibold text-sm flex items-center gap-2">
+              <i class="fas fa-boxes"></i>
+              Material Breakdown
+            </div>
+            <div class="collapse-content">
+              <div class="mt-4">
+                <%= render 'line_item_material_breakdowns/line_item_material_breakdown', line_item_material_breakdown: line_item.line_item_material_breakdown %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
     </div>
   </div>
 </turbo-frame>
