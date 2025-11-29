@@ -1,0 +1,76 @@
+<div class="rate-buildup-fields space-y-3" data-controller="rate-calculator">
+  <%= form.hidden_field :id %>
+
+  <!-- Rate Components Grid -->
+  <div class="grid grid-cols-2 gap-3">
+    <% [
+      [:material_supply_rate, "Material Supply"],
+      [:fabrication_rate, "Fabrication"],
+      [:overheads_rate, "Overheads"],
+      [:shop_priming_rate, "Shop Priming"],
+      [:onsite_painting_rate, "Onsite Painting"],
+      [:delivery_rate, "Delivery"],
+      [:bolts_rate, "Bolts"],
+      [:erection_rate, "Erection"],
+      [:crainage_rate, "Crainage"],
+      [:cherry_picker_rate, "Cherry Picker"],
+      [:galvanizing_rate, "Galvanizing"]
+    ].each do |rate_field, label| %>
+      <div class="rate-row border border-gray-200 p-2 rounded">
+        <div class="form-control mb-2">
+          <label class="label py-1">
+            <span class="label-text text-xs font-semibold"><%= label %></span>
+          </label>
+          <%= form.number_field rate_field, step: 0.01,
+                                placeholder: "0.00",
+                                class: "input input-bordered input-xs w-full",
+                                data: { rate_calculator_target: "rate",
+                                        action: "input->rate-calculator#compute" } %>
+        </div>
+
+        <label class="label cursor-pointer py-1">
+          <span class="label-text text-xs">Include</span>
+          <% included_field = "#{rate_field.to_s.sub('_rate', '')}_included" %>
+          <%= form.check_box included_field,
+                             { class: "checkbox checkbox-xs",
+                               data: { action: "change->rate-calculator#compute" } } %>
+        </label>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Calculation Results -->
+  <div class="bg-gray-100 rounded-lg p-3 space-y-2">
+    <div class="flex justify-between items-center">
+      <span class="text-sm font-semibold">Subtotal:</span>
+      <%= form.number_field :subtotal, readonly: true,
+                            class: "input input-bordered input-xs w-24 text-right",
+                            data: { rate_calculator_target: "subtotal" } %>
+    </div>
+
+    <div class="flex justify-between items-center">
+      <span class="text-sm font-semibold">Margin:</span>
+      <%= form.number_field :margin_amount, step: 0.01,
+                            placeholder: "0.00",
+                            class: "input input-bordered input-xs w-24 text-right",
+                            data: { action: "input->rate-calculator#compute" } %>
+    </div>
+
+    <div class="divider my-1"></div>
+
+    <div class="flex justify-between items-center">
+      <span class="text-sm font-semibold">Total Before Rounding:</span>
+      <%= form.number_field :total_before_rounding, readonly: true,
+                            class: "input input-bordered input-xs w-24 text-right font-bold",
+                            data: { rate_calculator_target: "total" } %>
+    </div>
+
+    <div class="flex justify-between items-center">
+      <span class="text-sm font-semibold">Rounded Rate:</span>
+      <%= form.number_field :rounded_rate, step: 0.01,
+                            placeholder: "0.00",
+                            class: "input input-bordered input-xs w-24 text-right font-bold text-success",
+                            data: { rate_calculator_target: "rounded" } %>
+    </div>
+  </div>
+</div>

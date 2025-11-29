@@ -1,0 +1,83 @@
+<turbo-frame id="<%= dom_id(line_item) %>" class="line-item-card">
+  <div class="card bg-white border border-gray-200 hover:shadow-lg transition">
+    <div class="card-body p-4">
+      <!-- Header Row -->
+      <div class="flex justify-between items-start mb-3">
+        <div class="flex-1">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="badge badge-lg"><%= line_item.item_number || "—" %></span>
+            <% if line_item.section_category %>
+              <span class="badge badge-sm"><%= line_item.section_category %></span>
+            <% end %>
+          </div>
+          <h3 class="font-semibold text-sm"><%= truncate(line_item.item_description, length: 70) %></h3>
+          <% if line_item.notes %>
+            <p class="text-xs text-gray-500 mt-1"><%= line_item.notes %></p>
+          <% end %>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex gap-1">
+          <%= link_to edit_tender_tender_line_item_path(line_item.tender, line_item),
+                      class: "btn btn-xs btn-ghost",
+                      data: { turbo_frame: dom_id(line_item) },
+                      title: "Edit" do %>
+            <i class="fas fa-edit"></i>
+          <% end %>
+
+          <%= button_to tender_tender_line_item_path(line_item.tender, line_item),
+                        method: :delete,
+                        class: "btn btn-xs btn-ghost text-error",
+                        data: { turbo_confirm: "Delete this line item?" },
+                        title: "Delete" do %>
+            <i class="fas fa-trash"></i>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Details Row -->
+      <div class="grid grid-cols-4 gap-3 py-3 border-t border-gray-100">
+        <div>
+          <div class="text-xs text-gray-500">Quantity</div>
+          <div class="font-semibold"><%= number_with_precision(line_item.quantity, precision: 2) %></div>
+          <div class="text-xs text-gray-400"><%= line_item.unit_of_measure || "—" %></div>
+        </div>
+
+        <div>
+          <div class="text-xs text-gray-500">Rate (R)</div>
+          <div class="font-semibold"><%= number_with_precision(line_item.rate, precision: 2) %></div>
+        </div>
+
+        <div>
+          <div class="text-xs text-gray-500">Page</div>
+          <div class="font-semibold"><%= line_item.page_number || "—" %></div>
+        </div>
+
+        <div class="text-right bg-success bg-opacity-10 p-2 rounded">
+          <div class="text-xs text-gray-500">Total (R)</div>
+          <div class="font-bold text-success"><%= number_with_precision(line_item.total_amount, precision: 2) %></div>
+        </div>
+      </div>
+
+      <!-- Rate Buildup Accordion -->
+      <% if line_item.line_item_rate_build_up %>
+        <div class="pt-2 border-t border-gray-100">
+          <div class="collapse collapse-arrow border border-base-300 bg-base-100">
+            <input type="checkbox" class="buildup-toggle" data-buildup-id="<%= line_item.line_item_rate_build_up.id %>" />
+            <div class="collapse-title font-semibold text-sm flex items-center gap-2">
+              <i class="fas fa-chart-bar"></i>
+              Rate Buildup Details
+            </div>
+            <div class="collapse-content">
+              <div id="buildup-content-<%= line_item.line_item_rate_build_up.id %>" class="buildup-content mt-4">
+                <div class="flex justify-center py-4">
+                  <span class="loading loading-spinner loading-sm"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</turbo-frame>

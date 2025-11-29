@@ -1,0 +1,11 @@
+<%= turbo_stream.remove dom_id(@line_item) %>
+
+<%= turbo_stream.replace "builder_header" do %>
+  <%= render "tenders/builder_header", tender: @tender.reload %>
+<% end %>
+
+<%= turbo_stream.replace "builder_summary" do %>
+  <%= render "tenders/builder_summary", tender: @tender %>
+<% end %>
+
+<%= turbo_stream.update "line_items_count", @tender.tender_line_items.count.to_s %>

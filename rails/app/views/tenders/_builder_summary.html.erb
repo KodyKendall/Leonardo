@@ -1,0 +1,38 @@
+<div class="card bg-base-100 shadow sticky top-6">
+  <div class="card-body">
+    <h3 class="card-title text-lg mb-4">Summary</h3>
+    
+    <div class="space-y-4">
+      <!-- Total Items -->
+      <div class="stat bg-base-200 rounded-lg p-3">
+        <div class="stat-title text-sm">Line Items</div>
+        <div class="stat-value text-2xl" id="summary_items_count">
+          <%= @tender.tender_line_items.count %>
+        </div>
+      </div>
+
+      <!-- Total Quantity -->
+      <div class="stat bg-base-200 rounded-lg p-3">
+        <div class="stat-title text-sm">Total Quantity</div>
+        <div class="stat-value text-2xl" id="summary_total_qty">
+          <%= number_with_delimiter(@tender.tender_line_items.sum(:quantity), precision: 2) %>
+        </div>
+      </div>
+
+      <!-- Grand Total -->
+      <div class="stat bg-success text-white rounded-lg p-3">
+        <div class="stat-title text-sm">Grand Total (R)</div>
+        <div class="stat-value text-2xl font-bold" id="summary_grand_total">
+          <%= number_with_delimiter(@tender.tender_line_items.sum { |li| li.total_amount }, precision: 2) %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Helpful Links -->
+    <div class="divider my-3"></div>
+    <div class="space-y-2">
+      <%= link_to "Edit Tender", edit_tender_path(@tender), class: "btn btn-sm btn-outline btn-block gap-2" %>
+      <%= link_to "View Details", tender_path(@tender), class: "btn btn-sm btn-outline btn-block gap-2" %>
+    </div>
+  </div>
+</div>

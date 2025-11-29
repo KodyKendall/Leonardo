@@ -14,6 +14,10 @@ class TendersController < ApplicationController
   # GET /tenders/1/builder
   def builder
     @tender = Tender.find(params[:id])
+    @line_items = @tender.tender_line_items
+                         .includes(:line_item_rate_build_up, 
+                                   line_item_material_breakdown: :line_item_materials)
+                         .order(:created_at)
   end
 
   # GET /tenders/new

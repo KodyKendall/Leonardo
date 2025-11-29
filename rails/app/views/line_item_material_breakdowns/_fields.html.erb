@@ -1,0 +1,27 @@
+<div class="material-breakdown-fields space-y-3" data-controller="nested-form">
+  <%= form.hidden_field :id %>
+
+  <!-- Materials List Container -->
+  <div data-nested-form-target="container" class="materials-list space-y-2">
+    <%= form.fields_for :line_item_materials do |lm| %>
+      <%= render "line_item_materials/fields", form: lm %>
+    <% end %>
+  </div>
+
+  <!-- Template for adding new materials dynamically -->
+  <template data-nested-form-target="template">
+    <%= form.fields_for :line_item_materials,
+                        LineItemMaterial.new,
+                        child_index: "NEW_RECORD" do |lm| %>
+      <%= render "line_item_materials/fields", form: lm %>
+    <% end %>
+  </template>
+
+  <!-- Add Material Button -->
+  <button type="button"
+          class="btn btn-sm btn-secondary gap-2 w-full"
+          data-action="nested-form#add">
+    <i class="fas fa-plus"></i>
+    Add Material
+  </button>
+</div>

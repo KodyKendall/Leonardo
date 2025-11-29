@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_27_180912) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_28_205400) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -214,7 +214,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_27_180912) do
   end
 
   create_table "line_item_materials", force: :cascade do |t|
-    t.bigint "tender_line_item_id", null: falsee
+    t.bigint "tender_line_item_id", null: false
     t.bigint "material_supply_id", null: false
     t.decimal "proportion", precision: 5, scale: 4, default: "0.0"
     t.datetime "created_at", null: false
@@ -255,6 +255,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_27_180912) do
     t.decimal "rounded_rate", precision: 12, scale: 2, default: "0.0"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "material_supply_included", default: true
     t.index ["tender_line_item_id"], name: "index_line_item_rate_build_ups_on_tender_line_item_id"
   end
 

@@ -1,22 +1,64 @@
 <% content_for :title, "Tender Builder - #{@tender.tender_name}" %>
 
 <div class="container mx-auto p-6">
-  <div class="flex justify-between items-center mb-6">
-    <div>
-      <h1 class="text-3xl font-bold"><%= @tender.tender_name %></h1>
-      <p class="text-gray-600 mt-1">
-        <span class="inline-flex items-center gap-2">
-          <i class="fa-solid fa-file-contract text-blue-600"></i>
-          <%= @tender.e_number %>
-          <span class="badge badge-sm"><%= @tender.status %></span>
-        </span>
-      </p>
+  <!-- Header Section -->
+  <turbo-frame id="builder_header">
+    <%= render "builder_header", tender: @tender %>
+  </turbo-frame>
+
+  <!-- Main Builder Layout: Workspace + Summary -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+    
+    <!-- Left: Line Items Workspace (2 columns wide on desktop) -->
+    <div class="lg:col-span-2">
+      <div class="card bg-base-100 shadow">
+        <div class="card-body">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="card-title mb-0">
+              <i class="fas fa-list"></i>
+              Line Items
+              <span id="line_items_count" class="badge badge-lg"><%= @line_items.size %></span>
+            </h2>
+            
+            <%= link_to new_tender_tender_line_item_path(@tender),
+                        class: "btn btn-sm btn-primary gap-2",
+                        data: { turbo_frame: "new_line_item_form" } do %>
+              <i class="fas fa-plus"></i>
+              Add Line Item
+            <% end %>
+          </div>
+
+          <!-- New/Edit Form Frame -->
+          <turbo-frame id="new_line_item_form" class="mb-4"></turbo-frame>
+
+          <!-- Line Items List -->
+          <div id="line_items" class="space-y-3">
+            <%= render partial: "tender_line_items/line_item",
+                       collection: @line_items,
+                       as: :line_item %>
+          </div>
+
+          <!-- Empty State -->
+          <% if @line_items.empty? %>
+            <div class="alert alert-info mt-4">
+              <i class="fas fa-info-circle"></i>
+              <div>No line items yet. Click "Add Line Item" to get started.</div>
+            </div>
+          <% end %>
+        </div>
+      </div>
     </div>
-    <%= link_to "Back to Tender", tender_path(@tender), class: "btn btn-ghost" %>
+
+    <!-- Right: Summary Panel (1 column) -->
+    <aside class="lg:col-span-1">
+      <turbo-frame id="builder_summary">
+        <%= render "builder_summary", tender: @tender %>
+      </turbo-frame>
+    </aside>
   </div>
 
   <!-- Inclusions & Exclusions Section -->
-  <div class="card bg-base-100 shadow">
+  <div class="card bg-base-100 shadow mt-6">
     <div class="card-body">
       <h2 class="card-title mb-6">
         <i class="fas fa-check-square"></i>
@@ -231,121 +273,8 @@
     </div>
   <% end %>
 
-  <!-- Tender Line Items Section - Styled like BOQ Line Items -->
-  <div class="card bg-base-100 shadow mt-6">
-    <div class="card-body">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="card-title mb-0">
-          <i class="fas fa-list"></i>
-          Tender Line Items
-          <span id="items-count" class="badge badge-lg"><%= @tender.tender_line_items.count %></span>
-        </h2>
-        <div class="flex gap-2">
-          <button 
-            id="add-new-row-btn"
-            class="btn btn-sm btn-primary gap-2"
-            onclick="addNewTenderLineItem()"
-          >
-            <i class="fas fa-plus"></i>
-            Add Line Item
-          </button>
-          <button 
-            id="refresh-items-btn" 
-            class="btn btn-sm btn-outline gap-2"
-            onclick="refreshTenderItems()"
-          >
-            <i class="fas fa-refresh"></i>
-            Refresh
-          </button>
-        </div>
-      </div>
-
-      <div id="items-container">
-        <% if @tender.tender_line_items.any? %>
-          <div class="overflow-x-auto">
-            <table class="table table-sm w-full">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Page</th>
-                  <th>Item Number</th>
-                  <th>Description</th>
-                  <th>Category</th>
-                  <th>UOM</th>
-                  <th>Quantity</th>
-                  <th>Rate (R)</th>
-                  <th class="text-right">Total Amount (R)</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="items-tbody">
-                <% @tender.tender_line_items.each_with_index do |item, idx| %>
-                  <tr class="tender-line-item-row" data-item-id="<%= item.id %>" data-category-key="<%= item.section_category || "" %>" data-category-display="<%= item.section_category || "" %>">
-                    <td><%= idx + 1 %></td>
-                    <td class="font-mono text-sm editable-cell" data-field="page_number" title="Click to edit"><%= item.page_number || "—" %></td>
-                    <td class="font-mono text-sm editable-cell" data-field="item_number" title="Click to edit"><%= item.item_number || "—" %></td>
-                    <td class="editable-cell" data-field="item_description" title="Click to edit">
-                      <div class="text-sm"><%= truncate(item.item_description, length: 60) %></div>
-                      <% if item.notes %>
-                        <div class="text-xs text-gray-500 mt-1"><%= item.notes %></div>
-                      <% end %>
-                    </td>
-                    <td class="editable-cell" data-field="section_category" title="Click to edit"><span class="badge badge-sm"><%= item.section_category || "—" %></span></td>
-                    <td class="editable-cell" data-field="unit_of_measure" title="Click to edit"><%= item.unit_of_measure || "—" %></td>
-                    <td class="text-right font-semibold editable-cell" data-field="quantity" title="Click to edit"><%= number_with_precision(item.quantity, precision: 2) %></td>
-                    <td class="text-right font-semibold editable-cell" data-field="rate" title="Click to edit"><%= number_with_precision(item.rate, precision: 2) %></td>
-                    <td class="text-right font-bold" data-field="total_amount"><%= number_with_precision(item.total_amount, precision: 2) %></td>
-                    <td class="text-center">
-                      <% if item.line_item_rate_build_up %>
-                        <%= link_to line_item_rate_build_up_path(item.line_item_rate_build_up), class: "btn btn-xs btn-info gap-1", title: "View rate buildup" do %>
-                          <i class="fas fa-chart-bar"></i>
-                          Buildup
-                        <% end %>
-                      <% else %>
-                        <span class="text-xs text-gray-400">No buildup</span>
-                      <% end %>
-                      <button class="btn btn-xs btn-ghost edit-row-btn" onclick="editRow(this, <%= item.id %>)" title="Edit this row">
-                        <i class="fas fa-edit"></i>
-                      </button>
-                      <button class="btn btn-xs btn-ghost delete-row-btn hidden" onclick="deleteRow(this, <%= item.id %>)" title="Delete this row">
-                        <i class="fas fa-trash text-red-600"></i>
-                      </button>
-                    </td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- Summary Row -->
-          <div class="mt-6 pt-4 border-t border-gray-200">
-            <div class="grid grid-cols-3 gap-4">
-              <div class="stat bg-base-100">
-                <div class="stat-title text-sm">Total Line Items</div>
-                <div class="stat-value text-lg" id="total-items"><%= @tender.tender_line_items.count %></div>
-              </div>
-              <div class="stat bg-base-100">
-                <div class="stat-title text-sm">Total Quantity</div>
-                <div class="stat-value text-lg" id="total-quantity"><%= number_with_precision(@tender.tender_line_items.sum(:quantity), precision: 2) %></div>
-              </div>
-              <div class="stat bg-base-100">
-                <div class="stat-title text-sm">Grand Total (R)</div>
-                <div class="stat-value text-lg text-green-600" id="grand-total"><%= number_with_precision(@tender.tender_line_items.sum { |li| li.total_amount }, precision: 2) %></div>
-              </div>
-            </div>
-          </div>
-        <% else %>
-          <div id="empty-state" class="alert alert-info">
-            <i class="fas fa-info-circle"></i>
-            <div>No line items yet. Click "Add Line Item" to create one.</div>
-          </div>
-        <% end %>
-      </div>
-    </div>
-  </div>
-
   <div class="mt-6 flex gap-2">
-    <%= link_to "Edit Tender Details", edit_tender_path(@tender), class: "btn btn-ghost" %>
+    <%= link_to "Edit Tender Details", edit_tender_path(@tender), class: "btn btn-ghost", data: { turbo_visit_control: "reload" } %>
     <%= link_to "Back to Tenders", tenders_path, class: "btn btn-ghost" %>
   </div>
 </div>
@@ -910,6 +839,259 @@
       btn.disabled = false;
       btn.innerHTML = originalHTML;
     }
+  }
+
+  // Rate Buildup Accordion Handler
+  document.addEventListener('change', async (e) => {
+    if (e.target.classList.contains('buildup-toggle')) {
+      const isChecked = e.target.checked;
+      const buildupId = e.target.getAttribute('data-buildup-id');
+      const contentDiv = document.getElementById(`buildup-content-${buildupId}`);
+      
+      if (isChecked && contentDiv) {
+        // Fetch buildup data if not already loaded
+        if (contentDiv.querySelector('.loading')) {
+          try {
+            const response = await fetch(`/line_item_rate_build_ups/${buildupId}.json`, {
+              headers: {
+                'Accept': 'application/json'
+              }
+            });
+            
+            if (!response.ok) throw new Error('Failed to fetch buildup data');
+            
+            const buildup = await response.json();
+            
+            // Build the HTML for the buildup details
+            const html = buildBuildupHTML(buildup);
+            contentDiv.innerHTML = html;
+          } catch (error) {
+            console.error('Error loading buildup:', error);
+            contentDiv.innerHTML = '<div class="alert alert-error">Failed to load rate buildup details</div>';
+          }
+        }
+      }
+    }
+  });
+
+  function buildBuildupHTML(buildup) {
+    const components = [
+      { label: 'Material Supply', rateField: 'material_supply_rate', includedField: null, rate: buildup.material_supply_rate, included: true, alwaysIncluded: true },
+      { label: 'Fabrication', rateField: 'fabrication_rate', includedField: 'fabrication_included', rate: buildup.fabrication_rate, included: buildup.fabrication_included, alwaysIncluded: false },
+      { label: 'Overheads', rateField: 'overheads_rate', includedField: 'overheads_included', rate: buildup.overheads_rate, included: buildup.overheads_included, alwaysIncluded: false },
+      { label: 'Shop Priming', rateField: 'shop_priming_rate', includedField: 'shop_priming_included', rate: buildup.shop_priming_rate, included: buildup.shop_priming_included, alwaysIncluded: false },
+      { label: 'Onsite Painting', rateField: 'onsite_painting_rate', includedField: 'onsite_painting_included', rate: buildup.onsite_painting_rate, included: buildup.onsite_painting_included, alwaysIncluded: false },
+      { label: 'Delivery', rateField: 'delivery_rate', includedField: 'delivery_included', rate: buildup.delivery_rate, included: buildup.delivery_included, alwaysIncluded: false },
+      { label: 'Bolts', rateField: 'bolts_rate', includedField: 'bolts_included', rate: buildup.bolts_rate, included: buildup.bolts_included, alwaysIncluded: false },
+      { label: 'Erection', rateField: 'erection_rate', includedField: 'erection_included', rate: buildup.erection_rate, included: buildup.erection_included, alwaysIncluded: false },
+      { label: 'Crainage', rateField: 'crainage_rate', includedField: 'crainage_included', rate: buildup.crainage_rate, included: buildup.crainage_included, alwaysIncluded: false },
+      { label: 'Cherry Picker', rateField: 'cherry_picker_rate', includedField: 'cherry_picker_included', rate: buildup.cherry_picker_rate, included: buildup.cherry_picker_included, alwaysIncluded: false },
+      { label: 'Galvanizing', rateField: 'galvanizing_rate', includedField: 'galvanizing_included', rate: buildup.galvanizing_rate, included: buildup.galvanizing_included, alwaysIncluded: false }
+    ];
+
+    let html = `<form id="buildup-form-${buildup.id}" class="space-y-3 text-sm">`;
+    
+    components.forEach(comp => {
+      const rateValue = parseFloat(comp.rate || 0).toFixed(2);
+      
+      if (comp.alwaysIncluded) {
+        // Material Supply: no checkbox, always included
+        html += `
+          <div class="flex items-center justify-between gap-3 p-3 bg-blue-50 rounded border-2 border-blue-200">
+            <div class="flex-1">
+              <span class="font-medium text-blue-900">${comp.label}</span>
+              <span class="text-xs text-blue-700 ml-2">(Always Included)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-gray-600">R</span>
+              <input type="number" 
+                     step="0.01" 
+                     min="0"
+                     class="input input-sm input-bordered w-24 text-right buildup-rate-input" 
+                     data-buildup-id="${buildup.id}"
+                     data-field="${comp.rateField}"
+                     value="${rateValue}"
+              >
+            </div>
+          </div>
+        `;
+      } else {
+        // Other components: with checkbox
+        html += `
+          <div class="flex items-center justify-between gap-3 p-3 bg-gray-50 rounded border border-gray-200">
+            <div class="flex-1">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" 
+                       class="checkbox checkbox-sm buildup-checkbox" 
+                       data-buildup-id="${buildup.id}"
+                       data-field="${comp.includedField}"
+                       ${comp.included ? 'checked' : ''}
+                >
+                <span class="font-medium">${comp.label}</span>
+              </label>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-gray-600">R</span>
+              <input type="number" 
+                     step="0.01" 
+                     min="0"
+                     class="input input-sm input-bordered w-24 text-right buildup-rate-input" 
+                     data-buildup-id="${buildup.id}"
+                     data-field="${comp.rateField}"
+                     value="${rateValue}"
+              >
+            </div>
+          </div>
+        `;
+      }
+    });
+
+    // Add summary section with auto-calculated values
+    html += `
+      <div class="mt-4 pt-4 border-t border-gray-200 space-y-2">
+        <div class="flex justify-between font-semibold text-sm">
+          <span>Subtotal:</span>
+          <span class="text-blue-600 buildup-subtotal" data-buildup-id="${buildup.id}">R ${parseFloat(buildup.subtotal || 0).toFixed(2)}</span>
+        </div>
+        <div class="flex justify-between font-semibold text-sm">
+          <span>Margin:</span>
+          <span class="text-orange-600 buildup-margin" data-buildup-id="${buildup.id}">R ${parseFloat(buildup.margin_amount || 0).toFixed(2)}</span>
+        </div>
+        <div class="flex justify-between text-sm bg-green-50 p-2 rounded border-2 border-green-500">
+          <span class="font-bold">Final Rate:</span>
+          <span class="font-bold text-green-600 buildup-final-rate" data-buildup-id="${buildup.id}">R ${parseFloat(buildup.rounded_rate || 0).toFixed(2)}</span>
+        </div>
+      </div>
+      
+      <div class="mt-4 flex gap-2">
+        <button type="button" 
+                class="btn btn-sm btn-primary buildup-save-btn" 
+                onclick="saveBuildupChanges(${buildup.id})"
+                data-buildup-id="${buildup.id}">
+          <i class="fas fa-save"></i>
+          Save Changes
+        </button>
+        <button type="button" 
+                class="btn btn-sm btn-ghost" 
+                onclick="cancelBuildupEdit(${buildup.id})">
+          Cancel
+        </button>
+      </div>
+    </form>`;
+
+    return html;
+  }
+
+  // Handle buildup checkbox/input changes
+  document.addEventListener('change', (e) => {
+    if (e.target.classList.contains('buildup-checkbox') || e.target.classList.contains('buildup-rate-input')) {
+      updateBuildupSummary(e.target.getAttribute('data-buildup-id'));
+    }
+  });
+
+  document.addEventListener('input', (e) => {
+    if (e.target.classList.contains('buildup-rate-input')) {
+      updateBuildupSummary(e.target.getAttribute('data-buildup-id'));
+    }
+  });
+
+  function updateBuildupSummary(buildupId) {
+    const form = document.getElementById(`buildup-form-${buildupId}`);
+    if (!form) return;
+
+    let subtotal = 0;
+
+    // Always add Material Supply (it has no checkbox)
+    const materialSupplyInput = form.querySelector('[data-field="material_supply_rate"]');
+    if (materialSupplyInput) {
+      subtotal += parseFloat(materialSupplyInput.value || 0);
+    }
+
+    // Add other components only if checked
+    form.querySelectorAll('.buildup-checkbox').forEach(checkbox => {
+      if (checkbox.checked) {
+        const field = checkbox.getAttribute('data-field');
+        const rateField = field.replace('_included', '_rate');
+        const rateInput = form.querySelector(`[data-field="${rateField}"]`);
+        if (rateInput) {
+          subtotal += parseFloat(rateInput.value || 0);
+        }
+      }
+    });
+
+    // Update summary displays
+    const subtotalElem = document.querySelector(`.buildup-subtotal[data-buildup-id="${buildupId}"]`);
+    if (subtotalElem) {
+      subtotalElem.textContent = `R ${subtotal.toFixed(2)}`;
+    }
+  }
+
+  async function saveBuildupChanges(buildupId) {
+    const form = document.getElementById(`buildup-form-${buildupId}`);
+    if (!form) return;
+
+    const saveBtn = form.querySelector('.buildup-save-btn');
+    const originalHTML = saveBtn.innerHTML;
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+    try {
+      const updateData = {};
+      
+      form.querySelectorAll('.buildup-checkbox').forEach(checkbox => {
+        const field = checkbox.getAttribute('data-field');
+        updateData[field] = checkbox.checked;
+      });
+
+      form.querySelectorAll('.buildup-rate-input').forEach(input => {
+        const field = input.getAttribute('data-field');
+        updateData[field] = parseFloat(input.value || 0);
+      });
+
+      const response = await fetch(`/line_item_rate_build_ups/${buildupId}.json`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ line_item_rate_build_up: updateData })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        showToast('Failed to save: ' + (errorData.error || 'Unknown error'), 'error');
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalHTML;
+        return;
+      }
+
+      const data = await response.json();
+      
+      // Update summary displays with returned values
+      const subtotalElem = document.querySelector(`.buildup-subtotal[data-buildup-id="${buildupId}"]`);
+      const marginElem = document.querySelector(`.buildup-margin[data-buildup-id="${buildupId}"]`);
+      const finalRateElem = document.querySelector(`.buildup-final-rate[data-buildup-id="${buildupId}"]`);
+
+      if (subtotalElem) subtotalElem.textContent = `R ${parseFloat(data.subtotal || 0).toFixed(2)}`;
+      if (marginElem) marginElem.textContent = `R ${parseFloat(data.margin_amount || 0).toFixed(2)}`;
+      if (finalRateElem) finalRateElem.textContent = `R ${parseFloat(data.rounded_rate || 0).toFixed(2)}`;
+
+      showToast('Rate buildup saved successfully!', 'success');
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = originalHTML;
+    } catch (error) {
+      console.error('Error saving buildup:', error);
+      showToast('Failed to save changes', 'error');
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = originalHTML;
+    }
+  }
+
+  function cancelBuildupEdit(buildupId) {
+    // Simply close the accordion
+    const toggle = document.querySelector(`input.buildup-toggle[data-buildup-id="${buildupId}"]`);
+    if (toggle) toggle.checked = false;
   }
 
   // Initialize on page load

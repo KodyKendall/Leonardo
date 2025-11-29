@@ -1,62 +1,126 @@
-<%= form_with(model: [@tender, @tender_line_item], local: true, class: "space-y-6") do |form| %>
-  <% if @tender_line_item.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 border border-red-200 rounded-lg p-4">
-      <h2 class="font-bold text-red-900 mb-2"><%= pluralize(@tender_line_item.errors.count, "error") %> prohibited this tender line item from being saved:</h2>
-      <ul class="list-disc list-inside space-y-1 text-red-800 text-sm">
-        <% @tender_line_item.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
+<%= form_with model: [@tender, line_item],
+              class: "line-item-form space-y-4",
+              local: true do |f| %>
+  
+  <% if line_item.errors.any? %>
+    <div class="alert alert-error">
+      <div>
+        <h4 class="font-bold"><%= pluralize(line_item.errors.count, "error") %> prevented save:</h4>
+        <ul class="list-disc ml-4 mt-2">
+          <% line_item.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
     </div>
   <% end %>
 
-  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-    <div>
-      <%= form.label :quantity, "Quantity", class: "block text-sm font-medium text-gray-700 mb-2" %>
-      <%= form.number_field :quantity, step: 0.01, min: 0, class: "w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder: "Enter quantity" %>
-      <p class="text-xs text-gray-500 mt-1">Precision: 12 digits, 2 decimals</p>
+  <!-- Basic Information Section -->
+  <fieldset class="space-y-3">
+    <legend class="font-semibold text-sm">Basic Information</legend>
+    
+    <div class="grid grid-cols-2 gap-3">
+      <!-- Item Number -->
+      <div class="form-control">
+        <%= f.label :item_number, class: "label" %>
+        <%= f.text_field :item_number, placeholder: "e.g., 1.1", class: "input input-bordered input-sm" %>
+      </div>
+
+      <!-- Section Category -->
+      <div class="form-control">
+        <%= f.label :section_category, "Category", class: "label" %>
+        <%= f.select :section_category,
+                    TenderLineItem.section_categories.keys.map { |k| [k, k] },
+                    { include_blank: "Select category" },
+                    class: "select select-bordered select-sm" %>
+      </div>
     </div>
 
-    <div>
-      <%= form.label :rate, "Rate (R)", class: "block text-sm font-medium text-gray-700 mb-2" %>
-      <%= form.number_field :rate, step: 0.01, min: 0, class: "w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500", placeholder: "Enter rate" %>
-      <p class="text-xs text-gray-500 mt-1">Precision: 12 digits, 2 decimals</p>
+    <!-- Description -->
+    <div class="form-control">
+      <%= f.label :item_description, class: "label" %>
+      <%= f.text_area :item_description, placeholder: "Item description", class: "textarea textarea-bordered textarea-sm", rows: 2 %>
     </div>
-  </div>
 
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
-    <p class="text-sm text-blue-900">
-      <strong>Total Amount:</strong> 
-      <span id="total_amount" class="font-bold text-lg">R 0.00</span>
-    </p>
-  </div>
+    <!-- Quantity & UOM -->
+    <div class="grid grid-cols-2 gap-3">
+      <div class="form-control">
+        <%= f.label :quantity, class: "label" %>
+        <%= f.number_field :quantity, step: 0.01, placeholder: "0.00", class: "input input-bordered input-sm" %>
+      </div>
 
-  <div class="flex gap-2">
-    <%= form.submit class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium cursor-pointer" %>
-    <%= link_to "Cancel", tender_path(@tender), class: "rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+      <div class="form-control">
+        <%= f.label :unit_of_measure, "UOM", class: "label" %>
+        <%= f.select :unit_of_measure,
+                    %w[kg m m² m³ each tonne nr],
+                    { include_blank: "Select unit" },
+                    class: "select select-bordered select-sm" %>
+      </div>
+    </div>
+
+    <!-- Rate & Page -->
+    <div class="grid grid-cols-2 gap-3">
+      <div class="form-control">
+        <%= f.label :rate, "Rate (R)", class: "label" %>
+        <%= f.number_field :rate, step: 0.01, placeholder: "0.00", class: "input input-bordered input-sm" %>
+      </div>
+
+      <div class="form-control">
+        <%= f.label :page_number, "Page (QOB Ref)", class: "label" %>
+        <%= f.text_field :page_number, placeholder: "e.g., 5", class: "input input-bordered input-sm" %>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="form-control">
+      <%= f.label :notes, class: "label" %>
+      <%= f.text_area :notes, placeholder: "Optional notes...", class: "textarea textarea-bordered textarea-sm", rows: 2 %>
+    </div>
+  </fieldset>
+
+  <!-- Rate Build Up Section -->
+  <fieldset class="border border-gray-200 rounded-lg p-3 space-y-3" data-controller="collapsible">
+    <legend class="font-semibold text-sm cursor-pointer flex items-center gap-2" data-action="click->collapsible#toggle">
+      <span data-collapsible-target="icon">▼</span>
+      Rate Build Up
+    </legend>
+    
+    <div data-collapsible-target="content" class="space-y-3">
+      <%= f.fields_for :line_item_rate_build_up do |rb| %>
+        <%= render "line_item_rate_build_ups/fields", form: rb %>
+      <% end %>
+    </div>
+  </fieldset>
+
+  <!-- Material Breakdown Section -->
+  <fieldset class="border border-gray-200 rounded-lg p-3 space-y-3" data-controller="collapsible">
+    <legend class="font-semibold text-sm cursor-pointer flex items-center gap-2" data-action="click->collapsible#toggle">
+      <span data-collapsible-target="icon">▼</span>
+      Material Breakdown
+    </legend>
+    
+    <div data-collapsible-target="content" class="space-y-3">
+      <%= f.fields_for :line_item_material_breakdown do |mb| %>
+        <%= render "line_item_material_breakdowns/fields", form: mb %>
+      <% end %>
+    </div>
+  </fieldset>
+
+  <!-- Form Actions -->
+  <div class="flex gap-2 pt-4 border-t border-gray-100">
+    <%= f.submit line_item.persisted? ? "Update Line Item" : "Add Line Item",
+                 class: "btn btn-sm btn-primary" %>
+    
+    <% if line_item.persisted? %>
+      <%= link_to "Cancel",
+                  builder_tender_path(@tender),
+                  class: "btn btn-sm btn-outline",
+                  data: { turbo_frame: dom_id(line_item) } %>
+    <% else %>
+      <%= link_to "Cancel",
+                  builder_tender_path(@tender),
+                  class: "btn btn-sm btn-outline",
+                  data: { turbo_frame: "new_line_item_form" } %>
+    <% end %>
   </div>
 <% end %>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const quantityInput = document.querySelector('input[name*="quantity"]');
-    const rateInput = document.querySelector('input[name*="rate"]');
-    const totalAmountSpan = document.getElementById('total_amount');
-
-    function updateTotalAmount() {
-      const quantity = parseFloat(quantityInput.value) || 0;
-      const rate = parseFloat(rateInput.value) || 0;
-      const total = quantity * rate;
-      
-      totalAmountSpan.textContent = 'R ' + total.toLocaleString('en-IN', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      });
-    }
-
-    if (quantityInput) quantityInput.addEventListener('input', updateTotalAmount);
-    if (rateInput) rateInput.addEventListener('input', updateTotalAmount);
-
-    updateTotalAmount();
-  });
-</script>

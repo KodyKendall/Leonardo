@@ -27,41 +27,52 @@ class TenderLineItemsController < ApplicationController
 
   # GET /tenders/:tender_id/tender_line_items/:id/edit or /tender_line_items/:id/edit
   def edit
+    respond_to do |format|
+      format.html
+      format.turbo_stream
+    end
   end
 
   # POST /tenders/:tender_id/tender_line_items or /tender_line_items
   def create
-    @tender_line_item = @tender.tender_line_items.new(tender_line_item_params)
+    @line_item = @tender.tender_line_items.new(tender_line_item_params)
 
     respond_to do |format|
-      if @tender_line_item.save
-        format.html { redirect_to tender_path(@tender), notice: 'Tender line item was successfully created.' }
-        format.json { render json: @tender_line_item, status: :created }
+      if @line_item.save
+        format.turbo_stream { render :create }
+        format.html { redirect_to builder_tender_path(@tender), notice: 'Tender line item was successfully created.' }
+        format.json { render json: @line_item, status: :created }
       else
+        format.turbo_stream { render :new, status: :unprocessable_entity }
         format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @tender_line_item.errors, status: :unprocessable_entity }
+        format.json { render json: @line_item.errors, status: :unprocessable_entity }
       end
     end
   end
 
   # PATCH/PUT /tenders/:tender_id/tender_line_items/:id or /tender_line_items/:id
   def update
+    @line_item = @tender_line_item
     respond_to do |format|
-      if @tender_line_item.update(tender_line_item_params)
-        format.html { redirect_to tender_path(@tender), notice: 'Tender line item was successfully updated.' }
-        format.json { render json: @tender_line_item }
+      if @line_item.update(tender_line_item_params)
+        format.turbo_stream { render :update }
+        format.html { redirect_to builder_tender_path(@tender), notice: 'Tender line item was successfully updated.' }
+        format.json { render json: @line_item }
       else
+        format.turbo_stream { render :edit, status: :unprocessable_entity }
         format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @tender_line_item.errors, status: :unprocessable_entity }
+        format.json { render json: @line_item.errors, status: :unprocessable_entity }
       end
     end
   end
 
   # DELETE /tenders/:tender_id/tender_line_items/:id or /tender_line_items/:id
   def destroy
-    @tender_line_item.destroy
+    @line_item = @tender_line_item
+    @line_item.destroy
     respond_to do |format|
-      format.html { redirect_to tender_path(@tender), notice: 'Tender line item was successfully deleted.' }
+      format.turbo_stream { render :destroy }
+      format.html { redirect_to builder_tender_path(@tender), notice: 'Tender line item was successfully deleted.' }
       format.json { head :no_content }
     end
   end
@@ -76,6 +87,25 @@ class TenderLineItemsController < ApplicationController
     end
 
     def tender_line_item_params
-      params.require(:tender_line_item).permit(:page_number, :item_number, :item_description, :section_category, :unit_of_measure, :quantity, :rate)
+      params.require(:tender_line_item).permit(
+        :page_number, :item_number, :item_description, :section_category, 
+        :unit_of_measure, :quantity, :rate, :notes,
+        line_item_rate_build_up_attributes: [
+          :id, :material_supply_rate, :fabrication_rate, :fabrication_included,
+          :overheads_rate, :overheads_included, :shop_priming_rate,
+          :shop_priming_included, :onsite_painting_rate, :onsite_painting_included,
+          :delivery_rate, :delivery_included, :bolts_rate, :bolts_included, 
+          :erection_rate, :erection_included, :crainage_rate, :crainage_included, 
+          :cherry_picker_rate, :cherry_picker_included, :galvanizing_rate, 
+          :galvanizing_included, :subtotal, :margin_amount, :total_before_rounding, 
+          :rounded_rate, :_destroy
+        ],
+        line_item_material_breakdown_attributes: [
+          :id, :_destroy,
+          line_item_materials_attributes: [
+            :id, :material_supply_id, :proportion, :_destroy
+          ]
+        ]
+      )
     end
 end
