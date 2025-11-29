@@ -63,16 +63,14 @@
       <% if line_item.line_item_rate_build_up %>
         <div class="pt-2 border-t border-gray-100">
           <div class="collapse collapse-arrow border border-base-300 bg-base-100">
-            <input type="checkbox" class="buildup-toggle" data-buildup-id="<%= line_item.line_item_rate_build_up.id %>" />
+            <input type="checkbox" />
             <div class="collapse-title font-semibold text-sm flex items-center gap-2">
               <i class="fas fa-chart-bar"></i>
               Rate Buildup Details
             </div>
             <div class="collapse-content">
-              <div id="buildup-content-<%= line_item.line_item_rate_build_up.id %>" class="buildup-content mt-4">
-                <div class="flex justify-center py-4">
-                  <span class="loading loading-spinner loading-sm"></span>
-                </div>
+              <div class="mt-4">
+                <%= render 'line_item_rate_build_ups/show', line_item_rate_build_up: line_item.line_item_rate_build_up %>
               </div>
             </div>
           </div>

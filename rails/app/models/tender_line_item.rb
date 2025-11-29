@@ -13,6 +13,7 @@ class TenderLineItem < ApplicationRecord
 
   after_initialize :build_defaults, if: :new_record?
   after_create :create_line_item_rate_build_up, if: -> { line_item_rate_build_up.nil? }
+  after_create :create_line_item_material_breakdown, if: -> { line_item_material_breakdown.nil? }
 
   enum section_category: {
     "Blank" => "Blank",
@@ -46,5 +47,9 @@ class TenderLineItem < ApplicationRecord
 
   def create_line_item_rate_build_up
     LineItemRateBuildUp.create!(tender_line_item_id: id) unless line_item_rate_build_up
+  end
+
+  def create_line_item_material_breakdown
+    LineItemMaterialBreakdown.create!(tender_line_item_id: id) unless line_item_material_breakdown
   end
 end

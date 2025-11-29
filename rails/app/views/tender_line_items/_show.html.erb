@@ -45,8 +45,8 @@
           </div>
 
           <div>
-            <div class="text-xs text-gray-500">Rate (R)</div>
-            <div class="font-semibold"><%= number_with_precision(tender_line_item.rate, precision: 2) %></div>
+            <div class="text-xs text-gray-500">Rate</div>
+            <div class="font-semibold">R<%= number_with_precision(tender_line_item.rate, precision: 2) %></div>
           </div>
 
           <div>
@@ -55,8 +55,8 @@
           </div>
 
           <div class="col-span-2 text-right bg-success bg-opacity-10 p-2 rounded">
-            <div class="text-xs text-gray-500">Line Total (R)</div>
-            <div class="font-bold text-success text-lg"><%= number_with_precision(tender_line_item.total_amount, precision: 2) %></div>
+            <div class="text-xs text-gray-500">Line Total</div>
+            <div class="font-bold text-gray-900 text-lg">R<%= number_with_precision(tender_line_item.total_amount, precision: 2) %></div>
           </div>
         </div>
       </div>
@@ -64,7 +64,7 @@
 
     <!-- Expandable Breakdowns Section -->
     <div class="collapse collapse-arrow border border-base-300 bg-base-100 mt-2 shadow-md">
-      <input type="checkbox" class="line-item-toggle" data-line-item-id="<%= tender_line_item.id %>" checked />
+      <input type="checkbox" class="line-item-toggle" data-line-item-id="<%= tender_line_item.id %>" />
       <div class="collapse-title font-semibold text-base flex items-center gap-2">
         <i class="fas fa-chevron-down"></i>
         Breakdown Details

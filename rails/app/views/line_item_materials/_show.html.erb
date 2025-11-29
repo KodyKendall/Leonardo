@@ -41,7 +41,7 @@
 
     <!-- Line Total (Calculated, Display Only) -->
     <div class="col-span-2 text-right font-semibold text-gray-900">
-      <%= number_to_currency(line_item_material.line_total) %>
+      R<%= number_with_precision(line_item_material.line_total, precision: 2) %>
     </div>
 
     <!-- Delete Button -->

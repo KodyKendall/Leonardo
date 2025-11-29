@@ -13,8 +13,8 @@
 
         <div class="text-right">
           <div class="text-sm text-gray-600 mb-1">GRAND TOTAL</div>
-          <div class="text-3xl font-bold text-success" id="grand-total">
-            <%= number_to_currency(@line_items.sum(&:total_amount)) %>
+          <div class="text-3xl font-bold text-gray-900" id="grand-total">
+            R<%= number_with_precision(@line_items.sum(&:total_amount), precision: 2) %>
           </div>
         </div>
       </div>
@@ -87,7 +87,7 @@
     let total = 0;
 
     lineItemFrames.forEach(frame => {
-      const totalCell = frame.querySelector('[class*="text-success"][class*="text-lg"]');
+      const totalCell = frame.querySelector('[class*="text-gray-900"][class*="text-lg"]');
       if (totalCell) {
         const currencyText = totalCell.textContent.trim();
         const numericValue = parseFloat(currencyText.replace(/[^\d.-]/g, ''));

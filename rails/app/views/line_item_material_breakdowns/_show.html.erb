@@ -48,7 +48,7 @@
     <div class="px-6 py-4 bg-gray-50 border-t space-y-2">
       <div class="flex justify-between text-sm">
         <span class="font-semibold text-gray-700">SUBTOTAL:</span>
-        <span class="font-semibold text-gray-900"><%= number_to_currency(line_item_material_breakdown.subtotal) %></span>
+        <span class="font-semibold text-gray-900">R<%= number_with_precision(line_item_material_breakdown.subtotal, precision: 2) %></span>
       </div>
 
       <div class="flex justify-between text-sm">
@@ -58,7 +58,7 @@
 
       <div class="flex justify-between text-lg font-bold border-t pt-2">
         <span class="text-gray-900">TOTAL:</span>
-        <span class="text-blue-600"><%= number_to_currency(line_item_material_breakdown.total) %></span>
+        <span class="text-blue-600">R<%= number_with_precision(line_item_material_breakdown.total, precision: 2) %></span>
       </div>
     </div>
   </div>
