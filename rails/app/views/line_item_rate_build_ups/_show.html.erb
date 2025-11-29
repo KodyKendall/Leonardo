@@ -1,0 +1,95 @@
+<%= turbo_frame_tag "line_item_rate_build_up_#{line_item_rate_build_up.id}" do %>
+  <div class="card bg-base-100 shadow-md mb-4">
+    <!-- Header -->
+    <div class="card-body pb-3">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="card-title text-lg font-bold">Rate Build-Up</h3>
+          <span class="badge badge-info">Steel Sections</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rate Items Table Header -->
+    <div class="px-6 pb-2 border-t">
+      <div class="grid grid-cols-12 gap-3 text-xs font-semibold text-gray-600 uppercase tracking-wide">
+        <div class="col-span-5">Component</div>
+        <div class="col-span-3">Rate</div>
+        <div class="col-span-2">Included</div>
+        <div class="col-span-2 text-right">Amount</div>
+      </div>
+    </div>
+
+    <!-- Rate Items (Each Component) -->
+    <div class="border-t">
+      <% rate_components = [
+        { label: "Material Supply", rate_field: :material_supply_rate, included_field: :material_supply_included },
+        { label: "Fabrication", rate_field: :fabrication_rate, included_field: :fabrication_included },
+        { label: "Overheads", rate_field: :overheads_rate, included_field: :overheads_included },
+        { label: "Shop Priming", rate_field: :shop_priming_rate, included_field: :shop_priming_included },
+        { label: "Onsite Painting", rate_field: :onsite_painting_rate, included_field: :onsite_painting_included },
+        { label: "Delivery", rate_field: :delivery_rate, included_field: :delivery_included },
+        { label: "Bolts", rate_field: :bolts_rate, included_field: :bolts_included },
+        { label: "Erection", rate_field: :erection_rate, included_field: :erection_included },
+        { label: "Crainage", rate_field: :crainage_rate, included_field: :crainage_included },
+        { label: "Cherry Picker", rate_field: :cherry_picker_rate, included_field: :cherry_picker_included },
+        { label: "Galvanizing", rate_field: :galvanizing_rate, included_field: :galvanizing_included }
+      ] %>
+
+      <% rate_components.each do |component| %>
+        <%= turbo_frame_tag "rate_item_#{line_item_rate_build_up.id}_#{component[:label].parameterize}" do %>
+          <div class="grid grid-cols-12 gap-3 items-center py-3 px-6 bg-white border-b hover:bg-gray-50">
+            <!-- Component Name -->
+            <div class="col-span-5">
+              <span class="text-sm font-medium text-gray-900"><%= component[:label] %></span>
+            </div>
+
+            <!-- Rate Input -->
+            <div class="col-span-3">
+              <%= form_with(model: line_item_rate_build_up, local: true, method: :patch) do |form| %>
+                <%= form.number_field component[:rate_field], 
+                    placeholder: "0.00", 
+                    step: 0.01,
+                    class: "input input-bordered input-sm w-full text-right" %>
+              <% end %>
+            </div>
+
+            <!-- Included Checkbox -->
+            <div class="col-span-2">
+              <%= form_with(model: line_item_rate_build_up, local: true, method: :patch) do |form| %>
+                <%= form.check_box component[:included_field], { class: "checkbox checkbox-sm" } %>
+              <% end %>
+            </div>
+
+            <!-- Amount (Calculated) -->
+            <div class="col-span-2 text-right">
+              <% is_included = line_item_rate_build_up.send(component[:included_field]) %>
+              <% rate_value = line_item_rate_build_up.send(component[:rate_field]).to_f %>
+              <span class="text-sm font-semibold <%= 'text-gray-400' if !is_included %>">
+                <%= is_included ? number_to_currency(rate_value) : "—" %>
+              </span>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <!-- Totals Section -->
+    <div class="px-6 py-4 bg-gray-50 border-t space-y-2">
+      <div class="flex justify-between text-sm">
+        <span class="font-semibold text-gray-700">SUBTOTAL:</span>
+        <span class="font-semibold text-gray-900"><%= number_to_currency(line_item_rate_build_up.subtotal) %></span>
+      </div>
+
+      <div class="flex justify-between text-sm">
+        <span class="font-semibold text-gray-700">MARGIN %:</span>
+        <input type="number" placeholder="0%" step="0.1" class="input input-bordered input-xs w-24 text-right" />
+      </div>
+
+      <div class="flex justify-between text-lg font-bold border-t pt-2">
+        <span class="text-gray-900">TOTAL:</span>
+        <span class="text-blue-600"><%= number_to_currency(line_item_rate_build_up.rounded_rate) %></span>
+      </div>
+    </div>
+  </div>
+<% end %>

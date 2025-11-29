@@ -344,6 +344,148 @@ material_supplies = material_supplies_data.map do |attrs|
   end
 end
 
+# ===== TENDER LINE ITEMS (for testing the builder) =====
+line_item_1 = tender3.tender_line_items.find_or_create_by!(
+  item_number: 'LI-001',
+  item_description: 'Light Structural Steel - Up to 25 kg/m',
+  unit_of_measure: 'tonne',
+  quantity: 45.5,
+  rate: 15500.00,
+  section_category: 'Steel Sections',
+  page_number: '1',
+  notes: 'Supplied and erected on site'
+) do |li|
+  li.section_category = 'Steel Sections'
+end
+
+line_item_2 = tender3.tender_line_items.find_or_create_by!(
+  item_number: 'LI-002',
+  item_description: 'Heavy Structural Steel - Over 25 kg/m',
+  unit_of_measure: 'tonne',
+  quantity: 28.3,
+  rate: 16800.00,
+  section_category: 'Steel Sections',
+  page_number: '1',
+  notes: 'Supplied and erected on site'
+) do |li|
+  li.section_category = 'Steel Sections'
+end
+
+line_item_3 = tender3.tender_line_items.find_or_create_by!(
+  item_number: 'LI-003',
+  item_description: 'Bolts and Fasteners',
+  unit_of_measure: 'kg',
+  quantity: 500,
+  rate: 85.00,
+  section_category: 'Bolts',
+  page_number: '2',
+  notes: 'M16, M20, M24 HD Bolts'
+) do |li|
+  li.section_category = 'Bolts'
+end
+
+# ===== LINE ITEM RATE BUILD-UPS =====
+# For line_item_1
+rate_buildup_1 = line_item_1.line_item_rate_build_up || line_item_1.create_line_item_rate_build_up
+rate_buildup_1.update(
+  material_supply_rate: 8500.00,
+  material_supply_included: true,
+  fabrication_rate: 4200.00,
+  fabrication_included: true,
+  overheads_rate: 1800.00,
+  overheads_included: true,
+  delivery_rate: 500.00,
+  delivery_included: true,
+  bolts_rate: 200.00,
+  bolts_included: true,
+  erection_rate: 300.00,
+  erection_included: true
+)
+
+# For line_item_2
+rate_buildup_2 = line_item_2.line_item_rate_build_up || line_item_2.create_line_item_rate_build_up
+rate_buildup_2.update(
+  material_supply_rate: 9500.00,
+  material_supply_included: true,
+  fabrication_rate: 4800.00,
+  fabrication_included: true,
+  overheads_rate: 1800.00,
+  overheads_included: true,
+  shop_priming_rate: 400.00,
+  shop_priming_included: false,
+  delivery_rate: 500.00,
+  delivery_included: true
+)
+
+# For line_item_3
+rate_buildup_3 = line_item_3.line_item_rate_build_up || line_item_3.create_line_item_rate_build_up
+rate_buildup_3.update(
+  material_supply_rate: 45.00,
+  material_supply_included: true,
+  delivery_rate: 15.00,
+  delivery_included: true,
+  bolts_rate: 25.00,
+  bolts_included: true
+)
+
+# ===== LINE ITEM MATERIAL BREAKDOWNS =====
+# For line_item_1
+breakdown_1 = line_item_1.line_item_material_breakdown || line_item_1.create_line_item_material_breakdown
+breakdown_1.save
+
+# Add materials to breakdown_1
+LineItemMaterial.find_or_create_by!(
+  line_item_material_breakdown_id: breakdown_1.id,
+  tender_line_item_id: line_item_1.id,
+  material_supply_id: material_supplies[3].id
+) do |m|
+  m.thickness = 12.5
+  m.rate = 8200.00
+  m.quantity = 30.0
+  m.proportion = 0.65
+end
+
+LineItemMaterial.find_or_create_by!(
+  line_item_material_breakdown_id: breakdown_1.id,
+  tender_line_item_id: line_item_1.id,
+  material_supply_id: material_supplies[4].id
+) do |m|
+  m.thickness = 15.0
+  m.rate = 8800.00
+  m.quantity = 15.5
+  m.proportion = 0.35
+end
+
+# For line_item_2
+breakdown_2 = line_item_2.line_item_material_breakdown || line_item_2.create_line_item_material_breakdown
+breakdown_2.save
+
+LineItemMaterial.find_or_create_by!(
+  line_item_material_breakdown_id: breakdown_2.id,
+  tender_line_item_id: line_item_2.id,
+  material_supply_id: material_supplies[3].id
+) do |m|
+  m.thickness = 20.0
+  m.rate = 9200.00
+  m.quantity = 28.3
+  m.proportion = 1.0
+end
+
+# For line_item_3
+breakdown_3 = line_item_3.line_item_material_breakdown || line_item_3.create_line_item_material_breakdown
+breakdown_3.save
+
+LineItemMaterial.find_or_create_by!(
+  line_item_material_breakdown_id: breakdown_3.id,
+  tender_line_item_id: line_item_3.id,
+  material_supply_id: material_supplies[0].id
+) do |m|
+  m.thickness = 0.0
+  m.rate = 42.00
+  m.quantity = 500
+  m.proportion = 1.0
+end
+
 puts "✅ Database seeded successfully!"
 puts ""
 puts "📊 SEEDED DATA SUMMARY:"

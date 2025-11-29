@@ -1,0 +1,54 @@
+<%= turbo_frame_tag "line_item_material_#{line_item_material.id}" do %>
+  <div class="grid grid-cols-12 gap-3 items-center py-3 px-3 bg-white border-b hover:bg-gray-50">
+    <!-- Material Supply Dropdown -->
+    <div class="col-span-3">
+      <%= form_with(model: line_item_material, local: true, method: :patch) do |form| %>
+        <%= form.collection_select :material_supply_id, MaterialSupply.all, :id, :name, 
+            { prompt: "Select material" }, 
+            class: "select select-bordered select-sm w-full" %>
+      <% end %>
+    </div>
+
+    <!-- Thickness Field -->
+    <div class="col-span-2">
+      <%= form_with(model: line_item_material, local: true, method: :patch) do |form| %>
+        <%= form.number_field :thickness, 
+            placeholder: "Thickness", 
+            step: 0.01,
+            class: "input input-bordered input-sm w-full text-right" %>
+      <% end %>
+    </div>
+
+    <!-- Rate Field -->
+    <div class="col-span-2">
+      <%= form_with(model: line_item_material, local: true, method: :patch) do |form| %>
+        <%= form.number_field :rate, 
+            placeholder: "Rate", 
+            step: 0.01,
+            class: "input input-bordered input-sm w-full text-right" %>
+      <% end %>
+    </div>
+
+    <!-- Quantity Field -->
+    <div class="col-span-2">
+      <%= form_with(model: line_item_material, local: true, method: :patch) do |form| %>
+        <%= form.number_field :quantity, 
+            placeholder: "Qty", 
+            step: 0.01,
+            class: "input input-bordered input-sm w-full text-right" %>
+      <% end %>
+    </div>
+
+    <!-- Line Total (Calculated, Display Only) -->
+    <div class="col-span-2 text-right font-semibold text-gray-900">
+      <%= number_to_currency(line_item_material.line_total) %>
+    </div>
+
+    <!-- Delete Button -->
+    <div class="col-span-1 text-center">
+      <%= button_to line_item_material, method: :delete, form: { class: "contents" }, class: "btn btn-ghost btn-xs text-red-600" do %>
+        <i class="fa-solid fa-trash"></i>
+      <% end %>
+    </div>
+  </div>
+<% end %>

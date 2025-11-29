@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_28_205400) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_29_173321) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -220,6 +220,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_28_205400) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "line_item_material_breakdown_id", null: false
+    t.decimal "thickness"
+    t.decimal "rate"
+    t.decimal "quantity"
     t.index ["line_item_material_breakdown_id"], name: "index_line_item_materials_on_line_item_material_breakdown_id"
     t.index ["material_supply_id"], name: "index_line_item_materials_on_material_supply_id"
     t.index ["tender_line_item_id", "material_supply_id"], name: "idx_on_tender_line_item_id_material_supply_id_beb386dde4"

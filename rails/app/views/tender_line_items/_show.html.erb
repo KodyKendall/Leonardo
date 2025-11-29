@@ -1,0 +1,97 @@
+<%= turbo_frame_tag "tender_line_item_#{tender_line_item.id}" do %>
+  <div class="mb-6">
+    <!-- Line Item Header -->
+    <div class="card bg-base-100 shadow-md">
+      <div class="card-body">
+        <div class="flex justify-between items-start mb-3">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="badge badge-lg"><%= tender_line_item.item_number || "—" %></span>
+              <% if tender_line_item.section_category %>
+                <span class="badge badge-sm"><%= tender_line_item.section_category %></span>
+              <% end %>
+            </div>
+            <h3 class="font-bold text-base"><%= truncate(tender_line_item.item_description, length: 80) %></h3>
+            <% if tender_line_item.notes %>
+              <p class="text-xs text-gray-500 mt-1"><%= tender_line_item.notes %></p>
+            <% end %>
+          </div>
+
+          <!-- Actions -->
+          <div class="flex gap-1">
+            <%= link_to edit_tender_tender_line_item_path(tender_line_item.tender, tender_line_item),
+                        class: "btn btn-xs btn-ghost",
+                        data: { turbo_frame: dom_id(tender_line_item) },
+                        title: "Edit" do %>
+              <i class="fas fa-edit"></i>
+            <% end %>
+
+            <%= button_to tender_tender_line_item_path(tender_line_item.tender, tender_line_item),
+                          method: :delete,
+                          class: "btn btn-xs btn-ghost text-error",
+                          data: { turbo_confirm: "Delete this line item?" },
+                          title: "Delete" do %>
+              <i class="fas fa-trash"></i>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Details Row -->
+        <div class="grid grid-cols-5 gap-3 py-3 border-t border-gray-100">
+          <div>
+            <div class="text-xs text-gray-500">Quantity</div>
+            <div class="font-semibold"><%= number_with_precision(tender_line_item.quantity, precision: 2) %></div>
+            <div class="text-xs text-gray-400"><%= tender_line_item.unit_of_measure || "—" %></div>
+          </div>
+
+          <div>
+            <div class="text-xs text-gray-500">Rate (R)</div>
+            <div class="font-semibold"><%= number_with_precision(tender_line_item.rate, precision: 2) %></div>
+          </div>
+
+          <div>
+            <div class="text-xs text-gray-500">Page</div>
+            <div class="font-semibold"><%= tender_line_item.page_number || "—" %></div>
+          </div>
+
+          <div class="col-span-2 text-right bg-success bg-opacity-10 p-2 rounded">
+            <div class="text-xs text-gray-500">Line Total (R)</div>
+            <div class="font-bold text-success text-lg"><%= number_with_precision(tender_line_item.total_amount, precision: 2) %></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Expandable Breakdowns Section -->
+    <div class="collapse collapse-arrow border border-base-300 bg-base-100 mt-2 shadow-md">
+      <input type="checkbox" class="line-item-toggle" data-line-item-id="<%= tender_line_item.id %>" checked />
+      <div class="collapse-title font-semibold text-base flex items-center gap-2">
+        <i class="fas fa-chevron-down"></i>
+        Breakdown Details
+      </div>
+
+      <div class="collapse-content pt-4">
+        <!-- Two-Column Layout: Rate Build-Up (Left) | Material Breakdown (Right) -->
+        <div class="grid grid-cols-2 gap-6">
+          <!-- Rate Build-Up (Left) -->
+          <div>
+            <% if tender_line_item.line_item_rate_build_up %>
+              <%= render 'line_item_rate_build_ups/show', line_item_rate_build_up: tender_line_item.line_item_rate_build_up %>
+            <% else %>
+              <div class="alert alert-warning">No rate build-up found</div>
+            <% end %>
+          </div>
+
+          <!-- Material Breakdown (Right) -->
+          <div>
+            <% if tender_line_item.line_item_material_breakdown %>
+              <%= render 'line_item_material_breakdowns/show', line_item_material_breakdown: tender_line_item.line_item_material_breakdown %>
+            <% else %>
+              <div class="alert alert-warning">No material breakdown found</div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
