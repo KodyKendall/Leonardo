@@ -1,0 +1,10 @@
+{
+  "instance_name": "CHANGEME_INSTANCE_NAME",
+  "instance_guid": "CHANGEME_GUID",
+  "environment": "development",
+  "s3_bucket": "CHANGEME_S3_BUCKET",
+  "region": "CHANGEME_REGION",
+  "created_at": "CHANGEME_DATE",
+  "platform_version": "0.0.1",
+  "notes": "This file defines metadata for a Leonardo instance. Replace placeholders when instantiating a new project."
+}
