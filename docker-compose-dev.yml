@@ -34,15 +34,16 @@ services:
     # build: ../LlamaBot
     env_file:
       - .env
-    command: bash -c "python init_pg_checkpointer.py && uvicorn main:app --host 0.0.0.0 --port 8000"
-    # command: tail -f /dev/null
+    # command: bash -c "python init_pg_checkpointer.py && uvicorn main:app --host 0.0.0.0 --port 8000"
+    command: bash -c "python init_pg_checkpointer.py && tail -f /dev/null"
     # docker compose exec -it llamabot uvicorn main:app --host 0.0.0.0 --port 8000
+    # docker compose exec -it llamabot langgraph dev --host 0.0.0.0
     volumes:
       - auth_json:/app/auth.json
       - ./langgraph/agents/leo/nodes.py:/app/app/agents/llamabot/nodes.py
       - ./rails:/app/app/rails
       - /var/run/docker.sock:/var/run/docker.sock
-      # - ../LlamaBot/app:/app/app
+      - ../LlamaBot/app:/app/app
     ports:
       - "8000:8000"
     depends_on:
@@ -75,32 +76,32 @@ services:
     networks:
       - llama-network
 
-  code:
-    image: kody06/llamabot-vscode:latest
-    container_name: code
-    user: root
-    environment:
-      - TZ=America/Denver
-      - PASSWORD=password
-    volumes:
-      - code_config:/config
-      - ./:/config/workspace
-    ports:
-      - "8443:8443"
-    restart: unless-stopped  
+  # code:
+  #   image: kody06/llamabot-vscode:latest
+  #   container_name: code
+  #   user: root
+  #   environment:
+  #     - TZ=America/Denver
+  #     - PASSWORD=password
+  #   volumes:
+  #     - code_config:/config
+  #     - ./:/config/workspace
+  #   ports:
+  #     - "8443:8443"
+  #   restart: unless-stopped  
 
-  pgweb:
-    image: sosedoff/pgweb
-    ports:
-      - "8082:8081"
-    environment:
-      DATABASE_URL: postgres://postgres:password@db:5432/llamapress_development?sslmode=disable
-      AUTH_USER: admin
-      AUTH_PASS: changeme
-    depends_on:
-      - db
-    networks:
-      - llama-network
+  # pgweb:
+  #   image: sosedoff/pgweb
+  #   ports:
+  #     - "8082:8081"
+  #   environment:
+  #     DATABASE_URL: postgres://postgres:password@db:5432/llamapress_development?sslmode=disable
+  #     AUTH_USER: admin
+  #     AUTH_PASS: changeme
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - llama-network
       
 volumes:
   redis_data:
