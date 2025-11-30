@@ -1,0 +1,8 @@
+{
+  "instance_name": "rsb-tender",
+  "instance_guid": "e2c6f3ba-4fb0-4cd2-8f6d-7b19385b30a2",
+  "environment": "development",
+  "region": "us-west-2",
+  "created_at": "2025-11-29T22:14:01Z",
+  "notes": "RSB Leonardo Instance."
+}
