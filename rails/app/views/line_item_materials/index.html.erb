@@ -1,29 +1,103 @@
-<% content_for :title, "Line item materials" %>
+<% content_for :title, "Line Item Materials" %>
 
-<div class="w-full">
+<div class="container mx-auto p-6">
   <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
+    <div class="alert alert-success mb-6">
+      <i class="fas fa-check-circle"></i>
+      <span><%= notice %></span>
+    </div>
   <% end %>
 
-  <div class="flex justify-between items-center">
-    <h1 class="font-bold text-4xl">Line item materials</h1>
-    <%= link_to "New line item material", new_line_item_material_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-3xl font-bold">Line Item Materials</h1>
+      <p class="text-gray-500">All materials across all line items</p>
+    </div>
+    <%= link_to new_line_item_material_path, class: "btn btn-primary" do %>
+      <i class="fas fa-plus"></i> New Material
+    <% end %>
   </div>
 
-  <div id="line_item_materials" class="min-w-full divide-y divide-gray-200 space-y-5">
-    <% if @line_item_materials.any? %>
-      <% @line_item_materials.each do |line_item_material| %>
-        <div class="flex flex-col sm:flex-row justify-between items-center pb-5 sm:pb-0">
-          <%= render line_item_material %>
-          <div class="w-full sm:w-auto flex flex-col sm:flex-row space-x-2 space-y-2">
-            <%= link_to "Show", line_item_material, class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= link_to "Edit", edit_line_item_material_path(line_item_material), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= button_to "Destroy", line_item_material, method: :delete, class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
-          </div>
+  <!-- Materials Table -->
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <% if @line_item_materials.any? %>
+        <div class="overflow-x-auto">
+          <table class="table table-zebra w-full">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Material Supply</th>
+                <th>Breakdown</th>
+                <th>Tender Line Item</th>
+                <th class="text-right">Proportion</th>
+                <th class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @line_item_materials.each do |material| %>
+                <tr class="hover">
+                  <td>
+                    <span class="font-mono text-sm"><%= material.id %></span>
+                  </td>
+                  <td>
+                    <%= link_to line_item_material_path(material), class: "link link-primary font-medium" do %>
+                      <%= material.material_supply&.name || "No material" %>
+                    <% end %>
+                  </td>
+                  <td>
+                    <% if material.line_item_material_breakdown %>
+                      <%= link_to line_item_material_breakdown_path(material.line_item_material_breakdown), class: "link link-secondary text-sm" do %>
+                        Breakdown #<%= material.line_item_material_breakdown.id %>
+                      <% end %>
+                    <% else %>
+                      <span class="text-gray-400">—</span>
+                    <% end %>
+                  </td>
+                  <td>
+                    <% if material.tender_line_item %>
+                      <%= link_to tender_tender_line_item_path(material.tender_line_item.tender, material.tender_line_item), class: "link link-secondary text-sm" do %>
+                        <%= truncate(material.tender_line_item.item_description, length: 30) %>
+                      <% end %>
+                    <% else %>
+                      <span class="text-gray-400">—</span>
+                    <% end %>
+                  </td>
+                  <td class="text-right font-mono"><%= number_with_precision((material.proportion || 0) * 100, precision: 2) %>%</td>
+                  <td class="text-center">
+                    <%= link_to line_item_material_path(material), class: "btn btn-xs btn-ghost", title: "View" do %>
+                      <i class="fas fa-eye"></i>
+                    <% end %>
+                    <%= link_to edit_line_item_material_path(material), class: "btn btn-xs btn-ghost", title: "Edit" do %>
+                      <i class="fas fa-edit"></i>
+                    <% end %>
+                    <%= button_to material, method: :delete, class: "btn btn-xs btn-ghost text-error", data: { turbo_confirm: "Delete this material?" }, title: "Delete" do %>
+                      <i class="fas fa-trash"></i>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <div class="text-center py-10 text-gray-500">
+          <i class="fas fa-inbox text-4xl mb-4"></i>
+          <p>No line item materials found.</p>
         </div>
       <% end %>
-    <% else %>
-      <p class="text-center my-10">No line item materials found.</p>
-    <% end %>
+    </div>
+  </div>
+
+  <!-- Debug Info -->
+  <div class="card bg-base-200 shadow-sm mt-6">
+    <div class="card-body">
+      <h3 class="card-title text-sm text-gray-500">Debug Info</h3>
+      <div class="text-sm">
+        <span class="text-gray-500">Total Materials:</span>
+        <span class="font-mono font-bold"><%= @line_item_materials.count %></span>
+      </div>
+    </div>
   </div>
 </div>

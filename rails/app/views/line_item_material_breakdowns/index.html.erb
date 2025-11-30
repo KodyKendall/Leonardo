@@ -1,29 +1,96 @@
-<% content_for :title, "Line item material breakdowns" %>
+<% content_for :title, "Material Breakdowns" %>
 
-<div class="w-full">
+<div class="container mx-auto p-6">
   <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
+    <div class="alert alert-success mb-6">
+      <i class="fas fa-check-circle"></i>
+      <span><%= notice %></span>
+    </div>
   <% end %>
 
-  <div class="flex justify-between items-center">
-    <h1 class="font-bold text-4xl">Line item material breakdowns</h1>
-    <%= link_to "New line item material breakdown", new_line_item_material_breakdown_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-3xl font-bold">Material Breakdowns</h1>
+      <p class="text-gray-500">All material breakdowns across all tenders</p>
+    </div>
   </div>
 
-  <div id="line_item_material_breakdowns" class="min-w-full divide-y divide-gray-200 space-y-5">
-    <% if @line_item_material_breakdowns.any? %>
-      <% @line_item_material_breakdowns.each do |line_item_material_breakdown| %>
-        <div class="flex flex-col sm:flex-row justify-between items-center pb-5 sm:pb-0">
-          <%= render line_item_material_breakdown %>
-          <div class="w-full sm:w-auto flex flex-col sm:flex-row space-x-2 space-y-2">
-            <%= link_to "Show", line_item_material_breakdown, class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= link_to "Edit", edit_line_item_material_breakdown_path(line_item_material_breakdown), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= button_to "Destroy", line_item_material_breakdown, method: :delete, class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
-          </div>
+  <!-- Breakdowns Table -->
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <% if @line_item_material_breakdowns.any? %>
+        <div class="overflow-x-auto">
+          <table class="table table-zebra w-full">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Tender Line Item</th>
+                <th>Tender</th>
+                <th class="text-right">Materials Count</th>
+                <th class="text-right">Subtotal</th>
+                <th class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @line_item_material_breakdowns.each do |breakdown| %>
+                <tr class="hover">
+                  <td>
+                    <span class="font-mono text-sm"><%= breakdown.id %></span>
+                  </td>
+                  <td>
+                    <% if breakdown.tender_line_item %>
+                      <%= link_to tender_tender_line_item_path(breakdown.tender_line_item.tender, breakdown.tender_line_item), class: "link link-primary font-medium" do %>
+                        <%= truncate(breakdown.tender_line_item.item_description, length: 40) %>
+                      <% end %>
+                      <div class="text-xs text-gray-500">Item #<%= breakdown.tender_line_item.item_number %></div>
+                    <% else %>
+                      <span class="text-gray-400">No line item</span>
+                    <% end %>
+                  </td>
+                  <td>
+                    <% if breakdown.tender_line_item&.tender %>
+                      <%= link_to tender_path(breakdown.tender_line_item.tender), class: "link link-secondary text-sm" do %>
+                        <%= truncate(breakdown.tender_line_item.tender.name, length: 25) %>
+                      <% end %>
+                    <% else %>
+                      <span class="text-gray-400">—</span>
+                    <% end %>
+                  </td>
+                  <td class="text-right">
+                    <span class="badge badge-outline"><%= breakdown.line_item_materials.count %></span>
+                  </td>
+                  <td class="text-right font-mono">R<%= number_with_precision(breakdown.subtotal || 0, precision: 2) %></td>
+                  <td class="text-center">
+                    <%= link_to line_item_material_breakdown_path(breakdown), class: "btn btn-xs btn-ghost", title: "View" do %>
+                      <i class="fas fa-eye"></i>
+                    <% end %>
+                    <%= link_to edit_line_item_material_breakdown_path(breakdown), class: "btn btn-xs btn-ghost", title: "Edit" do %>
+                      <i class="fas fa-edit"></i>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <div class="text-center py-10 text-gray-500">
+          <i class="fas fa-inbox text-4xl mb-4"></i>
+          <p>No material breakdowns found.</p>
         </div>
       <% end %>
-    <% else %>
-      <p class="text-center my-10">No line item material breakdowns found.</p>
-    <% end %>
+    </div>
+  </div>
+
+  <!-- Debug Info -->
+  <div class="card bg-base-200 shadow-sm mt-6">
+    <div class="card-body">
+      <h3 class="card-title text-sm text-gray-500">Debug Info</h3>
+      <div class="text-sm">
+        <span class="text-gray-500">Total Breakdowns:</span>
+        <span class="font-mono font-bold"><%= @line_item_material_breakdowns.count %></span>
+      </div>
+    </div>
   </div>
 </div>

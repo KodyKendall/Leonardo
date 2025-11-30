@@ -1,58 +1,64 @@
 <%= turbo_frame_tag "line_item_material_#{line_item_material.id}" do %>
-  <div class="grid grid-cols-12 gap-3 items-center py-3 px-3 bg-white border-b hover:bg-gray-50">
-    <!-- Material Supply Dropdown -->
-    <div class="col-span-3">
-      <%= form_with(model: line_item_material, local: true, method: :patch) do |form| %>
-        <%= form.collection_select :material_supply_id, MaterialSupply.all, :id, :name, 
-            { prompt: "Select material" }, 
-            class: "select select-bordered select-sm w-full opacity-50 pointer-events-none",
-            data: { edit_input: true } %>
-      <% end %>
-    </div>
+  <%= form_with(model: line_item_material, method: :patch, class: "contents") do |form| %>
+    <div class="grid grid-cols-12 gap-3 items-center py-3 px-3 bg-white border-b hover:bg-gray-50">
+      <!-- Material Supply Dropdown -->
+      <div class="col-span-3">
+        <%= form.collection_select :material_supply_id, MaterialSupply.all, :id, :name,
+            { prompt: "Select material" },
+            class: "select select-bordered select-sm w-full" %>
+      </div>
 
-    <!-- Thickness Field -->
-    <div class="col-span-2">
-      <%= form_with(model: line_item_material, local: true, method: :patch) do |form| %>
-        <%= form.number_field :thickness, 
-            placeholder: "Thickness", 
-            step: 0.01,
-            class: "input input-bordered input-sm w-full text-right opacity-50 pointer-events-none",
-            data: { edit_input: true } %>
-      <% end %>
-    </div>
+      <!-- Thickness Field (%) -->
+      <div class="col-span-2">
+        <div class="join w-full">
+          <%= form.number_field :thickness,
+              placeholder: "Thickness",
+              step: 0.01,
+              class: "input input-bordered input-sm w-full text-right join-item" %>
+          <span class="btn btn-sm no-animation join-item">%</span>
+        </div>
+      </div>
 
-    <!-- Rate Field -->
-    <div class="col-span-2">
-      <%= form_with(model: line_item_material, local: true, method: :patch) do |form| %>
-        <%= form.number_field :rate, 
-            placeholder: "Rate", 
-            step: 0.01,
-            class: "input input-bordered input-sm w-full text-right opacity-50 pointer-events-none",
-            data: { edit_input: true } %>
-      <% end %>
-    </div>
+      <!-- Rate Field (R) -->
+      <div class="col-span-2">
+        <div class="join w-full">
+          <span class="btn btn-sm no-animation join-item">R</span>
+          <%= form.number_field :rate,
+              placeholder: "Rate",
+              step: 0.01,
+              class: "input input-bordered input-sm w-full text-right join-item" %>
+        </div>
+      </div>
 
-    <!-- Quantity Field -->
-    <div class="col-span-2">
-      <%= form_with(model: line_item_material, local: true, method: :patch) do |form| %>
-        <%= form.number_field :quantity, 
-            placeholder: "Qty", 
-            step: 0.01,
-            class: "input input-bordered input-sm w-full text-right opacity-50 pointer-events-none",
-            data: { edit_input: true } %>
-      <% end %>
-    </div>
+      <!-- Quantity Field (%) -->
+      <div class="col-span-2">
+        <div class="join w-full">
+          <%= form.number_field :quantity,
+              placeholder: "Qty",
+              step: 0.01,
+              class: "input input-bordered input-sm w-full text-right join-item" %>
+          <span class="btn btn-sm no-animation join-item">%</span>
+        </div>
+      </div>
 
-    <!-- Line Total (Calculated, Display Only) -->
-    <div class="col-span-2 text-right font-semibold text-gray-900">
-      R<%= number_with_precision(line_item_material.line_total, precision: 2) %>
-    </div>
+      <!-- Line Total (Calculated, Display Only) -->
+      <div class="col-span-1 text-right font-semibold text-gray-900">
+        R<%= number_with_precision(line_item_material.line_total, precision: 2, delimiter: ",") %>
+      </div>
 
-    <!-- Delete Button -->
-    <div class="col-span-1 text-center">
-      <%= button_to line_item_material, method: :delete, form: { class: "contents" }, class: "btn btn-ghost btn-xs text-red-600" do %>
-        <i class="fa-solid fa-trash"></i>
-      <% end %>
+      <!-- Save Button -->
+      <div class="col-span-1 text-center">
+        <%= form.button type: :submit, class: "btn btn-ghost btn-xs text-green-600" do %>
+          <i class="fa-solid fa-check"></i>
+        <% end %>
+      </div>
+
+      <!-- Delete Button -->
+      <div class="col-span-1 text-center">
+        <%= button_to line_item_material, method: :delete, form: { class: "inline" }, data: { turbo_confirm: "Are you sure you want to delete this material?" }, class: "btn btn-ghost btn-xs text-red-600" do %>
+          <i class="fa-solid fa-trash"></i>
+        <% end %>
+      </div>
     </div>
-  </div>
+  <% end %>
 <% end %>

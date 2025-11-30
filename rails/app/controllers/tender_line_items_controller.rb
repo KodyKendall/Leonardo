@@ -1,7 +1,8 @@
 class TenderLineItemsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_tender, only: %i[ index show create edit update destroy ]
+  before_action :set_tender, only: %i[ index create edit update destroy ]
   before_action :set_tender_line_item, only: %i[ show edit update destroy ]
+  before_action :set_tender_from_line_item, only: %i[ show ], unless: -> { params[:tender_id].present? }
 
   # GET /tenders/:tender_id/tender_line_items or /tender_line_items
   def index
@@ -83,7 +84,15 @@ class TenderLineItemsController < ApplicationController
     end
 
     def set_tender_line_item
-      @tender_line_item = @tender.tender_line_items.find(params[:id])
+      @tender_line_item = if @tender
+        @tender.tender_line_items.find(params[:id])
+      else
+        TenderLineItem.find(params[:id])
+      end
+    end
+
+    def set_tender_from_line_item
+      @tender = @tender_line_item.tender
     end
 
     def tender_line_item_params

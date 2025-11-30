@@ -73,7 +73,7 @@
 </div>
 
 <!-- Modal Dialog using DaisyUI -->
-<dialog id="modal" class="modal">
+<dialog id="modal_dialog" class="modal">
   <div class="modal-box w-11/12 max-w-2xl">
     <form method="dialog">
       <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
@@ -87,25 +87,27 @@
 
 <script>
   document.addEventListener('turbo:load', () => {
-    const modal = document.getElementById('modal');
-    const modalFrame = document.getElementById('modal');
-    
-    // Show modal when content is loaded
+    const modalDialog = document.getElementById('modal_dialog');
+    const modalFrame = document.querySelector('turbo-frame#modal');
+
+    if (!modalDialog || !modalFrame) return;
+
+    // Show modal when content is loaded into the frame
     const observer = new MutationObserver(() => {
-      if (modalFrame && modalFrame.innerHTML.trim()) {
-        modal.showModal();
+      if (modalFrame.innerHTML.trim()) {
+        modalDialog.showModal();
       }
     });
-    
+
     observer.observe(modalFrame, { childList: true, subtree: true });
   });
 
   // Close modal when frame is emptied (after successful submit)
   document.addEventListener('turbo:submit-end', () => {
-    const modal = document.getElementById('modal');
-    const modalFrame = document.getElementById('modal');
+    const modalDialog = document.getElementById('modal_dialog');
+    const modalFrame = document.querySelector('turbo-frame#modal');
     if (modalFrame && !modalFrame.innerHTML.trim()) {
-      modal.close();
+      modalDialog.close();
     }
   });
 </script>
