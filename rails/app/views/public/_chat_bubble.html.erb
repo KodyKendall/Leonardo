@@ -1,0 +1,679 @@
+<% if defined?(javascript_importmap_tags) %> <!-- Rails 7+ -->
+  <%= javascript_importmap_tags %>
+<% else %> <!-- Rails 6 -->
+  <%= javascript_include_tag "application" %>
+<% end %>
+
+<%= javascript_include_tag "llama_bot_rails/application" %>
+<% if defined?(action_cable_meta_tag) %>
+  <%= action_cable_meta_tag %>
+<% end %>
+<!-- Add Tailwind Typography CDN -->
+<link rel="stylesheet" href="https://unpkg.com/@tailwindcss/typography@0.4.x/dist/typography.min.css">
+<!-- Add marked.js for markdown parsing -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+<!-- Chat Bubble Toggle Button -->
+<button id="chat-bubble-toggle" class="fixed bottom-6 right-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full p-4 shadow-lg z-50 transition-all duration-300 hover:scale-110">
+  <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+  </svg>
+</button>
+
+<!-- Chat Bubble Container -->
+<div id="chat-bubble-container" class="fixed bottom-20 right-4 w-96 bg-white shadow-2xl rounded-lg z-50 hidden" style="height: 500px; max-height: calc(100vh - 120px); display: none;">
+  <div class="flex flex-col h-full">
+    <!-- Chat Header -->
+    <div class="flex items-center justify-between border-b p-4 bg-indigo-600 text-white rounded-t-lg flex-shrink-0">
+      <div class="flex items-center space-x-3">
+        <img src="https://service-jobs-images.s3.us-east-2.amazonaws.com/7rl98t1weu387r43il97h6ipk1l7" alt="LlamaBot Logo" class="h-8 w-8">
+        <div id="connectionStatusIconForLlamaBot" class="h-3 w-3 rounded-full bg-yellow-400"></div>
+        <h1 class="text-lg font-bold">Leo the Llama</h1>
+      </div>
+      <button id="chat-bubble-close" class="hover:bg-indigo-700 rounded-full p-1">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Chat Messages -->
+    <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50 min-h-0">
+      <!-- Messages will be added here dynamically -->
+    </div>
+    
+    <!-- Loading Indicator -->
+    <div id="loading-indicator" class="hidden p-4 text-center bg-gray-50 flex-shrink-0">
+      <span class="inline-flex items-center text-gray-600">
+        Leo is thinking<span class="loading-dots"></span>
+      </span>
+    </div>
+    
+    <!-- Suggested Prompts -->
+    <div id="suggested-prompts" class="p-3 border-t border-gray-200 bg-white flex-shrink-0">
+      <div class="text-xs text-gray-600 mb-2">Quick actions:</div>
+      <div class="space-y-2">
+        <div class="flex flex-wrap gap-1">
+          <button onclick="selectPrompt(this)" class="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">List all my journals</button>
+          <button onclick="selectPrompt(this)" class="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">Help me reflect on my entries</button>
+          <button onclick="selectPrompt(this)" class="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-full text-gray-700">What patterns do you see?</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Chat Input -->
+    <div class="border-t border-gray-200 p-3 flex bg-white rounded-b-lg flex-shrink-0">
+      <input type="text" id="message-input" class="flex-grow border rounded-l-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Type your message...">
+      <button onclick="sendMessage()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-r-lg text-sm">Send</button>
+    </div>
+  </div>
+</div>
+
+<!-- Error Modal -->
+<div id="modalOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden"></div>
+<div id="errorModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-lg shadow-xl p-6 max-w-md mx-auto">
+    <h2 class="text-xl font-bold mb-4">Connection Error</h2>
+    <p class="mb-6">Lost connection to Leo. Is LlamaBot running? Refresh the page.</p>
+    <button onclick="closeErrorModal()" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded">Close</button>
+  </div>
+</div>
+
+<script>
+  let currentThreadId = null;
+  let isSidebarCollapsed = false;
+  let lastPongTime = Date.now();
+  let redStatusStartTime = null;
+  let errorModalShown = false;
+  let connectionCheckInterval;
+  let subscription = null;
+  let lastToolCallArgs = {};
+  let processedMessageIds = new Set();
+
+  // Chat bubble toggle functionality
+  document.getElementById('chat-bubble-toggle').addEventListener('click', function() {
+    const container = document.getElementById('chat-bubble-container');
+    if (container.style.display === 'none' || container.style.display === '') {
+      container.style.display = 'block';
+    } else {
+      container.style.display = 'none';
+    }
+  });
+
+  document.getElementById('chat-bubble-close').addEventListener('click', function() {
+    const container = document.getElementById('chat-bubble-container');
+    container.style.display = 'none';
+  });
+
+  function waitForCableConnection(callback) {
+    const interval = setInterval(() => {
+      if (window.LlamaBotRails && LlamaBotRails.cable) {
+        clearInterval(interval);
+        callback(LlamaBotRails.cable);
+      }
+    }, 50);
+  }
+  
+  waitForCableConnection((consumer) => {
+    const sessionId = crypto.randomUUID();
+
+    //TODO: this is where you can route to a new agent.
+    // subscription = consumer.subscriptions.create({channel: 'LlamaBotRails::ChatChannel', session_id: sessionId}, {
+    subscription = consumer.subscriptions.create({channel: 'LlamaBotRails::ChatChannel', session_id: sessionId}, {
+      connected() {
+        console.log('Connected to chat channel');
+        lastPongTime = Date.now();
+        startConnectionCheck();
+        startNewConversation();
+      },
+      disconnected() {
+        console.log('Disconnected from chat channel');
+        updateStatusIcon('bg-red-500');
+      },
+      received(data) {
+        const parsedData = JSON.parse(data).message;
+        console.log("LLM Response:", parsedData);
+
+        const toolName = parsedData.base_message?.name || '';
+        const toolCallId = parsedData.base_message?.tool_call_id || '';
+        const additionalKwargs = parsedData.base_message?.additional_kwargs?.tool_calls?.[0]?.id || '';
+        const contentPreview = parsedData.content ? parsedData.content.substring(0, 100) : '';
+        const messageId = parsedData.base_message?.id
+          ? `${parsedData.base_message.id}_${parsedData.type}_${toolName}_${toolCallId}_${additionalKwargs}`
+          : `${parsedData.type}_${contentPreview}_${Date.now()}`;
+
+        if (processedMessageIds.has(messageId)) {
+          console.log('⚠️ Duplicate message detected, skipping:', messageId);
+          return;
+        }
+
+        processedMessageIds.add(messageId);
+
+        if (processedMessageIds.size > 100) {
+          const idsArray = Array.from(processedMessageIds);
+          processedMessageIds = new Set(idsArray.slice(-100));
+        }
+
+        switch (parsedData.type) {
+          case "ai":
+            addMessage(parsedData.content, parsedData.type, parsedData.base_message);
+            break;
+          case "tool":
+            addMessage(parsedData.content, parsedData.type, parsedData.base_message);
+            break;
+          case "error":
+            addMessage(parsedData.content, parsedData.type, parsedData.base_message);
+            break;
+          case "pong":
+            lastPongTime = Date.now();
+            break;
+        }
+      }
+    });
+  });
+
+  function startConnectionCheck() {
+    if (connectionCheckInterval) {
+      clearInterval(connectionCheckInterval);
+    }
+    connectionCheckInterval = setInterval(updateConnectionStatus, 1000);
+  }
+
+  function updateConnectionStatus() {
+    const timeSinceLastPong = Date.now() - lastPongTime;
+    
+    if (timeSinceLastPong < 30000) {
+      updateStatusIcon('bg-green-500');
+      redStatusStartTime = null;
+      errorModalShown = false;
+    } else if (timeSinceLastPong < 50000) {
+      updateStatusIcon('bg-yellow-400');
+      redStatusStartTime = null;
+      errorModalShown = false;
+    } else {
+      updateStatusIcon('bg-red-500');
+      if (!redStatusStartTime) {
+        redStatusStartTime = Date.now();
+      } else if (Date.now() - redStatusStartTime > 5000 && !errorModalShown) {
+        showErrorModal();
+      }
+    }
+  }
+
+  function updateStatusIcon(statusClass) {
+    const statusIndicator = document.getElementById('connectionStatusIconForLlamaBot');
+    statusIndicator.classList.remove('bg-green-500', 'bg-yellow-400', 'bg-red-500');
+    statusIndicator.classList.add(statusClass);
+  }
+
+  function showErrorModal() {
+    const modal = document.getElementById('errorModal');
+    const overlay = document.getElementById('modalOverlay');
+    modal.classList.remove('hidden');
+    overlay.classList.remove('hidden');
+    errorModalShown = true;
+  }
+
+  function closeErrorModal() {
+    const modal = document.getElementById('errorModal');
+    const overlay = document.getElementById('modalOverlay');
+    modal.classList.add('hidden');
+    overlay.classList.add('hidden');
+  }
+
+  function startNewConversation() {
+    currentThreadId = null;
+    const messagesDiv = document.getElementById('chat-messages');
+    messagesDiv.innerHTML = '';
+    showWelcomeMessage();
+  }
+
+  function showWelcomeMessage() {
+    const messagesDiv = document.getElementById('chat-messages');
+    const welcomeDiv = document.createElement('div');
+    welcomeDiv.className = 'flex flex-col items-center justify-center h-full p-4 text-center text-gray-600';
+    welcomeDiv.innerHTML = `
+      <h2 class="text-xl font-bold mb-2">Welcome</h2>
+      <p class="text-sm">What's on the agenda?</p>
+    `;
+    messagesDiv.appendChild(welcomeDiv);
+  }
+
+  function showLoadingIndicator() {
+    const loadingIndicator = document.getElementById('loading-indicator');
+    loadingIndicator.classList.remove('hidden');
+  }
+
+  function hideLoadingIndicator() {
+    const loadingIndicator = document.getElementById('loading-indicator');
+    loadingIndicator.classList.add('hidden');
+  }
+
+  function selectPrompt(buttonElement) {
+    const promptText = buttonElement.textContent;
+    const messageInput = document.getElementById('message-input');
+    messageInput.value = promptText;
+    messageInput.focus();
+    buttonElement.style.transform = 'scale(0.98)';
+    setTimeout(() => {
+      buttonElement.style.transform = '';
+    }, 150);
+  }
+
+  function sendMessage() {
+    const input = document.getElementById('message-input');
+    const message = input.value.trim();
+    
+    if (message) {
+      if (!subscription) {
+        console.error('WebSocket connection not established yet');
+        addMessage('Connection not ready. Please wait...', 'error');
+        return;
+      }
+
+      const welcomeMessage = document.querySelector('[class*="flex flex-col items-center justify-center"]');
+      if (welcomeMessage) {
+        welcomeMessage.remove();
+      }
+      
+      addMessage(message, 'human');
+      input.value = '';
+      showLoadingIndicator();
+
+      let threadId = currentThreadId;
+      if (!threadId || threadId === 'global_thread_id') {
+        const now = new Date();
+        threadId = now.getFullYear() + '-' + 
+                  String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+                  String(now.getDate()).padStart(2, '0') + '_' + 
+                  String(now.getHours()).padStart(2, '0') + '-' + 
+                  String(now.getMinutes()).padStart(2, '0') + '-' + 
+                  String(now.getSeconds()).padStart(2, '0');
+        currentThreadId = threadId;
+      }
+
+      const messageData = {
+        message: message,
+        thread_id: threadId
+      };
+      
+      console.log('Sending message with data:', messageData);
+      subscription.send(messageData);
+    }
+  }
+
+  function addMessage(text, sender, base_message=null) {
+    console.log('🧠 Message from LlamaBot:', text, sender, base_message);
+
+    if (sender === 'ai') {
+      hideLoadingIndicator();
+    }
+
+    const messagesDiv = document.getElementById('chat-messages');
+    const messageDiv = document.createElement('div');
+    
+    if (sender === 'human') {
+      messageDiv.className = 'flex justify-end mb-4';
+      messageDiv.innerHTML = `
+        <div class="bg-indigo-100 rounded-lg py-2 px-3 max-w-[80%]">
+          <p class="text-gray-800 text-sm">${text}</p>
+        </div>
+      `;
+    } else if (sender === 'ai' || sender === 'AIMessageChunk') {
+      messageDiv.className = 'flex mb-4';
+      
+      if (text === '' && base_message && base_message.additional_kwargs && base_message.additional_kwargs.tool_calls) {
+        let tool_call = base_message.additional_kwargs.tool_calls[0];
+        let function_name = tool_call.function.name;
+        let function_arguments = JSON.parse(tool_call.function.arguments);
+        lastToolCallArgs[function_name] = function_arguments;
+        console.log('💾 Stored tool call args for', function_name, ':', function_arguments);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        return;
+      } else {
+        messageDiv.innerHTML = `
+          <div class="prose prose-sm max-w-none bg-white border border-gray-200 rounded-lg py-2 px-3 max-w-[80%] shadow-sm text-sm">
+            ${parseMarkdown(text)}
+          </div>
+        `;
+      }
+    } else if (sender === 'tool') {
+      messageDiv.className = 'flex mb-4';
+
+      if (base_message.name === 'run_rails_console_command') {
+        const command_result = JSON.parse(base_message.content)['result'];
+        messageDiv.innerHTML = `
+          <div class="bg-gray-100 border border-gray-200 rounded-lg py-2 px-3 max-w-[80%]">
+            <div class="flex items-center mb-1">
+              <span class="text-gray-500 mr-2 text-sm">🖥️</span>
+              <span class="font-medium text-gray-700 text-xs">Console Result</span>
+            </div>
+            <pre class="text-gray-800 text-xs overflow-x-auto">${command_result}</pre>
+          </div>
+        `;
+      } else {
+        let toolData = null;
+        try {
+          toolData = JSON.parse(text);
+        } catch (e) {
+          messageDiv.innerHTML = `
+            <div class="bg-gray-100 border border-gray-200 rounded-lg py-2 px-3 max-w-[80%]">
+              <div class="flex items-center">
+                <span class="text-gray-500 mr-2 text-sm">🔨</span>
+                <p class="text-gray-800 text-sm">${text}</p>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        if (toolData && toolData.toolname) {
+          const toolId = `tool-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+          const toolIcon = getToolIcon(toolData.toolname);
+          const toolColor = getToolColor(toolData.toolname);
+          const actualToolArgs = lastToolCallArgs[toolData.toolname] || toolData['tool args'] || {};
+
+          messageDiv.innerHTML = `
+            <div class="bg-white border-l-4 ${toolColor} shadow-sm rounded-lg py-2 px-3 max-w-[80%]">
+              <div class="flex items-center justify-between mb-1">
+                <div class="flex items-center">
+                  <span class="mr-2 text-sm">${toolIcon}</span>
+                  <span class="font-semibold text-gray-800 text-xs">${formatToolName(toolData.toolname)}</span>
+                </div>
+                <button onclick="toggleToolSection('${toolId}-args')" class="text-xs text-gray-500 hover:text-gray-700 px-1 py-0.5 rounded hover:bg-gray-100">
+                  Args ▼
+                </button>
+              </div>
+
+              <div id="${toolId}-args" class="hidden mb-2 bg-gray-50 rounded p-2 border border-gray-200">
+                <div class="text-xs font-medium text-gray-600 mb-1">Arguments:</div>
+                <div class="text-xs text-gray-700 space-y-1">
+                  ${formatToolArgs(actualToolArgs)}
+                </div>
+              </div>
+
+              <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded p-2 border border-blue-100">
+                <div class="flex items-center justify-between mb-1">
+                  <div class="text-xs font-medium text-gray-600">Result:</div>
+                  <button onclick="toggleToolSection('${toolId}-output')" class="text-xs text-blue-600 hover:text-blue-800">
+                    Details ▼
+                  </button>
+                </div>
+                <div id="${toolId}-output" class="max-h-24 overflow-y-auto text-xs">
+                  ${formatToolOutput(toolData.toolname, toolData.tool_output, actualToolArgs)}
+                </div>
+              </div>
+            </div>
+          `;
+        } else {
+          messageDiv.innerHTML = `
+            <div class="bg-gray-100 border border-gray-200 rounded-lg py-2 px-3 max-w-[80%]">
+              <div class="flex items-center">
+                <span class="text-gray-500 mr-2 text-sm">🔨</span>
+                <p class="text-gray-800 text-sm">${text}</p>
+              </div>
+            </div>
+          `;
+        }
+      }
+    } else if (sender === 'error') {
+      messageDiv.className = 'flex mb-4';
+      messageDiv.innerHTML = `
+        <div class="bg-red-100 border border-red-200 text-red-800 rounded-lg py-2 px-3 max-w-[80%]">
+          <p class="text-sm">${text}</p>
+        </div>
+      `;
+    }
+    
+    messagesDiv.appendChild(messageDiv);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+  }
+
+  document.getElementById('message-input').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  });
+
+  marked.setOptions({
+    breaks: true,
+    gfm: true,
+    sanitize: false,
+    smartLists: true,
+    smartypants: true
+  });
+
+  function parseMarkdown(text) {
+    if (!text) return '';
+    
+    try {
+      let html = marked.parse(text);
+      html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+      html = html.replace(/\son\w+="[^"]*"/gi, '');
+      html = html.replace(/\son\w+='[^']*'/gi, '');
+      return html;
+    } catch (error) {
+      console.error('Markdown parsing error:', error);
+      return text.replace(/\n/g, '<br>');
+    }
+  }
+  
+  function getToolIcon(toolname) {
+    const iconMap = {
+      'list_books': '📚',
+      'list_chapters': '📖',
+      'list_pages': '📄',
+      'create_book': '✨',
+      'create_chapter': '➕',
+      'create_page': '📝',
+      'generate_page_image': '🎨',
+      'update_book': '✏️',
+      'update_chapter': '✏️',
+      'update_page': '✏️',
+      'delete_book': '🗑️',
+      'delete_chapter': '🗑️',
+      'delete_page': '🗑️',
+    };
+    return iconMap[toolname] || '🔧';
+  }
+
+  function getToolColor(toolname) {
+    if (toolname.startsWith('list')) return 'border-blue-400';
+    if (toolname.startsWith('create')) return 'border-green-400';
+    if (toolname.startsWith('update')) return 'border-yellow-400';
+    if (toolname.startsWith('delete')) return 'border-red-400';
+    if (toolname.includes('generate')) return 'border-purple-400';
+    return 'border-gray-400';
+  }
+
+  function formatToolName(toolname) {
+    return toolname
+      .split('_')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  }
+
+  function formatToolArgs(args) {
+    if (!args || Object.keys(args).length === 0) {
+      return '<span class="text-gray-500">No arguments</span>';
+    }
+
+    const argsList = Object.entries(args).map(([key, value]) => {
+      const formattedKey = key.split('_').map(word =>
+        word.charAt(0).toUpperCase() + word.slice(1)
+      ).join(' ');
+
+      let formattedValue = value;
+      if (typeof value === 'string' && value.length > 100) {
+        formattedValue = value.substring(0, 100) + '...';
+      } else if (typeof value === 'object') {
+        formattedValue = JSON.stringify(value);
+      }
+
+      return `<div class="flex gap-2"><span class="font-medium">${formattedKey}:</span><span>${formattedValue}</span></div>`;
+    });
+
+    return argsList.join('');
+  }
+
+  function formatToolOutput(toolname, output, toolArgs = {}) {
+    console.log('🔍 formatToolOutput called with:', { toolname, output, toolArgs });
+    if (!output) return '<span class="text-gray-500 text-xs">No output</span>';
+
+    if (toolname === 'list_books') {
+      const count = Array.isArray(output) ? output.length : 0;
+      return `
+        <div class="text-xs text-gray-600">
+          📚 Fetching books... <span class="font-medium text-gray-700">(${count} found)</span>
+        </div>
+      `;
+    }
+
+    if (toolname === 'list_chapters') {
+      const count = Array.isArray(output) ? output.length : 0;
+      return `
+        <div class="text-xs text-gray-600">
+          📖 Fetching chapters... <span class="font-medium text-gray-700">(${count} found)</span>
+        </div>
+      `;
+    }
+
+    if (toolname === 'list_pages') {
+      const count = Array.isArray(output) ? output.length : 0;
+      return `
+        <div class="text-xs text-gray-600">
+          📄 Fetching pages... <span class="font-medium text-gray-700">(${count} found)</span>
+        </div>
+      `;
+    }
+
+    if (toolname === 'create_book' && output) {
+      return `
+        <div class="space-y-1 text-xs">
+          <div class="flex items-center text-green-600 font-medium">
+            ✅ Created book${output.title ? `: "${output.title}"` : ''}
+          </div>
+          ${output.reading_level ? `<div class="text-gray-600"><span class="font-medium">Reading Level:</span> ${output.reading_level}</div>` : ''}
+        </div>
+      `;
+    }
+
+    if (toolname === 'create_chapter' && output) {
+      return `
+        <div class="space-y-1 text-xs">
+          <div class="flex items-center text-green-600 font-medium">
+            ✅ Created chapter${output.title ? `: "${output.title}"` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    if (toolname === 'create_page' && output) {
+      return `
+        <div class="space-y-1 text-xs">
+          <div class="flex items-center text-green-600 font-medium">✅ Created page</div>
+        </div>
+      `;
+    }
+
+    if (toolname.startsWith('update_') && output) {
+      const resourceType = toolname.replace('update_', '');
+      let resourceName = resourceType.charAt(0).toUpperCase() + resourceType.slice(1);
+
+      if (resourceType === 'book' && output.title) {
+        resourceName = output.title;
+      }
+
+      return `
+        <div class="space-y-1 text-xs">
+          <div class="font-semibold text-gray-800">
+            ✅ ${resourceName}
+          </div>
+          <div class="text-gray-600">Updated</div>
+        </div>
+      `;
+    }
+
+    if (toolname.startsWith('delete_')) {
+      const resourceType = toolname.replace('delete_', '');
+      let deletedName = resourceType.charAt(0).toUpperCase() + resourceType.slice(1);
+
+      return `
+        <div class="space-y-1 text-xs">
+          <div class="font-semibold text-gray-800">
+            ✅ ${deletedName}
+          </div>
+          <div class="text-red-600">Deleted</div>
+        </div>
+      `;
+    }
+
+    if (toolname === 'generate_page_image' && output) {
+      return `
+        <div class="space-y-1 text-xs">
+          <div class="flex items-center text-purple-600 font-medium">✅ Image generated</div>
+          ${output.image_url ? `
+            <div class="mt-2">
+              <img src="${output.image_url}" alt="Generated page image" class="rounded border border-gray-200 max-w-full h-auto" />
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    return `<pre class="text-xs text-gray-800 overflow-x-auto whitespace-pre-wrap">${JSON.stringify(output, null, 2)}</pre>`;
+  }
+
+  function toggleToolSection(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.classList.toggle('hidden');
+
+      if (elementId.includes('output')) {
+        element.classList.toggle('max-h-24');
+        element.classList.toggle('max-h-none');
+      }
+    }
+  }
+
+  const style = document.createElement('style');
+  style.textContent = `
+    .loading-dots:after {
+      content: '.';
+      animation: dots 1.5s steps(5, end) infinite;
+    }
+
+    @keyframes dots {
+      0%, 20% { content: '.'; }
+      40% { content: '..'; }
+      60% { content: '...'; }
+      80%, 100% { content: ''; }
+    }
+
+    #chat-bubble-container {
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    @media (max-width: 640px) {
+      #chat-bubble-container {
+        width: calc(100vw - 2rem);
+        height: calc(100vh - 10rem);
+        max-height: calc(100vh - 10rem);
+        left: 1rem;
+        right: 1rem;
+        bottom: 5rem;
+      }
+      
+      #chat-bubble-toggle {
+        bottom: 1.5rem;
+        right: 1.5rem;
+      }
+      
+      #chat-messages {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+</script>
