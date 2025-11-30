@@ -53,7 +53,8 @@ end
 
 # ===== TENDERS (create first) =====
 tender1 = Tender.find_or_create_by!(e_number: 'E-2024-001') do |t|
-  t.status = 'awarded'
+  t.tender_name = 'ABC High-Rise'
+  t.status = 'Draft'
   t.client_name = 'ABC Construction Ltd'
   t.tender_value = 500000.00
   t.project_type = 'commercial'
@@ -61,7 +62,8 @@ tender1 = Tender.find_or_create_by!(e_number: 'E-2024-001') do |t|
 end
 
 tender2 = Tender.find_or_create_by!(e_number: 'E-2024-002') do |t|
-  t.status = 'awarded'
+  t.tender_name = 'XYZ Industrial Fabrication'
+  t.status = 'Draft'
   t.client_name = 'XYZ Infrastructure'
   t.tender_value = 1200000.00
   t.project_type = 'industrial'
@@ -69,7 +71,8 @@ tender2 = Tender.find_or_create_by!(e_number: 'E-2024-002') do |t|
 end
 
 tender3 = Tender.find_or_create_by!(e_number: 'E-2024-003') do |t|
-  t.status = 'submitted'
+  t.tender_name = 'Smart City Office Complex'
+  t.status = 'Draft'
   t.client_name = 'Smart City Developers'
   t.tender_value = 350000.00
   t.project_type = 'commercial'
@@ -77,7 +80,8 @@ tender3 = Tender.find_or_create_by!(e_number: 'E-2024-003') do |t|
 end
 
 tender4 = Tender.find_or_create_by!(e_number: 'E-2024-004') do |t|
-  t.status = 'awarded'
+  t.tender_name = 'Heritage Renovations'
+  t.status = 'Draft'
   t.client_name = 'Heritage Renovations Inc'
   t.tender_value = 180000.00
   t.project_type = 'commercial'
