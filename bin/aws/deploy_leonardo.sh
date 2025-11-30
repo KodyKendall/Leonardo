@@ -1,16 +1,30 @@
 set -e
 
-read -p "Name of instance: " INSTANCE
-read -p "Domain: (default is llamapress.ai) " DOMAIN
-export DOMAIN=${DOMAIN:-llamapress.ai}
-read -p "Path to identity file: (defaults to ~/.ssh/LightsailDefaultKey-us-east-2.pem)" IDENTITY_FILE
+# Base domain configuration - all instances will be created under llamapress.ai
+# If you need to support multiple base domains, update TARGET_FQDN variables below
+export DOMAIN=llamapress.ai.
+
+echo "=== AWS Lightsail Instance Deployment ==="
+echo "This script will create DNS records under llamapress.ai"
+echo ""
+read -p "Name of instance (e.g., HistoryEducation2): " INSTANCE
+read -p "Path to identity file (defaults to ~/.ssh/LightsailDefaultKey-us-east-2.pem): " IDENTITY_FILE
 export INSTANCE
-export DOMAIN=$DOMAIN.
 export REGION=us-east-2
 export AZ=${REGION}a
 export BLUEPRINT=ubuntu_24_04
 export BUNDLE=small_2_0
 export IDENTITY_FILE=${IDENTITY_FILE:-~/.ssh/LightsailDefaultKey-us-east-2.pem}
+
+# Convert instance name to lowercase for DNS (AWS requires lowercase)
+INSTANCE_LOWER=$(echo "$INSTANCE" | tr '[:upper:]' '[:lower:]')
+
+echo ""
+echo "Creating instance '$INSTANCE' with the following DNS records:"
+echo "  - https://${INSTANCE_LOWER}.llamapress.ai"
+echo "  - https://rails-${INSTANCE_LOWER}.llamapress.ai"
+echo "  - https://vscode-${INSTANCE_LOWER}.llamapress.ai"
+echo ""
 
 aws lightsail create-instances \
   --instance-names "$INSTANCE" \
@@ -37,10 +51,12 @@ EOF
 
 export ZONE_ID=$(aws route53 list-hosted-zones-by-name \
   --dns-name "$DOMAIN" --query 'HostedZones[0].Id' --output text | sed 's|/hostedzone/||')
-echo $ZONE_ID
+echo "Route53 Hosted Zone ID: $ZONE_ID"
 
-TARGET_FQDN=$INSTANCE.llamapress.ai.
-RAILS_TARGET_FQDN=rails-$TARGET_FQDN
+# Build FQDNs using lowercase instance name
+TARGET_FQDN=${INSTANCE_LOWER}.llamapress.ai.
+RAILS_TARGET_FQDN=rails-${INSTANCE_LOWER}.llamapress.ai.
+VSCODE_TARGET_FQDN=vscode-${INSTANCE_LOWER}.llamapress.ai.
 
 cat > new-a-record.json <<EOF
 {
@@ -61,6 +77,17 @@ cat > new-a-record.json <<EOF
       "Action": "UPSERT",
       "ResourceRecordSet": {
         "Name": "${RAILS_TARGET_FQDN}",
+        "Type": "A",
+        "TTL": 60,
+        "ResourceRecords": [
+          { "Value": "${IPADDRESS}" }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "${VSCODE_TARGET_FQDN}",
         "Type": "A",
         "TTL": 60,
         "ResourceRecords": [

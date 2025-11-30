@@ -193,6 +193,10 @@ rails-${SERVER_NAME} {
     encode gzip
     reverse_proxy 127.0.0.1:3000
 }
+vscode-${SERVER_NAME} {
+    encode gzip
+    reverse_proxy 127.0.0.1:8443
+}
 EOF
 
 # Open firewall for web traffic (Lightsail Console UI already did 443, but do both)
