@@ -1,14 +1,12 @@
-<div class="card bg-base-100 shadow-md mb-4" data-controller="breakdown-editor" data-breakdown-type="material-breakdown">
+<%= turbo_frame_tag dom_id(line_item_material_breakdown) do %>
+  <div class="card bg-base-100 shadow-md mb-4">
     <!-- Header -->
     <div class="card-body pb-3">
       <div class="flex items-center justify-between">
         <div>
           <h3 class="card-title text-lg font-bold">Material Breakdown</h3>
-          <span class="badge badge-primary">Light Structural Steel - Up to 25 kg/m</span>
+          <span class="badge badge-primary"><%= line_item_material_breakdown.tender_line_item&.item_description || "No Line Item" %></span>
         </div>
-        <button type="button" class="btn btn-sm btn-ghost" data-action="breakdown-editor#toggleEditMode" data-edit-button>
-          <i class="fas fa-edit"></i> Edit
-        </button>
       </div>
     </div>
 
@@ -19,8 +17,8 @@
         <div class="col-span-2">Thickness</div>
         <div class="col-span-2">Rate</div>
         <div class="col-span-2">Quantity</div>
-        <div class="col-span-2 text-right">Line Total</div>
-        <div class="col-span-1"></div>
+        <div class="col-span-1 text-right">Line Total</div>
+        <div class="col-span-2"></div>
       </div>
     </div>
 
@@ -31,7 +29,7 @@
           <%= render 'line_item_materials/show', line_item_material: material %>
         <% end %>
       <% else %>
-        <div class="px-6 py-4 text-center text-gray-500 text-sm">
+        <div class="px-6 py-4 text-center text-gray-500 text-sm" id="no_materials_message_<%= line_item_material_breakdown.id %>">
           No materials added yet.
         </div>
       <% end %>
@@ -39,27 +37,33 @@
 
     <!-- Add Material Button -->
     <div class="px-6 py-3 border-t bg-gray-50">
-      <%= link_to "＋ Add Material", 
-          new_line_item_material_path(line_item_material_breakdown_id: line_item_material_breakdown.id), 
-          class: "btn btn-sm btn-outline",
-          data: { turbo_frame: "modal" } %>
+      <%= button_to line_item_materials_path,
+          method: :post,
+          params: { line_item_material: { line_item_material_breakdown_id: line_item_material_breakdown.id } },
+          class: "btn btn-sm btn-outline" do %>
+        <i class="fa-solid fa-plus"></i> Add Material
+      <% end %>
     </div>
 
     <!-- Totals Section -->
     <div class="px-6 py-4 bg-gray-50 border-t space-y-2">
       <div class="flex justify-between text-sm">
         <span class="font-semibold text-gray-700">SUBTOTAL:</span>
-        <span class="font-semibold text-gray-900">R<%= number_with_precision(line_item_material_breakdown.subtotal, precision: 2) %></span>
+        <span class="font-semibold text-gray-900">R<%= number_with_precision(line_item_material_breakdown.subtotal, precision: 2, delimiter: ",") %></span>
       </div>
 
       <div class="flex justify-between text-sm">
         <span class="font-semibold text-gray-700">MARGIN %:</span>
-        <input type="number" placeholder="0%" step="0.1" class="input input-bordered input-xs w-24 text-right" />
+        <div class="join">
+          <input type="number" placeholder="0" step="0.1" class="input input-bordered input-xs w-20 text-right join-item" disabled />
+          <span class="btn btn-xs no-animation join-item">%</span>
+        </div>
       </div>
 
       <div class="flex justify-between text-lg font-bold border-t pt-2">
         <span class="text-gray-900">TOTAL:</span>
-        <span class="text-blue-600">R<%= number_with_precision(line_item_material_breakdown.total, precision: 2) %></span>
+        <span class="text-blue-600">R<%= number_with_precision(line_item_material_breakdown.total, precision: 2, delimiter: ",") %></span>
       </div>
     </div>
   </div>
+<% end %>

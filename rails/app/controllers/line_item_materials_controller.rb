@@ -24,24 +24,31 @@ class LineItemMaterialsController < ApplicationController
   # POST /line_item_materials or /line_item_materials.json
   def create
     @line_item_material = LineItemMaterial.new(line_item_material_params)
+    @breakdown = @line_item_material.line_item_material_breakdown
 
     respond_to do |format|
       if @line_item_material.save
         format.turbo_stream do
-          @breakdown = @line_item_material.line_item_material_breakdown
-          render :create
+          render turbo_stream: [
+            turbo_stream.append(
+              "line_item_materials_container_#{@breakdown&.id}",
+              partial: 'line_item_materials/show',
+              locals: { line_item_material: @line_item_material }
+            ),
+            turbo_stream.remove("no_materials_message_#{@breakdown&.id}")
+          ]
         end
         format.html do
-          redirect_path = @line_item_material.line_item_material_breakdown ? 
-            line_item_material_breakdown_path(@line_item_material.line_item_material_breakdown) : 
+          redirect_path = @breakdown ?
+            line_item_material_breakdown_path(@breakdown) :
             @line_item_material
           redirect_to redirect_path, notice: "Line item material was successfully created."
         end
         format.json { render :show, status: :created, location: @line_item_material }
       else
         format.turbo_stream do
-          @breakdown = @line_item_material.line_item_material_breakdown
-          render :create
+          flash.now[:alert] = "Failed to create material: #{@line_item_material.errors.full_messages.join(', ')}"
+          render turbo_stream: turbo_stream.update("flash", partial: "shared/flash")
         end
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @line_item_material.errors, status: :unprocessable_entity }

@@ -1,9 +1,16 @@
 class LineItemMaterial < ApplicationRecord
-  belongs_to :tender_line_item
-  belongs_to :material_supply
+  belongs_to :tender_line_item, optional: true
+  belongs_to :material_supply, optional: true
   belongs_to :line_item_material_breakdown
 
-  validates :material_supply_id, presence: true
+  # Set tender_line_item from breakdown before validation
+  before_validation :set_tender_line_item_from_breakdown
+
+  def set_tender_line_item_from_breakdown
+    if tender_line_item_id.blank? && line_item_material_breakdown.present?
+      self.tender_line_item_id = line_item_material_breakdown.tender_line_item_id
+    end
+  end
   validates :thickness, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :rate, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :quantity, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
