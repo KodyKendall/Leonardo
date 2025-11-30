@@ -1,10 +1,8 @@
 {
-  "instance_name": "CHANGEME_INSTANCE_NAME",
-  "instance_guid": "CHANGEME_GUID",
+  "instance_name": "rsb-tender",
+  "instance_guid": "e2c6f3ba-4fb0-4cd2-8f6d-7b19385b30a2",
   "environment": "development",
-  "s3_bucket": "CHANGEME_S3_BUCKET",
-  "region": "CHANGEME_REGION",
-  "created_at": "CHANGEME_DATE",
-  "platform_version": "0.0.1",
-  "notes": "This file defines metadata for a Leonardo instance. Replace placeholders when instantiating a new project."
+  "region": "us-west-2",
+  "created_at": "2025-11-29T22:14:01Z",
+  "notes": "RSB Leonardo Instance."
 }
