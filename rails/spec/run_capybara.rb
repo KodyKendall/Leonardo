@@ -10,6 +10,13 @@ Capybara.register_driver(:cuprite) do |app|
   )
 end
 
+AUTO_LOGIN = ENV.fetch("CAPYBARA_AUTO_LOGIN", "true") == "true"
+LOGIN_EMAIL = ENV.fetch("CAPYBARA_USER_EMAIL", "kody@llamapress.ai")
+LOGIN_PASSWORD = ENV.fetch("CAPYBARA_USER_PASSWORD", "123456")
+BASE_URL = ENV.fetch("CAPYBARA_BASE_URL", ENV.fetch("LLAMAPRESS_API_URL", "http://llamapress:3000"))
+
+Capybara.app_host = BASE_URL
+
 session = Capybara::Session.new(:cuprite)
 driver  = session.driver
 
@@ -54,6 +61,31 @@ preload_js = <<~JS
   })();
 JS
 
+def perform_login(session, email, password)
+  session.visit("/users/sign_in")
+  # Wait for the page to load and form to be present
+  session.find("#user_email", wait: 10)
+  session.fill_in "user_email", with: email
+  session.fill_in "user_password", with: password
+  session.click_button "Log in"
+  # Wait for redirect after login
+  sleep 1
+end
+
+# Helper to normalize URLs - converts localhost:3000 to the correct BASE_URL
+def normalize_url(url)
+  return url if url.nil? || url.start_with?("/")
+  url.gsub(%r{https?://localhost:3000}, BASE_URL)
+     .gsub(%r{https?://127\.0\.0\.1:3000}, BASE_URL)
+end
+
+# Wrap session.visit to auto-normalize URLs
+original_visit = session.method(:visit)
+session.define_singleton_method(:visit) do |url|
+  normalized = normalize_url(url)
+  original_visit.call(normalized)
+end
+
 # Force browser initialization by visiting about:blank
 session.visit("about:blank")
 
@@ -66,6 +98,10 @@ page = browser.page
 page.command("Page.enable")
 page.command("Runtime.enable")
 page.command("Page.addScriptToEvaluateOnNewDocument", source: preload_js)
+
+if AUTO_LOGIN
+  perform_login(session, LOGIN_EMAIL, LOGIN_PASSWORD)
+end
 
 code = ARGV.join(" ")
 if code.strip.empty?
