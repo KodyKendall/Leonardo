@@ -75,9 +75,9 @@
           <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">
             <%= content_for(:header) %>
           </h1>
-          <% flash.each do |key, value| %>
-            <div class="flash <%= key %>"><%= value %></div>
-          <% end %>
+          <div id="flash">
+            <%= render "shared/flash" %>
+          </div>
         </div>
       </header>
       <main>

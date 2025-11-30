@@ -1,20 +1,22 @@
 <% if @line_item_material.persisted? %>
-  <!-- Close the modal -->
-  <turbo-stream action="remove" target="modal">
+  <!-- Clear the modal content (triggers close via JS observer) -->
+  <turbo-stream action="update" target="modal">
+    <template></template>
   </turbo-stream>
 
   <!-- Update the breakdown if it exists on the page -->
   <% if @breakdown %>
-    <turbo-stream action="replace" target="<%= dom_id(@breakdown) %>">
+    <!-- Append the new material to the container instead of replacing the whole breakdown -->
+    <turbo-stream action="append" target="line_item_materials_container_<%= @breakdown.id %>">
       <template>
-        <%= render 'line_item_material_breakdowns/show', line_item_material_breakdown: @breakdown %>
+        <%= render partial: 'line_item_materials/show', formats: [:html], locals: { line_item_material: @line_item_material } %>
       </template>
     </turbo-stream>
   <% end %>
 <% else %>
   <turbo-stream action="replace" target="modal">
     <template>
-      <%= render 'line_item_materials/form', line_item_material: @line_item_material %>
+      <%= render partial: 'line_item_materials/form', formats: [:html], locals: { line_item_material: @line_item_material } %>
     </template>
   </turbo-stream>
 <% end %>

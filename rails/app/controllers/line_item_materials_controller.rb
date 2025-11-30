@@ -53,9 +53,31 @@ class LineItemMaterialsController < ApplicationController
   def update
     respond_to do |format|
       if @line_item_material.update(line_item_material_params)
+        format.turbo_stream do
+          flash.now[:notice] = "Material saved successfully."
+          render turbo_stream: [
+            turbo_stream.replace(
+              "line_item_material_#{@line_item_material.id}",
+              partial: 'line_item_materials/show',
+              locals: { line_item_material: @line_item_material }
+            ),
+            turbo_stream.update("flash", partial: "shared/flash")
+          ]
+        end
         format.html { redirect_to @line_item_material, notice: "Line item material was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @line_item_material }
       else
+        format.turbo_stream do
+          flash.now[:alert] = "Failed to save material: #{@line_item_material.errors.full_messages.join(', ')}"
+          render turbo_stream: [
+            turbo_stream.replace(
+              "line_item_material_#{@line_item_material.id}",
+              partial: 'line_item_materials/show',
+              locals: { line_item_material: @line_item_material }
+            ),
+            turbo_stream.update("flash", partial: "shared/flash")
+          ]
+        end
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @line_item_material.errors, status: :unprocessable_entity }
       end
@@ -67,6 +89,13 @@ class LineItemMaterialsController < ApplicationController
     @line_item_material.destroy!
 
     respond_to do |format|
+      format.turbo_stream do
+        flash.now[:notice] = "Material deleted successfully."
+        render turbo_stream: [
+          turbo_stream.remove("line_item_material_#{@line_item_material.id}"),
+          turbo_stream.update("flash", partial: "shared/flash")
+        ]
+      end
       format.html { redirect_to line_item_materials_path, notice: "Line item material was successfully destroyed.", status: :see_other }
       format.json { head :no_content }
     end
@@ -80,6 +109,6 @@ class LineItemMaterialsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def line_item_material_params
-      params.require(:line_item_material).permit(:tender_line_item_id, :material_supply_id, :proportion, :line_item_material_breakdown_id)
+      params.require(:line_item_material).permit(:tender_line_item_id, :material_supply_id, :proportion, :line_item_material_breakdown_id, :thickness, :rate, :quantity)
     end
 end

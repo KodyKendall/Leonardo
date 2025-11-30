@@ -32,6 +32,9 @@ Rails.application.routes.draw do
     resources :boqs, only: [:create]
     resources :tender_line_items
   end
+
+    resources :tender_line_items
+
   resources :suppliers
   resources :material_supplies
   resources :monthly_material_supply_rates do
