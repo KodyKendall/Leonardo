@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_29_173321) do
+ActiveRecord::Schema[7.2].define(version: 2025_11_30_233000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -215,7 +215,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_29_173321) do
 
   create_table "line_item_materials", force: :cascade do |t|
     t.bigint "tender_line_item_id", null: false
-    t.bigint "material_supply_id", null: false
+    t.bigint "material_supply_id"
     t.decimal "proportion", precision: 5, scale: 4, default: "0.0"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

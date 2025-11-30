@@ -88,5 +88,37 @@
         </div>
       </main>
     </div>
+
+    <!-- Global Modal for Turbo Frame content -->
+    <dialog id="modal_dialog" class="modal">
+      <div class="modal-box w-11/12 max-w-3xl">
+        <form method="dialog">
+          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+        </form>
+        <%= turbo_frame_tag "modal" do %>
+        <% end %>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+      </form>
+    </dialog>
+
+    <script>
+      // Auto-open modal when turbo frame content loads
+      document.addEventListener('turbo:frame-load', function(event) {
+        if (event.target.id === 'modal') {
+          const modal = document.getElementById('modal_dialog');
+          if (modal && event.target.innerHTML.trim() !== '') {
+            modal.showModal();
+          }
+        }
+      });
+
+      // Clear modal content when closed
+      document.getElementById('modal_dialog')?.addEventListener('close', function() {
+        const frame = document.querySelector('turbo-frame#modal');
+        if (frame) frame.innerHTML = '';
+      });
+    </script>
   </body>
 </html>
