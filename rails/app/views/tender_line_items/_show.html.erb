@@ -86,7 +86,7 @@
           <div>
             <% if tender_line_item.line_item_material_breakdown %>
               <%= turbo_frame_tag "line_item_material_breakdown_#{tender_line_item.line_item_material_breakdown.id}" do %>
-                <%= render 'line_item_material_breakdowns/show', line_item_material_breakdown: tender_line_item.line_item_material_breakdown %>
+                <%= render partial: 'line_item_material_breakdowns/line_item_material_breakdown', locals: { line_item_material_breakdown: tender_line_item.line_item_material_breakdown } %>
               <% end %>
             <% else %>
               <div class="alert alert-warning">No material breakdown found</div>

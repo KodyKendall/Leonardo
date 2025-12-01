@@ -26,7 +26,7 @@
     <div class="border-t" id="line_item_materials_container_<%= line_item_material_breakdown.id %>">
       <% if line_item_material_breakdown.line_item_materials.any? %>
         <% line_item_material_breakdown.line_item_materials.each do |material| %>
-          <%= render 'line_item_materials/show', line_item_material: material %>
+          <%= render partial: 'line_item_materials/line_item_material', locals: { line_item_material: material } %>
         <% end %>
       <% else %>
         <div class="px-6 py-4 text-center text-gray-500 text-sm" id="no_materials_message_<%= line_item_material_breakdown.id %>">
