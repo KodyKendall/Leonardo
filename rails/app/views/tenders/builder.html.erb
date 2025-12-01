@@ -19,12 +19,35 @@
         </div>
       </div>
 
+      <!-- BOQ Status Section -->
+      <% if @tender.boqs.any? %>
+        <div class="alert alert-success mb-4">
+          <div class="flex items-start justify-between">
+            <div class="flex items-start gap-3">
+              <i class="fa-solid fa-file-check text-lg"></i>
+              <div>
+                <h3 class="font-bold">BOQ Attached</h3>
+                <p class="text-sm"><%= @tender.boqs.first.boq_name %> — <%= @tender.boqs.first.boq_items.count %> items</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+
       <!-- Action Buttons -->
       <div class="flex gap-2 flex-wrap">
         <%= button_to "＋ Add Line Item",
             tender_tender_line_items_path(@tender),
             method: :post,
             class: "btn btn-primary" %>
+
+        <% if @tender.boqs.any? %>
+          <%= button_to "Copy from BOQ",
+              mirror_boq_items_tender_path(@tender),
+              method: :post,
+              class: "btn btn-info",
+              data: { "turbo-method": "post" } %>
+        <% end %>
 
         <%= link_to "Save", 
             @tender,
