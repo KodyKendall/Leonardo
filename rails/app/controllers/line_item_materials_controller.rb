@@ -32,7 +32,7 @@ class LineItemMaterialsController < ApplicationController
           render turbo_stream: [
             turbo_stream.append(
               "line_item_materials_container_#{@breakdown&.id}",
-              partial: 'line_item_materials/show',
+              partial: 'line_item_materials/line_item_material',
               locals: { line_item_material: @line_item_material }
             ),
             turbo_stream.remove("no_materials_message_#{@breakdown&.id}")
@@ -65,7 +65,7 @@ class LineItemMaterialsController < ApplicationController
           render turbo_stream: [
             turbo_stream.replace(
               "line_item_material_#{@line_item_material.id}",
-              partial: 'line_item_materials/show',
+              partial: 'line_item_materials/line_item_material',
               locals: { line_item_material: @line_item_material }
             ),
             turbo_stream.update("flash", partial: "shared/flash")
@@ -79,7 +79,7 @@ class LineItemMaterialsController < ApplicationController
           render turbo_stream: [
             turbo_stream.replace(
               "line_item_material_#{@line_item_material.id}",
-              partial: 'line_item_materials/show',
+              partial: 'line_item_materials/line_item_material',
               locals: { line_item_material: @line_item_material }
             ),
             turbo_stream.update("flash", partial: "shared/flash")
