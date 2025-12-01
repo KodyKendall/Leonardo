@@ -1,5 +1,8 @@
 <%= turbo_frame_tag "line_item_material_#{line_item_material.id}" do %>
-  <%= form_with(model: line_item_material, method: :patch, class: "contents", data: { controller: "dirty-form" }) do |form| %>
+  <%= form_with(model: line_item_material, method: :patch, class: "contents", data: {
+    controller: "dirty-form",
+    action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset"
+  }) do |form| %>
     <div class="grid grid-cols-12 gap-3 items-center py-3 px-3 bg-white border-b hover:bg-gray-50">
       <!-- Material Supply Dropdown -->
       <div class="col-span-3">
