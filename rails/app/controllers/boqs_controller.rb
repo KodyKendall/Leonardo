@@ -4,6 +4,7 @@ class BoqsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:update_attributes, :create_line_items]
   before_action :authenticate_user!
   before_action :set_boq, only: [:show, :parse, :update_attributes, :create_line_items, :chat, :csv_as_json, :update_header_row, :export_boq_csv]
+  before_action :set_tender, only: [:attach_boq]
   
   # Whitelist actions for LangGraph agent access
   llama_bot_allow :show, :update_attributes, :create_line_items, :chat
@@ -308,10 +309,52 @@ class BoqsController < ApplicationController
     end
   end
 
+  def search
+    # Search for BOQs by name, client, or QS
+    query = params[:q].to_s.strip
+    
+    respond_to do |format|
+      format.json do
+        if query.length < 1
+          render json: [], status: :ok
+        else
+          boqs = Boq.where(tender_id: nil)
+            .where("boq_name ILIKE ? OR client_name ILIKE ? OR qs_name ILIKE ?", 
+              "%#{query}%", "%#{query}%", "%#{query}%")
+            .order(created_at: :desc)
+            .limit(10)
+            .select(:id, :boq_name, :client_name, :qs_name, :status)
+          
+          render json: boqs, status: :ok
+        end
+      end
+    end
+  end
+
+  def attach_boq
+    # Attach an existing BOQ to a tender
+    boq_id = params[:boq_id]
+    boq = Boq.find_by(id: boq_id)
+    
+    if boq.nil?
+      render json: { success: false, message: "BOQ not found" }, status: :not_found
+    elsif boq.tender_id.present?
+      render json: { success: false, message: "BOQ is already attached to another tender" }, status: :unprocessable_entity
+    elsif boq.update(tender_id: @tender.id)
+      render json: { success: true, message: "BOQ attached successfully" }, status: :ok
+    else
+      render json: { success: false, message: "Failed to attach BOQ" }, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def set_boq
     @boq = Boq.find(params[:id])
+  end
+
+  def set_tender
+    @tender = Tender.find(params[:id])
   end
 
   def boq_params

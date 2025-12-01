@@ -3,6 +3,9 @@ Rails.application.routes.draw do
   resources :line_item_materials
   resources :line_item_rate_build_ups
   resources :boqs do
+    collection do
+      get :search
+    end
     member do
       post :parse
       get :csv_download
@@ -25,6 +28,7 @@ Rails.application.routes.draw do
       get :builder
       patch :update_inclusions_exclusions
       post :mirror_boq_items
+      post :attach_boq, to: "boqs#attach_boq"
     end
     collection do
       post :quick_create
