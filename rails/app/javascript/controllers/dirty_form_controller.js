@@ -1,19 +1,38 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Tracks form changes and shows an unsaved indicator
 export default class extends Controller {
-  static targets = ["indicator"]
+  static targets = ["indicator", "submit"]
 
   connect() {
+    this.originalData = new FormData(this.element)
     this.isDirty = false
-    this.element.addEventListener("input", this.markDirty.bind(this))
-    this.element.addEventListener("change", this.markDirty.bind(this))
   }
 
-  markDirty() {
-    if (!this.isDirty) {
-      this.isDirty = true
-      this.indicatorTarget.classList.remove("hidden")
+  change() {
+    const currentData = new FormData(this.element)
+    this.isDirty = !this.formDataEqual(this.originalData, currentData)
+    this.updateIndicator()
+  }
+
+  updateIndicator() {
+    if (this.hasIndicatorTarget) {
+      this.indicatorTarget.classList.toggle("hidden", !this.isDirty)
     }
+    if (this.hasSubmitTarget) {
+      this.submitTarget.classList.toggle("btn-warning", this.isDirty)
+      this.submitTarget.classList.toggle("btn-primary", !this.isDirty)
+    }
+  }
+
+  formDataEqual(a, b) {
+    const aEntries = [...a.entries()].sort((x, y) => x[0].localeCompare(y[0]))
+    const bEntries = [...b.entries()].sort((x, y) => x[0].localeCompare(y[0]))
+    return JSON.stringify(aEntries) === JSON.stringify(bEntries)
+  }
+
+  reset() {
+    this.originalData = new FormData(this.element)
+    this.isDirty = false
+    this.updateIndicator()
   }
 }

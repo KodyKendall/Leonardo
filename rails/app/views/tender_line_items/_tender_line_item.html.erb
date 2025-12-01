@@ -1,0 +1,120 @@
+<%= turbo_frame_tag dom_id(tender_line_item) do %>
+  <div class="mb-6">
+    <%= form_with model: [tender_line_item.tender, tender_line_item],
+                  data: {
+                    controller: "dirty-form",
+                    action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset"
+                  } do |f| %>
+      <!-- Line Item Header Card -->
+      <div class="card bg-base-100 shadow-md">
+        <div class="card-body">
+          <!-- Top Row: Item Number, Category, Delete -->
+          <div class="flex justify-between items-start mb-3">
+            <div class="flex items-center gap-2">
+              <div class="form-control">
+                <label class="label label-text text-xs">Item #</label>
+                <%= f.text_field :item_number, class: "input input-sm input-bordered w-24" %>
+              </div>
+              <div class="form-control">
+                <label class="label label-text text-xs">Category</label>
+                <%= f.select :section_category,
+                    options_for_select(TenderLineItem.section_categories.keys, tender_line_item.section_category),
+                    { include_blank: "Select..." },
+                    class: "select select-sm select-bordered" %>
+              </div>
+            </div>
+
+            <!-- Delete Button -->
+            <%= button_to tender_tender_line_item_path(tender_line_item.tender, tender_line_item),
+                          method: :delete,
+                          class: "btn btn-xs btn-ghost text-error",
+                          form: { data: { turbo_confirm: "Delete this line item?" } },
+                          title: "Delete" do %>
+              <i class="fas fa-trash"></i>
+            <% end %>
+          </div>
+
+          <!-- Description -->
+          <div class="form-control mb-3">
+            <label class="label label-text text-xs">Description</label>
+            <%= f.text_area :item_description, rows: 2, class: "textarea textarea-bordered textarea-sm" %>
+          </div>
+
+          <!-- Notes -->
+          <div class="form-control mb-3">
+            <label class="label label-text text-xs">Notes</label>
+            <%= f.text_area :notes, rows: 1, class: "textarea textarea-bordered textarea-sm" %>
+          </div>
+
+          <!-- Details Row -->
+          <div class="grid grid-cols-5 gap-3 py-3 border-t border-gray-100">
+            <div class="form-control">
+              <label class="label label-text text-xs">Quantity</label>
+              <%= f.number_field :quantity, step: 0.01, min: 0, class: "input input-sm input-bordered w-full" %>
+            </div>
+
+            <div class="form-control">
+              <label class="label label-text text-xs">Unit</label>
+              <%= f.text_field :unit_of_measure, class: "input input-sm input-bordered w-full" %>
+            </div>
+
+            <div class="form-control">
+              <label class="label label-text text-xs">Rate (R)</label>
+              <%= f.number_field :rate, step: 0.01, min: 0, class: "input input-sm input-bordered w-full" %>
+            </div>
+
+            <div class="form-control">
+              <label class="label label-text text-xs">Page</label>
+              <%= f.text_field :page_number, class: "input input-sm input-bordered w-full" %>
+            </div>
+
+            <div class="text-right bg-success bg-opacity-10 p-2 rounded">
+              <div class="text-xs text-gray-500">Line Total</div>
+              <div class="font-bold text-gray-900 text-lg">R<%= number_with_precision(tender_line_item.total_amount, precision: 2) %></div>
+            </div>
+          </div>
+
+          <!-- Save Button & Dirty Indicator -->
+          <div class="flex items-center gap-3 mt-3">
+            <%= f.submit "Save", class: "btn btn-primary btn-sm", data: { dirty_form_target: "submit" } %>
+            <span class="hidden text-warning text-sm font-medium" data-dirty-form-target="indicator">
+              Unsaved changes
+            </span>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Expandable Breakdowns Section -->
+    <div class="collapse collapse-arrow border border-base-300 bg-base-100 mt-2 shadow-md">
+      <input type="checkbox" class="line-item-toggle" data-line-item-id="<%= tender_line_item.id %>" />
+      <div class="collapse-title font-semibold text-base flex items-center gap-2">
+        <i class="fas fa-chevron-down"></i>
+        Breakdown Details
+      </div>
+
+      <div class="collapse-content pt-4">
+        <!-- Two-Column Layout: Rate Build-Up (Left) | Material Breakdown (Right) -->
+        <div class="grid grid-cols-2 gap-6">
+          <!-- Rate Build-Up (Left) -->
+          <div>
+            <% if tender_line_item.line_item_rate_build_up %>
+              <%= render tender_line_item.line_item_rate_build_up %>
+            <% else %>
+              <div class="alert alert-warning">No rate build-up found</div>
+            <% end %>
+          </div>
+
+          <!-- Material Breakdown (Right) -->
+          <div>
+            <% if tender_line_item.line_item_material_breakdown %>
+              <%= render tender_line_item.line_item_material_breakdown %>
+            <% else %>
+              <div class="alert alert-warning">No material breakdown found</div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

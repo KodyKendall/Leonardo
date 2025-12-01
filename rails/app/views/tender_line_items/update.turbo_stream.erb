@@ -1,6 +1,5 @@
 <%= turbo_stream.replace dom_id(@line_item) do %>
-  <%= render partial: "tender_line_items/show",
-             locals: { tender_line_item: @line_item } %>
+  <%= render @line_item %>
 <% end %>
 
 <%= turbo_stream.replace "builder_header" do %>

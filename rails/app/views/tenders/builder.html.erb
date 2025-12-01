@@ -49,9 +49,8 @@
     <!-- Line Items Section -->
     <div id="line_items_container" class="space-y-4">
       <% if @line_items.any? %>
-        <% @line_items.each do |line_item| %>
-          <%= render 'tender_line_items/show', tender_line_item: line_item %>
-        <% end %>
+        <%= render @line_items %>
+
       <% else %>
         <div class="alert alert-info">
           <div>
