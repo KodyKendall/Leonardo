@@ -1,6 +1,5 @@
-<%= turbo_stream.append "line_items" do %>
-  <%= render partial: "tender_line_items/line_item",
-             locals: { line_item: @line_item } %>
+<%= turbo_stream.append "line_items_container" do %>
+  <%= render @line_item %>
 <% end %>
 
 <%= turbo_stream.update "new_line_item_form", "" %>
