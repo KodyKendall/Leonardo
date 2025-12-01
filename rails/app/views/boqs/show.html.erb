@@ -141,10 +141,12 @@
                   
                   # Get preview rows (starting after header row, max 20)
                   preview_rows = []
+                  preview_row_indices = []
                   all_rows.each_with_index do |row, idx|
                     next if idx <= header_row_idx || preview_rows.length >= 20
                     next if row.compact.empty?
                     preview_rows << row
+                    preview_row_indices << idx
                   end
                   csv_parse_error = false
                 rescue => e
@@ -152,6 +154,7 @@
                   csv_error_message = e.message
                   headers = []
                   preview_rows = []
+                  preview_row_indices = []
                 end
               %>
                 <% if csv_parse_error %>
@@ -166,14 +169,16 @@
                 <% elsif headers.any? %>
                 <thead>
                   <tr>
+                    <th class="bg-gray-100 font-semibold text-center w-12">#</th>
                     <% headers.each do |col| %>
                       <th><%= col %></th>
                     <% end %>
                   </tr>
                 </thead>
                 <tbody>
-                  <% preview_rows.each do |row| %>
+                  <% preview_rows.each_with_index do |row, idx| %>
                     <tr>
+                      <td class="bg-gray-100 font-semibold text-center text-sm text-gray-600 w-12"><%= preview_row_indices[idx] %></td>
                       <% row.each do |col| %>
                         <td><%= col %></td>
                       <% end %>
@@ -192,25 +197,30 @@
                 # Use same logic for full view
                 unless csv_parse_error
                   full_rows = []
+                  full_row_indices = []
                   all_rows.each_with_index do |row, idx|
                     next if idx <= header_row_idx || row.compact.empty?
                     full_rows << row
+                    full_row_indices << idx
                   end
                 else
                   full_rows = []
+                  full_row_indices = []
                 end
               %>
                 <% if headers.any? %>
                 <thead>
                   <tr>
+                    <th class="bg-gray-100 font-semibold text-center w-12">#</th>
                     <% headers.each do |col| %>
                       <th><%= col %></th>
                     <% end %>
                   </tr>
                 </thead>
                 <tbody>
-                  <% full_rows.each do |row| %>
+                  <% full_rows.each_with_index do |row, idx| %>
                     <tr>
+                      <td class="bg-gray-100 font-semibold text-center text-sm text-gray-600 w-12"><%= full_row_indices[idx] %></td>
                       <% row.each do |col| %>
                         <td><%= col %></td>
                       <% end %>
@@ -445,17 +455,19 @@
 
             if (!previewTable) return;
 
-            // Build header row HTML
+            // Build header row HTML with row index column
             let headerHTML = '<thead><tr>';
+            headerHTML += '<th class="bg-gray-100 font-semibold text-center w-12">#</th>';
             headers.forEach(header => {
               headerHTML += `<th>${escapeHtml(header)}</th>`;
             });
             headerHTML += '</tr></thead>';
 
-            // Build preview rows HTML
+            // Build preview rows HTML with row indices
             let previewBodyHTML = '<tbody>';
             previewRows.forEach(row => {
               previewBodyHTML += '<tr>';
+              previewBodyHTML += `<td class="bg-gray-100 font-semibold text-center text-sm text-gray-600 w-12">${escapeHtml(row.row_index.toString())}</td>`;
               row.columns.forEach(col => {
                 previewBodyHTML += `<td>${escapeHtml(col)}</td>`;
               });
