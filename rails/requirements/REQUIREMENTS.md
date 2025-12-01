@@ -708,6 +708,7 @@ Main tender/quote record.
 | assigned_to_id | Currently assigned user | 2 |
 | tender_date | Date created | 2024-11-26 |
 | expiry_date | Validity end date | 2024-12-26 |
+| project_type | Tender category | "commercial" |
 | margin_pct | Overall margin | 0.00 |
 | status | Tender status | "draft" |
 | notes | Internal notes | "Client prefers itemized breakdown" |
@@ -717,6 +718,10 @@ Main tender/quote record.
 
 **Status Values:**
 - draft, in_progress, ready_for_review, approved, submitted, won, lost
+
+**Project Type Values (NEW):**
+- commercial (standard shop drawings lumped into one line; used for most projects)
+- mining (shop drawings broken by work type: structural, platework, piping, etc. with separate rates)
 
 #### 5.2.3 tender_inclusions_exclusions
 
@@ -794,7 +799,8 @@ Detailed cost breakdown for each line item.
 | id | Unique identifier | 1 |
 | tender_line_item_id | Reference to line item | 1 |
 | material_supply_rate | Material cost per tonne | 17092.50 |
-| fabrication_rate | Fabrication cost | 8000.00 |
+| fabrication_rate | Fabrication cost (base) | 8000.00 |
+| fabrication_factor | Multiplier for fabrication by work type | 1.0 |
 | fabrication_included | Whether included | true |
 | overheads_rate | Overheads cost | 4150.00 |
 | overheads_included | Whether included | true |
@@ -954,20 +960,20 @@ Example with 85% UB/UC and 15% Plate:
 
 #### 6.1.2 Line Item Rate Build-up
 
-For a standard steel section line item:
+For a standard steel section line item (structural work, factor = 1.0):
 ```
 line_rate_per_tonne =
-    material_supply_rate                           -- e.g., 17,100
-  + (fabrication_rate  include_fabrication)       -- 8,000  1 = 8,000
-  + (overheads_rate  include_overheads)           -- 4,150  1 = 4,150
-  + (shop_priming_rate  include_shop_priming)     -- 1,380  0 = 0
-  + (onsite_paint_rate  include_onsite_paint)     -- 1,565  0 = 0
-  + (delivery_rate  include_delivery)             -- 700  1 = 700
-  + (bolts_rate  include_bolts)                   -- 1,500  1 = 1,500
-  + (erection_rate  include_erection)             -- 1,800  1 = 1,800
-  + (crainage_rate  include_crainage)             -- 1,080  0 = 0
-  + (cherry_picker_rate  include_cherry_picker)   -- 1,430  1 = 1,430
-  + (galvanizing_rate  include_galvanizing)       -- 11,000  0 = 0
+    material_supply_rate                                                -- e.g., 17,100
+  + (fabrication_rate  fabrication_factor  include_fabrication)        -- 8,000  1.0  1 = 8,000
+  + (overheads_rate  include_overheads)                                -- 4,150  1 = 4,150
+  + (shop_priming_rate  include_shop_priming)                          -- 1,380  0 = 0
+  + (onsite_paint_rate  include_onsite_paint)                          -- 1,565  0 = 0
+  + (delivery_rate  include_delivery)                                  -- 700  1 = 700
+  + (bolts_rate  include_bolts)                                        -- 1,500  1 = 1,500
+  + (erection_rate  include_erection)                                  -- 1,800  1 = 1,800
+  + (crainage_rate  include_crainage)                                  -- 1,080  0 = 0
+  + (cherry_picker_rate  include_cherry_picker)                        -- 1,430  1 = 1,430
+  + (galvanizing_rate  include_galvanizing)                            -- 11,000  0 = 0
 
 subtotal = 34,680
 margin = subtotal  margin_pct = 34,680  0% = 0
@@ -975,6 +981,22 @@ total = 34,680
 rounded_rate = CEILING(total, 50) = R34,700
 line_amount = rounded_rate  quantity = 34,700  11.19 = R388,293
 ```
+
+**Fabrication Multiplier Examples:**
+
+For platework (factor = 1.75):
+```
+fabrication_cost = 8,000  1.75  1 = R14,000 (instead of R8,000)
+```
+
+For piping (factor = 3.0):
+```
+fabrication_cost = 8,000  3.0  1 = R24,000 (instead of R8,000)
+```
+
+**When rates are updated**, the base_rate changes but the multiplier remains, so all tenders using that factor automatically get the updated cost without manual intervention.
+
+**NEW (Dec-01):** Fabrication multiplier factor allows different work types to scale from a single base rate. Eliminates need to manually hard-code different rates per work type; supports cascading rate updates.
 
 #### 6.1.3 Equipment Cost Calculation
 
@@ -1391,14 +1413,26 @@ All rate changes are versioned:
 | A-009 | No integration with external systems in Phase 1 | Scope defined |
 | A-010 | Users operate in same timezone | RSB is single-location |
 
-### 9.4 Deferred Features
+### 9.4 Resolved Questions (from Dec-01 Demo)
+
+Questions clarified during Richard's first live demo session:
+
+| ID | Question | Resolution | Status |
+|----|----------|-----------|--------|
+| RQ-001 | Should tenders be tagged as commercial vs mining? | YES. Mining and commercial tenders have different shop drawing structures. Commercial: lump all shop drawings into one line. Mining: break down into structural, platework, piping, etc. each with own rates. Add "project_type" field to tenders (values: commercial, mining). | RESOLVED |
+| RQ-002 | How to handle fabrication rate multipliers? | Support multiplier factors (1.0x for structural, 1.75x for platework, 3.0x for piping). Instead of manually updating rates, apply factor to base rate. Allows rate changes to cascade. Store as field on line_item_rate_build_ups or processing_rates with work_type factor. | RESOLVED |
+| RQ-003 | Can material supply composition validation be enforced? | YES. Proportions in line_item_materials must sum to exactly 100%. Reject if > 100% or < 100%. | RESOLVED |
+| RQ-004 | What about material type auto-detection from BOQ? | PHASE 2. Richard has a catalog of structural steel sections (e.g., "254×146×40" → Local UB/UC). Long-term: provide catalog, system matches BOQ descriptions to material types and populates waste %. For now: manual selection + override in UI. | DEFERRED |
+| RQ-005 | What are the BOQ size limits? | Current Leonardo AI parsing hits 50-item limit. Need to increase token/message limits before full production. Testing with 66-item BOQ showed this constraint. | RESOLVED |
+
+### 9.5 Deferred Features
 
 Per Richard's guidance: *"I wouldn't do that in the beginning... once the whole system's working and there's no bugs"*
 
 | ID | Feature | Reason for Deferral |
 |----|---------|---------------------|
 | DF-001 | Automatic bolt threshold detection (2.5%) | Complex logic, manual decision preferred initially |
-| DF-002 | AI-powered material type auto-classification | Needs training data, manual override sufficient |
+| DF-002 | Material type auto-classification from steel catalog | Needs training data and master catalog. Manual override sufficient for MVP. |
 | DF-003 | Supplier integration/EDI | Future phase |
 | DF-004 | Budget tracking module | Out of Phase 1 scope |
 | DF-005 | Claims processing | Out of Phase 1 scope |
@@ -1412,7 +1446,8 @@ Per Richard's guidance: *"I wouldn't do that in the beginning... once the whole 
 
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
-| 1.0 | 2025-11-27 | Draft | Initial comprehensive requirements document |
+| 1.0 | 2025-11-27 | Darren | Initial comprehensive requirements document |
+| 1.01 | 2025-12-01 | Leonardo | Updated post-demo clarifications: Added project_type field to tenders (commercial vs mining); Added fabrication_factor multiplier to line_item_rate_build_ups; Documented fabrication multiplier calculation logic; Added new section 9.4 "Resolved Questions" with 5 clarified items; Deferred material type auto-classification to Phase 2; Noted Leonardo API parsing limit (50 items) for BOQ uploads |
 
 ---
 
