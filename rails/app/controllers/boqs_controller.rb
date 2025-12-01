@@ -250,7 +250,7 @@ class BoqsController < ApplicationController
             next if idx < header_row_idx + 1 || preview_rows.length >= 20
             next if row.compact.empty? # Skip if all cells are empty
             
-            preview_rows << { columns: row }
+            preview_rows << { columns: row, row_index: idx }
           end
           
           format.json { render json: { 
