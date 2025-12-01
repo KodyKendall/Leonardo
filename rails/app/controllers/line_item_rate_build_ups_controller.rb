@@ -1,4 +1,6 @@
 class LineItemRateBuildUpsController < ApplicationController
+  include ActionView::RecordIdentifier
+
   before_action :set_line_item_rate_build_up, only: %i[ show edit update destroy ]
 
   # GET /line_item_rate_build_ups or /line_item_rate_build_ups.json
@@ -39,10 +41,23 @@ class LineItemRateBuildUpsController < ApplicationController
     respond_to do |format|
       if @line_item_rate_build_up.update(line_item_rate_build_up_params)
         format.html { redirect_to @line_item_rate_build_up, notice: "Line item rate build up was successfully updated.", status: :see_other }
-        format.turbo_stream { render :update }
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace(
+            dom_id(@line_item_rate_build_up),
+            partial: "line_item_rate_build_ups/line_item_rate_build_up",
+            locals: { line_item_rate_build_up: @line_item_rate_build_up }
+          )
+        end
         format.json { render json: @line_item_rate_build_up, status: :ok }
       else
         format.html { render :edit, status: :unprocessable_entity }
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace(
+            dom_id(@line_item_rate_build_up),
+            partial: "line_item_rate_build_ups/line_item_rate_build_up",
+            locals: { line_item_rate_build_up: @line_item_rate_build_up }
+          )
+        end
         format.json { render json: @line_item_rate_build_up.errors, status: :unprocessable_entity }
       end
     end

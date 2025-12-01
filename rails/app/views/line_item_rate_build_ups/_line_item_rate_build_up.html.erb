@@ -1,106 +1,127 @@
-<div id="<%= dom_id line_item_rate_build_up %>" class="w-full sm:w-auto my-5 space-y-5">
-  <div>
-    <strong class="block font-medium mb-1">Tender line item:</strong>
-    <%= line_item_rate_build_up.tender_line_item_id %>
+<%= turbo_frame_tag dom_id(line_item_rate_build_up) do %>
+  <div class="card bg-base-100 shadow" data-controller="line-item-rate-build-up">
+    <div class="card-body">
+      <div class="flex justify-between items-center mb-4">
+        <div>
+          <h2 class="card-title text-xl">Rate Buildup</h2>
+          <% if line_item_rate_build_up.tender_line_item.present? %>
+            <p class="text-gray-600 text-sm">
+              <span class="font-semibold"><%= line_item_rate_build_up.tender_line_item.item_number || "Item" %></span>
+              — <%= line_item_rate_build_up.tender_line_item.item_description %>
+            </p>
+          <% end %>
+        </div>
+      </div>
+
+      <%= form_with model: line_item_rate_build_up, data: { turbo_frame: dom_id(line_item_rate_build_up), line_item_rate_build_up_target: "form" } do |form| %>
+        <div class="overflow-x-auto">
+          <table class="table table-sm w-full">
+            <thead>
+              <tr class="bg-base-200">
+                <th>Component</th>
+                <th class="text-center">Included</th>
+                <th class="text-right">Rate (R)</th>
+                <th class="text-right">Amount (R)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%# Define rate components as an array for cleaner iteration %>
+              <% rate_components = [
+                { name: "Material Supply", rate_field: :material_supply_rate, included_field: :material_supply_included },
+                { name: "Fabrication", rate_field: :fabrication_rate, included_field: :fabrication_included },
+                { name: "Overheads", rate_field: :overheads_rate, included_field: :overheads_included },
+                { name: "Shop Priming", rate_field: :shop_priming_rate, included_field: :shop_priming_included },
+                { name: "Onsite Painting", rate_field: :onsite_painting_rate, included_field: :onsite_painting_included },
+                { name: "Delivery", rate_field: :delivery_rate, included_field: :delivery_included },
+                { name: "Bolts", rate_field: :bolts_rate, included_field: :bolts_included },
+                { name: "Erection", rate_field: :erection_rate, included_field: :erection_included },
+                { name: "Crainage", rate_field: :crainage_rate, included_field: :crainage_included },
+                { name: "Cherry Picker", rate_field: :cherry_picker_rate, included_field: :cherry_picker_included },
+                { name: "Galvanizing", rate_field: :galvanizing_rate, included_field: :galvanizing_included }
+              ] %>
+
+              <% rate_components.each do |component| %>
+                <% rate_value = line_item_rate_build_up.send(component[:rate_field]) || 0 %>
+                <% is_included = line_item_rate_build_up.send(component[:included_field]) %>
+                <tr class="hover:bg-base-200" data-line-item-rate-build-up-target="row">
+                  <td class="font-medium"><%= component[:name] %></td>
+                  <td class="text-center">
+                    <%= form.check_box component[:included_field],
+                        class: "checkbox checkbox-sm",
+                        data: {
+                          line_item_rate_build_up_target: "includedCheckbox",
+                          action: "change->line-item-rate-build-up#calculate"
+                        } %>
+                  </td>
+                  <td class="text-right">
+                    <%= form.number_field component[:rate_field],
+                        step: 0.01,
+                        min: 0,
+                        class: "input input-sm input-bordered w-28 text-right",
+                        data: {
+                          line_item_rate_build_up_target: "rateInput",
+                          action: "input->line-item-rate-build-up#calculate"
+                        } %>
+                  </td>
+                  <td class="text-right font-semibold" data-line-item-rate-build-up-target="amountCell">
+                    <span class="<%= 'text-gray-400' unless is_included %>">
+                      <%= is_included ? number_to_currency(rate_value, unit: "R ", precision: 2) : "—" %>
+                    </span>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+            <tfoot>
+              <tr class="border-t-2 border-base-300">
+                <td colspan="3" class="text-right font-bold">Subtotal:</td>
+                <td class="text-right font-bold text-blue-600" data-line-item-rate-build-up-target="subtotal">
+                  <%= number_to_currency(line_item_rate_build_up.subtotal, unit: "R ", precision: 2) %>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2" class="text-right font-medium">Margin:</td>
+                <td class="text-right">
+                  <%= form.number_field :margin_amount,
+                      step: 0.01,
+                      min: 0,
+                      class: "input input-sm input-bordered w-28 text-right",
+                      data: {
+                        line_item_rate_build_up_target: "marginInput",
+                        action: "input->line-item-rate-build-up#calculate"
+                      } %>
+                </td>
+                <td class="text-right font-semibold text-orange-600" data-line-item-rate-build-up-target="marginDisplay">
+                  <%= number_to_currency(line_item_rate_build_up.margin_amount, unit: "R ", precision: 2) %>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3" class="text-right font-medium">Before Rounding:</td>
+                <td class="text-right font-semibold text-purple-600" data-line-item-rate-build-up-target="beforeRounding">
+                  <%= number_to_currency(line_item_rate_build_up.total_before_rounding, unit: "R ", precision: 2) %>
+                </td>
+              </tr>
+              <tr class="bg-green-50">
+                <td colspan="3" class="text-right font-bold text-lg">Final Rate:</td>
+                <td class="text-right font-bold text-lg text-green-600" data-line-item-rate-build-up-target="roundedRate">
+                  <%= number_to_currency(line_item_rate_build_up.rounded_rate, unit: "R ", precision: 2) %>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div class="mt-6 flex gap-2 items-center">
+          <%= form.submit "Save",
+              class: "btn btn-primary btn-sm",
+              data: { line_item_rate_build_up_target: "saveButton" } %>
+          <span class="hidden text-warning text-sm font-medium" data-line-item-rate-build-up-target="dirtyIndicator">
+            Unsaved changes
+          </span>
+          <% if line_item_rate_build_up.tender_line_item.present? %>
+            <%= link_to "Back to Tender", tender_path(line_item_rate_build_up.tender_line_item.tender), class: "btn btn-ghost btn-sm" %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
   </div>
-  <div>
-    <strong class="block font-medium mb-1">Material supply rate:</strong>
-    <%= line_item_rate_build_up.material_supply_rate %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Fabrication rate:</strong>
-    <%= line_item_rate_build_up.fabrication_rate %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Fabrication included:</strong>
-    <%= line_item_rate_build_up.fabrication_included? ? "Yes" : "No" %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Overheads rate:</strong>
-    <%= line_item_rate_build_up.overheads_rate %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Overheads included:</strong>
-    <%= line_item_rate_build_up.overheads_included? ? "Yes" : "No" %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Shop priming rate:</strong>
-    <%= line_item_rate_build_up.shop_priming_rate %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Shop priming included:</strong>
-    <%= line_item_rate_build_up.shop_priming_included? ? "Yes" : "No" %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Onsite painting rate:</strong>
-    <%= line_item_rate_build_up.onsite_painting_rate %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Onsite painting included:</strong>
-    <%= line_item_rate_build_up.onsite_painting_included? ? "Yes" : "No" %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Delivery rate:</strong>
-    <%= line_item_rate_build_up.delivery_rate %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Delivery included:</strong>
-    <%= line_item_rate_build_up.delivery_included? ? "Yes" : "No" %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Bolts rate:</strong>
-    <%= line_item_rate_build_up.bolts_rate %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Bolts included:</strong>
-    <%= line_item_rate_build_up.bolts_included? ? "Yes" : "No" %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Erection rate:</strong>
-    <%= line_item_rate_build_up.erection_rate %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Erection included:</strong>
-    <%= line_item_rate_build_up.erection_included? ? "Yes" : "No" %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Crainage rate:</strong>
-    <%= line_item_rate_build_up.crainage_rate %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Crainage included:</strong>
-    <%= line_item_rate_build_up.crainage_included? ? "Yes" : "No" %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Cherry picker rate:</strong>
-    <%= line_item_rate_build_up.cherry_picker_rate %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Cherry picker included:</strong>
-    <%= line_item_rate_build_up.cherry_picker_included? ? "Yes" : "No" %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Galvanizing rate:</strong>
-    <%= line_item_rate_build_up.galvanizing_rate %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Galvanizing included:</strong>
-    <%= line_item_rate_build_up.galvanizing_included? ? "Yes" : "No" %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Subtotal:</strong>
-    <%= line_item_rate_build_up.subtotal %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Margin amount:</strong>
-    <%= line_item_rate_build_up.margin_amount %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Total before rounding:</strong>
-    <%= line_item_rate_build_up.total_before_rounding %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Rounded rate:</strong>
-    <%= line_item_rate_build_up.rounded_rate %>
-  </div>
-</div>
+<% end %>
