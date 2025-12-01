@@ -1,0 +1,112 @@
+<dialog id="boq_attach_modal" class="modal">
+  <div class="modal-box w-full max-w-2xl">
+    <h3 class="font-bold text-lg mb-4">Attach Existing BOQ</h3>
+    
+    <div class="form-control mb-4">
+      <input 
+        type="text" 
+        id="boq_search_input" 
+        placeholder="Search by BOQ name, client name, or QS name..." 
+        class="input input-bordered w-full"
+      />
+    </div>
+
+    <div id="boq_search_results" class="space-y-2 max-h-96 overflow-y-auto border border-gray-200 rounded p-4 bg-gray-50">
+      <p class="text-gray-500 text-sm">Type to search for BOQs...</p>
+    </div>
+
+    <div class="modal-action mt-4">
+      <button type="button" class="btn" onclick="document.getElementById('boq_attach_modal').close()">Cancel</button>
+    </div>
+    
+    <form method="dialog" class="modal-backdrop">
+      <button>close</button>
+    </form>
+  </div>
+</dialog>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('boq_search_input');
+  const resultsContainer = document.getElementById('boq_search_results');
+  let debounceTimer;
+
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      clearTimeout(debounceTimer);
+      const query = this.value.trim();
+
+      if (query.length < 1) {
+        resultsContainer.innerHTML = '<p class="text-gray-500 text-sm">Type to search for BOQs...</p>';
+        return;
+      }
+
+      debounceTimer = setTimeout(function() {
+        fetch(`/boqs/search?q=${encodeURIComponent(query)}`, {
+          headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.length === 0) {
+            resultsContainer.innerHTML = '<p class="text-gray-500 text-sm">No BOQs found</p>';
+          } else {
+            resultsContainer.innerHTML = data.map(boq => `
+              <div class="flex items-center justify-between p-3 bg-white rounded border border-gray-200 hover:border-blue-400">
+                <div class="flex-1">
+                  <p class="font-medium text-gray-800">${boq.boq_name}</p>
+                  <p class="text-xs text-gray-500">
+                    ${boq.client_name ? 'Client: ' + boq.client_name : ''}
+                    ${boq.qs_name ? (boq.client_name ? ' • ' : '') + 'QS: ' + boq.qs_name : ''}
+                  </p>
+                </div>
+                <button 
+                  type="button"
+                  onclick="attachBoq(${boq.id}, '${boq.boq_name}')"
+                  class="btn btn-sm btn-primary"
+                >
+                  Attach
+                </button>
+              </div>
+            `).join('');
+          }
+        })
+        .catch(error => {
+          resultsContainer.innerHTML = '<p class="text-red-500 text-sm">Error searching BOQs</p>';
+          console.error('Search error:', error);
+        });
+      }, 300);
+    });
+  }
+
+  window.attachBoq = function(boqId, boqName) {
+    const tenderId = <%= @tender.id %>;
+    
+    fetch(`/tenders/${tenderId}/attach_boq`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: JSON.stringify({ boq_id: boqId })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        document.getElementById('boq_attach_modal').close();
+        // Reload the page to show the newly attached BOQ
+        window.location.reload();
+      } else {
+        alert('Error: ' + (data.message || 'Could not attach BOQ'));
+      }
+    })
+    .catch(error => {
+      alert('Error attaching BOQ');
+      console.error('Attach error:', error);
+    });
+  };
+});
+</script>

@@ -81,9 +81,14 @@
           <p class="text-gray-500 text-sm mb-4">No BOQs uploaded yet</p>
         <% end %>
 
-        <button class="btn btn-sm btn-primary w-full" onclick="const modal = document.getElementById('boq_upload_modal'); if (modal) { if (typeof modal.showModal === 'function') { modal.showModal(); } else { modal.classList.add('modal-open'); } }">
-          <i class="fa-solid fa-upload"></i> Upload BOQ
-        </button>
+        <div class="flex gap-2">
+          <button class="btn btn-sm btn-primary flex-1" onclick="const modal = document.getElementById('boq_upload_modal'); if (modal) { if (typeof modal.showModal === 'function') { modal.showModal(); } else { modal.classList.add('modal-open'); } }">
+            <i class="fa-solid fa-upload"></i> Upload BOQ
+          </button>
+          <button class="btn btn-sm btn-outline flex-1" onclick="const modal = document.getElementById('boq_attach_modal'); if (modal) { if (typeof modal.showModal === 'function') { modal.showModal(); } else { modal.classList.add('modal-open'); } }">
+            <i class="fa-solid fa-link"></i> Attach BOQ
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -96,4 +101,5 @@
   </div>
 
   <%= render "boqs/upload_form", tender: @tender %>
+  <%= render "boqs/attach_form", tender: @tender %>
 </div>
