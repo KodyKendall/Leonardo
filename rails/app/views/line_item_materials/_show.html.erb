@@ -1,5 +1,5 @@
 <%= turbo_frame_tag "line_item_material_#{line_item_material.id}" do %>
-  <%= form_with(model: line_item_material, method: :patch, class: "contents") do |form| %>
+  <%= form_with(model: line_item_material, method: :patch, class: "contents", data: { controller: "dirty-form" }) do |form| %>
     <div class="grid grid-cols-12 gap-3 items-center py-3 px-3 bg-white border-b hover:bg-gray-50">
       <!-- Material Supply Dropdown -->
       <div class="col-span-3">
@@ -47,7 +47,8 @@
       </div>
 
       <!-- Save Button -->
-      <div class="col-span-1 text-center">
+      <div class="col-span-1 text-center flex items-center justify-center gap-1">
+        <span class="hidden text-red-500 text-xs font-medium" data-dirty-form-target="indicator">unsaved</span>
         <%= form.button type: :submit, class: "btn btn-ghost btn-xs text-green-600" do %>
           <i class="fa-solid fa-check"></i>
         <% end %>
