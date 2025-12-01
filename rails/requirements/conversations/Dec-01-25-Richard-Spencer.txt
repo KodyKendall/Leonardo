@@ -1,0 +1,834 @@
+Richard Spencer is the CEO/President of RSB Construction (Steel Construction Company)
+Darren Spencer is the Business Analyst, consultant, and project manager for this project (and Richard's brother)
+Kody is the Software Solutions Architect and Software Developer building the project.
+
+Darren Spencer  0:00  
+Brilliant. Yeah, he's got a new one. It'll be fun to try a new one, sure, yeah, but yeah, if not, if not, we just use that one message. But he said he's gonna join now. He's just having problem with internet.
+
+Kody  0:09  
+Okay, very cool. His
+
+Darren Spencer  0:10  
+internet at home used to be not great, and so I think that he's trying to that. He said he changed to a new one on Friday,
+
+Kody  0:17  
+makes sense. So you think, oh. And then, okay, yeah. And then I did make a little which, this isn't live yet, so probably will do is, rather than have him type Leonardo like messages to Leonardo directly, yeah, I'll just demo him this kind of feedback mode, which is super simple. All it does is, it, will all we'll do is basically, it can basically just read the requirements. It can see what page he's looking at. It can, like, you can point things out and then say, you know, this is broken. This is broken. Or, you know, long term, it'd be great if we did this instead, and then we'll just kind of save it into the code base as well. That's great.
+
+Darren Spencer  1:07  
+Yeah, that's super okay. And that you can access now, you can already do that from today.
+
+Kody  1:12  
+He doesn't have access to this right away. This is running locally, but we'll just basically confirm that he will actually want to talk to Leonardo and use it based off what I show and then if he's excited and he's like, wanting access to that, then I'll, yeah, then I'll deploy it. So okay,
+
+Darren Spencer  1:31  
+cool, yeah, we can obviously show him the feedback mode and the edit mode. Or do you want to just show him this, yeah, and then see what he says when you show
+
+Kody  1:38  
+him the feedback mode. I'm a little worried about having him try. We can edit stuff. We can
+
+Darren Spencer  1:45  
+even say to him, Listen, we're not going to give you access to edit mode yet, but in the future, you know, we might give you access to this. This is how
+
+Kody  1:53  
+it works. Okay, yeah,
+
+Darren Spencer  1:56  
+that's cool. That's cool. That's feedback. On the feedback side will be fun, yeah? So kind of fun city, struggling with the app or something now.
+
+Kody  2:06  
+Okay, cool, no worries. But yeah, no, I feel pretty, pretty ready.
+
+Darren Spencer  2:12  
+Yeah, sweet. Brilliant.
+
+Kody  2:14  
+Showed you a little bit of this. I don't think you got to watch the video, but
+
+Darren Spencer  2:18  
+no, I didn't watch the video. I was actually on the train, and that's what I think.
+
+Kody  2:23  
+So these are basically the builder mode, kind of like some of the core pieces are there. There's, there's still a lot that we have to do. And there's, like, little tiny things like this needs to be waste percentage, not thickness. I don't know how that got pulled in quantity. This seems to be like, ratio, or name this, like the breakdown, or something like that. And then little things like this too, right? Like the UI is like,
+
+Darren Spencer  2:49  
+you can't see the number.
+
+Kody  2:52  
+You can if it's like, if you go into this full screen mode to
+
+Darren Spencer  2:56  
+extra if you, if you bring an external monitor,
+
+Kody  3:01  
+yeah, exactly as we'll tell. But even this, look at this. I mean, yeah. So we just need to, like, yeah, iterate on this, but, but it is saving it to the database, and it is just kind of, like, the foundational thing, yeah, does it like, you know, like, sit, you can say that it'll, like, calculate these. It doesn't auto calculate these yet.
+
+Darren Spencer  3:19  
+Yeah, yeah, that's cool. One question on that, on the material supply stuff. So obviously, it doesn't have to be number. Just to make sure I understand, let's say they've got their normal material supplies, you know, which we have a table that it reaches from, I'm guessing, where they choose a drop down, right? And then I want to say, hey, I want to add a new item which isn't in my drop downs, so I see it. There's like two options. One is being okay, just send Richard the code, the asking for the code, and you probably need to send in the password, and I'll be my guess.
+
+Kody  3:52  
+What's the meaning code so I can join via app.
+
+Darren Spencer  3:57  
+It's normally in the link. Actually, we click on, yeah, yes, I've got the code. I've got the meeting link. Have you got, I mean, the, I hope it isn't a code, yeah, oh, it
+
+Kody  4:15  
+might be doing it from this. Oh, that's
+
+Darren Spencer  4:19  
+definitely right, what you've done the code, okay, okay,
+
+Kody  4:24  
+he might not be able to demo Well, worst case scenario, we just, I mean, I guess we could have him signing on his phone. Probably not,
+
+Darren Spencer  4:34  
+my guess. I don't think he's necessarily gonna be on its phone. The app could be a computer app. Oh, I see, but 5050, let's see it could be the phone, yeah,
+
+Kody  4:44  
+either way, we'll figure out, yeah,
+
+Darren Spencer  4:47  
+for the material supply, let's say I want to add It's okay. I'm thinking, and I think this is something we have to think about in general. Okay, either I want to add a material supply for this tender specifically and never again, or I want to add it at the, you know, higher level. How would, how would one pro out a person added at the high level, and how to handle it, just for this tender,
+
+Kody  5:09  
+um, so I can tell you how it currently works, and then tell you how the direction I think we're going, but right now, it's basically like you manually add these. So which I, yeah, this isn't the best experience.
+
+Darren Spencer  5:20  
+But fine. I think that's great. Let's say those drop downs. Let's say I don't want any of those. I want a new one. Then what is it like another at the moment? At the moment, you can't add a single one, right? Which I think is fine for the material supply rates. Yeah, you're just thinking. I'm just thinking more generally. I think this is
+
+Kody  5:35  
+pulling from a specific database table, because we have this test material, so we can just go modal, that's like, add new or something, and then it like, pops up another thing that they can add, and then nice, um, or you could just have it like, be like a, not set one, and then you, like, manually input these. Or maybe it's pre form field,
+
+Darren Spencer  5:52  
+but that's a little all I'm thinking about. In general, each of these tables, there's going to be needs for adding at the main level, which I think is totally easy, just a normal table, sometimes adding just at this level, this kind of whatever level, and then we needed to kind of tell them, or they need to tell us, either every time you add it at this level, only then you need to push other or you have to add it to the main table every time and just go and select it at the bottom, or whatever. Yeah, for sure. So just thinking about that, with all the tables, with this table specifically, I think it's totally fine, because I think this
+
+Kody  6:24  
+is the table that it's pulling from. Yeah, test material, so and for materials
+
+Darren Spencer  6:28  
+apply specifically. It's not going to be more than, like, these 20, or whatever it's. I think that's totally Yeah, for
+
+Kody  6:34  
+sure, for sure. And then we'll make it. We can also make a template where it has, like, the formulas, or, sorry, the, what do you call it? Like the cookbook, I guess, or the recipe book. It's like the common ones, yes,
+
+Darren Spencer  6:44  
+yeah, that's a good idea. Yeah, 7085, 15 that Danny was talking about.
+
+Kody  6:49  
+So for example, I just added one to this material, underscore, supplies, URL, and then you have, yeah, I added, like, just barely, that's like, programmable, but,
+
+Darren Spencer  7:01  
+and, yeah, excellent. And the rate was automatically selected. I would assume the thick, the wastage percent the thickness.
+
+Kody  7:10  
+It shouldn't theory, but I don't think it actually does. Yeah, but that's where this is heading.
+
+Darren Spencer  7:14  
+Yeah, excellent. Okay, good.
+
+Kody  7:18  
+Yeah, making progress. Okay, so let me Okay, rich, jumped on. There we go. Pull up the agenda here. Very cool. What
+
+Darren Spencer  7:35  
+took you to London? I'm heading back to South Africa and stopping in London. The way is kind of easy and helpful to break up the journey. But also, I've got a lot of friends here, and my favorite soccer team is here, so watching a couple of games. Hey, rich, don't worry, Rich. We work with these kind of businesses all the time. They don't know how technology works. Totally okay. Darren man,
+
+Richard Spencer  8:08  
+I switched my fiber providers on Friday. Who did you go to? I came in every host from Vodacom, and they are internet works, but there's certain things that don't like. I can't log on to my BP, and I can't do this. I can't do teamview. Adam, there's like, certain, I don't know what it would be called, but
+
+Darren Spencer  8:33  
+interesting, that's just by just you might, you might find this interesting as well. Resh, when I was in Panama, I couldn't and the internet, the local internet. If I try to join zoom all zoom calls, Zoom links, everything was like the Internet didn't work, so it wasn't hitting the IP address. I did turn a VPN on, and then I could access zoom, and then I get to disconnect from the VPN to stay connected. Well, like, yeah,
+
+Richard Spencer  8:57  
+yeah. We're now doing it with a hot spot through my phone. Yeah.
+
+Darren Spencer  9:01  
+So you miss I wonder how. I don't know how to solve that, but probably just call Afro host and tell them,
+
+Richard Spencer  9:07  
+Well, they say, they say they're talking to them.
+
+Darren Spencer  9:11  
+They Yeah, they email support. I've used a first a lot in contact with the email support, a lot Linux. Yeah, the email supports, a bit slow, but it does work. They do eventually get to you kind of thing. But also, what I've actually found is the most useful thing is their WhatsApp helpline. It's a lot faster than their email helpline.
+
+Richard Spencer  9:32  
+Now, I've got the IT company working on it now, then they've been on it since Saturday, and they still dynamic, right?
+
+Kody  9:42  
+We'll sort it out soon, hopefully. Very cool, very cool. Okay, so rich. So I sent, I sent a WhatsApp message that has,
+
+Richard Spencer  9:56  
+yes, so that, and so go in there.
+
+Kody  10:02  
+Yes, yes. So if you click that URL, and we'll change this URL to be something RSB specific in the future, but for now, that's just a good kind of testing URL. And then what we'll probably have you do would be very helpful for us, and I think help speed things up. Is what we can have you do is you can drive and share your screen, and then I'll just kind of walk you through kind of the progress that we've, that we've made, where we're currently at, we officially kicked off like a week ago, so last Monday, and we're the kind of the original plan was, this is like a six Week thing where we're sprinting to try and get everything completed in phase one. But, you know, so we're definitely, definitely still early, but it's going to be super helpful to have you click around and kind of see the structure, see the workflows a little bit, and just kind of start to get familiar. And then also let us kind of see you click around and get your kind of show you what we're building.
+
+Richard Spencer  11:01  
+So okay, let's there should
+
+Kody  11:05  
+be a way to share. Oh, sorry Go for it.
+
+Darren Spencer  11:08  
+Darren to say rich. I'm sure Kody will mention this as we go. But it's in a way, this is like we're in the building site here. There's still lots of things that will change. Lots of you'll see, like, I don't know, spelling mistakes, or then things got the wrong name, or like, pushing up, changing the numbers is not great. Obviously, all of that stuff will develop and get better as we work on it. But just this is just kind of the initial structures, which you'll see, which I think will be helpful and some good work over the last few days. So, yeah, some cool stuff.
+
+Richard Spencer  11:35  
+Okay, sweet. So, so what should I do? I've got this I've got this screen here we're on the landing page. For us. You want me to share?
+
+Darren Spencer  11:46  
+If you open the app, there's
+
+Kody  11:53  
+like a green arrow that says, share somewhere on your probably on your zoom, your zoom window, and then perfect.
+
+Richard Spencer  12:02  
+Can you guys see Yes, yes, perfect.
+
+Kody  12:06  
+All right, okay, sweet. Okay, so there's a there's a couple of things, yes, there's this kind of tender. So if you scroll down a little bit, we have kind of a tender overview. We have six in there that we've just kind of been playing with. And then, yes, on the bottom there's that Quick Actions section, and that's where you can see tenders, or you can see BOQs. So kind of the flow is, you start with the BOQ, you upload a file, the AI kind of parses out the items, and then you can pull that into a tender. So maybe just click on, actually, yeah, let's, let's start. Let's just view the BOQs. And I think I have one in there just as an example. So we have this kind of test BOQ on the right hand side. This is where you'd have, like, multiple BOQs, but we just have the single one in there on the right hand side, there's that view button. Yeah. Yeah, go ahead and click that. And then in here, this is kind of just showing some of the information we have, the CSV file that's kind of just displaying some of the things, if you scroll down a little bit there, and this is kind of the stuff that El Marie and Demi will be kind of doing as the initial startup. If you scroll down a little bit so there's, it kind of shows a preview of the CSV. There's a little AI inside, yeah, yes, yes. And it only shows the first 20 rows. There's 116 Okay, data rows, but, but this is essentially what the parsing, where the AI kind of parses out the initial items, kind of how the AI can can read those. And then if you scroll down, there's this little AI chat assistant. We've already parsed this one specifically, but in future ones, basically the flow is that you create a new BOQ, and you attach the CSV, and then there's a little quick action button, if you scroll down just a little bit more that has like a message formatted that says that parse BOQ. And you can go ahead and click that, but don't hit send. So if you click that, parse BOQ, quick action button.
+
+Richard Spencer  14:22  
+Oh, do you just click that?
+
+Kody  14:23  
+Yeah, yeah, if you click that, and this is kind of ugly right now, but, okay, yes, you see how it for, like, basically, it makes this massive message, if you, like, scroll up, yes. This is basically the message that gets sent into the AI, don't, don't click the Send button right now, just because we already parse this one specifically. But this would be essentially what l Marie is doing.
+
+Richard Spencer  14:47  
+So you go in there, click, or whatever you is this now, so, okay, but this would be slightly different because you've already uploaded one so, but it would be a similar kind of thing. Where would you import your file into this should be able to pass.
+
+Darren Spencer  15:06  
+Yeah, there's a little button earlier that says Upload, and then you just file it, just attach it,
+
+Kody  15:11  
+yeah, yeah. If you go on the top,
+
+Richard Spencer  15:13  
+I thought it was one back, wasn't it, or what?
+
+Kody  15:17  
+Yeah, click the back button. There's also that RSB contracts that will always take, oh yeah, there's the upload button, perfect. So if you click that one, so
+
+Richard Spencer  15:26  
+you would click that thing, and then you would put all the details in.
+
+Darren Spencer  15:32  
+Richard, have you got a BOQ that? Have you got a new BOQ? That's a CSV,
+
+Richard Spencer  15:40  
+that's a CSV. But I've got, I've got some that are excels, I think, obviously, just save as a CSV.
+
+Darren Spencer  15:49  
+Yeah, yeah, perfect. If you've got one, we can give it a shot. There are some tricky things with certain CSV formats, whatever, but we'll have a process, you know, to save it as the right one. But we can, if you've got one that's easily available, we can even try it right now. I think, I think I think Kody a little bit worried that something breaks, but we'll give it a shot, and if it doesn't work, we can go back.
+
+Richard Spencer  16:09  
+What is this? Let me just see this before might be, yeah, this
+
+Richard Spencer  16:18  
+one looks perfect. Yeah, this, I think, has got the the basics I don't really want to tender, but, yeah, this seems good. Okay, so I will save as Can I come on? Oh,
+
+Richard Spencer  16:51  
+hmm, internet teams. Anyone want to open Excel,
+
+Darren Spencer  17:01  
+what I find sometimes helps is if you open Excel just as a because it looks like the application is not open yet, just open it in general. And then if you go back to the file and say, open in Excel, it's more likely to open it's new.
+
+Richard Spencer  17:19  
+Let me just see. What was this called? Okay, well, at the same I was gonna see
+
+Darren Spencer  17:41  
+that's all waking up. Now it opens the file 10 times you start getting that message, can't open the file with the same
+
+Richard Spencer  17:52  
+name, yeah, that's next. Just
+
+Darren Spencer  18:02  
+V Kody, I can't remember it's, I don't know if it's the UTF eight or not the UTF eight, but let's try the UTF eight. We should. We might have to change it as not UTF eight later.
+
+Richard Spencer  18:12  
+Yeah, that's just normal. We go here. Normal comma, this one, yeah, let's try.
+
+Darren Spencer  18:19  
+It might be that issue might have been fixed as well, Kody, but let's give it a shot to see what happens if this doesn't work.
+
+Richard Spencer  18:26  
+Okay, yeah, so now it's saved on my desktop. I think we should be able to close Hey, yep, those structural STEELWORK BOQ. Then we go back and we will say, use file. Yeah, start that one.
+
+Kody  18:46  
+And then you will have to put in, if you scroll up just a little bit, it needs, I think it just needs the BOQ name, so you can just name it something just it just can't be an empty value.
+
+Richard Spencer  18:57  
+Francisco, I'm going to, I'm two. This would, I suppose, would this client reference be a reference on on what we put in when we submit So, like our tender number, our E number, that just sort of flows in numerical order, like, today, it's E double oh one. Tomorrow, it's E double o2 and or the next tender E double oh two and then. Or what is this a manual client reference.
+
+Kody  19:29  
+Yeah, this, this is, I think this is just kind of a plate, honestly, just kind of like a placeholder where we'll kind of Need Help defining exactly like what you want to put in that client reference. Or even if we keep the field, or maybe you have just
+
+Darren Spencer  19:47  
+to say, like, this would be the
+
+Richard Spencer  19:48  
+tender name, BOQ name would be tender name, client name, this could be like that. We don't generally need more than those, I think. And then our E number, which could be generated, yeah, that is okay.
+
+Kody  20:07  
+We cool. And then let's say, What the hell
+
+Richard Spencer  20:17  
+there? We've got it very
+
+Kody  20:19  
+cool plus, right? It. Okay, good, okay, so
+
+Richard Spencer  20:29  
+now, yeah, so that's cool. So that gives us a nice name.
+
+Kody  20:33  
+Yes, yes, yes. Very cool.
+
+Darren Spencer  20:35  
+Looking good. So
+
+Kody  20:37  
+there's a little bit of a next step on the CSV file, just kind of preparing it to parse. If you notice, the very top row is that candy, xls, dadada. So we just, we need to basically set the top row in a way that the AI is going to be able to recognize that that's the top row. And the way to do that is you actually bump up that header row zero, there's little arrows, and you bump it up to the number of lines. So you can kind of test it a little bit. I think it looks
+
+Darren Spencer  21:10  
+like if you count 12340,
+
+Richard Spencer  21:13  
+do you check the lines here?
+
+Kody  21:15  
+Yeah, yeah.
+
+Richard Spencer  21:18  
+I think it's where would number one be this?
+
+Kody  21:20  
+Yeah, basically
+
+Darren Spencer  21:22  
+what you're doing in that row reach is how many rows I'll skip four get to the real heading rows. And the real heading rows is about line six. So if you make that hit a row five, it will skip the first five rows. So just pump up.
+
+Richard Spencer  21:37  
+Would this be two? Would this count as two? Was it? What is it? 12345, and then it starts here by this,
+
+Darren Spencer  21:47  
+yeah, so this classified as one. No, you got candy. XL is one. And then company, job name, SUBCONTRACT submission, so five. Okay, you can kind of see those light gray lines in between.
+
+Richard Spencer  22:03  
+Okay, so that's the line. That's what splits at these lines here, yeah, 12345, okay, that's why you're saying five. I was counting five, like, 12345, and you're starting up. I remember. Okay, fine. So we go to five,
+
+Darren Spencer  22:19  
+yeah, perfect. And then a push apply, and then we're hoping that the top row is now the actual top row, which it is perfect, yeah.
+
+Richard Spencer  22:28  
+Okay. Then we go and we do our quick pause, BOQ,
+
+Kody  22:35  
+yes, and send, yes. And then hit the send button, and this is sending it into the AI. We mentioned on what side that there's a little AI embedded in the app, yes. So this is kind of one small version of that, but over time we can really customize it and grow it. But we're starting just kind of simple for
+
+Darren Spencer  22:56  
+now, for now, for now, when you when you send it to the AI, it's just me looking at it. Yeah.
+
+Richard Spencer  23:02  
+Now. Now what's so slow, very cool.
+
+Darren Spencer  23:09  
+It's gonna it'll basically send us easier saying that overfitting. Now it's done that just Lipped, yeah.
+
+Kody  23:17  
+So if you scroll down a little bit, there's like that message, and this is basically like just a little preview message where it's saying, Hey, here's kind of what I found. I found 66 of them. If you scroll down to the very bottom of that specific message, it says, ready to create 66 items. Should I proceed? And you would just go into the chat input field and just type yes, and then hit send.
+
+Richard Spencer  23:41  
+Oh, yeah, yeah. This
+
+Darren Spencer  23:45  
+is built like, this was well, reached just in case. And you can push send just in case that there's something like,
+
+Richard Spencer  23:51  
+if you see something funny,
+
+Darren Spencer  23:53  
+yeah, it shouldn't happen. But if there's like, a really weird format or something, it will say,
+
+Richard Spencer  23:58  
+so this one, yeah, I see this should be, I'm assuming this should be the chemical anchor one.
+
+Darren Spencer  24:04  
+Yeah, that's, well, actually, yeah, is chemical anchor category. There
+
+Richard Spencer  24:06  
+wasn't. We didn't have a, we must didn't have a, let me just recalibrate. Let me see if I can show you, because we didn't have an M 12 chemical anchor. I think our started at m 16. So that might be why it's not recognizing this as a chemical anchor yet, that was one of the things we talked about. I think I didn't mention that it was an issue internet. I forgot my
+
+Richard Spencer  24:40  
+internet I forgot my internet horribly slow. And,
+
+Darren Spencer  24:47  
+yeah, so you are rich we, yeah, basically, there'll be what you saw there. Now there's, like, a, you know, we've got a list of what everything is. And we've got a, we've got a list that we said to chat GPT, Hey, these are the list we've currently got. Which of these make the most sense? Do you think it's on? Think in terms of mapping? And so what we can do is a couple of things there. One is, obviously you can manually override those. You'll be able to manually overwrite those that an issue. But to make chatgpt get better at understanding that, we'll also, you know, we can include in the prompt that says or in the list. We can give it some examples and say, m 12 should always be. I mean, M 12, but, I mean, it'll should pick that up, but for ones wrong, we can basically tell it what it should be.
+
+Richard Spencer  25:29  
+Yes, I'm assuming it just can't read this, because there isn't actually a template with costing and stuff for 12 only from 16. So maybe I'm just gonna say yes and send
+
+Darren Spencer  25:39  
+Yeah, yeah, yeah. And this will pop up in this table, and then you can update from from bolts to whatever is available. So, yes, just a little preview, sweet, and just came up
+
+Richard Spencer  25:53  
+with a name Leonardo. That
+
+Kody  25:57  
+was me and my girlfriend, Leonardo the llama and Leonardo the long, yeah, I
+
+Darren Spencer  26:06  
+think it's cool Leonard, like Leonardo da Vinci
+
+Richard Spencer  26:08  
+creating, I like I was thinking of DiCaprio.
+
+Darren Spencer  26:16  
+This can only work with spreadsheets that are less than 25 years old, and RSB is started in 1995 it's not allowed
+
+Kody  26:25  
+flip it's over. Silly,
+
+Darren Spencer  26:29  
+so rich. What I wanted to say now, Kody, we'll show this to you later. But what we're thinking about doing, if it, you know, works for you, is give you some time to look at the stuff also, you know, without us, and then if you have little feedback, stuff like that, we'll basically build a little interface with the ability to just write, hey, there should be m 12 anchors. And then that will store it like a database for us. And then we can go and visit and say, oh, let's try. And let's see if we can do something about this thing that you requested or whatever.
+
+Richard Spencer  26:58  
+Okay, yes,
+
+Darren Spencer  26:59  
+but we'll get to that it's not properly built yet. So, yeah,
+
+Richard Spencer  27:06  
+I mean the extent and the variables can sort of easily be be populated, like the extent of the core library or whatever, or little variables, and that shouldn't really need to be changed too much.
+
+Darren Spencer  27:23  
+Yeah, Kody, just to check if we refresh the list, all those show up new ones in the CSV below. Yes.
+
+Kody  27:30  
+So of a lame experience right now, but if you scroll down to the very, very bottom underneath the Yeah, then there's that little refresh button above that. Oh yes, yeah, click on that, and if it's working properly, it should be loading in. Oh, perfect. So ideally, you know, it'd be great if you didn't have to click the Refresh button, if it just kind of told you immediately, but just, you know, kind of, yeah. So some
+
+Richard Spencer  28:00  
+that's only if you get impatient. Then you click refresh and see what's in that
+
+Kody  28:03  
+exactly. And sometimes you want to double check, yeah, that wasn't
+
+Darren Spencer  28:06  
+all of them. That was only 38 we're expecting 66 so you push refresh again, we should see more than 38 that's added another nine.
+
+Richard Spencer  28:13  
+Yeah, yeah.
+
+Darren Spencer  28:15  
+And then one, just to talk, because we spoke about the categories changing reach. At the moment, you can't change anything. No, no, all good.
+
+Richard Spencer  28:25  
+It's his IT guys asking me to power off.
+
+Darren Spencer  28:31  
+Okay, I see we're not pinned. Irish, we didn't get the Rawl and Tiana pinned, and we flip and left not to be pinned.
+
+Richard Spencer  28:40  
+You open, but then I think about it
+
+Darren Spencer  28:46  
+the whole time. So the categories, what Kody and Michaela were working on is an ability. It was in this page, Kody, which Michaela was working on,
+
+Kody  28:55  
+is editing. It has to, has to finish loading everything, and then you would refresh this page. And then there's a little pencil that you
+
+Darren Spencer  29:02  
+can it's already built in. I thought it was. It's always still being built. Amazing.
+
+Kody  29:05  
+Okay, yeah, we just, it would be a little chaotic. I think if we
+
+Darren Spencer  29:09  
+hit refresh now again, Rich. Is it 5050? Oh, I thought there was going to be 66 maybe
+
+Richard Spencer  29:18  
+that's 15. I don't
+
+Kody  29:20  
+think it's done. When it's done, then the little llama message will go away, and then Leo will have responded with a final message that says, hey, I added 66 Yeah, so this is where you go and make your morning coffee and respond some emails and but it's good to check that the it's good to check the refresh button a couple of times to just see the first couple come through. Because, you know, if you wait 30 minutes or an hour, sometimes, you know, if you didn't click refresh, it might not have actually kicked it off properly. And so that's where. But in this case, it does seem to be working.
+
+Richard Spencer  29:59  
+And then, yeah, I like the fact that this thing, even right now, like at the early stages, is smart enough to be able to allocate, you start taking out a lot of the thinking work From my employees, which is normally when
+
+Darren Spencer  30:28  
+they battle, you know
+
+Kody  30:30  
+what it could Yeah, I don't think we've ever tested one over 50. And there actually might be, let me agree. Well, we
+
+Richard Spencer  30:41  
+can go back to your test, though now, because, yes, this whole idea was just to, oh yeah,
+
+Kody  30:48  
+oh yeah. We hit, we hit our message limit for Leonardo. So this is, this is a great example of kind of user testing and like, very slowly building up, and like finding little because what some, what some developer shops will do is they'll wait a month or two months or three months, and they don't let the user sign in and test things like this, and then you don't catch those things for months down the road, and actually delays the project. But this is, this is perfect. So now we have a note that we can go in and have our team bump that limit up so that it doesn't get blocked at 50. So I'll just make a quick note of that, and then we can, yeah, move.
+
+Richard Spencer  31:25  
+Then we'll go back to, back to BOQs, and then we'll go to your one. Yes, I have this test, 123, that's the one we were on now,
+
+Kody  31:35  
+yeah, in fact, one at this stage. So at this stage, after the line items are parsed out, then we can actually jump into the tender creation stage. So I think
+
+Darren Spencer  31:47  
+it'll be cool just to show Richard the editing on this one. Kody, you wanted to update one of these, right? You can, I think you click on the pencil like Kody,
+
+Kody  31:54  
+on the right, yeah, so on the far right there's that little pencil, yeah, if you click on that, then I there was any mistakes, you can go in and you can adjust the category description, any of those things.
+
+Darren Spencer  32:13  
+Yeah, obviously there's this list of of the categories, but we will have to there's another table where, if you want to update the categories, you can obviously, update the category. So we can add the M 12 there, etc.
+
+Richard Spencer  32:27  
+Yes, yes. Okay, so this is detailing. Now this one, we haven't actually done a specific one for it, because in our tenders, it's always that this is also one where we'd have to let me see. Am I going to show you? Excuse my very blank desktop. I you know, it's
+
+Darren Spencer  33:05  
+funny, these kind of pictures. For me, it's like, I would hate to go on holiday day that thing does not have air
+
+Richard Spencer  33:12  
+con, no. But this, this is one of the Greek islands. This, I think could be Mykonos or something. It's actually, this is just
+
+Darren Spencer  33:23  
+one of the animals. I want egg. Oh, okay, good, okay, that's fine. I want an egg on and I want a nice food nearby.
+
+Richard Spencer  33:37  
+Yeah, no, look, the restaurants and stuff are very closely. Okay? How loud? I just open one of them so I can show you.
+
+Darren Spencer  33:53  
+Yeah, I think the steamer corn is good, is the one you looked at last time, right?
+
+Richard Spencer  33:57  
+Recent ones that was awarded or sort of converted from a tender to a project. So over here, you'll see our we've always got shop drawings there. It's like the first one. It's p's and G's, and then shop drawings, where with our mining guys, which we now haven't gotten to yet, but it just happens to be that this tender created here was is for a mining customer. But so that's why they'll have, they'll have detailing of something, and then the supply and supply fabrication, corrosion protection, you then have detailing again.
+
+Darren Spencer  34:43  
+So when it's like this, would the detailing go in the shop drawing section,
+
+Richard Spencer  34:47  
+detailing equal shop drawings, if the tenders being automatically created the way that it is now, you could have a detailing line item as often as what it calls for it here, you wouldn't like with us. It's just we've simplified it and we add it all into one. Because to have to create multiple detailing lines over and over and over again is sometimes a bit painful. But detailing equal SHOPDRAWINGS, and that will definitely as part of building the the system correctly. It actually would be required to have its own section, like what we have here, because there's different kinds of I think, you know, I think when did we When did we meet last was it last week? Thursday? Yeah, we spoke about different kinds of fabrication, different carrying different kinds of rates, fabrication rates, similarly with shop drawings or detailing different kinds of drawing work, whether it be piping or plate work or structural Steelwork or like this, some of our tenders, with our commercial it all carries a different rate per ton.
+
+Darren Spencer  36:05  
+Okay, well, that's specifically XL that we're looking at the the costing sheet, or the, yeah, would so let's say now that that first line item detailing steel section, blah, blah, blah, how would you what's the ideal situation? Would it be its own block, like the steel columns and beams? You know, 305, times, 165, or is it a line item in the shop drawing section?
+
+Richard Spencer  36:32  
+So ideally, ideally, I think, to track it. You would have now, if you, if you, if I'm thinking one step further, where you start tracking the allowances. Because if it's a mining project, and you've got different rates in a commercial project like this, Dimako, you've got one rate for all the detailing or shop drawing. So that's easy to track later on as a budget or an allowance. When you get to other guys who are I'll show you.
+
+Richard Spencer  37:11  
+I give them what I call a shopping list, and then they will have, in here, they'll have SHOPDRAWINGS for the different kinds of different categories you'll see here, if I go into the casting, well, let me just show you here, because, I mean, it's going to be the same, but you see there. So this is all shop drawings. And then you've got structural Steelwork, Platework liners, piping, and you see, they vary,
+
+Darren Spencer  37:42  
+yeah, and then the costing in the costing sheet, each of those line items their own block, right?
+
+Richard Spencer  37:49  
+Yes, I'll put them in here. So it's very basic. I mean, you don't need all of this mumbo jumbo, no, no, but I need that. And you don't need from
+
+Darren Spencer  37:57  
+our perspective, it's got its own from our perspective, that makes sense, because we would want to do it as you know, as the more consistent it is, the better. If every block, if every line item in the bo in that from the Boq gets its own little block, then it's easier to build.
+
+Richard Spencer  38:13  
+You know what I'm saying? Yes, like you do get the case, like with Dimako, or even, even if we go back, well, now I can't go back to kody's example, because this one shows the detailing actually specifies it. But in that other one that I pulled in, which I saved on the desktop, this one, there isn't any, Oh, my word looks funny as it sees me, but yeah, there isn't any line item called SHOPDRAWINGS or detailing. In this case, in those cases, it would be like this with a one line and everything's combined.
+
+Darren Spencer  39:01  
+Yeah, that makes sense. Okay,
+
+Richard Spencer  39:02  
+sorry, I think we've gone a bit off track there, but
+
+Darren Spencer  39:05  
+that's useful. So I think basically what you're saying is we need an extra category for SHOPDRAWINGS, yeah, and sometimes the AI, and then people, if they manually override it, can obviously assign some of these to shop drawings, like the detailing ones, and each of those will get their own little block, like this,
+
+Richard Spencer  39:25  
+yeah, so it'll be detailing, and then, depending your would be, I don't know how, I don't know how you guys do the allowances for the rates and stuff within there, but that should be a section of its or breakdown of its own.
+
+Darren Spencer  39:40  
+And just to confirm at other times, there's going to be a line item and a cost breakdown for shock drawing that are not mentioned on this. Yes, still things that is like, potentially, how we could build the podium. Obviously, you're obviously the Pro on this, but it's like, we have general shock ring line item that is included on every tender, every everyone. And then some of them will have the breakdown blocks underneath as well. And then you add all those rows to get the total shop drawings,
+
+Kody  40:09  
+yeah, but cool, yeah. We can add a section and it's just yeah. And then kind of, kind of like the tender inclusions, exclusions, some of the Crain stuff, like tender tenders specific, as opposed to more of a generalized 100%
+
+Darren Spencer  40:24  
+buy shop drawings done at the overall level or the block level. And if these categories the block level, okay?
+
+Richard Spencer  40:33  
+So a way to maybe differentiate that would be just to have it called where you would either started as a commercial tender or as a mining tender. Because as a commercial tender, we would always lump summit into one line, even if, even if they do specify it as five different ones, we would always combine it into one but most 90% of the time, there isn't even a request for it, and the mining works a bit differently.
+
+Darren Spencer  41:06  
+Is that what ish, maybe you maybe just will keep, like, a, you know, separate section now mines or on paper somewhere, that's like, these are the differences between a mining and a commercial. If it's just SHOPDRAWINGS, it could just be like a, do you want shop drawing separate altogether? Question, like, like, what you're saying with the inclusions, exclusions, and if there's, you know, we can build, you know, five things that all are all Yes, is there?
+
+Richard Spencer  41:30  
+Yeah, yeah. It can just be setting up this or answering questions to set as a scenario, sort of set up in the beginning.
+
+Kody  41:37  
+Yeah, you're rich. So what I'll, what I'll do real quick, is, I'm actually going to take over the screen share for a second. And can you see this? Okay, yep. Okay, cool. So this is, so this is Leonardo, like the kind of the tool that we're using to build the software
+
+Darren Spencer  41:58  
+and basically reach this is, this is kody's like tool that he's developed over months, which cool, can build stuff like, like this, this, we think we're building for this project.
+
+Kody  42:09  
+Nice, yeah, 100% and so, so, kind of, kind of the vision here, that it could make a lot of sense, is we have this feedback mode where what we could have you do, and it's not ready right this minute. But if this is a direction that that makes sense to you, what we can do is, we can have you as you're doing tests. Let's say you're doing tests where me and Darren are on the call, or maybe even sometimes if we are on the call, then what you can do is, you know, for example, you could say, you know, we really should have a way to track if this TENDERER is a mining project versus what was the other project type.
+
+Richard Spencer  42:47  
+Sorry, commercial, okay,
+
+Kody  42:49  
+versus a commercial project. And then you can send that into Leonardo, and in this feedback mode, he's not going to make any changes to any of the code any of the projects, so you don't have to worry about, you know, accidentally breaking anything. But what, what he will do is he'll basically just write down these pieces of feedback, and he'll, he'll remember them, and this is extremely helpful for me and Darren and Michaela and just just our team in general, to just kind of track, you know, your kind of feedback, your implementation, like the way, like things that you want change. Another example is so he's just kind of thinking through things, and he's going to save it out. But there's also this little mouse button down here at the bottom where you could very specifically select certain buttons or certain parts of the thing that you're thinking about, and basically ask questions or say, Hey, this is confusing. You know, what is this part supposed to do? Maybe this part instead should say this, etc. And then this is kind of makes it really structured and organized, and this allows us to kind of plan for future phases, future sprints. Sets the conversation for us as we go into demos and testing and all that good stuff. So does that kind of make sense?
+
+Richard Spencer  44:05  
+Yeah, yeah, that's cool. I mean, we'd be, we'd be providing feedback, so we work on it, provide feedback, and then that goes to you, and you can, it's in captured. We don't have to do a call, we'll just pop it on there, yeah, absolutely instant. What you need to Yeah, yeah.
+
+Kody  44:21  
+And there still might be calls where we maybe, like, we ask clarification on certain things, but, you know, maybe that's 50% of the problems. Maybe the other 50% are pretty obvious and pretty intuitive, you know, kind of what you're describing. So this would be amazing to be able to render feedback as you're testing and doing things, and even for maybe Elmari and Demi to also, like, maybe render feedback and kind of keep everything organized. And because, kind of, like you said, you know, this is something that we're really trying to lay the foundation for the next 15 years. And you know, we're not going to be able to overnight build the entire wish list of everything, but if we keep it all tracked and organized, then that will help set the stage for prioritizing, for moving towards the stuff that's going to move the needle the fastest, which you know you'll you'll be kind of guiding that a lot as we go into other phases in that. Yeah. Just kind of want to show this to you and see if this is something you want us to roll out to you and your team. Yeah.
+
+Richard Spencer  45:22  
+Out to you and your team. That's pretty sweet. Tomorrow. ReCAPTCHA. Your idea? Okay, cool, yeah, and it saves it for you, and then you can raise it later down the line, or whatever.
+
+Darren Spencer  45:37  
+And as you can see, there's sometimes, if it's not obvious, Richard will, like, ask follow up questions, and then you can, like, also add those in.
+
+Richard Spencer  45:47  
+Should it affect your notes, calculations? Is it mainly for tracking? Yeah, okay, so it would actually affecting calculations?
+
+Kody  45:55  
+Nice, yeah. So then this, this level of back and forth. If you were to sit here and talk to it for a while, it's kind of like talking to chat GPT, like brainstorming with chat GBT. But the difference with this is it actually saves it in a place where it can kind of track it long term and be structured, and it can also read the source code. It can understand the project. It can read previous requirements conversation, so just has way more context than chat, G, P, T, would have
+
+Richard Spencer  46:24  
+fantastic, yeah. So,
+
+Kody  46:26  
+so, for example, it even said, I can see the tender model already has a project type field, and it does default to commercial. So we, even though it's not in the interface quite yet like we're starting to capture the ability for little things like that. And, yeah, if that kind of makes sense, yeah, that's cool. Okay, so you're very cool. Okay, so all so what we'll do then for this specific part, is I'll set it up so that you and your team can access Leonardo so you can give it feedback. And then I'll plan to try to have that ready probably sometime next week. And then, as we're doing user sessions, then you can kind of all that being said, though, before we let's, let's go ahead and we didn't, we didn't quite finish the tender builder of things. So if you want to share your screen again, and we can jump back on that train of thought.
+
+Richard Spencer  47:27  
+So we were in, yeah.
+
+Kody  47:30  
+Okay, sweet. Okay, so this is so this is kind of the Boq part. Obviously, there's some room to improve some things and but let me just show you the next step in the workflow. So on the top left, where it says RSB contracts, you can always click that blue. It's up on the nav navigation bar. Oh, yeah. So if you click, if you click that, that's always kind of like a home button, and then that takes you back to the homepage. And if you you can click that yellow start new tender button, yes. And then there's that purple, start new tender so just click that. And then, from now, you can see on the right hand side, it says BOQs. And then you can click that, attach Boq button. In this case, we already uploaded the one. So click on that, attach Boq button, and then go ahead and just type like, put like a T in there. If you just start typing, I think if you just do like a T, it should search for like the test the test one. We might need to make this a little bit simpler, where it lists the first couple of them. Try hitting enter. It might not just be matching. Try doing a capital T. So this is, this is something we'll have to improve. Yeah, and then just hit enter and see if this comes up.
+
+Darren Spencer  48:59  
+Try with just a capital T, reach anything else.
+
+Kody  49:01  
+Yeah, you could try that. Oh, yeah,
+
+Darren Spencer  49:10  
+nothing when you push into nothing's happening.
+
+Kody  49:15  
+Eric, no, okay, so this was working last night, so go ahead and click Cancel.
+
+Richard Spencer  49:20  
+I wonder. But I mean, your wonder if it's got anything to do with my No, it
+
+Darren Spencer  49:28  
+shouldn't have anything to do in
+
+Kody  49:29  
+any situation. Yeah. No, there's, there's just an issue. Yeah. So go ahead and click the back button on the top left, and then click back one more time. We'll go back to the home page. And if you scroll the very bottom, there's the tenders, and that's
+
+Richard Spencer  49:45  
+updated our number.
+
+Kody  49:47  
+Yeah, yeah. So there's that purple view tenders button. Let's click on that one. This will show you a list of all of the tenders. And then there's one that is, I think it's going to be that second one. So e2, zero, yeah, that new TENDERER. And then on the right hand side, yeah, go and click on that view button. Okay. And then here on the BOQs. So this is when I was testing last night. You can see it has the Boq attached to it, yes. Now if you scroll down a little bit, then there's this tender builder button, and this is going to take you into a mode where you can actually start to view the entire breakdown. And this is a very, very early version. We're missing a handful of things, such as the inclusions and exclusions, the PNG, the Crain stuff. But what we do have is we do start, we're starting to have a structure for some of the line items. So you can see this top line item, and then below it, there's a little drop down that says breakdown details, yes, so if you click on that breakdown details, then this shows you the unit rate build up and the material breakdown for this specific line item. And then this is where you can so right now, it only lets you manually enter the rate build up in the material breakdown. Obviously we want it to be a little more automated in the future, but this is just kind of a foundational piece that we just need to kind of have working and we can maybe test, you know.
+
+Richard Spencer  51:18  
+So this is actually now our costing sheet, this is our right. Is this not our rates? PAG? Well, that's just the breakdown for each
+
+Darren Spencer  51:29  
+Yeah, go to the code of the costing sheet. Quick Rick, in the in the Excel. So basically it's, yes, it's that. And so what we've done is is, like, basically every item in the tender is the top part is like, you know, it sums up into the top and then if you click that drop down arrow, it's basically the costing sheet, the left table and the right table. Try and make it similar to what it's current in the existing XL.
+
+Richard Spencer  51:57  
+Didn't realize we had so many freaking rows in our thing, but it's pretty cool. And, I
+
+Darren Spencer  52:03  
+mean, this doesn't even include adding the ones that, like, like curving or whatever, castellating,
+
+Richard Spencer  52:09  
+yeah, all those little extra add ons, yeah. Very, very cool, yeah. And he has the material breakdown. So if we chose, let's say local UBS.
+
+Darren Spencer  52:22  
+That's currently called thickness is basically margin is wastage. It's just the wrong Yes, but should add twice that's percents there.
+
+Richard Spencer  52:30  
+Put in your percentage. It would obviously, then do the formula,
+
+Darren Spencer  52:34  
+yeah, obviously, lots of things to be to be built, but just the scaffolding is, yeah,
+
+Richard Spencer  52:46  
+yeah, and then I jump away
+
+Darren Spencer  52:48  
+when you clicked it enter a number issue. What happened?
+
+Richard Spencer  52:52  
+Yeah, I clicked enter, then it disappeared.
+
+Richard Spencer  53:02  
+Okay, now it does. Oh, I must have clicked a, okay, sorry.
+
+Kody  53:07  
+Oh, no worries. No worries. Little, even little things like that, like little things like that. You know, we do want to try to identify and capture that feedback and fix because they can be pretty easy fixes. But especially when you're training employees or trying to get people up to speed, they'll probably trip on the same, the same issue. So, you know, yeah, yeah.
+
+Darren Spencer  53:25  
+One small thing that I would want to add, Kody, just and Richard, to get your answer on this. You know, we've kind of forgot this included, which basically means, you know, times by one. I can't remember it was you or Danny, but one of you spoke about with sometimes making this instead of times by one, it's times by two, or times by 1.25 or something.
+
+Richard Spencer  53:41  
+Yes, that was when I was talking about the various fabrication rates. They're like, just because we don't have a better way to do it where I think, okay, if we had a better way to do it, like you'll see here. This is now mining customer of mine, so it will be the same for most mining guys you'd have. But, I mean, it could be like that in in all projects, but we've got fabrication, so we know, okay, that's what we've now got to charge these guys. Then we get to line fab. We get to normal structural Steelwork, called the one times factor there is sufficient, yeah. But then we get to Platework, which is like big bins and weird things, then we have to, then it's a 1.75 to get to that value, because we don't really want to manually just make it one and hard punch at 20,000 but then there's no way that that thing's pulling to where. Where's our allowance of 20,000 a ton for that project, pulling through to got
+
+Darren Spencer  54:45  
+it okay. So I think
+
+Richard Spencer  54:47  
+piping is three times and whatever. But yeah, so that's yeah,
+
+Darren Spencer  54:52  
+good, good to know. I mean, the worst case is the person has to update it manually. Like, instead of saying 20,000 they times it by two and it's 40,000 but that's not ideal, as you say, because, maybe the base rate changes, and then you want to update all of them, and would have to mean someone has to manually go and update it. So that's the worst, worst case we have that. But ideally we have something similar, where we could add like a percent or, or make this a number, yeah,
+
+Richard Spencer  55:17  
+like a, yeah, like, a multiplier factor to it, where, okay, you know, this client's full of issue. Going to charge him 1.25 more than what you charge someone else, that kind of thing.
+
+Darren Spencer  55:27  
+Yeah. Okay. This is
+
+Richard Spencer  55:29  
+super cool, though. And
+
+Kody  55:31  
+then real quick, and we'll wrap up here just in a couple minutes. But if you scroll down more, there's quite a few line items. And what this had actually done, if you remember, this had had, this had a Boq that was attached to it originally, and so this should have roughly 25 to 30 line items. And it actually pulled in some of the Boq line items that had gotten parsed. So yeah, you notice how it has, like the description still sections, those are directly from the Boq that was parsed in the previous
+
+Richard Spencer  56:04  
+Yes, yes
+
+Kody  56:05  
+step. So,
+
+Richard Spencer  56:07  
+but this one, what is this like a standard where you would have a new line item, or is that just one of the ones that wasn't passed,
+
+Kody  56:15  
+it wasn't parsed, and it basically this came from me manually clicking at the very, very bottom of the thing, there's like, an add line item button where you can manually add line items. And so I'd clicked that one, and I think that was just the default value that that it put in when it wasn't parched, if that makes sense.
+
+Richard Spencer  56:40  
+Just want to sorry, just enjoying looking at this thing now. So if I take that away, which one was I on now I was on this one. All right, build up. 57, 750.
+
+Darren Spencer  57:05  
+Yeah. So this rate number will be auto calculated rich based on the stuff you see below.
+
+Richard Spencer  57:11  
+That's what I'm checking now. So, yeah, we've got a rate of 57, 750,
+
+Darren Spencer  57:15  
+my guess would be the maths you have to put you might have to push save after you updated the material supply rate, or it could just not be correct.
+
+Richard Spencer  57:21  
+Did I click Save?
+
+Kody  57:26  
+Yeah, no. Try it. This part should be working, yeah, and then that just make sure it saves it to the data.
+
+Darren Spencer  57:35  
+Theoretically, the rate should update based on the calculation. Change, 100% 100% yes.
+
+Kody  57:40  
+Currently, yeah, we're just
+
+Darren Spencer  57:46  
+just to add. One thing my vision for like how this will look Is that what you currently see with all these details, one steel sections, detailing quantity, unit rate, PAG, whatever will be like, quite a lot squeezed. It'll be almost like one or two rows. So it looks a little bit like the tender one pager, you know, it's like a summary of that. And then you click the drop down, and then you've basically got the costing sheet. So it'll look kind of like this.
+
+Richard Spencer  58:12  
+And then, yeah, and then you click on, boom, that's the plan,
+
+Darren Spencer  58:16  
+yeah, yeah. So it like looks when it's all in the summary view, it looks a little bit like the page one tender when you're clicked all the all the arrows open, it looks a little bit like the costing sheet.
+
+Richard Spencer  58:27  
+Nice man. As far as what's
+
+Kody  58:32  
+on the agenda for this week in terms of what we're going to try to have done? Yes, so for phase one, let me see. So we still have so we still have, so we're not gonna be able to get all this done, you know, in this, in this next but just kind of what's remaining for the next five weeks, we have, kind of some of the core calculations and logic, which is including the Crain calculations, material breakdown math, and kind of the some of the calculations in the tender line items, that'll be probably what We're focusing on this specific week, like, such as updating the total amount that you and Darren were just looking at, any kind of like, automatically updating that stuff as you're entering information in. So that's that's gonna be the main focus of this week. And we'll see, you know, how quickly we can move on that. And then we the other things that we still have for this phase is we still have the material supply rate where we want that to be able to pull in to some of the tender line items automatically. We saw the P and G's material breakdown templates so that as you pull in items from the Boq, it can try to, like, match it with existing templates that kind of give you the waste percentage and the break in the ratio and that stuff, like, for 8515 Yeah, yeah, yes, yes. And then we still have the tender inclusions and exclusions. And so that's, that's kind of what's on the agenda for the next five weeks. But for this next week, we're going to be really focusing on the the breakdown math and kind of the calculations and updating the tender line items. And then probably, if we can get this in, like some of the Crain stuff, and then the inclusions, exclusions, that kind of stuff, so nice. So maybe for the next demo, does this? Does this time work well for you rich for Mondays, what if we just got into a cadence where every Monday we aim to do this exact format where we do a kind of like a touch base, is that? Does that work for you? Yeah, perfect.
+
+Darren Spencer  1:00:28  
+I think next Monday, this time I'm going to be at your house. That's true, but so you'll have to be out of my spot there. Rick, you can sit on the other corner.
+
+Richard Spencer  1:00:46  
+I'll have to jump online from the office. I'll have to stay at work late. Yeah, that's cool, Kody, I'm happy to happy to meet this time on a Monday. Every Monday is fine. I wanted to just ask you guys, I thought about this, can you still see my screen? Yes,
+
+Richard Spencer  1:01:06  
+one thing I just wanted to see, if I'm a share, sorry this out phoned me again,
+
+Richard Spencer  1:01:19  
+which I don't know if it's really worth it, to send it to you guys, and it's just to have a look and tell me it's a, it's a sort of a catalog of our steel sections, our steel members. But not every steel member that will pop up on a Boq will be in this XL. But age 75 80% of it should be so you'll see here database of structural sections. Now I don't know if this would, if this would help at all, but so basically, yeah, just if I show you like, let's say for example. Now this, this information, yeah, except for maybe this one in blue. So you'll see, like a 254, by 146 by what you like this, you see there three or five, 165 by 40. Now, if we look at this, you'll have your 3051 65 by 40. And then that would be part of the local UBS and UCs. And then, like, here the import starts. I don't know if I need to, if you if it would help me at all. Or you guys, if I said, like, I took this thing and I selected, okay, this and I made it red. And I say these are IPE s and these are local UBS and UCs, and these are because that all ties up to this. Yeah, the right hand, sameing, yeah. So that, if it pulls in and it auto allocates it to steel sections, maybe it could allocate the material. That's just
+
+Darren Spencer  1:03:01  
+one of the costing sheet. Rick, just to make sure I'm understanding what you're basically saying is, if you tell if you tell me three or 516, 540, kilos, you we can have a rule that says, Oh, that means on the right hand side, 100% material supply, local UB and UC
+
+Richard Spencer  1:03:17  
+or not necessarily that. But it can edificate this. Can allocate that local wastage and and the rate,
+
+Darren Spencer  1:03:29  
+what's the breakdown of the most material supplies? Oh, not the rates are either the actual categories tell you
+
+Richard Spencer  1:03:35  
+what the category of is it? Is it large angles? Is it unequal angles? Is it small angles? Is it locals? Is it whatever? Just pretty much, if I could put some kind of, I don't know, it's maybe a lot more of a long term thing where it will start, or to allocate pricing as well based on the breakdown and the name reads back to it. But I don't know,
+
+Kody  1:04:02  
+yeah, I would say if, if you have a bunch of these, just, just saying them to us, to have them on our files, is, I think, a good idea. And I'm always interested in, kind of, like looking at spreadsheets and just kind of, like wrapping my head around them, but, but, yeah, you're, I mean, if this is a 15 year system, then there's, there's gonna be lots of opportunity to add stuff like this, especially over time.
+
+Darren Spencer  1:04:24  
+And Maria's just to, just to check one question, additional question, I agree with whatever, whatever, everything Kody saying on the angle, on the angle stuff, where would the, where would the the unequal angles thing pop up? Is that just, yeah, is that? Let me look here.
+
+Richard Spencer  1:04:45  
+I'll look at it now too. Then I'll tell you that's our basic without anything added, but I just, I'll send it to you anyway. Sorry you were asking me unequal angles. Yeah.
+
+Darren Spencer  1:04:56  
+Oh, good. Okay, I'm looking at it now I understand. Okay, so let's say it was a any one of these, the first 165 times 50 times six.
+
+Richard Spencer  1:05:09  
+If any of these popped up in the Boq as a line item, it would be able to allocate the unequal angle material price to that line item, whether it's 8515 if it's plates, or no plates, or 100 zero pool, that would be a different thing, but it would be able to give you the base rate per ton for the for the material supply, because most of the catalog is here. Okay, you see here circular hollow sections, which is also there. We've got standard and non standard.
+
+Darren Spencer  1:05:43  
+Yes, okay, that makes a lot of sense. Sure. Yeah, if you someone gave us the rules, that would be helpful. A second thing we can also do is, which we've kind of actually, in a way, started, is basically you give chat GPT 1000 examples and say, Come up with the rules based on we've seen in other tenders. But yeah, I think not something we need to write now. But yeah, the plane spreadsheet will be interesting to see. We can have a list.
+
+Richard Spencer  1:06:09  
+Yeah, this you guys, there's so many things in my mind that you might be building the software for the next 15 years, not necessarily for the next
+
+Kody  1:06:18  
+well, we'll have intelligent AI that will take over, and you'll just be on the phone with it constantly. And it will be amazing, yeah, Leonardo. Leonardo will be the will get his age, his update from open AI or whoever, and then he'll be super intelligent.
+
+Richard Spencer  1:06:40  
+Will be best buddies,
+
+Darren Spencer  1:06:42  
+yeah, so they did actually call me about that, so they'll be sending me more messages.
+
+Kody  1:06:50  
+Okay, well, sweet. So we're gonna jump on with Michaela, who's our she's helping us with this, and then she's a VA that that we have. It's also a junior developer that's working with Leonardo and working with us, so we're gonna jump off there. But yeah, let's keep the we'll keep the messages going in WhatsApp, and that login is is good for you to continue playing with and poking.
+
+Richard Spencer  1:07:16  
+So can I? Can I play with it? That's fantastic. Yeah,
+
+Kody  1:07:19  
+yeah. Go for it. My
+
+Richard Spencer  1:07:20  
+partner, Ruan actually asked me if he said, If this, I must record the video showing but I'll just spam tomorrow to log on and we'll go into it. Great. Yeah, I think it'll be good.
+
+Darren Spencer  1:07:32  
+And also, I mean, I'll be, I should be awake, your tiny show if you want, if you haven't done you can't figure something out, just text me. I should be
+
+Richard Spencer  1:07:38  
+able to swap it out as well. Well, I think what we'll try and do is, if we play around with it, we'll either make some notes and send you guys some notes, or we'll see if we can do the notes in that system that Kody showed us, where we say something to Leonardo. Maybe if we can remember that tomorrow, we'll try that, and if we have things well, then we'll just make notes and mail it to do whatever
+
+Kody  1:08:05  
+I might, I might be able to get that update out, um, sooner rather than later, especially if you're going to be taking notes and things. So I'll, um, yeah, let's stay messaging. But if I don't have it ready by then, if you don't hear from me, then Do? Do? Just write notes down. Yeah. Also wrote on your phone, if you're talking to somebody, any transcriptions, Virtual Audio recordings as you're testing, talking to Ron Darren, walking. Then the more information, the more data we better, because we just into Leonardo, and Leonardo gets smarter and more aligned with what we're doing.
+
+Richard Spencer  1:08:35  
+So, okay, awesome. Sweet stuff with it,
+
+Kody  1:08:41  
+sweet we'll talk next week for the same demo.
+
+Richard Spencer  1:08:45  
+Awesome. Thanks, James, have a
+
+Darren Spencer  1:08:49  
+good week. Thanks. You too. Yeah.
