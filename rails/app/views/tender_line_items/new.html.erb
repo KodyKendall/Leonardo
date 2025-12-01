@@ -1,8 +1,8 @@
-<turbo-frame id="new_line_item_form">
-  <div class="card bg-white border border-gray-200 mb-4">
-    <div class="card-body p-4">
-      <h3 class="card-title text-lg mb-4">New Line Item</h3>
-      <%= render "form", tender: @tender, line_item: @line_item %>
-    </div>
-  </div>
-</turbo-frame>
+<div class="max-w-4xl mx-auto py-6">
+  <h1 class="text-2xl font-bold mb-4">New Line Item</h1>
+  <p class="text-gray-600 mb-4">
+    Note: Line items are typically added directly from the
+    <%= link_to "Tender Builder", builder_tender_path(@tender), class: "link link-primary" %>.
+  </p>
+  <%= link_to "← Back to Builder", builder_tender_path(@tender), class: "btn btn-outline" %>
+</div>

@@ -1,6 +1,6 @@
 class TenderLineItemsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_tender, only: %i[ index create edit update destroy ]
+  before_action :set_tender, only: %i[ index new create edit update destroy ]
   before_action :set_tender_line_item, only: %i[ show edit update destroy ]
   before_action :set_tender_from_line_item, only: %i[ show ], unless: -> { params[:tender_id].present? }
 
@@ -36,11 +36,30 @@ class TenderLineItemsController < ApplicationController
 
   # POST /tenders/:tender_id/tender_line_items or /tender_line_items
   def create
-    @line_item = @tender.tender_line_items.new(tender_line_item_params)
+    # If params are provided, use them; otherwise create with defaults (instant creation)
+    if params[:tender_line_item].present?
+      @line_item = @tender.tender_line_items.new(tender_line_item_params)
+    else
+      # Instant creation with sensible defaults
+      next_item_number = (@tender.tender_line_items.maximum(:item_number).to_i + 1).to_s
+      @line_item = @tender.tender_line_items.new(
+        item_number: next_item_number,
+        item_description: "New Line Item",
+        quantity: 0,
+        rate: 0,
+        unit_of_measure: "each"
+      )
+    end
 
     respond_to do |format|
       if @line_item.save
-        format.turbo_stream { render :create }
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.append(
+            "line_items_container",
+            partial: "tender_line_items/tender_line_item",
+            locals: { tender_line_item: @line_item }
+          )
+        end
         format.html { redirect_to builder_tender_path(@tender), notice: 'Tender line item was successfully created.' }
         format.json { render json: @line_item, status: :created }
       else

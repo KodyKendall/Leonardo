@@ -21,10 +21,10 @@
 
       <!-- Action Buttons -->
       <div class="flex gap-2 flex-wrap">
-        <%= link_to "＋ Add Line Item", 
-            new_tender_tender_line_item_path(@tender),
-            class: "btn btn-primary",
-            data: { turbo_frame: "modal" } %>
+        <%= button_to "＋ Add Line Item",
+            tender_tender_line_items_path(@tender),
+            method: :post,
+            class: "btn btn-primary" %>
 
         <%= link_to "Save", 
             @tender,
@@ -63,53 +63,13 @@
 
     <!-- Add New Line Item Button -->
     <div class="mt-6 text-center">
-      <%= link_to "＋ Add New Line Item", 
-          new_tender_tender_line_item_path(@tender),
-          class: "btn btn-lg btn-outline",
-          data: { turbo_frame: "modal" } %>
+      <%= button_to "＋ Add New Line Item",
+          tender_tender_line_items_path(@tender),
+          method: :post,
+          class: "btn btn-lg btn-outline" %>
     </div>
   </div>
 </div>
-
-<!-- Modal Dialog using DaisyUI -->
-<dialog id="modal_dialog" class="modal">
-  <div class="modal-box w-11/12 max-w-2xl">
-    <form method="dialog">
-      <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-    </form>
-    <%= turbo_frame_tag "modal" %>
-  </div>
-  <form method="dialog" class="modal-backdrop">
-    <button>close</button>
-  </form>
-</dialog>
-
-<script>
-  document.addEventListener('turbo:load', () => {
-    const modalDialog = document.getElementById('modal_dialog');
-    const modalFrame = document.querySelector('turbo-frame#modal');
-
-    if (!modalDialog || !modalFrame) return;
-
-    // Show modal when content is loaded into the frame
-    const observer = new MutationObserver(() => {
-      if (modalFrame.innerHTML.trim()) {
-        modalDialog.showModal();
-      }
-    });
-
-    observer.observe(modalFrame, { childList: true, subtree: true });
-  });
-
-  // Close modal when frame is emptied (after successful submit)
-  document.addEventListener('turbo:submit-end', () => {
-    const modalDialog = document.getElementById('modal_dialog');
-    const modalFrame = document.querySelector('turbo-frame#modal');
-    if (modalFrame && !modalFrame.innerHTML.trim()) {
-      modalDialog.close();
-    }
-  });
-</script>
 
 <!-- Stimulus Controller for Grand Total Calculation -->
 <script>
