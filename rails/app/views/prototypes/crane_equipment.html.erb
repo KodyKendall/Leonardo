@@ -1,0 +1,1075 @@
+<%= render layout: 'prototypes/layouts/default' do %>
+<div class="space-y-8 p-6" data-controller="prototypes--global">
+
+  <!-- Developer Annotations Toggle -->
+  <div class="bg-red-50 border-2 border-red-300 rounded-lg p-4 mb-6">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+        </svg>
+        <div>
+          <h3 class="text-sm font-bold text-red-800">Developer Mode: Database Schema Annotations</h3>
+          <p class="text-xs text-red-600">Red badges show which database tables map to each UI component</p>
+        </div>
+      </div>
+      <label class="relative inline-flex items-center cursor-pointer">
+        <input type="checkbox" id="toggleAnnotations" checked class="sr-only peer">
+        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+        <span class="ml-2 text-sm font-medium text-red-700">Show Annotations</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <div class="border-b border-gray-200 pb-5">
+    <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl">Crane Equipment & Rates</h2>
+    <p class="mt-2 text-sm text-gray-500">Configure crane selections based on site parameters and erection requirements.</p>
+  </div>
+
+  <!-- Site Parameters Section -->
+  <div class="bg-white shadow rounded-lg overflow-hidden relative">
+    <!-- DB Annotation Badge -->
+    <div class="db-annotation absolute -top-3 -right-3 z-10">
+      <div class="bg-red-600 text-white text-xs font-mono px-3 py-1.5 rounded-lg shadow-lg border-2 border-red-800">
+        <div class="flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/>
+            <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"/>
+            <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"/>
+          </svg>
+          tender_site_configs
+        </div>
+      </div>
+    </div>
+    <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
+      <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+        </svg>
+        Site Parameters
+      </h3>
+    </div>
+    <div class="px-6 py-5">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="relative">
+          <!-- Field Annotation -->
+          <div class="db-annotation absolute -top-2 right-0">
+            <span class="bg-red-100 text-red-700 text-xs font-mono px-2 py-0.5 rounded border border-red-300">total_roof_area_sqm</span>
+          </div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Total Roof Area</label>
+          <div class="relative">
+            <input type="number" value="19609" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+            <span class="absolute right-3 top-2 text-gray-400 text-sm">m²</span>
+          </div>
+        </div>
+        <div class="relative">
+          <!-- Field Annotation -->
+          <div class="db-annotation absolute -top-2 right-0">
+            <span class="bg-red-100 text-red-700 text-xs font-mono px-2 py-0.5 rounded border border-red-300">erection_rate_sqm_per_day</span>
+          </div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Area to be Erected per Day</label>
+          <div class="relative">
+            <input type="number" value="300" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+            <span class="absolute right-3 top-2 text-gray-400 text-sm">m²/day</span>
+          </div>
+        </div>
+        <div class="relative">
+          <!-- Field Annotation -->
+          <div class="db-annotation absolute -top-2 right-0">
+            <span class="bg-red-100 text-red-700 text-xs font-mono px-2 py-0.5 rounded border border-red-300">program_duration_days</span>
+          </div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Program Duration</label>
+          <div class="relative">
+            <input type="text" value="66" readonly class="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 font-medium">
+            <span class="absolute right-3 top-2 text-gray-400 text-sm">days</span>
+          </div>
+          <p class="text-xs text-gray-500 mt-1">Calculated: ⌈19,609 ÷ 300⌉ = 66 days</p>
+          <!-- Calculation Rule Annotation -->
+          <div class="db-annotation mt-1">
+            <span class="bg-amber-100 text-amber-800 text-xs font-mono px-2 py-0.5 rounded border border-amber-300">BR-018: CEILING(roof_area / erection_rate, 1)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Crane Rental Rates Table -->
+  <div class="bg-white shadow rounded-lg overflow-hidden relative">
+    <!-- DB Annotation Badge -->
+    <div class="db-annotation absolute -top-3 -right-3 z-10">
+      <div class="bg-red-600 text-white text-xs font-mono px-3 py-1.5 rounded-lg shadow-lg border-2 border-red-800">
+        <div class="flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/>
+            <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"/>
+            <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"/>
+          </svg>
+          crane_rates (Master Data)
+        </div>
+      </div>
+    </div>
+    <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+          </svg>
+          Mobile Crane Rental Rates
+        </h3>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-gray-500">Ownership Type:</span>
+          <div class="relative">
+            <!-- Field Annotation -->
+            <div class="db-annotation absolute -top-5 right-0">
+              <span class="bg-red-100 text-red-700 text-xs font-mono px-2 py-0.5 rounded border border-red-300">ownership_type</span>
+            </div>
+            <select class="text-sm border border-gray-300 rounded-md px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="rental">Rental</option>
+              <option value="rsb_owned">RSB Owned</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead>
+          <tr class="bg-gray-50">
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Crane Size
+              <div class="db-annotation absolute -bottom-1 left-6">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">size</span>
+              </div>
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              All Inclusive Rate / Day
+              <div class="db-annotation absolute -bottom-1 right-6">
+                <span class="bg-amber-100 text-amber-800 text-xs font-mono px-1 py-0.5 rounded border border-amber-300">calculated</span>
+              </div>
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Dry Rate / Day (9 hrs)
+              <div class="db-annotation absolute -bottom-1 right-6">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">dry_rate_per_day</span>
+              </div>
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Diesel Allowance / Day
+              <div class="db-annotation absolute -bottom-1 right-6">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">diesel_per_day</span>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-100">
+          <tr class="hover:bg-blue-50 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-800">90t</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right font-medium text-gray-900">R13,500</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R12,500</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R1,000</td>
+          </tr>
+          <tr class="hover:bg-blue-50 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-orange-100 text-orange-800">50t</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right font-medium text-gray-900">R9,350</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R8,500</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R850</td>
+          </tr>
+          <tr class="hover:bg-blue-50 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800">35t</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right font-medium text-gray-900">R4,600</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R3,850</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R750</td>
+          </tr>
+          <tr class="hover:bg-blue-50 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-lime-100 text-lime-800">30t</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right font-medium text-gray-900">R4,400</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R3,650</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R750</td>
+          </tr>
+          <tr class="hover:bg-blue-50 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800">25t</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right font-medium text-gray-900">R4,150</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R3,400</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R750</td>
+          </tr>
+          <tr class="hover:bg-blue-50 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-teal-100 text-teal-800">20t</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right font-medium text-gray-900">R3,900</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R3,150</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R750</td>
+          </tr>
+          <tr class="hover:bg-blue-50 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-800">10t</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right font-medium text-gray-900">R2,050</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R1,300</td>
+            <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R750</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="px-6 py-3 bg-gray-50 border-t border-gray-200">
+      <p class="text-xs text-gray-500">
+        <span class="font-medium">Note:</span> All Inclusive Rate = Dry Rate + Diesel Allowance (wet rate includes operator & diesel)
+      </p>
+      <!-- Business Rule Annotation -->
+      <div class="db-annotation mt-2">
+        <span class="bg-amber-100 text-amber-800 text-xs font-mono px-2 py-0.5 rounded border border-amber-300">BR-010: wet_rate = dry_rate_per_day + diesel_per_day</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lifting Requirement Lookup Table -->
+  <div class="bg-white shadow rounded-lg overflow-hidden relative" data-controller="table-editor">
+    <!-- DB Annotation Badge -->
+    <div class="db-annotation absolute -top-3 -right-3 z-10">
+      <div class="bg-red-600 text-white text-xs font-mono px-3 py-1.5 rounded-lg shadow-lg border-2 border-red-800">
+        <div class="flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/>
+            <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"/>
+            <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"/>
+          </svg>
+          crane_complements (Master Data)
+        </div>
+      </div>
+    </div>
+    <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-green-50 to-white">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            Lifting Requirement (Crane Complement Lookup)
+          </h3>
+          <p class="text-sm text-gray-500 mt-1">Auto-selected based on area to be erected per day</p>
+        </div>
+        <button class="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-green-600 bg-green-50 rounded-md hover:bg-green-100 transition" data-action="table-editor#openAddModal">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Add Row
+        </button>
+      </div>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead>
+          <tr class="bg-gray-50">
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Area to be Erected per Day
+              <div class="db-annotation absolute -bottom-1 left-6">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">area_min_sqm / area_max_sqm</span>
+              </div>
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Crane Complement
+              <div class="db-annotation absolute -bottom-1 left-6">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">complement_description</span>
+              </div>
+            </th>
+            <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Wet Rate / Day
+              <div class="db-annotation absolute -bottom-1 right-6">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">default_wet_rate_per_day</span>
+              </div>
+            </th>
+            <th class="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-100">
+          <tr class="hover:bg-green-50 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="text-gray-700">0 m² to 150 m²</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">1 × 25t</span>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right">
+              <span class="text-gray-400 text-sm">R1.00</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-center">
+              <div class="flex items-center justify-center gap-2">
+                <button class="text-blue-600 hover:text-blue-800 transition" data-action="table-editor#openEditModal" data-area-min="0" data-area-max="150" data-complement="1 × 25t" data-rate="1.00">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
+                </button>
+                <button class="text-red-600 hover:text-red-800 transition" data-action="table-editor#deleteRow">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr class="hover:bg-green-50 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="text-gray-700">150 m² to 250 m²</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">2 × 25t</span>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right">
+              <span class="text-gray-400 text-sm">R2.00</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-center">
+              <div class="flex items-center justify-center gap-2">
+                <button class="text-blue-600 hover:text-blue-800 transition" data-action="table-editor#openEditModal" data-area-min="150" data-area-max="250" data-complement="2 × 25t" data-rate="2.00">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
+                </button>
+                <button class="text-red-600 hover:text-red-800 transition" data-action="table-editor#deleteRow">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr class="bg-green-100 hover:bg-green-100 transition-colors ring-2 ring-green-500 ring-inset">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-2">
+                <span class="text-green-800 font-semibold">250 m² to 350 m²</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-600 text-white">Selected</span>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">3 × 10t</span>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right">
+              <span class="text-green-800 font-semibold">R3.00</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-center">
+              <div class="flex items-center justify-center gap-2">
+                <button class="text-blue-600 hover:text-blue-800 transition" data-action="table-editor#openEditModal" data-area-min="250" data-area-max="350" data-complement="3 × 10t" data-rate="3.00">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
+                </button>
+                <button class="text-red-600 hover:text-red-800 transition" data-action="table-editor#deleteRow">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr class="hover:bg-green-50 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="text-gray-700">350 m² to 450 m²</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-1 flex-wrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">2 × 10t</span>
+                <span class="text-gray-400">+</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">1 × 25t</span>
+                <span class="text-gray-400">+</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">2 × 35t</span>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right">
+              <span class="text-gray-400 text-sm">R4.00</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-center">
+              <div class="flex items-center justify-center gap-2">
+                <button class="text-blue-600 hover:text-blue-800 transition" data-action="table-editor#openEditModal" data-area-min="350" data-area-max="450" data-complement="2 × 10t + 1 × 25t + 2 × 35t" data-rate="4.00">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
+                </button>
+                <button class="text-red-600 hover:text-red-800 transition" data-action="table-editor#deleteRow">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr class="hover:bg-green-50 transition-colors">
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="text-gray-700">450 m² to 550 m²</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-1 flex-wrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">2 × 10t</span>
+                <span class="text-gray-400">+</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">2 × 25t</span>
+                <span class="text-gray-400">+</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800">2 × 35t</span>
+                <span class="text-gray-400">+</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">1 × 50t</span>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-right">
+              <span class="text-gray-400 text-sm">R5.00</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-center">
+              <div class="flex items-center justify-center gap-2">
+                <button class="text-blue-600 hover:text-blue-800 transition" data-action="table-editor#openEditModal" data-area-min="450" data-area-max="550" data-complement="2 × 10t + 2 × 25t + 2 × 35t + 1 × 50t" data-rate="5.00">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
+                </button>
+                <button class="text-red-600 hover:text-red-800 transition" data-action="table-editor#deleteRow">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="px-6 py-3 bg-gray-50 border-t border-gray-200">
+      <p class="text-xs text-gray-500">
+        <span class="font-medium">BR-019:</span> Crane complement auto-selected based on erection rate bracket. Current selection: <span class="font-semibold text-green-700">250-350 m²/day</span>
+      </p>
+    </div>
+  </div>
+
+  <!-- Crane Selection Configuration -->
+  <div class="bg-white shadow rounded-lg overflow-hidden relative">
+    <!-- DB Annotation Badge -->
+    <div class="db-annotation absolute -top-3 -right-3 z-10">
+      <div class="bg-red-600 text-white text-xs font-mono px-3 py-1.5 rounded-lg shadow-lg border-2 border-red-800">
+        <div class="flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/>
+            <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"/>
+            <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"/>
+          </svg>
+          tender_crane_selections
+        </div>
+      </div>
+    </div>
+    <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-white">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+          <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+          </svg>
+          Crane Selection Configuration
+        </h3>
+        <button class="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-indigo-600 bg-indigo-50 rounded-md hover:bg-indigo-100 transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+          </svg>
+          Edit Selection
+        </button>
+      </div>
+    </div>
+    <div class="p-6">
+      <!-- Main Cranes -->
+      <div class="mb-6 relative">
+        <!-- Purpose Annotation -->
+        <div class="db-annotation absolute -top-2 right-0">
+          <span class="bg-red-100 text-red-700 text-xs font-mono px-2 py-0.5 rounded border border-red-300">purpose: "main"</span>
+        </div>
+        <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-3">Main Cranes</h4>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+            <div class="relative">
+              <!-- Field Annotation -->
+              <div class="db-annotation absolute -top-2 right-0">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">quantity + crane_rate_id</span>
+              </div>
+              <label class="block text-xs text-gray-500 mb-1">Complement</label>
+              <p class="font-medium text-gray-900">3 × 10t</p>
+            </div>
+            <div class="relative">
+              <!-- Field Annotation -->
+              <div class="db-annotation absolute -top-2 right-0">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">duration_days</span>
+              </div>
+              <label class="block text-xs text-gray-500 mb-1">Duration</label>
+              <p class="font-medium text-gray-900">66 days</p>
+            </div>
+            <div class="relative">
+              <!-- Field Annotation -->
+              <div class="db-annotation absolute -top-2 right-0">
+                <span class="bg-amber-100 text-amber-800 text-xs font-mono px-1 py-0.5 rounded border border-amber-300">from crane_rates</span>
+              </div>
+              <label class="block text-xs text-gray-500 mb-1">Rate/Day</label>
+              <p class="font-medium text-gray-900">R6,150</p>
+            </div>
+            <div class="relative">
+              <!-- Field Annotation -->
+              <div class="db-annotation absolute -top-2 right-0">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">total_cost</span>
+              </div>
+              <label class="block text-xs text-gray-500 mb-1">Total Cost</label>
+              <p class="font-semibold text-indigo-600 text-lg">R405,900</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Optional Cranes -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Splicing Crane -->
+        <div class="border border-gray-200 rounded-lg p-4 relative">
+          <!-- Purpose Annotation -->
+          <div class="db-annotation absolute -top-3 right-2">
+            <span class="bg-red-100 text-red-700 text-xs font-mono px-2 py-0.5 rounded border border-red-300">purpose: "splicing"</span>
+          </div>
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="text-sm font-semibold text-gray-700">Splicing Crane</h4>
+            <div class="flex items-center">
+              <!-- Field Annotation -->
+              <div class="db-annotation mr-2">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">splicing_crane_required</span>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" checked class="sr-only peer">
+                <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                <span class="ml-2 text-xs text-gray-500">Required</span>
+              </label>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div class="grid grid-cols-2 gap-3">
+              <div class="relative">
+                <!-- Field Annotation -->
+                <div class="db-annotation absolute -top-2 right-0">
+                  <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">splicing_crane_size</span>
+                </div>
+                <label class="block text-xs text-gray-500 mb-1">Size</label>
+                <select class="w-full text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option>25t</option>
+                  <option>30t</option>
+                  <option>35t</option>
+                </select>
+              </div>
+              <div class="relative">
+                <!-- Field Annotation -->
+                <div class="db-annotation absolute -top-2 right-0">
+                  <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">splicing_crane_days</span>
+                </div>
+                <label class="block text-xs text-gray-500 mb-1">Duration (days)</label>
+                <input type="number" value="70" class="w-full text-sm border border-gray-300 rounded-md px-3 py-1.5 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+              <span class="text-xs text-gray-500">Estimated Cost</span>
+              <span class="font-semibold text-gray-900">R290,500</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Miscellaneous Crane -->
+        <div class="border border-gray-200 rounded-lg p-4 opacity-60 relative">
+          <!-- Purpose Annotation -->
+          <div class="db-annotation absolute -top-3 right-2">
+            <span class="bg-red-100 text-red-700 text-xs font-mono px-2 py-0.5 rounded border border-red-300">purpose: "miscellaneous"</span>
+          </div>
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="text-sm font-semibold text-gray-700">Miscellaneous Crane</h4>
+            <div class="flex items-center">
+              <!-- Field Annotation -->
+              <div class="db-annotation mr-2">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">misc_crane_required</span>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer">
+                <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                <span class="ml-2 text-xs text-gray-500">Required</span>
+              </label>
+            </div>
+          </div>
+          <div class="space-y-3">
+            <div class="grid grid-cols-2 gap-3">
+              <div class="relative">
+                <!-- Field Annotation -->
+                <div class="db-annotation absolute -top-2 right-0">
+                  <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">misc_crane_size</span>
+                </div>
+                <label class="block text-xs text-gray-500 mb-1">Size</label>
+                <select disabled class="w-full text-sm border border-gray-300 rounded-md px-3 py-1.5 bg-gray-100">
+                  <option>Select size...</option>
+                </select>
+              </div>
+              <div class="relative">
+                <!-- Field Annotation -->
+                <div class="db-annotation absolute -top-2 right-0">
+                  <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">misc_crane_days</span>
+                </div>
+                <label class="block text-xs text-gray-500 mb-1">Duration (days)</label>
+                <input type="number" disabled placeholder="0" class="w-full text-sm border border-gray-300 rounded-md px-3 py-1.5 bg-gray-100">
+              </div>
+            </div>
+            <div class="flex justify-between items-center pt-2 border-t border-gray-100">
+              <span class="text-xs text-gray-500">Estimated Cost</span>
+              <span class="font-semibold text-gray-400">R0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cost Summary -->
+  <div class="bg-white shadow rounded-lg overflow-hidden relative">
+    <!-- DB Annotation Badge -->
+    <div class="db-annotation absolute -top-3 -right-3 z-10">
+      <div class="bg-red-600 text-white text-xs font-mono px-3 py-1.5 rounded-lg shadow-lg border-2 border-red-800">
+        <div class="flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/>
+            <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"/>
+            <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"/>
+          </svg>
+          Calculated from tender_crane_selections
+        </div>
+      </div>
+    </div>
+    <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-emerald-50 to-white">
+      <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+        </svg>
+        Cost Summary
+      </h3>
+    </div>
+    <div class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Cost Breakdown -->
+        <div>
+          <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">Cost Breakdown</h4>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center py-2 border-b border-gray-100">
+              <span class="text-gray-600">Main Cranes (3 × 10t × 66 days)</span>
+              <span class="font-medium text-gray-900">R405,900</span>
+            </div>
+            <div class="flex justify-between items-center py-2 border-b border-gray-100">
+              <span class="text-gray-600">Splicing Crane (25t × 70 days)</span>
+              <span class="font-medium text-gray-900">R290,500</span>
+            </div>
+            <div class="flex justify-between items-center py-2 border-b border-gray-100">
+              <span class="text-gray-600">Miscellaneous Crane</span>
+              <span class="font-medium text-gray-400">R0</span>
+            </div>
+            <div class="flex justify-between items-center py-3 bg-emerald-50 -mx-2 px-2 rounded-lg">
+              <span class="font-semibold text-gray-900">Total Crainage Cost</span>
+              <span class="font-bold text-emerald-600 text-xl">R696,400</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rate per Tonne -->
+        <div>
+          <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">Rate per Tonne Calculation</h4>
+          <div class="bg-gray-50 rounded-lg p-4 space-y-3 relative">
+            <!-- DB Annotation Badge -->
+            <div class="db-annotation absolute -top-3 -right-3 z-10">
+              <div class="bg-red-600 text-white text-xs font-mono px-2 py-1 rounded shadow border border-red-800">
+                line_item_rate_build_ups.crainage_rate
+              </div>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Total Tonnage</span>
+              <span class="font-medium text-gray-900">931.62 t</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Raw Rate</span>
+              <span class="font-medium text-gray-900">R747.48/t</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-gray-200">
+              <span class="font-semibold text-gray-900">Rounded Rate (BR-002)</span>
+              <span class="font-bold text-emerald-600 text-lg">R760/t</span>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">Rounded to nearest R20 (upward): ⌈747.48⌉₂₀ = R760</p>
+            <!-- Business Rule Annotation -->
+            <div class="db-annotation mt-2">
+              <span class="bg-amber-100 text-amber-800 text-xs font-mono px-2 py-0.5 rounded border border-amber-300">BR-002: CEILING(rate, 20)</span>
+            </div>
+          </div>
+
+          <!-- Mutual Exclusion Toggle -->
+          <div class="mt-6 p-4 border border-amber-200 bg-amber-50 rounded-lg relative">
+            <!-- DB Annotation Badge -->
+            <div class="db-annotation absolute -top-3 -right-3 z-10">
+              <div class="bg-red-600 text-white text-xs font-mono px-2 py-1 rounded shadow border border-red-800">
+                tender_inclusions_exclusions
+              </div>
+            </div>
+            <h5 class="text-sm font-semibold text-amber-800 mb-3">Crainage Inclusion (BR-012)</h5>
+            <div class="space-y-2">
+              <label class="flex items-center gap-3 cursor-pointer relative">
+                <!-- Field Annotation -->
+                <div class="db-annotation absolute -left-2 -top-3">
+                  <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">include_crainage = true</span>
+                </div>
+                <input type="radio" name="crainage_inclusion" checked class="w-4 h-4 text-amber-600 border-gray-300 focus:ring-amber-500">
+                <span class="text-sm text-gray-700">Include in line item rates</span>
+              </label>
+              <label class="flex items-center gap-3 cursor-pointer relative">
+                <!-- Field Annotation -->
+                <div class="db-annotation absolute -left-2 -top-3">
+                  <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">include_crainage = false</span>
+                </div>
+                <input type="radio" name="crainage_inclusion" class="w-4 h-4 text-amber-600 border-gray-300 focus:ring-amber-500">
+                <span class="text-sm text-gray-700">Include in P&G (Preliminaries & General)</span>
+              </label>
+            </div>
+            <p class="text-xs text-amber-700 mt-3">
+              <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+              </svg>
+              Mutual exclusion: crainage cannot be in both line items AND P&G
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex justify-end gap-3">
+    <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+      Reset to Defaults
+    </button>
+    <button class="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition">
+      Save Configuration
+    </button>
+  </div>
+
+  <!-- Schema Reference Card -->
+  <div class="bg-red-50 border-2 border-red-300 rounded-lg p-6 db-annotation">
+    <h3 class="text-lg font-bold text-red-800 mb-4 flex items-center gap-2">
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/>
+        <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"/>
+        <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"/>
+      </svg>
+      Database Schema Reference
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- Master Data Tables -->
+      <div class="bg-white rounded-lg p-4 border border-red-200">
+        <h4 class="font-semibold text-red-700 text-sm mb-2">Master Data Tables</h4>
+        <ul class="text-xs font-mono text-gray-700 space-y-1">
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+            crane_rates
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+            crane_complements
+          </li>
+        </ul>
+      </div>
+      <!-- Transactional Tables -->
+      <div class="bg-white rounded-lg p-4 border border-red-200">
+        <h4 class="font-semibold text-red-700 text-sm mb-2">Transactional Tables</h4>
+        <ul class="text-xs font-mono text-gray-700 space-y-1">
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+            tender_site_configs
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+            tender_crane_selections
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+            tender_inclusions_exclusions
+          </li>
+        </ul>
+      </div>
+      <!-- Business Rules -->
+      <div class="bg-white rounded-lg p-4 border border-amber-200">
+        <h4 class="font-semibold text-amber-700 text-sm mb-2">Business Rules</h4>
+        <ul class="text-xs font-mono text-gray-700 space-y-1">
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-amber-500 rounded-full"></span>
+            BR-002: Rounding to R20
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-amber-500 rounded-full"></span>
+            BR-010: Wet rate calc
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-amber-500 rounded-full"></span>
+            BR-012: Mutual exclusion
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-amber-500 rounded-full"></span>
+            BR-018: Duration ceiling
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-amber-500 rounded-full"></span>
+            BR-019: Complement lookup
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit/Add Modal -->
+  <div id="rowModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" data-element="modal">
+    <div class="bg-white rounded-lg shadow-lg max-w-md w-full mx-4">
+      <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-gray-900" id="modalTitle">Add New Row</h3>
+        <button class="text-gray-400 hover:text-gray-600 transition" data-action="click->table-editor#closeModal">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <form id="rowForm" class="p-6 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Area Min (m²)</label>
+          <input type="number" id="areaMin" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Area Max (m²)</label>
+          <input type="number" id="areaMax" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Crane Complement</label>
+          <input type="text" id="complement" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="e.g., 3 × 10t" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Wet Rate / Day (R)</label>
+          <input type="number" id="rate" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
+        </div>
+        <div class="flex gap-3 pt-4">
+          <button type="button" class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition" data-action="click->table-editor#closeModal">
+            Cancel
+          </button>
+          <button type="button" class="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition" data-action="click->table-editor#saveRow">
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JavaScript Controller -->
+  <script>
+    // Toggle annotations visibility
+    document.getElementById('toggleAnnotations').addEventListener('change', function() {
+      const annotations = document.querySelectorAll('.db-annotation');
+      annotations.forEach(el => {
+        if (this.checked) {
+          el.style.display = '';
+        } else {
+          el.style.display = 'none';
+        }
+      });
+    });
+
+    class TableEditorController {
+      constructor() {
+        this.modal = document.getElementById('rowModal');
+        this.form = document.getElementById('rowForm');
+        this.modalTitle = document.getElementById('modalTitle');
+        this.table = document.querySelector('[data-controller="table-editor"] table tbody');
+        this.isEditing = false;
+        this.editingRow = null;
+      }
+
+      openAddModal() {
+        this.isEditing = false;
+        this.editingRow = null;
+        this.modalTitle.textContent = 'Add New Row';
+        this.form.reset();
+        this.modal.classList.remove('hidden');
+      }
+
+      openEditModal(e) {
+        const button = e.target.closest('button');
+        const row = button.closest('tr');
+
+        this.isEditing = true;
+        this.editingRow = row;
+        this.modalTitle.textContent = 'Edit Row';
+
+        document.getElementById('areaMin').value = button.dataset.areaMin;
+        document.getElementById('areaMax').value = button.dataset.areaMax;
+        document.getElementById('complement').value = button.dataset.complement;
+        document.getElementById('rate').value = button.dataset.rate;
+
+        this.modal.classList.remove('hidden');
+      }
+
+      closeModal() {
+        this.modal.classList.add('hidden');
+        this.form.reset();
+      }
+
+      saveRow() {
+        const areaMin = document.getElementById('areaMin').value;
+        const areaMax = document.getElementById('areaMax').value;
+        const complement = document.getElementById('complement').value;
+        const rate = document.getElementById('rate').value;
+
+        if (!areaMin || !areaMax || !complement || !rate) {
+          alert('Please fill in all fields');
+          return;
+        }
+
+        if (this.isEditing && this.editingRow) {
+          this.updateRow(this.editingRow, areaMin, areaMax, complement, rate);
+        } else {
+          this.addRow(areaMin, areaMax, complement, rate);
+        }
+
+        this.closeModal();
+      }
+
+      addRow(areaMin, areaMax, complement, rate) {
+        const newRow = document.createElement('tr');
+        newRow.className = 'hover:bg-green-50 transition-colors';
+        newRow.innerHTML = `
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="text-gray-700">${areaMin} m² to ${areaMax} m²</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center gap-2">
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">${complement}</span>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right">
+            <span class="text-gray-400 text-sm">R${parseFloat(rate).toFixed(2)}</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-center">
+            <div class="flex items-center justify-center gap-2">
+              <button class="text-blue-600 hover:text-blue-800 transition" data-action="table-editor#openEditModal" data-area-min="${areaMin}" data-area-max="${areaMax}" data-complement="${complement}" data-rate="${rate}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+              </button>
+              <button class="text-red-600 hover:text-red-800 transition" data-action="table-editor#deleteRow">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </div>
+          </td>
+        `;
+        this.table.appendChild(newRow);
+        this.attachEventListeners(newRow);
+      }
+
+      updateRow(row, areaMin, areaMax, complement, rate) {
+        row.innerHTML = `
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="text-gray-700">${areaMin} m² to ${areaMax} m²</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="flex items-center gap-2">
+              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">${complement}</span>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right">
+            <span class="text-gray-400 text-sm">R${parseFloat(rate).toFixed(2)}</span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-center">
+            <div class="flex items-center justify-center gap-2">
+              <button class="text-blue-600 hover:text-blue-800 transition" data-action="table-editor#openEditModal" data-area-min="${areaMin}" data-area-max="${areaMax}" data-complement="${complement}" data-rate="${rate}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+              </button>
+              <button class="text-red-600 hover:text-red-800 transition" data-action="table-editor#deleteRow">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </div>
+          </td>
+        `;
+        this.attachEventListeners(row);
+      }
+
+      deleteRow(e) {
+        const row = e.target.closest('tr');
+        if (confirm('Are you sure you want to delete this row?')) {
+          row.remove();
+        }
+      }
+
+      attachEventListeners(row) {
+        const editBtn = row.querySelector('[data-action="table-editor#openEditModal"]');
+        const deleteBtn = row.querySelector('[data-action="table-editor#deleteRow"]');
+
+        if (editBtn) {
+          editBtn.addEventListener('click', (e) => this.openEditModal(e));
+        }
+        if (deleteBtn) {
+          deleteBtn.addEventListener('click', (e) => this.deleteRow(e));
+        }
+      }
+
+      init() {
+        const addBtn = document.querySelector('[data-action="table-editor#openAddModal"]');
+        const editBtns = document.querySelectorAll('[data-action="table-editor#openEditModal"]');
+        const deleteBtns = document.querySelectorAll('[data-action="table-editor#deleteRow"]');
+        const closeBtn = document.querySelector('[data-action="click->table-editor#closeModal"]');
+        const saveBtn = document.querySelector('[data-action="click->table-editor#saveRow"]');
+
+        if (addBtn) {
+          addBtn.addEventListener('click', () => this.openAddModal());
+        }
+
+        editBtns.forEach(btn => {
+          btn.addEventListener('click', (e) => this.openEditModal(e));
+        });
+
+        deleteBtns.forEach(btn => {
+          btn.addEventListener('click', (e) => this.deleteRow(e));
+        });
+
+        if (closeBtn) {
+          closeBtn.addEventListener('click', () => this.closeModal());
+        }
+
+        if (saveBtn) {
+          saveBtn.addEventListener('click', () => this.saveRow());
+        }
+
+        // Close modal when clicking outside
+        this.modal.addEventListener('click', (e) => {
+          if (e.target === this.modal) {
+            this.closeModal();
+          }
+        });
+      }
+    }
+
+    // Initialize when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      const controller = new TableEditorController();
+      controller.init();
+    });
+  </script>
+
+</div>
+<% end %>

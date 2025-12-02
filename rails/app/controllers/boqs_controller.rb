@@ -310,23 +310,32 @@ class BoqsController < ApplicationController
   end
 
   def search
-    # Search for BOQs by name, client, or QS
+    # Search for BOQs by name, client, or QS (showing 5 most recent, including attached ones)
     query = params[:q].to_s.strip
     
     respond_to do |format|
       format.json do
-        if query.length < 1
-          render json: [], status: :ok
-        else
-          boqs = Boq.where(tender_id: nil)
-            .where("boq_name ILIKE ? OR client_name ILIKE ? OR qs_name ILIKE ?", 
-              "%#{query}%", "%#{query}%", "%#{query}%")
-            .order(created_at: :desc)
-            .limit(10)
-            .select(:id, :boq_name, :client_name, :qs_name, :status)
-          
-          render json: boqs, status: :ok
+        boqs = Boq.includes(:tender).order(created_at: :desc).limit(5)
+        
+        if query.length > 0
+          boqs = boqs.where("boq_name ILIKE ? OR client_name ILIKE ? OR qs_name ILIKE ?", 
+            "%#{query}%", "%#{query}%", "%#{query}%")
         end
+        
+        # Format response to include tender information
+        boqs_data = boqs.map do |boq|
+          {
+            id: boq.id,
+            boq_name: boq.boq_name,
+            client_name: boq.client_name,
+            qs_name: boq.qs_name,
+            status: boq.status,
+            tender_id: boq.tender_id,
+            tender_name: boq.tender&.tender_name
+          }
+        end
+        
+        render json: boqs_data, status: :ok
       end
     end
   end
@@ -338,12 +347,23 @@ class BoqsController < ApplicationController
     
     if boq.nil?
       render json: { success: false, message: "BOQ not found" }, status: :not_found
-    elsif boq.tender_id.present?
-      render json: { success: false, message: "BOQ is already attached to another tender" }, status: :unprocessable_entity
     elsif boq.update(tender_id: @tender.id)
       render json: { success: true, message: "BOQ attached successfully" }, status: :ok
     else
       render json: { success: false, message: "Failed to attach BOQ" }, status: :unprocessable_entity
+    end
+  end
+
+  def detach
+    # Detach a BOQ from its current tender
+    boq = Boq.find_by(id: params[:id])
+    
+    if boq.nil?
+      render json: { success: false, message: "BOQ not found" }, status: :not_found
+    elsif boq.update(tender_id: nil)
+      render json: { success: true, message: "BOQ detached successfully" }, status: :ok
+    else
+      render json: { success: false, message: "Failed to detach BOQ" }, status: :unprocessable_entity
     end
   end
 
