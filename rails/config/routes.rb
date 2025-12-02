@@ -79,7 +79,7 @@ Rails.application.routes.draw do
 
   # Requirements browser
   get "requirements" => "requirements#index"
-  get "requirements/*path" => "requirements#index", as: :requirements_path, constraints: { path: /.*/ }
+  get "requirements/*path" => "requirements#index", as: :requirements_path, constraints: { path: /.*/ }, defaults: { format: :html }
 
   namespace :admin do
     root to: "dashboard#index"
