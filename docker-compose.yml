@@ -15,6 +15,7 @@ services:
       - ./rails/spec:/rails/spec:delegated
       - ./rails/config/environments/development.rb:/rails/config/environments/development.rb
       - ./rails/config/database.yml:/rails/config/database.yml
+      - ./rails/requirements:/rails/requirements:delegated
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:prepare && bundle exec rails s -b 0.0.0.0"
     #TO DEBUG, comment the above command, uncomment the below command, restart the container, then run the docker compose exec command below.
     # command: tail -f /dev/null
