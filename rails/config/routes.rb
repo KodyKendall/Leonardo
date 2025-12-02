@@ -77,6 +77,10 @@ Rails.application.routes.draw do
   get "home" => "public#home"
   get "chat" => "public#chat"
 
+  # Requirements browser
+  get "requirements" => "requirements#index"
+  get "requirements/*path" => "requirements#index", as: :requirements_path, constraints: { path: /.*/ }
+
   namespace :admin do
     root to: "dashboard#index"
     

@@ -16,6 +16,7 @@ services:
       - ./rails/spec:/rails/spec:delegated
       - ./rails/config/environments/development.rb:/rails/config/environments/development.rb
       - ./rails/config/database.yml:/rails/config/database.yml
+      - ./rails/requirements:/rails/requirements
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:prepare && bundle exec rails s -b 0.0.0.0"
     # command: tail -f /dev/null
     # docker compose exec -it llamapress bundle exec rails s -b 0.0.0.0
