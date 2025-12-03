@@ -742,7 +742,7 @@ Toggle switches for cost components at tender level.
 | include_cherry_picker | Include cherry picker in rates? | false |
 | include_galvanizing | Include galvanizing? | false |
 
-#### 5.2.4 tender_on_site_breakdown
+#### 5.2.4 on_site_mobile_crane_breakdown
 
 On-site parameters for crane and equipment calculations.
 
@@ -913,7 +913,7 @@ P&G (Preliminaries & General) items.
 - clients has many tenders
 - users has many tenders (created_by, assigned_to)
 - tenders has one tender_inclusions_exclusions
-- tenders has one tender_on_site_breakdown
+- tenders has one on_site_mobile_crane_breakdown
 - tenders has many tender_line_items
 - tenders has many tender_crane_selections
 - tenders has many tender_equipment_selections
