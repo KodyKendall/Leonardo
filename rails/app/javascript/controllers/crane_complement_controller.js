@@ -1,17 +1,21 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["field", "editButton", "deleteButton"]
+  static targets = ["field", "editButton", "deleteButton", "editIcon", "areaDisplay", "areaMinField", "areaMaxField", "fieldsContainer"]
   
   connect() {
     this.isEditing = false
+    // Immediately show the fields container
+    if (this.hasFieldsContainerTarget) {
+      this.fieldsContainerTarget.classList.remove("hidden")
+    }
     this.updateUI()
   }
   
   toggleEdit() {
     if (this.isEditing) {
-      // Save mode - submit the form
-      this.element.querySelector("form").requestSubmit()
+      // Save mode - submit the form (this.element IS the form)
+      this.element.requestSubmit()
     } else {
       // Enter edit mode
       this.isEditing = true
@@ -20,20 +24,35 @@ export default class extends Controller {
   }
   
   updateUI() {
-    // Enable/disable all input fields
+    // Ensure fields container is visible
+    if (this.hasFieldsContainerTarget) {
+      this.fieldsContainerTarget.classList.remove("hidden")
+    }
+    
+    // Show all fields - no toggling
+    if (this.hasAreaDisplayTarget) {
+      this.areaDisplayTarget.parentElement.classList.remove("hidden")
+    }
+    if (this.hasAreaMinFieldTarget) {
+      this.areaMinFieldTarget.parentElement.classList.remove("hidden")
+    }
+    if (this.hasAreaMaxFieldTarget) {
+      this.areaMaxFieldTarget.parentElement.classList.remove("hidden")
+    }
+    
+    // Toggle readonly on all other input fields
     this.fieldTargets.forEach(field => {
-      field.disabled = !this.isEditing
+      field.readOnly = !this.isEditing
     })
     
-    // Change icon and styling based on edit mode
-    const icon = this.editButtonTarget.querySelector("i")
+    // Change icon based on edit mode
     if (this.isEditing) {
-      icon.classList.remove("fa-pencil")
-      icon.classList.add("fa-check")
+      this.editIconTarget.classList.remove("fa-pencil")
+      this.editIconTarget.classList.add("fa-check")
       this.deleteButtonTarget.classList.add("hidden")
     } else {
-      icon.classList.add("fa-pencil")
-      icon.classList.remove("fa-check")
+      this.editIconTarget.classList.add("fa-pencil")
+      this.editIconTarget.classList.remove("fa-check")
       this.deleteButtonTarget.classList.remove("hidden")
     }
   }
