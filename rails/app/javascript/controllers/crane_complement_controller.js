@@ -24,20 +24,28 @@ export default class extends Controller {
   }
   
   updateUI() {
-    // Ensure fields container is visible
-    if (this.hasFieldsContainerTarget) {
-      this.fieldsContainerTarget.classList.remove("hidden")
-    }
-    
-    // Show all fields - no toggling
-    if (this.hasAreaDisplayTarget) {
-      this.areaDisplayTarget.parentElement.classList.remove("hidden")
-    }
-    if (this.hasAreaMinFieldTarget) {
-      this.areaMinFieldTarget.parentElement.classList.remove("hidden")
-    }
-    if (this.hasAreaMaxFieldTarget) {
-      this.areaMaxFieldTarget.parentElement.classList.remove("hidden")
+    if (this.isEditing) {
+      // EDIT MODE: Show input fields, hide display
+      if (this.hasAreaDisplayTarget) {
+        this.areaDisplayTarget.classList.add("hidden")
+      }
+      if (this.hasAreaMinFieldTarget) {
+        this.areaMinFieldTarget.classList.remove("hidden")
+      }
+      if (this.hasAreaMaxFieldTarget) {
+        this.areaMaxFieldTarget.classList.remove("hidden")
+      }
+    } else {
+      // DISPLAY MODE: Show display, hide input fields
+      if (this.hasAreaDisplayTarget) {
+        this.areaDisplayTarget.classList.remove("hidden")
+      }
+      if (this.hasAreaMinFieldTarget) {
+        this.areaMinFieldTarget.classList.add("hidden")
+      }
+      if (this.hasAreaMaxFieldTarget) {
+        this.areaMaxFieldTarget.classList.add("hidden")
+      }
     }
     
     // Toggle readonly on all other input fields
