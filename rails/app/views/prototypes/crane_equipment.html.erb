@@ -110,27 +110,12 @@
       </div>
     </div>
     <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-white">
-      <div class="flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-          </svg>
-          Mobile Crane Rental Rates
-        </h3>
-        <div class="flex items-center gap-2">
-          <span class="text-xs text-gray-500">Ownership Type:</span>
-          <div class="relative">
-            <!-- Field Annotation -->
-            <div class="db-annotation absolute -top-5 right-0">
-              <span class="bg-red-100 text-red-700 text-xs font-mono px-2 py-0.5 rounded border border-red-300">ownership_type</span>
-            </div>
-            <select class="text-sm border border-gray-300 rounded-md px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              <option value="rental">Rental</option>
-              <option value="rsb_owned">RSB Owned</option>
-            </select>
-          </div>
-        </div>
-      </div>
+      <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+        </svg>
+        Mobile Crane Rental Rates
+      </h3>
     </div>
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
@@ -140,6 +125,12 @@
               Crane Size
               <div class="db-annotation absolute -bottom-1 left-6">
                 <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">size</span>
+              </div>
+            </th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Ownership Type
+              <div class="db-annotation absolute -bottom-1 left-6">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">ownership_type</span>
               </div>
             </th>
             <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
@@ -167,6 +158,7 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-red-100 text-red-800">90t</span>
             </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rental</td>
             <td class="px-6 py-4 whitespace-nowrap text-right font-medium text-gray-900">R13,500</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R12,500</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R1,000</td>
@@ -175,6 +167,7 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-orange-100 text-orange-800">50t</span>
             </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rental</td>
             <td class="px-6 py-4 whitespace-nowrap text-right font-medium text-gray-900">R9,350</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R8,500</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R850</td>
@@ -183,6 +176,7 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-yellow-100 text-yellow-800">35t</span>
             </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Rental</td>
             <td class="px-6 py-4 whitespace-nowrap text-right font-medium text-gray-900">R4,600</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R3,850</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R750</td>
@@ -191,6 +185,7 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-lime-100 text-lime-800">30t</span>
             </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">RSB Owned</td>
             <td class="px-6 py-4 whitespace-nowrap text-right font-medium text-gray-900">R4,400</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R3,650</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R750</td>
@@ -199,6 +194,7 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-green-100 text-green-800">25t</span>
             </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">RSB Owned</td>
             <td class="px-6 py-4 whitespace-nowrap text-right font-medium text-gray-900">R4,150</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R3,400</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R750</td>
@@ -207,6 +203,7 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-teal-100 text-teal-800">20t</span>
             </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">RSB Owned</td>
             <td class="px-6 py-4 whitespace-nowrap text-right font-medium text-gray-900">R3,900</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R3,150</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R750</td>
@@ -215,6 +212,7 @@
             <td class="px-6 py-4 whitespace-nowrap">
               <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-100 text-blue-800">10t</span>
             </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">RSB Owned</td>
             <td class="px-6 py-4 whitespace-nowrap text-right font-medium text-gray-900">R2,050</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R1,300</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-gray-600">R750</td>
