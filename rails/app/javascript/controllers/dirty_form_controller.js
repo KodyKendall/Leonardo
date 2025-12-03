@@ -44,7 +44,8 @@ export default class extends Controller {
   }
 
   handleSubmitEnd(event) {
-    // Only show saved state if submission was successful (no errors)
+    // Show saved state if submission was successful (no errors)
+    // Turbo Stream responses with 200-299 status codes have success: true
     if (event.detail.success) {
       this.showSavedState()
     }
@@ -59,13 +60,15 @@ export default class extends Controller {
     this.isDirty = false
     this.updateIndicator()
     
-    // Show saved confirmation and auto-hide after 3 seconds
+    // Show saved confirmation and auto-hide after 5 seconds
     if (this.hasSavedIndicatorTarget) {
       this.savedIndicatorTarget.classList.remove("hidden")
-      this.indicatorTarget.classList.add("hidden")
+      if (this.hasIndicatorTarget) {
+        this.indicatorTarget.classList.add("hidden")
+      }
       setTimeout(() => {
         this.savedIndicatorTarget.classList.add("hidden")
-      }, 3000)
+      }, 5000)
     }
   }
 

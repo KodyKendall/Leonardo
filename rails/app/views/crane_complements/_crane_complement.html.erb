@@ -1,34 +1,98 @@
 <%= turbo_frame_tag dom_id(crane_complement) do %>
-  <div class="card bg-base-100 shadow-md p-6 mb-6"
-       data-controller="crane-complement dirty-form"
-       data-action="input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset">
-    
-    <%= form_with model: crane_complement, data: { action: "turbo:submit-end->crane-complement#resetAfterSave" } do |f| %>
+  <div class="bg-white rounded-lg border border-gray-200 p-6">
+    <%= form_with(
+      model: crane_complement,
+      local: true,
+      data: {
+        controller: "dirty-form crane-complement",
+        action: "input->dirty-form#change change->dirty-form#change turbo:before-stream-render->dirty-form#showSaveSuccess turbo:submit-end->crane-complement#resetAfterSave"
+      }
+    ) do |f| %>
 
-      <h2 class="card-title text-lg mb-4">
+      <h2 class="text-lg font-semibold mb-6">
         Crane Bracket: <%= crane_complement.area_min_sqm %>m² to <%= crane_complement.area_max_sqm %>m²
       </h2>
 
-      <div class="flex gap-2 mb-4 items-center">
-        <%= f.number_field :area_min_sqm, step: 0.01, class: "input input-bordered flex-1", disabled: true, data: { "crane-complement-target": "field" }, placeholder: "Area Min (m²)" %>
-        <%= f.number_field :area_max_sqm, step: 0.01, class: "input input-bordered flex-1", disabled: true, data: { "crane-complement-target": "field" }, placeholder: "Area Max (m²)" %>
-        <%= f.text_field :crane_recommendation, class: "input input-bordered flex-1", disabled: true, data: { "crane-complement-target": "field" }, placeholder: "Crane Recommendation" %>
-        <%= f.number_field :default_wet_rate_per_day, step: 0.01, class: "input input-bordered flex-1", disabled: true, data: { "crane-complement-target": "field" }, placeholder: "Wet Rate Per Day (R)" %>
+      <!-- Submit Button -->
+      <%= f.submit "Save", data: { "dirty-form-target": "submit" } %>
 
-        <!-- Unsaved Changes Indicator -->
-        <span class="text-warning text-sm font-semibold hidden" data-dirty-form-target="indicator">
-          ⚠
-        </span>
+      <!-- Fields Row with Action Buttons -->
+      <div class="flex gap-4 mb-6 items-end" data-crane-complement-target="fieldsContainer">
+        <!-- Area Display (when not editing) -->
+        <div class="form-group flex-1" data-crane-complement-target="areaDisplay">
+          <div class="input input-bordered w-full flex items-center px-4 py-2 bg-gray-50">
+            <span class="text-gray-700"><%= crane_complement.area_min_sqm %>m² to <%= crane_complement.area_max_sqm %>m²</span>
+          </div>
+        </div>
 
-        <!-- Edit/Save Icon Button (pencil -> checkmark) -->
-        <button type="button" class="btn btn-ghost btn-sm" data-crane-complement-target="editButton" data-action="click->crane-complement#toggleEdit">
-          <i class="fas fa-pencil"></i>
+        <!-- Area Min Field (hidden when not editing) -->
+        <div class="form-group flex-1" data-crane-complement-target="areaMinField">
+          <%= f.number_field :area_min_sqm, 
+            placeholder: "Area Min (m²)",
+            step: 0.01,
+            data: { "crane-complement-target": "field" },
+            class: "input input-bordered w-full",
+            readonly: false %>
+        </div>
+
+        <!-- Area Max Field (hidden when not editing) -->
+        <div class="form-group flex-1" data-crane-complement-target="areaMaxField">
+          <%= f.number_field :area_max_sqm, 
+            placeholder: "Area Max (m²)",
+            step: 0.01,
+            data: { "crane-complement-target": "field" },
+            class: "input input-bordered w-full",
+            readonly: false %>
+        </div>
+
+        <!-- Crane Recommendation Field -->
+        <div class="form-group flex-1">
+          <%= f.text_field :crane_recommendation, 
+            placeholder: "Crane Recommendation",
+            data: { "crane-complement-target": "field" },
+            class: "input input-bordered w-full",
+            readonly: true %>
+        </div>
+
+        <!-- Wet Rate Per Day Field -->
+        <div class="form-group flex-1">
+          <%= f.number_field :default_wet_rate_per_day, 
+            placeholder: "Wet Rate / Day (R)",
+            step: 0.01, 
+            data: { "crane-complement-target": "field" },
+            class: "input input-bordered w-full",
+            readonly: true %>
+        </div>
+
+        <!-- Edit Button (Pencil Icon / Checkmark) -->
+        <button type="button" 
+          data-crane-complement-target="editButton" 
+          data-action="click->crane-complement#toggleEdit"
+          class="btn btn-circle btn-outline btn-sm"
+          title="Edit">
+          <i class="fas fa-pencil text-lg" data-crane-complement-target="editIcon"></i>
         </button>
 
-        <!-- Delete Icon Button -->
-        <%= link_to crane_complement, method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-ghost btn-sm", data: { "crane-complement-target": "deleteButton" } do %>
-          <i class="fas fa-trash"></i>
-        <% end %>
+        <!-- Delete Button (Trash Icon) -->
+        <button type="button"
+          data-crane-complement-target="deleteButton"
+          class="btn btn-circle btn-error btn-sm"
+          title="Delete"
+          onclick="if(confirm('Are you sure?')) { Rails.csrf.token(document.querySelector('meta[name=csrf-token]').content); fetch('<%= crane_complement_path(crane_complement) %>', { method: 'DELETE', headers: { 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]').content } }).then(() => window.location = '<%= crane_complements_path %>'); }">
+          <i class="fas fa-trash text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Status Indicator (Unsaved/Saved) -->
+      <div data-dirty-form-target="indicator" class="flex items-center gap-2 p-3 mb-6 bg-yellow-50 border border-yellow-200 rounded-md">
+        <i class="fas fa-exclamation-circle text-yellow-600" data-dirty-form-target="indicatorIcon"></i>
+        <span class="text-sm font-medium text-yellow-800" data-dirty-form-target="indicatorText">Unsaved changes</span>
+      </div>
+
+      <!-- Saved Confirmation -->
+      <div data-dirty-form-target="savedIndicator" class="flex items-center gap-2 p-3 mb-6 bg-green-50 border border-green-200 rounded-md">
+        <i class="fas fa-check-circle text-green-600"></i>
+        <span class="text-sm font-medium text-green-800">Changes saved</span>
       </div>
     <% end %>
   </div>
