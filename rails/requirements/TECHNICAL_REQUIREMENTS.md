@@ -624,7 +624,7 @@ end
 # Site parameters for equipment/crane calculations
 class CreateTenderSiteConfigs < ActiveRecord::Migration[7.1]
   def change
-    create_table :tender_site_configs do |t|
+    create_table :on_site_mobile_crane_breakdowns do |t|
       t.references :tender,                    foreign_key: true, null: false
 
       # Area and erection parameters
@@ -647,7 +647,7 @@ class CreateTenderSiteConfigs < ActiveRecord::Migration[7.1]
       t.timestamps
     end
 
-    add_index :tender_site_configs, :tender_id, unique: true
+    add_index :on_site_mobile_crane_breakdowns, :tender_id, unique: true
   end
 end
 ```
@@ -907,13 +907,13 @@ class Tender < ApplicationRecord
   belongs_to :created_by, class_name: 'User'
   
   has_one  :tender_setting, dependent: :destroy
-  has_one  :tender_site_config, dependent: :destroy
+  has_one  :on_site_mobile_crane_breakdown, dependent: :destroy
   has_many :tender_line_items, dependent: :destroy
   has_many :tender_equipment_selections, dependent: :destroy
   has_many :tender_preliminary_items, dependent: :destroy
   
   accepts_nested_attributes_for :tender_setting
-  accepts_nested_attributes_for :tender_site_config
+  accepts_nested_attributes_for :on_site_mobile_crane_breakdown
   accepts_nested_attributes_for :tender_line_items, allow_destroy: true
   
   enum status: { draft: 'draft', submitted: 'submitted', won: 'won', lost: 'lost' }
@@ -992,7 +992,7 @@ class TenderCalculator
   def initialize(tender)
     @tender = tender
     @settings = tender.tender_setting
-    @site_config = tender.tender_site_config
+    @site_config = tender.on_site_mobile_crane_breakdown
   end
 
   def calculate_all
@@ -1125,7 +1125,7 @@ CraneRate.create!([
 | Rates Page B16:B33          | `processing_rates`             | Fabrication, erection, etc. rates |
 | Rates Page B35:C56          | `materials`                    | Steel material supply rates       |
 | Rates Page F21:F30          | `tender_inclusions_exclusions` | Include/exclude toggles           |
-| Rates Page E36:H48          | `tender_site_configs`          | Site parameters                   |
+| Rates Page E36:H48          | `on_site_mobile_crane_breakdowns`          | Site parameters                   |
 | Access Equipment            | `equipment_types`              | Cherry picker/boom catalog        |
 | Access Equipment selections | `tender_equipment_selections`  | Equipment per tender              |
 | DATA SHEET LOCKED A4:D10    | `crane_rates`                  | Mobile crane rates                |
@@ -1696,7 +1696,7 @@ end
 | `extra_over_types`             | Castellating, curving, MPI, etc.        | New requirement             |
 | `tenders`                      | Tender header                           | Page 1 header               |
 | `tender_inclusions_exclusions` | Include/exclude toggles                 | Rates Page F21:F30          |
-| `tender_site_configs`          | Site parameters                         | Rates Page E36:H48          |
+| `on_site_mobile_crane_breakdowns`          | Site parameters                         | Rates Page E36:H48          |
 | `tender_line_items`            | BOQ line items                          | Tender Data                 |
 | `line_item_materials`          | Material breakdown per line             | Costing Sheet K:O           |
 | `line_item_rate_build_ups`     | Rate build up calculations              | Costing Sheet C:F           |

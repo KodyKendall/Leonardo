@@ -275,7 +275,7 @@ Lookup table for default crane combinations based on erection area.
 
 ### 5.2 Transactional Data Tables
 
-#### 5.2.1 tender_site_configs
+#### 5.2.1 on_site_mobile_crane_breakdowns
 
 On-site parameters for crane and equipment calculations.
 
@@ -494,8 +494,8 @@ p&g_line_amount = crainage_rate_per_tonne × total_tonnage
 | BR-018 | Program Duration Ceiling | Program duration rounded up to nearest day | `CEILING(roof_area / erection_rate, 1)` |
 | BR-019 | Crane Complement Lookup | Lookup based on erection rate bracket | Query crane_complements table |
 | BR-020 | RSB vs Rental Selection | Support both RSB-owned and rental crane options | crane_rate.ownership_type |
-| BR-021 | Splicing Crane Optional | Splicing crane added only if required | tender_site_configs.splicing_crane_required |
-| BR-022 | Miscellaneous Crane Optional | Miscellaneous crane added only if required | tender_site_configs.misc_crane_required |
+| BR-021 | Splicing Crane Optional | Splicing crane added only if required | on_site_mobile_crane_breakdowns.splicing_crane_required |
+| BR-022 | Miscellaneous Crane Optional | Miscellaneous crane added only if required | on_site_mobile_crane_breakdowns.misc_crane_required |
 | BR-023 | Manual Crane Override | User can override auto-lookup crane selection | Editable tender_crane_selections |
 
 ### 7.2 Calculation Precedence
@@ -553,7 +553,7 @@ p&g_line_amount = crainage_rate_per_tonne × total_tonnage
 - **Given**: roof_area = 19,609 m², erection_rate = 300 m²/day
 - **When**: System calculates program duration
 - **Then**: Result = CEILING(19,609/300, 1) = 66 days
-- **And**: Result stored in tender_site_configs.program_duration_days
+- **And**: Result stored in on_site_mobile_crane_breakdowns.program_duration_days
 
 #### A-C 3: Main Crane Cost Calculation
 - **Given**: 1 × 10t @ R2,200/day + 2 × 25t @ R2,410/day for 100 days
