@@ -510,6 +510,25 @@ crane_rates_data.each do |attrs|
   end
 end
 
+# ===== CRANE COMPLEMENTS =====
+crane_complements_data = [
+  { area_min_sqm: 0.00, area_max_sqm: 150.00, crane_recommendation: '1 × 25t', default_wet_rate_per_day: 1.00 },
+  { area_min_sqm: 150.00, area_max_sqm: 250.00, crane_recommendation: '2 × 25t', default_wet_rate_per_day: 2.00 },
+  { area_min_sqm: 250.00, area_max_sqm: 350.00, crane_recommendation: '3 × 10t', default_wet_rate_per_day: 3.00 },
+  { area_min_sqm: 350.00, area_max_sqm: 450.00, crane_recommendation: '2 × 10t + 1 × 25t + 2 × 35t', default_wet_rate_per_day: 4.00 },
+  { area_min_sqm: 450.00, area_max_sqm: 550.00, crane_recommendation: '2 × 10t + 2 × 25t + 2 × 35t + 1 × 50t', default_wet_rate_per_day: 5.00 }
+]
+
+crane_complements_data.each do |attrs|
+  CraneComplement.find_or_create_by!(
+    area_min_sqm: attrs[:area_min_sqm],
+    area_max_sqm: attrs[:area_max_sqm]
+  ) do |cc|
+    cc.crane_recommendation = attrs[:crane_recommendation]
+    cc.default_wet_rate_per_day = attrs[:default_wet_rate_per_day]
+  end
+end
+
 puts "✅ Database seeded successfully!"
 puts ""
 puts "📊 SEEDED DATA SUMMARY:"
@@ -527,6 +546,7 @@ puts "  • Material Supplies: #{MaterialSupply.count}"
 puts "  • Monthly Material Supply Rates: #{MonthlyMaterialSupplyRate.count}"
 puts "  • Material Supply Rates: #{MaterialSupplyRate.count}"
 puts "  • Crane Rates: #{CraneRate.count}"
+puts "  • Crane Complements: #{CraneComplement.count}"
 puts ""
 puts "🔑 LOGIN CREDENTIALS:"
 puts "  • Email: kody@llamapress.ai (Admin)"

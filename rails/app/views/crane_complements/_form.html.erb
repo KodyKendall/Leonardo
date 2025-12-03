@@ -1,0 +1,37 @@
+<%= form_with(model: crane_complement, class: "contents") do |form| %>
+  <% if crane_complement.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(crane_complement.errors.count, "error") %> prohibited this crane_complement from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% crane_complement.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :area_min_sqm %>
+    <%= form.text_field :area_min_sqm, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": crane_complement.errors[:area_min_sqm].none?, "border-red-400 focus:outline-red-600": crane_complement.errors[:area_min_sqm].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :area_max_sqm %>
+    <%= form.text_field :area_max_sqm, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": crane_complement.errors[:area_max_sqm].none?, "border-red-400 focus:outline-red-600": crane_complement.errors[:area_max_sqm].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :crane_recommendation %>
+    <%= form.text_field :crane_recommendation, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": crane_complement.errors[:crane_recommendation].none?, "border-red-400 focus:outline-red-600": crane_complement.errors[:crane_recommendation].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :default_wet_rate_per_day %>
+    <%= form.text_field :default_wet_rate_per_day, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": crane_complement.errors[:default_wet_rate_per_day].none?, "border-red-400 focus:outline-red-600": crane_complement.errors[:default_wet_rate_per_day].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

@@ -1,0 +1,2 @@
+class CraneComplement < ApplicationRecord
+end
