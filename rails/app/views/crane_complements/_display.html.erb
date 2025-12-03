@@ -1,0 +1,44 @@
+<%= turbo_frame_tag dom_id(crane_complement) do %>
+  <div class="card bg-base-100 shadow-md p-6 mb-6">
+    <h2 class="card-title text-lg mb-4">
+      Crane Bracket: <%= crane_complement.area_min_sqm %>m² to <%= crane_complement.area_max_sqm %>m²
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <!-- Area Range Display -->
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Area Coverage</span>
+        </label>
+        <div class="text-lg font-semibold">
+          <%= crane_complement.area_min_sqm %>m² to <%= crane_complement.area_max_sqm %>m²
+        </div>
+      </div>
+
+      <!-- Crane Recommendation Display -->
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Crane Recommendation</span>
+        </label>
+        <div class="text-lg font-semibold">
+          <%= crane_complement.crane_recommendation.presence || "—" %>
+        </div>
+      </div>
+
+      <!-- Wet Rate Display -->
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Wet Rate Per Day (R)</span>
+        </label>
+        <div class="text-lg font-semibold">
+          <%= number_to_currency(crane_complement.default_wet_rate_per_day, unit: "R") %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Button -->
+    <div class="flex items-center justify-start gap-2">
+      <%= link_to "Edit", edit_crane_complement_path(crane_complement), class: "btn btn-primary" %>
+    </div>
+  </div>
+<% end %>

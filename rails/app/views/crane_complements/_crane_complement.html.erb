@@ -1,72 +1,35 @@
 <%= turbo_frame_tag dom_id(crane_complement) do %>
-  <%= form_with model: crane_complement,
-                local: true,
-                data: {
-                  controller: "dirty-form",
-                  action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset"
-                } do |f| %>
+  <div class="card bg-base-100 shadow-md p-6 mb-6"
+       data-controller="crane-complement dirty-form"
+       data-action="input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset">
     
-    <div class="card bg-base-100 shadow-md p-6 mb-6">
+    <%= form_with model: crane_complement, data: { action: "turbo:submit-end->crane-complement#resetAfterSave" } do |f| %>
+
       <h2 class="card-title text-lg mb-4">
-        Crane Bracket: <%= crane_complement.area_min_sqm %>–<%= crane_complement.area_max_sqm %> m²/day
+        Crane Bracket: <%= crane_complement.area_min_sqm %>m² to <%= crane_complement.area_max_sqm %>m²
       </h2>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <!-- Area Min -->
-        <div class="form-control">
-          <%= f.label :area_min_sqm, "Area Min (m²/day)", class: "label" %>
-          <%= f.number_field :area_min_sqm, 
-                              step: "0.01",
-                              class: "input input-bordered w-full",
-                              placeholder: "e.g., 0.00" %>
-        </div>
+      <div class="flex gap-2 mb-4 items-center">
+        <%= f.number_field :area_min_sqm, step: 0.01, class: "input input-bordered flex-1", disabled: true, data: { "crane-complement-target": "field" }, placeholder: "Area Min (m²)" %>
+        <%= f.number_field :area_max_sqm, step: 0.01, class: "input input-bordered flex-1", disabled: true, data: { "crane-complement-target": "field" }, placeholder: "Area Max (m²)" %>
+        <%= f.text_field :crane_recommendation, class: "input input-bordered flex-1", disabled: true, data: { "crane-complement-target": "field" }, placeholder: "Crane Recommendation" %>
+        <%= f.number_field :default_wet_rate_per_day, step: 0.01, class: "input input-bordered flex-1", disabled: true, data: { "crane-complement-target": "field" }, placeholder: "Wet Rate Per Day (R)" %>
 
-        <!-- Area Max -->
-        <div class="form-control">
-          <%= f.label :area_max_sqm, "Area Max (m²/day)", class: "label" %>
-          <%= f.number_field :area_max_sqm, 
-                              step: "0.01",
-                              class: "input input-bordered w-full",
-                              placeholder: "e.g., 150.00" %>
-        </div>
+        <!-- Unsaved Changes Indicator -->
+        <span class="text-warning text-sm font-semibold hidden" data-dirty-form-target="indicator">
+          ⚠
+        </span>
+
+        <!-- Edit/Save Icon Button (pencil -> checkmark) -->
+        <button type="button" class="btn btn-ghost btn-sm" data-crane-complement-target="editButton" data-action="click->crane-complement#toggleEdit">
+          <i class="fas fa-pencil"></i>
+        </button>
+
+        <!-- Delete Icon Button -->
+        <%= link_to crane_complement, method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-ghost btn-sm", data: { "crane-complement-target": "deleteButton" } do %>
+          <i class="fas fa-trash"></i>
+        <% end %>
       </div>
-
-      <!-- Crane Recommendation -->
-      <div class="form-control mb-4">
-        <%= f.label :crane_recommendation, "Crane Recommendation", class: "label" %>
-        <%= f.text_field :crane_recommendation, 
-                          class: "input input-bordered w-full",
-                          placeholder: "e.g., 1 × 25t" %>
-        <label class="label">
-          <span class="label-text-alt text-gray-500">Max 100 characters</span>
-        </label>
-      </div>
-
-      <!-- Default Wet Rate Per Day -->
-      <div class="form-control mb-4">
-        <%= f.label :default_wet_rate_per_day, "Wet Rate Per Day (R)", class: "label" %>
-        <%= f.number_field :default_wet_rate_per_day, 
-                            step: "0.01",
-                            class: "input input-bordered w-full",
-                            placeholder: "e.g., 1.00" %>
-      </div>
-
-      <!-- Unsaved Changes Indicator & Buttons -->
-      <div class="flex items-center justify-between gap-2">
-        <div class="flex-1">
-          <span class="hidden text-warning text-sm font-medium" data-dirty-form-target="indicator">
-            ⚠️ Unsaved changes
-          </span>
-          <span class="hidden text-success text-sm font-medium" data-dirty-form-target="savedIndicator">
-            ✓ Saved
-          </span>
-        </div>
-        
-        <%= f.submit "Save", 
-                      class: "btn btn-primary",
-                      data: { dirty_form_target: "submit" } %>
-      </div>
-    </div>
-
-  <% end %>
+    <% end %>
+  </div>
 <% end %>

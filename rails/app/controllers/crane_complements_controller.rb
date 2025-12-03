@@ -1,4 +1,5 @@
 class CraneComplementsController < ApplicationController
+  include ActionView::RecordIdentifier
   before_action :set_crane_complement, only: %i[ show edit update destroy ]
 
   # GET /crane_complements or /crane_complements.json
@@ -38,8 +39,6 @@ class CraneComplementsController < ApplicationController
   def update
     respond_to do |format|
       if @crane_complement.update(crane_complement_params)
-        format.html { redirect_to @crane_complement, notice: "Crane complement was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @crane_complement }
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace(
             dom_id(@crane_complement),
@@ -47,9 +46,9 @@ class CraneComplementsController < ApplicationController
             locals: { crane_complement: @crane_complement }
           )
         end
+        format.html { redirect_to @crane_complement, notice: "Crane complement was successfully updated.", status: :see_other }
+        format.json { render :show, status: :ok, location: @crane_complement }
       else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @crane_complement.errors, status: :unprocessable_entity }
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace(
             dom_id(@crane_complement),
@@ -57,6 +56,8 @@ class CraneComplementsController < ApplicationController
             locals: { crane_complement: @crane_complement }
           ), status: :unprocessable_entity
         end
+        format.html { render :edit, status: :unprocessable_entity }
+        format.json { render json: @crane_complement.errors, status: :unprocessable_entity }
       end
     end
   end
