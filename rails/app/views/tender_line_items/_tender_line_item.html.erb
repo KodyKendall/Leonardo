@@ -3,8 +3,9 @@
     <!-- Main Card with Collapsible Breakdown Details -->
     <div class="card bg-base-100 shadow-md">
       <!-- Collapse Wrapper -->
-      <div class="collapse collapse-arrow" data-line-item-id="<%= tender_line_item.id %>">
-        <input type="checkbox" class="line-item-toggle" />
+      <div class="collapse" data-line-item-id="<%= tender_line_item.id %>" id="collapse_<%= tender_line_item.id %>">
+        <!-- Checkbox Toggle (hidden but controls collapse) -->
+        <input type="checkbox" class="line-item-toggle" id="toggle_<%= tender_line_item.id %>" />
         
         <!-- Header Section (always visible) -->
         <div class="collapse-title p-0">
@@ -91,6 +92,10 @@
                 <span class="hidden text-warning text-sm font-medium" data-dirty-form-target="indicator">
                   Unsaved changes
                 </span>
+                <button type="button" class="btn btn-ghost btn-sm ml-auto material-breakdown-toggle" onclick="document.getElementById('toggle_<%= tender_line_item.id %>').click()">
+                  <i class="fas fa-chevron-down"></i>
+                  Material Breakdown
+                </button>
               </div>
             <% end %>
           </div>

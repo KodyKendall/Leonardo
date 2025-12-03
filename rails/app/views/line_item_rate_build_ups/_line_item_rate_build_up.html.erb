@@ -14,7 +14,23 @@
       </div>
 
       <%= form_with model: line_item_rate_build_up, data: { turbo_frame: dom_id(line_item_rate_build_up), line_item_rate_build_up_target: "form" } do |form| %>
-        <div class="overflow-x-auto">
+        <%# Define rate components as an array for cleaner iteration %>
+        <% rate_components = [
+          { name: "Material Supply", rate_field: :material_supply_rate, included_field: :material_supply_included },
+          { name: "Fabrication", rate_field: :fabrication_rate, included_field: :fabrication_included },
+          { name: "Overheads", rate_field: :overheads_rate, included_field: :overheads_included },
+          { name: "Shop Priming", rate_field: :shop_priming_rate, included_field: :shop_priming_included },
+          { name: "Onsite Painting", rate_field: :onsite_painting_rate, included_field: :onsite_painting_included },
+          { name: "Delivery", rate_field: :delivery_rate, included_field: :delivery_included },
+          { name: "Bolts", rate_field: :bolts_rate, included_field: :bolts_included },
+          { name: "Erection", rate_field: :erection_rate, included_field: :erection_included },
+          { name: "Crainage", rate_field: :crainage_rate, included_field: :crainage_included },
+          { name: "Cherry Picker", rate_field: :cherry_picker_rate, included_field: :cherry_picker_included },
+          { name: "Galvanizing", rate_field: :galvanizing_rate, included_field: :galvanizing_included }
+        ] %>
+
+        <!-- Desktop Table View (hidden on mobile) -->
+        <div class="hidden md:block overflow-x-auto">
           <table class="table table-sm w-full">
             <thead>
               <tr class="bg-base-200">
@@ -25,21 +41,6 @@
               </tr>
             </thead>
             <tbody>
-              <%# Define rate components as an array for cleaner iteration %>
-              <% rate_components = [
-                { name: "Material Supply", rate_field: :material_supply_rate, included_field: :material_supply_included },
-                { name: "Fabrication", rate_field: :fabrication_rate, included_field: :fabrication_included },
-                { name: "Overheads", rate_field: :overheads_rate, included_field: :overheads_included },
-                { name: "Shop Priming", rate_field: :shop_priming_rate, included_field: :shop_priming_included },
-                { name: "Onsite Painting", rate_field: :onsite_painting_rate, included_field: :onsite_painting_included },
-                { name: "Delivery", rate_field: :delivery_rate, included_field: :delivery_included },
-                { name: "Bolts", rate_field: :bolts_rate, included_field: :bolts_included },
-                { name: "Erection", rate_field: :erection_rate, included_field: :erection_included },
-                { name: "Crainage", rate_field: :crainage_rate, included_field: :crainage_included },
-                { name: "Cherry Picker", rate_field: :cherry_picker_rate, included_field: :cherry_picker_included },
-                { name: "Galvanizing", rate_field: :galvanizing_rate, included_field: :galvanizing_included }
-              ] %>
-
               <% rate_components.each do |component| %>
                 <% rate_value = line_item_rate_build_up.send(component[:rate_field]) || 0 %>
                 <% is_included = line_item_rate_build_up.send(component[:included_field]) %>
@@ -108,6 +109,83 @@
               </tr>
             </tfoot>
           </table>
+        </div>
+
+        <!-- Mobile Card View (visible on mobile only) -->
+        <div class="md:hidden space-y-3">
+          <% rate_components.each do |component| %>
+            <% rate_value = line_item_rate_build_up.send(component[:rate_field]) || 0 %>
+            <% is_included = line_item_rate_build_up.send(component[:included_field]) %>
+            <div class="bg-base-200 rounded-lg p-3 space-y-2" data-line-item-rate-build-up-target="row">
+              <div class="flex justify-between items-start gap-2">
+                <h3 class="font-semibold text-sm flex-grow"><%= component[:name] %></h3>
+                <div class="flex items-center gap-2">
+                  <%= form.check_box component[:included_field],
+                      class: "checkbox checkbox-sm",
+                      data: {
+                        line_item_rate_build_up_target: "includedCheckbox",
+                        action: "change->line-item-rate-build-up#calculate"
+                      } %>
+                </div>
+              </div>
+              <div class="flex justify-between items-center gap-2">
+                <label class="text-xs text-gray-600">Rate (R):</label>
+                <%= form.number_field component[:rate_field],
+                    step: 0.01,
+                    min: 0,
+                    class: "input input-sm input-bordered w-24 text-right text-xs",
+                    data: {
+                      line_item_rate_build_up_target: "rateInput",
+                      action: "input->line-item-rate-build-up#calculate"
+                    } %>
+              </div>
+              <div class="flex justify-between items-center text-sm font-semibold border-t border-base-300 pt-2" data-line-item-rate-build-up-target="amountCell">
+                <span class="text-gray-600">Amount:</span>
+                <span class="<%= 'text-gray-400' unless is_included %>">
+                  <%= is_included ? number_to_currency(rate_value, unit: "R ", precision: 2) : "—" %>
+                </span>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Summary Section (visible on all screens) -->
+        <div class="mt-6 space-y-2 bg-base-50 rounded-lg p-4">
+          <div class="flex justify-between items-center text-sm">
+            <span class="font-medium">Subtotal:</span>
+            <span class="font-semibold text-blue-600" data-line-item-rate-build-up-target="subtotal">
+              <%= number_to_currency(line_item_rate_build_up.subtotal, unit: "R ", precision: 2) %>
+            </span>
+          </div>
+          
+          <div class="flex justify-between items-center gap-2">
+            <label class="font-medium text-sm">Margin:</label>
+            <%= form.number_field :margin_amount,
+                step: 0.01,
+                min: 0,
+                class: "input input-sm input-bordered w-24 text-right text-xs",
+                data: {
+                  line_item_rate_build_up_target: "marginInput",
+                  action: "input->line-item-rate-build-up#calculate"
+                } %>
+            <span class="font-semibold text-orange-600 text-sm" data-line-item-rate-build-up-target="marginDisplay">
+              <%= number_to_currency(line_item_rate_build_up.margin_amount, unit: "R ", precision: 2) %>
+            </span>
+          </div>
+          
+          <div class="flex justify-between items-center text-sm border-t border-base-300 pt-2">
+            <span class="font-medium">Before Rounding:</span>
+            <span class="font-semibold text-purple-600" data-line-item-rate-build-up_target="beforeRounding">
+              <%= number_to_currency(line_item_rate_build_up.total_before_rounding, unit: "R ", precision: 2) %>
+            </span>
+          </div>
+          
+          <div class="flex justify-between items-center bg-green-50 rounded p-3 mt-3">
+            <span class="font-bold text-green-700">Final Rate:</span>
+            <span class="font-bold text-lg text-green-600" data-line-item-rate-build-up-target="roundedRate">
+              <%= number_to_currency(line_item_rate_build_up.rounded_rate, unit: "R ", precision: 2) %>
+            </span>
+          </div>
         </div>
 
         <div class="mt-6 flex gap-2 items-center">
