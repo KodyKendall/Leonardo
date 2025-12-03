@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_11_30_233000) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_03_170549) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -189,6 +189,23 @@ ActiveRecord::Schema[7.2].define(version: 2025_11_30_233000) do
     t.string "business_name"
     t.string "contact_name"
     t.string "contact_email"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "crane_rates", force: :cascade do |t|
+    t.string "size", null: false
+    t.string "ownership_type", default: "rental", null: false
+    t.decimal "dry_rate_per_day", precision: 12, scale: 2, null: false
+    t.decimal "diesel_per_day", precision: 12, scale: 2, default: "0.0", null: false
+    t.boolean "is_active", default: true
+    t.date "effective_from", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "destroys", force: :cascade do |t|
+    t.string "CraneRequirements"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

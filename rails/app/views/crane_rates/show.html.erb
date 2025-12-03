@@ -1,0 +1,14 @@
+<% content_for :title, "Crane Rate" %>
+
+<div class="w-full">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
+  <% end %>
+
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="font-bold text-4xl">Crane Rate</h1>
+    <%= link_to "Back", crane_rates_path, class: "rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+  </div>
+
+  <%= render @crane_rate %>
+</div>

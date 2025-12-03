@@ -1,0 +1,107 @@
+<%= turbo_frame_tag dom_id(crane_rate) do %>
+  <div class="bg-white rounded-lg border border-gray-200 p-6">
+    <%= form_with(
+      model: crane_rate,
+      local: true,
+      data: {
+        controller: "dirty-form crane-rate",
+        action: "input->dirty-form#change change->dirty-form#change turbo:before-stream-render->dirty-form#showSaveSuccess"
+      }
+    ) do |f| %>
+      <% if crane_rate.errors.any? %>
+        <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+          <h2 class="font-bold text-red-600"><%= pluralize(crane_rate.errors.count, "error") %> prohibited this crane_rate from being saved:</h2>
+          <ul class="list-disc ml-5 mt-2">
+            <% crane_rate.errors.full_messages.each do |message| %>
+              <li class="text-red-600"><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <!-- Hidden Submit Button -->
+      <%= f.submit "", style: "display: none;", data: { "dirty-form-target": "submit" } %>
+
+      <!-- Fields Row with Action Buttons -->
+      <div class="flex gap-4 mb-6 items-end" data-crane-rate-target="fieldsContainer">
+        <!-- Size Field -->
+        <div class="form-group flex-1">
+          <%= f.text_field :size, 
+            placeholder: "Size",
+            data: { "crane-rate-target": "sizeField" },
+            class: "input input-bordered w-full",
+            readonly: true %>
+        </div>
+
+        <!-- Ownership Type Field -->
+        <div class="form-group flex-1">
+          <%= f.select :ownership_type, 
+            [["Rental", "rental"], ["RSB Owned", "rsb_owned"]], 
+            { include_blank: false }, 
+            data: { "crane-rate-target": "ownershipField" },
+            class: "select select-bordered w-full",
+            disabled: true %>
+        </div>
+
+        <!-- Dry Rate Per Day Field -->
+        <div class="form-group flex-1">
+          <%= f.number_field :dry_rate_per_day, 
+            placeholder: "Dry Rate / Day (R)",
+            step: 0.01, 
+            data: { "crane-rate-target": "dryRate", action: "input->crane-rate#dryRateChanged" },
+            class: "input input-bordered w-full",
+            readonly: true %>
+        </div>
+
+        <!-- Diesel Per Day Field -->
+        <div class="form-group flex-1">
+          <%= f.number_field :diesel_per_day, 
+            placeholder: "Diesel / Day (R)",
+            step: 0.01, 
+            data: { "crane-rate-target": "dieselRate", action: "input->crane-rate#dieselRateChanged" },
+            class: "input input-bordered w-full",
+            readonly: true %>
+        </div>
+
+        <!-- Wet Rate Per Day (Calculated, Read-only) -->
+        <div class="form-group flex-1">
+          <div class="input input-bordered w-full flex items-center bg-gray-50 cursor-not-allowed" title="Auto-calculated: Dry Rate + Diesel">
+            <span data-crane-rate-target="wetRate" class="text-gray-900 font-semibold">
+              <%= number_with_precision(crane_rate.wet_rate_per_day, precision: 2) %>
+            </span>
+          </div>
+        </div>
+
+        <!-- Edit Button (Pencil Icon / Checkmark) -->
+        <button type="button" 
+          data-crane-rate-target="editBtn" 
+          data-action="crane-rate#toggleEditMode"
+          class="btn btn-circle btn-outline btn-sm"
+          title="Edit">
+          <i class="fas fa-pencil text-lg" data-crane-rate-target="editIcon"></i>
+        </button>
+
+        <!-- Delete Button (Trash Icon) -->
+        <button type="button"
+          data-crane-rate-target="deleteBtn"
+          class="btn btn-circle btn-error btn-sm"
+          title="Delete"
+          onclick="if(confirm('Are you sure?')) { Rails.csrf.token(document.querySelector('meta[name=csrf-token]').content); fetch('<%= crane_rate_path(crane_rate) %>', { method: 'DELETE', headers: { 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]').content } }).then(() => window.location = '<%= crane_rates_path %>'); }">
+          <i class="fas fa-trash text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Status Indicator (Unsaved/Saved) -->
+      <div data-dirty-form-target="indicator" class="hidden flex items-center gap-2 p-3 mb-6 bg-yellow-50 border border-yellow-200 rounded-md">
+        <i class="fas fa-exclamation-circle text-yellow-600" data-dirty-form-target="indicatorIcon"></i>
+        <span class="text-sm font-medium text-yellow-800" data-dirty-form-target="indicatorText">Unsaved changes</span>
+      </div>
+
+      <!-- Saved Confirmation (hidden by default) -->
+      <div data-dirty-form-target="savedIndicator" class="hidden flex items-center gap-2 p-3 mb-6 bg-green-50 border border-green-200 rounded-md">
+        <i class="fas fa-check-circle text-green-600"></i>
+        <span class="text-sm font-medium text-green-800">Changes saved</span>
+      </div>
+    <% end %>
+  </div>
+<% end %>
