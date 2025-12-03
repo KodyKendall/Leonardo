@@ -152,10 +152,10 @@ The process is embedded in a complex Excel lookup table (DATA SHEET LOCKED) and 
 
 ### 4.1 Step-by-Step Workflow
 
-#### Step 1: Navigate to Site Configuration
+#### Step 1: Navigate to On-Site Mobile Crane Breakdown
 - User opens Tender show page
-- Clicks "Site Configuration" tab or button
-- System displays site config form
+- Clicks "On-Site Mobile Crane Breakdown" tab or button
+- System displays crane breakdown form
 
 #### Step 2: Enter Site Parameters
 - Input: Total Roof Area (m²)
@@ -252,7 +252,7 @@ Lookup table for default crane combinations based on erection rate.
 
 ---
 
-#### Table: tender_site_configs
+#### Table: on_site_mobile_crane_breakdown
 On-site parameters for crane and equipment calculations (one per tender).
 
 | Column | Type | Constraints | Description |
@@ -343,7 +343,7 @@ P&G line items including crainage when not in line rates.
 
 | Parent Table | Child Table | Relationship | Foreign Key | On Delete |
 |--------------|-------------|--------------|-------------|-----------|
-| tenders | tender_site_configs | 1:1 | tender_id | cascade |
+| tenders | on_site_mobile_crane_breakdown | 1:1 | tender_id | cascade |
 | tenders | tender_crane_selections | 1:many | tender_id | cascade |
 | tenders | tender_inclusions_exclusions | 1:1 | tender_id | cascade |
 | tenders | tender_preliminary_items | 1:many | tender_id | cascade |
@@ -362,7 +362,7 @@ Crane_Rates (Master)                Crane_Complements (Master)
                      |                     |
 Tenders -------------+---------------------+
     |
-    +-- (1:1) --> Tender_Site_Configs
+    +-- (1:1) --> On_Site_Mobile_Crane_Breakdown
     |
     +-- (1:1) --> Tender_Inclusions_Exclusions
     |
@@ -382,7 +382,7 @@ Tenders -------------+---------------------+
 | crane_rates | idx_crane_size_ownership | size, ownership_type | btree | Fast lookup by crane type |
 | crane_rates | idx_crane_active | is_active | btree | Filter active rates |
 | crane_complements | idx_complement_bracket | area_min_sqm, area_max_sqm | btree | Fast bracket lookup |
-| tender_site_configs | idx_site_tender | tender_id | unique | One config per tender |
+| on_site_mobile_crane_breakdown | idx_site_tender | tender_id | unique | One config per tender |
 | tender_crane_selections | idx_crane_sel_tender | tender_id | btree | Find all selections for tender |
 | tender_crane_selections | idx_crane_sel_purpose | tender_id, purpose | btree | Find by purpose type |
 | tender_inclusions_exclusions | idx_incl_tender | tender_id | unique | One record per tender |
@@ -398,7 +398,7 @@ Tenders -------------+---------------------+
 ```
 [Tender Show: /tenders/:id]
     |
-    +-- [Site Config Tab: /tenders/:id/site_config]
+    +-- [Crane Breakdown Tab: /tenders/:id/crane_breakdown]
             |
             +-- [Site Parameters Section]
             |       |
@@ -435,10 +435,10 @@ Tenders -------------+---------------------+
 
 ### 6.2 View Specifications
 
-#### View: Site Configuration Page
-- **Route**: `/tenders/:id/site_config` or `/tender_site_configs/:id`
-- **Primary Table**: tender_site_configs
-- **Turbo Frame**: `turbo_frame_tag dom_id(@tender_site_config)`
+#### View: On-Site Mobile Crane Breakdown Page
+- **Route**: `/tenders/:id/crane_breakdown` or `/on_site_mobile_crane_breakdowns/:id`
+- **Primary Table**: on_site_mobile_crane_breakdown
+- **Turbo Frame**: `turbo_frame_tag dom_id(@crane_breakdown)`
 
 **Layout:**
 ```
@@ -669,8 +669,8 @@ line_item_rate_build_up.crainage_included = false
 | BR-018 | Program Duration Ceiling | Program duration rounded up to nearest day | `(roof_area / erection_rate).ceil` |
 | BR-019 | Crane Complement Lookup | Lookup based on erection rate bracket | Query crane_complements table |
 | BR-020 | RSB vs Rental Selection | Support both ownership types | crane_rate.ownership_type filter |
-| BR-021 | Splicing Crane Optional | Only if required flag is true | tender_site_config.splicing_crane_required |
-| BR-022 | Miscellaneous Crane Optional | Only if required flag is true | tender_site_config.misc_crane_required |
+| BR-021 | Splicing Crane Optional | Only if required flag is true | on_site_mobile_crane_breakdown.splicing_crane_required |
+| BR-022 | Miscellaneous Crane Optional | Only if required flag is true | on_site_mobile_crane_breakdown.misc_crane_required |
 | BR-023 | Manual Crane Override | User can override auto-lookup selection | Editable tender_crane_selections |
 | BR-024 | Rate Snapshot | Crane rates frozen at selection time | Store wet_rate_per_day in tender_crane_selection |
 
@@ -699,12 +699,12 @@ Build and test bottom-up: master data first, then transactional, then UI. Each c
 |-------|-------|-----------------|-------------------|-------|-----------|
 | 1 | CraneRate | Seed 14 rates (7 sizes × 2 ownership) | index, show | /crane_rates | None |
 | 2 | CraneComplement | Seed 5 bracket lookups | index, show | /crane_complements | None |
-| 3 | TenderSiteConfig | One per tender | show, update | /tender_site_configs/:id | Tender |
+| 3 | TenderSiteConfig | One per tender | show, update | /on_site_mobile_crane_breakdowns/:id | Tender |
 | 4 | TenderCraneSelection | Multiple per tender | create, update, destroy | /tender_crane_selections | TenderSiteConfig |
 | 5 | TenderInclusionExclusion | One per tender | show, update | /tender_inclusions_exclusions/:id | Tender |
 | 6 | TenderPreliminaryItem | P&G line items | index, show, update | /tender_preliminary_items | Tender |
 | 7 | CrainageCalculatorService | Calculate totals | N/A (service) | N/A | All above |
-| 8 | Site Config UI (Integration) | Full page | site_config action on TendersController | /tenders/:id/site_config | All above |
+| 8 | Crane Breakdown UI (Integration) | Full page | crane_breakdown action on TendersController | /tenders/:id/crane_breakdown | All above |
 
 ### 8.2 Per-Component Task Breakdown
 
@@ -755,28 +755,28 @@ Build and test bottom-up: master data first, then transactional, then UI. Each c
 
 ---
 
-#### Component 3: Tender Site Config
+#### Component 3: On-Site Mobile Crane Breakdown
 **Files:**
-- `app/models/tender_site_config.rb`
-- `app/controllers/tender_site_configs_controller.rb`
-- `app/views/tender_site_configs/show.html.erb`
-- `app/views/tender_site_configs/_tender_site_config.html.erb`
-- `db/migrate/xxx_create_tender_site_configs.rb`
+- `app/models/on_site_mobile_crane_breakdown.rb`
+- `app/controllers/on_site_mobile_crane_breakdowns_controller.rb`
+- `app/views/on_site_mobile_crane_breakdowns/show.html.erb`
+- `app/views/on_site_mobile_crane_breakdowns/_on_site_mobile_crane_breakdown.html.erb`
+- `db/migrate/xxx_create_on_site_mobile_crane_breakdowns.rb`
 
 **Tasks:**
-1. Create migration for tender_site_configs table
-2. Create TenderSiteConfig model with:
+1. Create migration for on_site_mobile_crane_breakdowns table
+2. Create OnSiteMobileCraneBreakdown model with:
    - `belongs_to :tender`
    - `before_save :calculate_program_duration`
    - Validations for numeric fields
-3. Add to Tender model: `has_one :tender_site_config, dependent: :destroy`
+3. Add to Tender model: `has_one :on_site_mobile_crane_breakdown, dependent: :destroy`
 4. Build controller with show, update actions
 5. Build editable partial with dirty-form controller
 6. Auto-create site config when tender is created (callback)
 
 **Acceptance Criteria:**
-- [ ] Create tender → TenderSiteConfig auto-creates
-- [ ] /tender_site_configs/:id displays editable form
+- [ ] Create tender → OnSiteMobileCraneBreakdown auto-creates
+- [ ] /on_site_mobile_crane_breakdowns/:id displays editable form
 - [ ] Enter roof area + erection rate → program duration calculates on blur
 - [ ] Save updates database; dirty indicator works
 - [ ] Validation: roof area > 0, erection rate > 0
@@ -886,32 +886,32 @@ Build and test bottom-up: master data first, then transactional, then UI. Each c
 
 ---
 
-#### Component 8: Site Config UI Integration
+#### Component 8: Crane Breakdown UI Integration
 **Files:**
-- `app/controllers/tenders_controller.rb` (add site_config action)
-- `app/views/tenders/site_config.html.erb`
-- `app/javascript/controllers/site_config_controller.js`
+- `app/controllers/tenders_controller.rb` (add crane_breakdown action)
+- `app/views/tenders/crane_breakdown.html.erb`
+- `app/javascript/controllers/crane_breakdown_controller.js`
 - `app/javascript/controllers/crane_selection_controller.js`
 - Routes update
 
 **Tasks:**
-1. Add `site_config` action to TendersController
-2. Build site_config.html.erb page composing all partials:
-   - TenderSiteConfig partial (parameters)
+1. Add `crane_breakdown` action to TendersController
+2. Build crane_breakdown.html.erb page composing all partials:
+   - OnSiteMobileCraneBreakdown partial (parameters)
    - Crane complement display with override button
    - Optional cranes section
    - Cost summary section
    - Inclusion toggle section
-3. Build site_config_controller.js for:
+3. Build crane_breakdown_controller.js for:
    - Program duration calculation on input
    - Crane complement lookup on rate change
 4. Build crane_selection_controller.js for:
    - Cost calculation on quantity/duration change
    - Total summary update
-5. Add route: `get 'tenders/:id/site_config', to: 'tenders#site_config'`
+5. Add route: `get 'tenders/:id/crane_breakdown', to: 'tenders#crane_breakdown'`
 
 **Acceptance Criteria:**
-- [ ] /tenders/:id/site_config renders full page
+- [ ] /tenders/:id/crane_breakdown renders full page
 - [ ] Enter roof area + erection rate → duration updates live (Stimulus)
 - [ ] Erection rate change → crane complement lookup displays
 - [ ] Can add/edit/delete crane selections inline
