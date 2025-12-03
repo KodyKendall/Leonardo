@@ -7,13 +7,14 @@ export default class extends Controller {
     this.originalData = new FormData(this.element)
     this.isDirty = false
     
-    // Check if we just saved
-    if (sessionStorage.getItem("crane-rate:just-saved")) {
-      sessionStorage.removeItem("crane-rate:just-saved")
-      this.showSavedState()
+    // Check if we just saved - show success message on fresh form after stream render
+    if (sessionStorage.getItem("dirty-form:show-saved")) {
+      sessionStorage.removeItem("dirty-form:show-saved")
+      // Give the DOM a moment to fully render before showing success
+      setTimeout(() => this.showSavedState(), 50)
     }
     
-    // Listen for turbo:submit-end to show saved state
+    // Listen for successful form submission
     this.element.addEventListener("turbo:submit-end", (e) => this.handleSubmitEnd(e))
   }
 
@@ -44,10 +45,11 @@ export default class extends Controller {
   }
 
   handleSubmitEnd(event) {
-    // Show saved state if submission was successful (no errors)
-    // Turbo Stream responses with 200-299 status codes have success: true
+    // Turbo Stream responses return success: true for 200-299 status codes
+    // The update action renders turbo_stream with status 200 on success
     if (event.detail.success) {
-      this.showSavedState()
+      // Set a flag to show saved state after the Turbo Stream re-renders the form
+      sessionStorage.setItem("dirty-form:show-saved", "true")
     }
   }
 
