@@ -490,6 +490,26 @@ LineItemMaterial.find_or_create_by!(
   m.proportion = 1.0
 end
 
+# ===== CRANE RATES =====
+crane_rates_data = [
+  { size: '110t', ownership_type: 'rental', dry_rate_per_day: 12500.00, diesel_per_day: 1000.00 },
+  { size: '90t', ownership_type: 'rental', dry_rate_per_day: 12500.00, diesel_per_day: 1000.00 },
+  { size: '50t', ownership_type: 'rental', dry_rate_per_day: 8500.00, diesel_per_day: 850.00 },
+  { size: '35t', ownership_type: 'rental', dry_rate_per_day: 3850.00, diesel_per_day: 750.00 },
+  { size: '30t', ownership_type: 'rental', dry_rate_per_day: 3650.00, diesel_per_day: 750.00 },
+  { size: '25t', ownership_type: 'rental', dry_rate_per_day: 3400.00, diesel_per_day: 750.00 },
+  { size: '20t', ownership_type: 'rsb_owned', dry_rate_per_day: 3150.00, diesel_per_day: 750.00 },
+  { size: '10t', ownership_type: 'rental', dry_rate_per_day: 1300.00, diesel_per_day: 750.00 }
+]
+
+crane_rates_data.each do |attrs|
+  CraneRate.find_or_create_by!(size: attrs[:size], ownership_type: attrs[:ownership_type], effective_from: Date.today) do |cr|
+    cr.dry_rate_per_day = attrs[:dry_rate_per_day]
+    cr.diesel_per_day = attrs[:diesel_per_day]
+    cr.is_active = true
+  end
+end
+
 puts "✅ Database seeded successfully!"
 puts ""
 puts "📊 SEEDED DATA SUMMARY:"
@@ -506,6 +526,7 @@ puts "  • Suppliers: #{Supplier.count}"
 puts "  • Material Supplies: #{MaterialSupply.count}"
 puts "  • Monthly Material Supply Rates: #{MonthlyMaterialSupplyRate.count}"
 puts "  • Material Supply Rates: #{MaterialSupplyRate.count}"
+puts "  • Crane Rates: #{CraneRate.count}"
 puts ""
 puts "🔑 LOGIN CREDENTIALS:"
 puts "  • Email: kody@llamapress.ai (Admin)"

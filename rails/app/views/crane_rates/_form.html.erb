@@ -1,0 +1,47 @@
+<%= form_with(model: crane_rate, class: "contents") do |form| %>
+  <% if crane_rate.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(crane_rate.errors.count, "error") %> prohibited this crane_rate from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% crane_rate.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :size %>
+    <%= form.text_field :size, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": crane_rate.errors[:size].none?, "border-red-400 focus:outline-red-600": crane_rate.errors[:size].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :ownership_type %>
+    <%= form.text_field :ownership_type, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": crane_rate.errors[:ownership_type].none?, "border-red-400 focus:outline-red-600": crane_rate.errors[:ownership_type].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :dry_rate_per_day %>
+    <%= form.text_field :dry_rate_per_day, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": crane_rate.errors[:dry_rate_per_day].none?, "border-red-400 focus:outline-red-600": crane_rate.errors[:dry_rate_per_day].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :diesel_per_day %>
+    <%= form.text_field :diesel_per_day, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": crane_rate.errors[:diesel_per_day].none?, "border-red-400 focus:outline-red-600": crane_rate.errors[:diesel_per_day].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :is_active %>
+    <%= form.check_box :is_active, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": crane_rate.errors[:is_active].none?, "border-red-400 focus:outline-red-600": crane_rate.errors[:is_active].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :effective_from %>
+    <%= form.date_field :effective_from, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": crane_rate.errors[:effective_from].none?, "border-red-400 focus:outline-red-600": crane_rate.errors[:effective_from].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

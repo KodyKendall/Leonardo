@@ -1,0 +1,54 @@
+<tr id="<%= dom_id crane_rate %>">
+  <td colspan="6">
+    <%= turbo_frame_tag dom_id(crane_rate, :edit) do %>
+      <div class="py-4">
+        <%= form_with(model: crane_rate, local: true, class: "space-y-3") do |form| %>
+          <% if crane_rate.errors.any? %>
+            <div class="alert alert-error">
+              <span><%= pluralize(crane_rate.errors.count, "error") %> prohibited this crane_rate from being saved</span>
+            </div>
+          <% end %>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="form-control">
+              <%= form.label :size, "Crane Size" %>
+              <%= form.text_field :size, class: "input input-bordered input-sm w-full" %>
+            </div>
+
+            <div class="form-control">
+              <%= form.label :ownership_type, "Ownership Type" %>
+              <%= form.select :ownership_type, ["rsb_owned", "rental"], { prompt: "Select type" }, class: "select select-bordered select-sm w-full" %>
+            </div>
+
+            <div class="form-control">
+              <%= form.label :dry_rate_per_day, "Dry Rate / Day (9 HRS)" %>
+              <%= form.number_field :dry_rate_per_day, step: 0.01, class: "input input-bordered input-sm w-full" %>
+            </div>
+
+            <div class="form-control">
+              <%= form.label :diesel_per_day, "Diesel Allowance / Day" %>
+              <%= form.number_field :diesel_per_day, step: 0.01, class: "input input-bordered input-sm w-full" %>
+            </div>
+
+            <div class="form-control">
+              <%= form.label :effective_from, "Effective From" %>
+              <%= form.date_field :effective_from, class: "input input-bordered input-sm w-full" %>
+            </div>
+
+            <div class="form-control">
+              <%= form.label :is_active, class: "label cursor-pointer" do %>
+                <%= form.check_box :is_active, class: "checkbox checkbox-sm" %>
+                <span class="label-text ml-2">Active</span>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="flex gap-2 mt-4">
+            <%= form.submit "Save", class: "btn btn-sm btn-primary" %>
+            <%= link_to "Cancel", crane_rate, class: "btn btn-sm btn-ghost" %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </td>
+</tr>
