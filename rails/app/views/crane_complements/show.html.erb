@@ -1,3 +1,12 @@
-<%= turbo_frame_tag dom_id(@crane_complement) do %>
+<% content_for :title, "Crane Complement" %>
+
+<div class="w-full">
+  <%= render "shared/notice", notice: notice %>
+
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="font-bold text-4xl">Crane Complement</h1>
+    <%= link_to "Back", crane_complements_path, class: "rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+  </div>
+
   <%= render @crane_complement %>
-<% end %>
+</div>

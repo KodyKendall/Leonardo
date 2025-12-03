@@ -42,11 +42,18 @@ class CraneComplementsController < ApplicationController
         format.html { redirect_to @crane_complement, notice: "Crane complement was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @crane_complement }
         format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
-            dom_id(@crane_complement),
-            partial: "crane_complements/crane_complement",
-            locals: { crane_complement: @crane_complement }
-          )
+          render turbo_stream: [
+            turbo_stream.replace(
+              dom_id(@crane_complement),
+              partial: "crane_complements/crane_complement",
+              locals: { crane_complement: @crane_complement }
+            ),
+            turbo_stream.replace(
+              "notice",
+              partial: "shared/notice",
+              locals: { notice: "Crane complement was successfully updated." }
+            )
+          ]
         end
       else
         format.html { render :edit, status: :unprocessable_entity }
