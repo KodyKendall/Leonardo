@@ -239,9 +239,8 @@ Lookup table for default crane combinations based on erection rate.
 | id | bigint | PK, auto-increment | Primary key |
 | area_min_sqm | decimal(10,2) | NOT NULL | Minimum m²/day for this bracket |
 | area_max_sqm | decimal(10,2) | NOT NULL | Maximum m²/day for this bracket |
-| complement_description | string(100) | NOT NULL | Crane combination text (e.g., "1 × 10t + 2 × 25t") |
+| crane_recommendation | string(100) | NOT NULL | Crane combination text (e.g., "1 × 10t + 2 × 25t") |
 | default_wet_rate_per_day | decimal(12,2) | NOT NULL | Combined daily wet rate |
-| is_active | boolean | DEFAULT true | Whether bracket is active |
 | created_at | datetime | NOT NULL | |
 | updated_at | datetime | NOT NULL | |
 
@@ -395,136 +394,256 @@ Tenders -------------+---------------------+
 
 ### 6.1 Screen Hierarchy
 
+**Routing Principles:**
+- Every model has its own independent `/show` route
+- Parent models index their children inline (no modals)
+- All edits happen inline with dirty-form indicators
+- Each partial is independently testable via its own route
+
 ```
-[Tender Show: /tenders/:id]
+[OnSiteMobileCraneBreakdown Show: /on_site_mobile_crane_breakdowns/:id]
     |
-    +-- [Crane Breakdown Tab: /tenders/:id/crane_breakdown]
+    +-- [Editable Partial: _on_site_mobile_crane_breakdown.html.erb]
+    |       |
+    |       +-- Total Roof Area (editable, Turbo Frame)
+    |       +-- Erection Rate (editable, Turbo Frame)
+    |       +-- Program Duration (read-only, calculated)
+    |       +-- Ownership Type Radio (editable, Turbo Frame)
+    |       +-- Splicing Crane Required Checkbox
+    |       +-- Misc Crane Required Checkbox
+    |
+    +-- [Crane Complements Index: /crane_complements]
+    |       |
+    |       +-- (read-only master data for reference)
+    |
+    +-- [Tender Crane Selections Index: /tenders/:tender_id/crane_selections]
             |
-            +-- [Site Parameters Section]
+            +-- [Crane Selection 1 Show: /tender_crane_selections/:id]
             |       |
-            |       +-- Roof Area Input
-            |       +-- Erection Rate Input
-            |       +-- Program Duration Display (calculated)
+            |       +-- [Editable Partial: _tender_crane_selection.html.erb]
+            |               |
+            |               +-- Purpose (main/splicing/misc, read-only)
+            |               +-- Size Dropdown (editable, Turbo Frame)
+            |               +-- Quantity (editable, Turbo Frame)
+            |               +-- Duration Days (editable, Turbo Frame)
+            |               +-- Wet Rate (read-only snapshot, auto-calculated)
+            |               +-- Total Cost (read-only, calculated)
+            |               +-- Delete button (Turbo Stream)
             |
-            +-- [Crane Complement Section]
-            |       |
-            |       +-- Auto-Lookup Display
-            |       +-- Override Modal (if editing)
+            +-- [Crane Selection 2 Show: /tender_crane_selections/:id]
             |
-            +-- [Optional Cranes Section]
-            |       |
-            |       +-- Splicing Crane Toggle + Config
-            |       +-- Miscellaneous Crane Toggle + Config
+            +-- [+ Add Crane button] → creates new selection
             |
-            +-- [Ownership Selection]
-            |       |
-            |       +-- RSB-Owned / Rental Radio
-            |
-            +-- [Cost Summary Section]
+            +-- [Cost Summary (read-only calculated display)]
             |       |
             |       +-- Main Crane Cost
-            |       +-- Splicing Cost
-            |       +-- Misc Cost
+            |       +-- Splicing Crane Cost
+            |       +-- Misc Crane Cost
             |       +-- Total Crainage
             |       +-- Rate per Tonne
             |
-            +-- [Inclusion Toggle Section]
+            +-- [Tender Inclusion Exclusion Show: /tender_inclusions_exclusions/:id]
                     |
-                    +-- Line Items / P&G Radio
+                    +-- [Editable Partial: _tender_inclusion_exclusion.html.erb]
+                            |
+                            +-- Include in Line Items Radio (editable, Turbo Frame)
+                            +-- Include in P&G Radio (editable, Turbo Frame)
 ```
 
 ### 6.2 View Specifications
 
-#### View: On-Site Mobile Crane Breakdown Page
-- **Route**: `/tenders/:id/crane_breakdown` or `/on_site_mobile_crane_breakdowns/:id`
+#### View 1: On-Site Mobile Crane Breakdown Show
+- **Route**: `/on_site_mobile_crane_breakdowns/:id`
 - **Primary Table**: on_site_mobile_crane_breakdown
-- **Turbo Frame**: `turbo_frame_tag dom_id(@crane_breakdown)`
+- **Turbo Frame**: `turbo_frame_tag dom_id(@breakdown)`
+- **Parent Page**: Links back to `/tenders/:tender_id` 
+- **Layout**: Just renders `_on_site_mobile_crane_breakdown.html.erb` partial
 
-**Layout:**
+**Page displays:**
 ```
 +----------------------------------------------------------+
 | Site Configuration for E3801                              |
+| [← Back to Tender]                                        |
 +----------------------------------------------------------+
-| Site Parameters                                           |
-| ┌──────────────────────────────────────────────────────┐ |
-| │ Total Roof Area:      [19,609    ] m²                │ |
-| │ Erection Rate:        [   300    ] m²/day            │ |
-| │ Program Duration:     66 days (calculated)           │ |
-| └──────────────────────────────────────────────────────┘ |
-|                                                          |
-| Crane Complement                                         |
-| ┌──────────────────────────────────────────────────────┐ |
-| │ Recommended: 1 × 10t + 2 × 25t                       │ |
-| │ Combined Rate: R8,300/day (wet)                      │ |
-| │                                    [Override Cranes] │ |
-| └──────────────────────────────────────────────────────┘ |
-|                                                          |
-| Optional Cranes                                          |
-| ┌──────────────────────────────────────────────────────┐ |
-| │ [✓] Splicing crane required                          │ |
-| │     Size: [25t ▼]  Duration: [70] days               │ |
-| │     Cost: R168,700                                   │ |
-| │                                                      │ |
-| │ [ ] Miscellaneous crane required                     │ |
-| └──────────────────────────────────────────────────────┘ |
-|                                                          |
-| Crane Ownership                                          |
-| ┌──────────────────────────────────────────────────────┐ |
-| │ (•) Rental    ( ) RSB-Owned                          │ |
-| └──────────────────────────────────────────────────────┘ |
-|                                                          |
-| Cost Summary                                             |
-| ┌──────────────────────────────────────────────────────┐ |
-| │ Main Crane Cost:       R 547,800                     │ |
-| │ Splicing Crane Cost:   R 168,700                     │ |
-| │ Miscellaneous Cost:    R       0                     │ |
-| │ ─────────────────────────────────                    │ |
-| │ TOTAL CRAINAGE:        R 716,500                     │ |
-| │ Rate per Tonne:        R     780 /t (rounded)        │ |
-| └──────────────────────────────────────────────────────┘ |
-|                                                          |
-| Crainage Inclusion                                       |
-| ┌──────────────────────────────────────────────────────┐ |
-| │ Where should crainage be charged?                    │ |
-| │ ( ) Include in Line Item Rates                       │ |
-| │ (•) Include in P&G (Preliminaries & General)         │ |
-| │                                                      │ |
-| │ ⓘ Selecting one excludes the other to prevent       │ |
-| │   double-counting                                    │ |
-| └──────────────────────────────────────────────────────┘ |
-|                                                          |
-|                              [Save Configuration]        |
+| 
+| ⏱ Last updated 2 minutes ago
+|
+| Total Roof Area:      [19,609    ✏] m²   [✓ Save]
+| Erection Rate:        [   300    ✏] m²/day
+| Program Duration:     66 days (calculated)
+| 
+| Ownership Type:
+| (•) Rental    ( ) RSB-Owned
+|
+| [✓] Splicing crane required?
+| [ ] Miscellaneous crane required?
+|
+| [View All Crane Selections] ← Links to crane_selections index
+|
 +----------------------------------------------------------+
 ```
 
-#### View: Crane Selection Override Modal
-- **Trigger**: Click "Override Cranes" button
-- **Display**: Editable list of crane selections
+**Key Points:**
+- All fields are inline editable (pencil icon)
+- Dirty indicator shows unsaved changes
+- Save via Checkmark → async POST/PATCH, no page reload
+- "View All Crane Selections" links to `/tenders/:tender_id/crane_selections`
 
-**Modal Layout:**
+---
+
+#### View 2: Tender Crane Selections Index
+- **Route**: `/tenders/:tender_id/crane_selections`
+- **Primary Table**: tender_crane_selections (index of records for tender)
+- **Parent**: OnSiteMobileCraneBreakdown (via tender)
+- **Layout**: Page renders a list of `_tender_crane_selection.html.erb` partials, one per selection
+
+**Page displays:**
 ```
-+----------------------------------------------+
-| Edit Crane Selection                    [×]  |
-+----------------------------------------------+
-| Main Cranes (for 66 days):                   |
-| ┌──────────────────────────────────────────┐ |
-| │ Size    Qty   Rate/Day    Subtotal       │ |
-| │ [10t▼]  [1]   R2,200      R145,200  [×]  │ |
-| │ [25t▼]  [2]   R2,410      R318,120  [×]  │ |
-| │                                          │ |
-| │ [+ Add Crane]                            │ |
-| │                                          │ |
-| │ Total Daily Rate: R7,020                 │ |
-| │ Total Main Cost:  R463,320               │ |
-| └──────────────────────────────────────────┘ |
-|                                              |
-|                    [Cancel]  [Save Changes]  |
-+----------------------------------------------+
++----------------------------------------------------------+
+| Crane Selections for E3801                                |
+| [← Back to Site Config]                                  |
++----------------------------------------------------------+
+|
+| Crane Selection #1: Main Crane                            
+| ┌─────────────────────────────────────────────────────┐  |
+| │ Purpose:    Main         (read-only label)          │  |
+| │ Size:       [10t ▼ ✏]   (edit via dropdown)        │  |
+| │ Quantity:   [1    ✏]                               │  |
+| │ Duration:   [66   ✏] days                          │  |
+| │ Wet Rate:   R2,200/day (read-only, from crane_rates)  │  |
+| │ Total Cost: R145,200 (calculated)                   │  |
+| │                                      [Edit] [Delete] │  |
+| └─────────────────────────────────────────────────────┘  |
+|
+| Crane Selection #2: Main Crane (2nd)                      
+| ┌─────────────────────────────────────────────────────┐  |
+| │ Purpose:    Main                                    │  |
+| │ Size:       [25t ▼ ✏]                              │  |
+| │ Quantity:   [2    ✏]                               │  |
+| │ Duration:   [66   ✏] days                          │  |
+| │ Wet Rate:   R2,410/day                             │  |
+| │ Total Cost: R318,120                               │  |
+| │                                      [Edit] [Delete] │  |
+| └─────────────────────────────────────────────────────┘  |
+|
+| Crane Selection #3: Splicing Crane                        
+| ┌─────────────────────────────────────────────────────┐  |
+| │ Purpose:    Splicing                               │  |
+| │ Size:       [25t ▼ ✏]                              │  |
+| │ Quantity:   [1    ✏]                               │  |
+| │ Duration:   [70   ✏] days                          │  |
+| │ Wet Rate:   R2,410/day                             │  |
+| │ Total Cost: R168,700                               │  |
+| │                                      [Edit] [Delete] │  |
+| └─────────────────────────────────────────────────────┘  |
+|
+| [+ Add Crane Selection]  ← Creates new, appends to index
+|
+| ─────────────────────────────────────────────────────────
+| COST SUMMARY (read-only, calculated):
+| Main Crane Cost:        R463,320
+| Splicing Crane Cost:    R168,700
+| Miscellaneous Cost:     R      0
+| ────────────────────────────────
+| TOTAL CRAINAGE:         R632,020
+| Crainage Rate/Tonne:    R    780 (rounded to nearest R20)
+|
++----------------------------------------------------------+
 ```
 
-#### View: Cost Summary Card
-- **Location**: Right sidebar or bottom of site config
-- **Updates**: Real-time via Stimulus controller
+**Key Points:**
+- Each crane selection renders as an editable card
+- Edit/Delete buttons on each card
+- All field edits happen inline with Turbo Frame wrapping
+- Changes recalculate costs in real-time (Stimulus controller)
+- Cost summary updates after each save
+- "[+ Add Crane Selection]" button POSTs to create new record, appends to list
+- "Delete" button removes via TURBO STREAM (no page reload)
+
+---
+
+#### View 3: Tender Crane Selection Show
+- **Route**: `/tender_crane_selections/:id`
+- **Primary Table**: tender_crane_selection (single record)
+- **Turbo Frame**: `turbo_frame_tag dom_id(@selection)`
+- **Layout**: Renders just the `_tender_crane_selection.html.erb` partial
+
+**Page displays:**
+```
++----------------------------------------------------------+
+| Crane Selection #2                                        |
+| [← Back to Crane Selections]                             |
++----------------------------------------------------------+
+|
+| Purpose:    Main (read-only)
+| Size:       [25t ▼ ✏]   (edit inline, Turbo Frame)
+| Quantity:   [2    ✏]
+| Duration:   [66   ✏] days
+| Wet Rate:   R2,410/day (read-only snapshot)
+| Total Cost: R318,120 (read-only calculated)
+|
+| ⏱ Last updated 5 minutes ago
+|
+| [Edit Crane]  [Delete]  [Back to List]
+|
++----------------------------------------------------------+
+```
+
+**Key Points:**
+- Developer can iterate on this component independently
+- No parent views needed to test
+- Edit via inline Turbo Frames
+- Delete via Turbo Stream confirmation
+- Breadcrumb links back to crane_selections index
+
+---
+
+#### View 4: Tender Inclusion/Exclusion Show
+- **Route**: `/tender_inclusions_exclusions/:id`
+- **Primary Table**: tender_inclusion_exclusion (one per tender)
+- **Parent**: Tender
+- **Layout**: Renders just the `_tender_inclusion_exclusion.html.erb` partial
+
+**Page displays:**
+```
++----------------------------------------------------------+
+| Crainage Inclusion Settings for E3801                    |
+| [← Back to Tender]                                       |
++----------------------------------------------------------+
+|
+| Where should crainage be charged?
+|
+| ( ) Include in Line Item Rates
+|     (All line items get crainage_rate added to their cost)
+|
+| (•) Include in P&G (Preliminaries & General)
+|     (Single lump-sum P&G line item for total crainage)
+|
+| ⓘ These are mutually exclusive. Selecting one 
+|   automatically deselects the other to prevent 
+|   double-counting.
+|
+| ⏱ Last updated 10 minutes ago
+|
+| [Back to Tender]
+|
++----------------------------------------------------------+
+```
+
+**Key Points:**
+- Radio buttons for include_crainage toggle
+- On selection → async PATCH, no page reload
+- Mutually exclusive enforcement in model/controller
+- After save, triggers CrainageCalculatorService to redistribute
+
+---
+
+#### View 5: Cost Summary (Displayed on Multiple Views)
+- **Location**: Fixed card/sidebar shown on:
+  - `/tender_crane_selections` (crane selections index)
+  - `/on_site_mobile_crane_breakdowns/:id` (site config)
+- **Updates**: Via Turbo Stream after each selection save
+- **Read-only**: All fields calculated, no user input
 
 **Display:**
 ```
@@ -544,21 +663,46 @@ Tenders -------------+---------------------+
 │ TOTAL CRAINAGE:           R632,020  │
 │                                     │
 │ Total Tonnage:            931.62 t  │
-│ Rate per Tonne:           R    680  │
+│ Rate per Tonne:           R    780  │
 │ (rounded to nearest R20)            │
 └─────────────────────────────────────┘
 ```
 
+**Key Points:**
+- Displayed as a separate Turbo Frame
+- Updates after CrainageCalculatorService runs
+- No direct user interaction (read-only summary)
+
 ### 6.3 UI Composition Rules
 
-| Parent View | Child Component | Display Style | Interaction |
-|-------------|-----------------|---------------|-------------|
-| Site Config Form | Site Parameters | Card with inputs | Edit inline |
-| Site Config Form | Crane Complement | Card with display | Click to override (modal) |
-| Site Config Form | Optional Cranes | Collapsible sections | Toggle checkbox to expand |
-| Site Config Form | Cost Summary | Fixed sidebar/card | Read-only, auto-updates |
-| Site Config Form | Inclusion Toggle | Radio buttons | Mutual exclusion |
-| Crane Override Modal | Crane Selection List | Editable table rows | Add/edit/delete |
+**RULE 1: NO MODALS** - All editing happens inline or on dedicated show pages.
+
+**RULE 2: INLINE EDITING** - Every field is editable inline with Turbo Frame wrapping:
+- Pencil icon on hover
+- Edit mode: input field + Checkmark (save) + X (cancel)
+- Dirty indicator: shows unsaved changes
+- On Checkmark: async PATCH request, no page reload
+- All updates via Turbo Streams
+
+**RULE 3: INDEPENDENT ROUTES** - Every model has its own `/show` route:
+- `/on_site_mobile_crane_breakdowns/:id` — Site config editable
+- `/tender_crane_selections/:id` — Individual crane selection editable
+- `/tender_inclusions_exclusions/:id` — Inclusion toggle editable
+- Developers can test each component in isolation
+
+**RULE 4: PARENT INDEXES CHILDREN** - Parent show pages render child collections:
+- `/tender_crane_selections` (index) renders list of `_tender_crane_selection.html.erb` partials
+- Each partial is independently editable inline
+- "+ Add" button creates new child, appends to list via Turbo Stream
+- Delete button removes child via Turbo Stream
+
+| View | Route | Primary Table | Editable Fields | Layout |
+|------|-------|---------------|-----------------|--------|
+| Site Config | `/on_site_mobile_crane_breakdowns/:id` | on_site_mobile_crane_breakdown | roof_area, erection_rate, ownership_type, splicing_required, misc_required | Partial only; edit inline |
+| Crane Selections (Index) | `/tenders/:tender_id/crane_selections` | tender_crane_selections | List of partials; each has inline editable size, quantity, duration | Index page renders multiple `_tender_crane_selection.html.erb` partials |
+| Crane Selection (Show) | `/tender_crane_selections/:id` | tender_crane_selection (single) | size, quantity, duration | Partial only; edit inline |
+| Inclusion/Exclusion | `/tender_inclusions_exclusions/:id` | tender_inclusion_exclusion | include_crainage (radio toggle) | Partial only; edit inline |
+| Cost Summary | (embedded on crane_selections index & site config) | (calculated, read-only) | None (read-only) | Turbo Frame, updates after each selection save |
 
 ---
 
@@ -755,12 +899,13 @@ Build and test bottom-up: master data first, then transactional, then UI. Each c
 
 ---
 
-#### Component 3: On-Site Mobile Crane Breakdown
+#### Component 3: On-Site Mobile Crane Breakdown (Site Config)
 **Files:**
 - `app/models/on_site_mobile_crane_breakdown.rb`
 - `app/controllers/on_site_mobile_crane_breakdowns_controller.rb`
 - `app/views/on_site_mobile_crane_breakdowns/show.html.erb`
 - `app/views/on_site_mobile_crane_breakdowns/_on_site_mobile_crane_breakdown.html.erb`
+- `app/javascript/controllers/site-config_controller.js`
 - `db/migrate/xxx_create_on_site_mobile_crane_breakdowns.rb`
 
 **Tasks:**
@@ -770,25 +915,44 @@ Build and test bottom-up: master data first, then transactional, then UI. Each c
    - `before_save :calculate_program_duration`
    - Validations for numeric fields
 3. Add to Tender model: `has_one :on_site_mobile_crane_breakdown, dependent: :destroy`
-4. Build controller with show, update actions
-5. Build editable partial with dirty-form controller
-6. Auto-create site config when tender is created (callback)
+4. Build controller:
+   - `show` action: displays partial wrapped in layout
+   - `update` action: PATCH endpoint that responds with Turbo Stream
+5. Build `show.html.erb`: Header + breadcrumb + partial + link to crane_selections index
+6. Build `_on_site_mobile_crane_breakdown.html.erb` partial:
+   - Wrapped in `turbo_frame_tag dom_id(@breakdown)` 
+   - Each field: `<input>` with pencil icon, inline edit with Checkmark/X buttons
+   - Checkmark → async PATCH to controller
+7. Build `site-config_controller.js` Stimulus controller:
+   - Listen for input changes
+   - Calculate program_duration on change (client-side ephemeral calc)
+   - Display updated duration in real-time
+8. Auto-create site config when tender is created (callback)
 
 **Acceptance Criteria:**
 - [ ] Create tender → OnSiteMobileCraneBreakdown auto-creates
-- [ ] /on_site_mobile_crane_breakdowns/:id displays editable form
-- [ ] Enter roof area + erection rate → program duration calculates on blur
-- [ ] Save updates database; dirty indicator works
-- [ ] Validation: roof area > 0, erection rate > 0
+- [ ] GET /on_site_mobile_crane_breakdowns/:id displays standalone page
+- [ ] Each field shows pencil icon on hover
+- [ ] Click field → inline edit mode with Checkmark/X buttons
+- [ ] Enter roof area + erection rate → program duration calculates live (no API call)
+- [ ] Checkmark → async PATCH, Turbo Stream response, no page reload
+- [ ] Dirty indicator shows when changes unsaved
+- [ ] Validation: roof area > 0, erection rate > 0, both required
+- [ ] Breadcrumb links back to tender show page
 
 ---
 
-#### Component 4: Tender Crane Selection
+#### Component 4: Tender Crane Selection (Main + Optional Cranes)
 **Files:**
 - `app/models/tender_crane_selection.rb`
 - `app/controllers/tender_crane_selections_controller.rb`
+- `app/views/tender_crane_selections/index.html.erb`
+- `app/views/tender_crane_selections/show.html.erb`
 - `app/views/tender_crane_selections/_tender_crane_selection.html.erb`
 - `app/views/tender_crane_selections/create.turbo_stream.erb`
+- `app/views/tender_crane_selections/update.turbo_stream.erb`
+- `app/views/tender_crane_selections/destroy.turbo_stream.erb`
+- `app/javascript/controllers/crane-selection_controller.js`
 - `db/migrate/xxx_create_tender_crane_selections.rb`
 
 **Tasks:**
@@ -798,24 +962,66 @@ Build and test bottom-up: master data first, then transactional, then UI. Each c
    - `belongs_to :crane_rate`
    - `before_save :calculate_total_cost`
    - `before_save :snapshot_wet_rate`
+   - `after_save :recalculate_crainage` (calls CrainageCalculatorService)
+   - `after_destroy :recalculate_crainage`
 3. Add to Tender: `has_many :tender_crane_selections, dependent: :destroy`
-4. Build controller: create, update, destroy with Turbo Stream responses
-5. Build editable partial (Turbo Frame per selection)
-6. Implement "+ Add Crane" button that POSTs new selection
+4. Build controller:
+   - `index` action: GET /tenders/:tender_id/crane_selections — renders all selections + cost summary
+   - `show` action: GET /tender_crane_selections/:id — renders single selection for independent testing
+   - `create` action: POST — creates new selection, responds with Turbo Stream that appends to index
+   - `update` action: PATCH /tender_crane_selections/:id — updates field, responds with Turbo Stream
+   - `destroy` action: DELETE — removes selection, responds with Turbo Stream remove action
+5. Build `index.html.erb`: 
+   - Breadcrumb + header + link back to site config
+   - For each selection: render `_tender_crane_selection.html.erb` partial in Turbo Frame
+   - "+ Add Crane Selection" button (POST to create with default values)
+   - Cost summary card (read-only, updates via Turbo Stream after each save)
+6. Build `show.html.erb`:
+   - Breadcrumb: [Tender] > [Crane Selections] > [Selection #2]
+   - Render single `_tender_crane_selection.html.erb` partial
+   - Allow independent testing/iteration on this component
+7. Build `_tender_crane_selection.html.erb` partial:
+   - Wrapped in `turbo_frame_tag dom_id(@selection)` 
+   - Field: Purpose (read-only label: main/splicing/misc)
+   - Field: Size (editable dropdown with pencil icon)
+   - Field: Quantity (editable number field)
+   - Field: Duration Days (editable number field)
+   - Field: Wet Rate (read-only, displays snapshot)
+   - Field: Total Cost (read-only, calculated)
+   - Buttons: [Edit] (optional, can expand to show all fields), [Delete]
+   - On any field change: Checkmark/X inline, PATCH request triggers recalculation
+8. Build `crane-selection_controller.js` Stimulus:
+   - Listen for quantity/duration/size changes
+   - Calculate total_cost client-side (ephemeral, for preview)
+   - Display updated cost in real-time
+   - On blur/Checkmark → PATCH to server
+9. Build Turbo Stream responses:
+   - `create.turbo_stream.erb`: Append new selection to list, update cost summary
+   - `update.turbo_stream.erb`: Replace updated selection row, update cost summary
+   - `destroy.turbo_stream.erb`: Remove selection row, update cost summary
 
 **Acceptance Criteria:**
-- [ ] Can add crane selection via "+ Add Crane" button
-- [ ] New selection appears via Turbo Stream (no page reload)
-- [ ] Can edit quantity, size, duration → cost recalculates
-- [ ] Delete button removes selection
-- [ ] wet_rate_per_day snapshot stored on create
+- [ ] GET /tenders/:tender_id/crane_selections displays all selections
+- [ ] GET /tender_crane_selections/:id displays single selection standalone
+- [ ] "+ Add Crane Selection" button creates new with default values (size='10t', qty=1, duration=66)
+- [ ] New selection appears via Turbo Stream at bottom of list (no page reload)
+- [ ] Each field has pencil icon, inline editable with Checkmark/X
+- [ ] Edit size dropdown → cost recalculates (Stimulus controller)
+- [ ] Edit quantity → cost recalculates
+- [ ] Edit duration → cost recalculates
+- [ ] Checkmark → PATCH request, Turbo Stream response updates row, cost summary updates
+- [ ] Delete button removes selection via Turbo Stream
+- [ ] wet_rate_per_day snapshot stored on create and never changes
+- [ ] After each PATCH/DELETE, CrainageCalculatorService runs to update total crainage + rate/tonne
+- [ ] Cost summary card updates after each change (via Turbo Stream)
 
 ---
 
-#### Component 5: Tender Inclusions/Exclusions
+#### Component 5: Tender Inclusions/Exclusions (Crainage Distribution)
 **Files:**
 - `app/models/tender_inclusion_exclusion.rb`
 - `app/controllers/tender_inclusions_exclusions_controller.rb`
+- `app/views/tender_inclusions_exclusions/show.html.erb`
 - `app/views/tender_inclusions_exclusions/_tender_inclusion_exclusion.html.erb`
 - `db/migrate/xxx_create_tender_inclusions_exclusions.rb`
 
@@ -823,17 +1029,34 @@ Build and test bottom-up: master data first, then transactional, then UI. Each c
 1. Create migration for tender_inclusions_exclusions table
 2. Create TenderInclusionExclusion model with:
    - `belongs_to :tender`
-   - `after_save :update_crainage_distribution`
+   - `after_save :recalculate_crainage_distribution` (calls CrainageCalculatorService)
+   - Validates mutual exclusion of include_crainage flags
 3. Add to Tender: `has_one :tender_inclusion_exclusion, dependent: :destroy`
-4. Build controller with show, update actions
-5. Build partial with radio buttons for include_crainage toggle
-6. Auto-create when tender is created
+4. Build controller:
+   - `show` action: GET /tender_inclusions_exclusions/:id — renders standalone page
+   - `update` action: PATCH /tender_inclusions_exclusions/:id — updates radio selection, responds Turbo Stream
+5. Build `show.html.erb`:
+   - Breadcrumb: [Tender] > [Crainage Settings]
+   - Header + explanation text
+   - Render `_tender_inclusion_exclusion.html.erb` partial
+6. Build `_tender_inclusion_exclusion.html.erb` partial:
+   - Wrapped in `turbo_frame_tag dom_id(@inclusion_exclusion)`
+   - Radio buttons: "Include in Line Item Rates" / "Include in P&G"
+   - Explanation text: "Selecting one excludes the other to prevent double-counting"
+   - On radio change: async PATCH request (no page reload)
+   - Dirty indicator shows unsaved changes
+7. Auto-create when tender is created (callback in Tender model)
 
 **Acceptance Criteria:**
-- [ ] Create tender → TenderInclusionExclusion auto-creates
-- [ ] Radio toggle: "Line Items" vs "P&G"
-- [ ] Toggle updates database on change
-- [ ] After save, triggers crainage distribution update
+- [ ] Create tender → TenderInclusionExclusion auto-creates with default include_crainage=false
+- [ ] GET /tender_inclusions_exclusions/:id displays standalone page
+- [ ] Radio buttons: one for "Line Items", one for "P&G"
+- [ ] Click radio → async PATCH, Turbo Stream response, no page reload
+- [ ] After PATCH, CrainageCalculatorService.call(tender) runs to redistribute crainage
+- [ ] include_crainage=true → line_item_rate_build_ups.crainage_rate updated for tender
+- [ ] include_crainage=false → tender_preliminary_item CRAINAGE created/updated with lump sum
+- [ ] Mutual exclusion: only one radio can be selected at a time
+- [ ] Dirty indicator updates correctly
 
 ---
 
@@ -886,38 +1109,37 @@ Build and test bottom-up: master data first, then transactional, then UI. Each c
 
 ---
 
-#### Component 8: Crane Breakdown UI Integration
+#### Component 8: Routes & Navigation Integration
 **Files:**
-- `app/controllers/tenders_controller.rb` (add crane_breakdown action)
-- `app/views/tenders/crane_breakdown.html.erb`
-- `app/javascript/controllers/crane_breakdown_controller.js`
-- `app/javascript/controllers/crane_selection_controller.js`
-- Routes update
+- `config/routes.rb` (add nested routes)
+- Tender show page link additions
+- Breadcrumb components
 
 **Tasks:**
-1. Add `crane_breakdown` action to TendersController
-2. Build crane_breakdown.html.erb page composing all partials:
-   - OnSiteMobileCraneBreakdown partial (parameters)
-   - Crane complement display with override button
-   - Optional cranes section
-   - Cost summary section
-   - Inclusion toggle section
-3. Build crane_breakdown_controller.js for:
-   - Program duration calculation on input
-   - Crane complement lookup on rate change
-4. Build crane_selection_controller.js for:
-   - Cost calculation on quantity/duration change
-   - Total summary update
-5. Add route: `get 'tenders/:id/crane_breakdown', to: 'tenders#crane_breakdown'`
+1. Add routes:
+   ```ruby
+   resources :tenders do
+     resources :crane_selections, only: [:index]
+   end
+   resources :on_site_mobile_crane_breakdowns, only: [:show, :update]
+   resources :tender_crane_selections, only: [:show, :create, :update, :destroy]
+   resources :tender_inclusions_exclusions, only: [:show, :update]
+   ```
+2. Update Tender show page to link to crane config:
+   - Add button/link: "Configure Crane Requirements" → `/on_site_mobile_crane_breakdowns/:id`
+   - Or add tab/section that embeds crane config
+3. Implement breadcrumb helper for nested views:
+   - Tender > Site Config > Crane Selections
+   - Tender > Crane Selection #2
+   - Tender > Crainage Settings
 
 **Acceptance Criteria:**
-- [ ] /tenders/:id/crane_breakdown renders full page
-- [ ] Enter roof area + erection rate → duration updates live (Stimulus)
-- [ ] Erection rate change → crane complement lookup displays
-- [ ] Can add/edit/delete crane selections inline
-- [ ] Cost summary updates in real-time
-- [ ] Toggle inclusion → distribution updates
-- [ ] All changes persist on save
+- [ ] All routes accessible and working
+- [ ] Breadcrumbs navigate correctly between views
+- [ ] Links from Tender show page lead to site config
+- [ ] Links from site config lead to crane selections
+- [ ] Back buttons work at all levels
+- [ ] No dead links or routing errors
 
 ---
 
