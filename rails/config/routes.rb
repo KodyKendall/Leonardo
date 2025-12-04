@@ -1,5 +1,10 @@
 Rails.application.routes.draw do
-  resources :on_site_mobile_crane_breakdowns
+  resources :on_site_mobile_crane_breakdowns do
+    member do
+      get :builder
+    end
+  end
+  post "tenders/:tender_id/ensure_breakdown", to: "on_site_mobile_crane_breakdowns#ensure_breakdown", as: "ensure_breakdown"
   resources :crane_complements
   resources :crane_rates
   resources :line_item_material_breakdowns
