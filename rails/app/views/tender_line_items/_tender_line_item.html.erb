@@ -2,104 +2,104 @@
   <div class="mb-6">
     <!-- Main Card with Collapsible Breakdown Details -->
     <div class="card bg-base-100 shadow-md">
-      <!-- Collapse Wrapper -->
+      <div class="card-body">
+        <%= form_with model: [tender_line_item.tender, tender_line_item],
+                      data: {
+                        controller: "dirty-form",
+                        action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset"
+                      } do |f| %>
+          <!-- Delete Button (Top Right) -->
+          <div class="flex justify-end mb-3">
+            <%= button_to tender_tender_line_item_path(tender_line_item.tender, tender_line_item),
+                          method: :delete,
+                          class: "btn btn-xs btn-ghost text-error",
+                          form: { data: { turbo_confirm: "Delete this line item?" } },
+                          title: "Delete" do %>
+              <i class="fas fa-trash"></i>
+            <% end %>
+          </div>
+
+          <!-- All Fields in One Row -->
+          <div class="grid grid-cols-12 gap-2">
+            <!-- Item # -->
+            <div class="col-span-1">
+              <label class="label label-text text-xs font-semibold">Item #</label>
+              <%= f.text_field :item_number, class: "input input-sm input-bordered w-full" %>
+            </div>
+
+            <!-- Category -->
+            <div class="col-span-2">
+              <label class="label label-text text-xs font-semibold">Category</label>
+              <%= f.select :section_category,
+                  options_for_select(TenderLineItem.section_categories.keys, tender_line_item.section_category),
+                  { include_blank: "Select..." },
+                  class: "select select-sm select-bordered w-full" %>
+            </div>
+
+            <!-- Description -->
+            <div class="col-span-3">
+              <label class="label label-text text-xs font-semibold">Description</label>
+              <%= f.text_field :item_description, class: "input input-sm input-bordered w-full" %>
+            </div>
+
+            <!-- Notes -->
+            <div class="col-span-2">
+              <label class="label label-text text-xs font-semibold">Notes</label>
+              <%= f.text_field :notes, class: "input input-sm input-bordered w-full" %>
+            </div>
+
+            <!-- Quantity -->
+            <div class="col-span-1">
+              <label class="label label-text text-xs font-semibold">Qty</label>
+              <%= f.number_field :quantity, step: 0.01, min: 0, class: "input input-sm input-bordered w-full" %>
+            </div>
+
+            <!-- Unit -->
+            <div class="col-span-1">
+              <label class="label label-text text-xs font-semibold">Unit</label>
+              <%= f.text_field :unit_of_measure, class: "input input-sm input-bordered w-full" %>
+            </div>
+
+            <!-- Rate -->
+            <div class="col-span-1.5">
+              <label class="label label-text text-xs font-semibold">Rate (R)</label>
+              <%= f.number_field :rate, step: 0.01, min: 0, class: "input input-sm input-bordered w-full" %>
+            </div>
+
+            <!-- Page -->
+            <div class="col-span-1">
+              <label class="label label-text text-xs font-semibold">Page</label>
+              <%= f.text_field :page_number, class: "input input-sm input-bordered w-full" %>
+            </div>
+
+            <!-- Line Total -->
+            <div class="col-span-1.5 flex flex-col justify-end">
+              <div class="text-xs text-gray-500 font-semibold">Line Total</div>
+              <div class="font-bold text-gray-900 text-sm bg-success bg-opacity-10 p-2 rounded text-center">R<%= number_with_precision(tender_line_item.total_amount, precision: 2) %></div>
+            </div>
+          </div>
+
+          <!-- Save Button & Dirty Indicator -->
+          <div class="flex items-center gap-3 mt-3">
+            <%= f.submit "Save", class: "btn btn-primary btn-sm", data: { dirty_form_target: "submit" } %>
+            <span class="hidden text-warning text-sm font-medium" data-dirty-form-target="indicator">
+              Unsaved changes
+            </span>
+            <button type="button" class="btn btn-ghost btn-sm ml-auto material-breakdown-toggle" onclick="document.getElementById('toggle_<%= tender_line_item.id %>').click()">
+              <i class="fas fa-chevron-down"></i>
+              Material Breakdown
+            </button>
+          </div>
+        <% end %>
+      </div>
+
+      <!-- Collapse Wrapper for Breakdown Details -->
       <div class="collapse" data-line-item-id="<%= tender_line_item.id %>" id="collapse_<%= tender_line_item.id %>">
         <!-- Checkbox Toggle (hidden but controls collapse) -->
         <input type="checkbox" class="line-item-toggle" id="toggle_<%= tender_line_item.id %>" />
         
-        <!-- Header Section (always visible) -->
-        <div class="collapse-title p-0">
-          <div class="card-body">
-            <%= form_with model: [tender_line_item.tender, tender_line_item],
-                          data: {
-                            controller: "dirty-form",
-                            action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset"
-                          } do |f| %>
-              <!-- Delete Button (Top Right) -->
-              <div class="flex justify-end mb-3">
-                <%= button_to tender_tender_line_item_path(tender_line_item.tender, tender_line_item),
-                              method: :delete,
-                              class: "btn btn-xs btn-ghost text-error",
-                              form: { data: { turbo_confirm: "Delete this line item?" } },
-                              title: "Delete" do %>
-                  <i class="fas fa-trash"></i>
-                <% end %>
-              </div>
-
-              <!-- All Fields in One Row -->
-              <div class="grid grid-cols-12 gap-2">
-                <!-- Item # -->
-                <div class="col-span-1">
-                  <label class="label label-text text-xs font-semibold">Item #</label>
-                  <%= f.text_field :item_number, class: "input input-sm input-bordered w-full" %>
-                </div>
-
-                <!-- Category -->
-                <div class="col-span-2">
-                  <label class="label label-text text-xs font-semibold">Category</label>
-                  <%= f.select :section_category,
-                      options_for_select(TenderLineItem.section_categories.keys, tender_line_item.section_category),
-                      { include_blank: "Select..." },
-                      class: "select select-sm select-bordered w-full" %>
-                </div>
-
-                <!-- Description -->
-                <div class="col-span-3">
-                  <label class="label label-text text-xs font-semibold">Description</label>
-                  <%= f.text_field :item_description, class: "input input-sm input-bordered w-full" %>
-                </div>
-
-                <!-- Notes -->
-                <div class="col-span-2">
-                  <label class="label label-text text-xs font-semibold">Notes</label>
-                  <%= f.text_field :notes, class: "input input-sm input-bordered w-full" %>
-                </div>
-
-                <!-- Quantity -->
-                <div class="col-span-1">
-                  <label class="label label-text text-xs font-semibold">Qty</label>
-                  <%= f.number_field :quantity, step: 0.01, min: 0, class: "input input-sm input-bordered w-full" %>
-                </div>
-
-                <!-- Unit -->
-                <div class="col-span-1">
-                  <label class="label label-text text-xs font-semibold">Unit</label>
-                  <%= f.text_field :unit_of_measure, class: "input input-sm input-bordered w-full" %>
-                </div>
-
-                <!-- Rate -->
-                <div class="col-span-1.5">
-                  <label class="label label-text text-xs font-semibold">Rate (R)</label>
-                  <%= f.number_field :rate, step: 0.01, min: 0, class: "input input-sm input-bordered w-full" %>
-                </div>
-
-                <!-- Page -->
-                <div class="col-span-1">
-                  <label class="label label-text text-xs font-semibold">Page</label>
-                  <%= f.text_field :page_number, class: "input input-sm input-bordered w-full" %>
-                </div>
-
-                <!-- Line Total -->
-                <div class="col-span-1.5 flex flex-col justify-end">
-                  <div class="text-xs text-gray-500 font-semibold">Line Total</div>
-                  <div class="font-bold text-gray-900 text-sm bg-success bg-opacity-10 p-2 rounded text-center">R<%= number_with_precision(tender_line_item.total_amount, precision: 2) %></div>
-                </div>
-              </div>
-
-              <!-- Save Button & Dirty Indicator -->
-              <div class="flex items-center gap-3 mt-3">
-                <%= f.submit "Save", class: "btn btn-primary btn-sm", data: { dirty_form_target: "submit" } %>
-                <span class="hidden text-warning text-sm font-medium" data-dirty-form-target="indicator">
-                  Unsaved changes
-                </span>
-                <button type="button" class="btn btn-ghost btn-sm ml-auto material-breakdown-toggle" onclick="document.getElementById('toggle_<%= tender_line_item.id %>').click()">
-                  <i class="fas fa-chevron-down"></i>
-                  Material Breakdown
-                </button>
-              </div>
-            <% end %>
-          </div>
-        </div>
+        <!-- Header Section (empty to prevent event interception) -->
+        <div class="collapse-title p-0"></div>
 
         <!-- Expandable Breakdown Details Section -->
         <div class="collapse-content pt-0">
