@@ -95,6 +95,9 @@
 
   <div class="mt-6 flex gap-2">
     <%= link_to "Tender Builder", builder_tender_path(@tender), class: "rounded-md px-3.5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white inline-block font-medium inline-flex items-center gap-2" %>
+    <% if @tender.on_site_mobile_crane_breakdown %>
+      <%= link_to "On-Site Mobile Crane Breakdown", on_site_mobile_crane_breakdown_path(@tender.on_site_mobile_crane_breakdown), class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium inline-flex items-center gap-2" %>
+    <% end %>
     <%= link_to "Edit this tender", edit_tender_path(@tender), class: "rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
     <%= link_to "Back to tenders", tenders_path, class: "rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
     <%= button_to "Destroy this tender", @tender, method: :delete, form_class: "inline-block", class: "rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>

@@ -1,5 +1,7 @@
 <% content_for :title, "Mobile Crane Breakdown" %>
 
-<div class="md:w-3/4 w-full">
-  <%= render @on_site_mobile_crane_breakdown %>
-</div>
+<%= turbo_frame_tag dom_id(@on_site_mobile_crane_breakdown) do %>
+  <div class="md:w-3/4 w-full">
+    <%= render @on_site_mobile_crane_breakdown %>
+  </div>
+<% end %>

@@ -22,7 +22,7 @@
           <!-- Back to Tender Button -->
           <% if on_site_mobile_crane_breakdown.tender %>
             <div class="mt-2">
-              <%= link_to on_site_mobile_crane_breakdown.tender.tender_name || "Back to Tender", tender_path(on_site_mobile_crane_breakdown.tender), class: "btn btn-sm btn-outline shadow-sm" %>
+              <%= link_to on_site_mobile_crane_breakdown.tender.tender_name || "Back to Tender", tender_path(on_site_mobile_crane_breakdown.tender), class: "btn btn-sm btn-outline shadow-sm", data: { turbo: false } %>
             </div>
           <% end %>
         </div>
