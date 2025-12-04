@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_03_180939) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_04_170731) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -315,6 +315,23 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_03_180939) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "on_site_mobile_crane_breakdowns", force: :cascade do |t|
+    t.bigint "tender_id", null: false
+    t.decimal "total_roof_area_sqm", precision: 12, scale: 2, default: "0.0"
+    t.decimal "erection_rate_sqm_per_day", precision: 10, scale: 2, default: "0.0"
+    t.integer "program_duration_days", default: 0
+    t.string "ownership_type", limit: 20, default: "rental"
+    t.boolean "splicing_crane_required", default: false
+    t.string "splicing_crane_size", limit: 10
+    t.integer "splicing_crane_days", default: 0
+    t.boolean "misc_crane_required", default: false
+    t.string "misc_crane_size", limit: 10
+    t.integer "misc_crane_days", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tender_id"], name: "index_on_site_mobile_crane_breakdowns_on_tender_id", unique: true
+  end
+
   create_table "projects", force: :cascade do |t|
     t.string "rsb_number", null: false
     t.bigint "tender_id", null: false
@@ -447,6 +464,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_03_180939) do
   add_foreign_key "material_supply_rates", "material_supplies"
   add_foreign_key "material_supply_rates", "monthly_material_supply_rates"
   add_foreign_key "material_supply_rates", "suppliers"
+  add_foreign_key "on_site_mobile_crane_breakdowns", "tenders", on_delete: :cascade
   add_foreign_key "projects", "tenders"
   add_foreign_key "projects", "users", column: "created_by_id"
   add_foreign_key "tender_inclusions_exclusions", "tenders"

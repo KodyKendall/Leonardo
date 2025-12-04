@@ -1,0 +1,46 @@
+<div id="<%= dom_id on_site_mobile_crane_breakdown %>" class="w-full sm:w-auto my-5 space-y-5">
+  <div>
+    <strong class="block font-medium mb-1">Tender:</strong>
+    <%= on_site_mobile_crane_breakdown.tender_id %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Total roof area sqm:</strong>
+    <%= on_site_mobile_crane_breakdown.total_roof_area_sqm %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Erection rate sqm per day:</strong>
+    <%= on_site_mobile_crane_breakdown.erection_rate_sqm_per_day %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Program duration days:</strong>
+    <%= on_site_mobile_crane_breakdown.program_duration_days %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Ownership type:</strong>
+    <%= on_site_mobile_crane_breakdown.ownership_type %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Splicing crane required:</strong>
+    <%= on_site_mobile_crane_breakdown.splicing_crane_required? ? "Yes" : "No" %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Splicing crane size:</strong>
+    <%= on_site_mobile_crane_breakdown.splicing_crane_size %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Splicing crane days:</strong>
+    <%= on_site_mobile_crane_breakdown.splicing_crane_days %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Misc crane required:</strong>
+    <%= on_site_mobile_crane_breakdown.misc_crane_required? ? "Yes" : "No" %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Misc crane size:</strong>
+    <%= on_site_mobile_crane_breakdown.misc_crane_size %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Misc crane days:</strong>
+    <%= on_site_mobile_crane_breakdown.misc_crane_days %>
+  </div>
+</div>

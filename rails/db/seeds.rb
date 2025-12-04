@@ -529,6 +529,47 @@ crane_complements_data.each do |attrs|
   end
 end
 
+# ===== ON-SITE MOBILE CRANE BREAKDOWNS =====
+OnSiteMobileCraneBreakdown.find_or_create_by!(tender: tender1) do |breakdown|
+  breakdown.total_roof_area_sqm = 2500.00
+  breakdown.erection_rate_sqm_per_day = 150.00
+  breakdown.ownership_type = 'rental'
+  breakdown.splicing_crane_required = true
+  breakdown.splicing_crane_size = '25t'
+  breakdown.splicing_crane_days = 14
+  breakdown.misc_crane_required = true
+  breakdown.misc_crane_size = '10t'
+  breakdown.misc_crane_days = 7
+end
+
+OnSiteMobileCraneBreakdown.find_or_create_by!(tender: tender2) do |breakdown|
+  breakdown.total_roof_area_sqm = 5000.00
+  breakdown.erection_rate_sqm_per_day = 200.00
+  breakdown.ownership_type = 'rsb_owned'
+  breakdown.splicing_crane_required = true
+  breakdown.splicing_crane_size = '35t'
+  breakdown.splicing_crane_days = 21
+  breakdown.misc_crane_required = false
+end
+
+OnSiteMobileCraneBreakdown.find_or_create_by!(tender: tender3) do |breakdown|
+  breakdown.total_roof_area_sqm = 1800.00
+  breakdown.erection_rate_sqm_per_day = 120.00
+  breakdown.ownership_type = 'rental'
+  breakdown.splicing_crane_required = false
+  breakdown.misc_crane_required = true
+  breakdown.misc_crane_size = '20t'
+  breakdown.misc_crane_days = 5
+end
+
+OnSiteMobileCraneBreakdown.find_or_create_by!(tender: tender4) do |breakdown|
+  breakdown.total_roof_area_sqm = 1200.00
+  breakdown.erection_rate_sqm_per_day = 100.00
+  breakdown.ownership_type = 'rental'
+  breakdown.splicing_crane_required = false
+  breakdown.misc_crane_required = false
+end
+
 puts "✅ Database seeded successfully!"
 puts ""
 puts "📊 SEEDED DATA SUMMARY:"
@@ -547,6 +588,7 @@ puts "  • Monthly Material Supply Rates: #{MonthlyMaterialSupplyRate.count}"
 puts "  • Material Supply Rates: #{MaterialSupplyRate.count}"
 puts "  • Crane Rates: #{CraneRate.count}"
 puts "  • Crane Complements: #{CraneComplement.count}"
+puts "  • On-Site Mobile Crane Breakdowns: #{OnSiteMobileCraneBreakdown.count}"
 puts ""
 puts "🔑 LOGIN CREDENTIALS:"
 puts "  • Email: kody@llamapress.ai (Admin)"

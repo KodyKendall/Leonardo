@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :on_site_mobile_crane_breakdowns
   resources :crane_complements
   resources :crane_rates
   resources :line_item_material_breakdowns
