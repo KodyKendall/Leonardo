@@ -1,46 +1,147 @@
-<div id="<%= dom_id on_site_mobile_crane_breakdown %>" class="w-full sm:w-auto my-5 space-y-5">
-  <div>
-    <strong class="block font-medium mb-1">Tender:</strong>
-    <%= on_site_mobile_crane_breakdown.tender_id %>
+<%= turbo_frame_tag dom_id(on_site_mobile_crane_breakdown) do %>
+  <div class="bg-white rounded-lg border border-gray-200 p-6">
+    <%= form_with model: on_site_mobile_crane_breakdown, local: true, data: { controller: "on-site-mobile-crane-breakdown dirty-form", action: "input->dirty-form#change change->dirty-form#change turbo:before-stream-render->dirty-form#showSaveSuccess" } do |f| %>
+      <% if on_site_mobile_crane_breakdown.errors.any? %>
+        <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-md">
+          <h2 class="font-bold text-red-600"><%= pluralize(on_site_mobile_crane_breakdown.errors.count, "error") %> prohibited this breakdown from being saved:</h2>
+          <ul class="list-disc ml-5 mt-2">
+            <% on_site_mobile_crane_breakdown.errors.full_messages.each do |message| %>
+              <li class="text-red-600"><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <!-- Hidden Submit Button -->
+      <%= f.submit "", style: "display: none;", data: { "dirty-form-target": "submit" } %>
+
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-2xl font-bold">Mobile Crane Breakdown</h2>
+          <!-- Back to Tender Button -->
+          <% if on_site_mobile_crane_breakdown.tender %>
+            <div class="mt-2">
+              <%= link_to on_site_mobile_crane_breakdown.tender.tender_name || "Back to Tender", tender_path(on_site_mobile_crane_breakdown.tender), class: "btn btn-sm btn-outline shadow-sm" %>
+            </div>
+          <% end %>
+        </div>
+        
+        <!-- Edit and Delete Buttons -->
+        <div class="flex gap-2">
+          <!-- Edit Button (Pencil Icon / Checkmark) -->
+          <button type="button" 
+            data-on-site-mobile-crane-breakdown-target="editButton" 
+            data-action="click->on-site-mobile-crane-breakdown#toggleEdit"
+            class="btn btn-circle btn-outline btn-sm"
+            title="Edit">
+            <i class="fas fa-pencil text-lg"></i>
+          </button>
+
+          <!-- Delete Button (Trash Icon) -->
+          <button type="button"
+            class="btn btn-circle btn-error btn-sm"
+            title="Delete"
+            onclick="if(confirm('Are you sure?')) { fetch('<%= on_site_mobile_crane_breakdown_path(on_site_mobile_crane_breakdown) %>', { method: 'DELETE', headers: { 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]').content } }).then(() => window.location = '<%= on_site_mobile_crane_breakdowns_path %>'); }">
+            <i class="fas fa-trash text-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Total Roof Area -->
+      <div class="form-control">
+        <label class="label" for="on_site_mobile_crane_breakdown_total_roof_area_sqm">
+          <span class="label-text font-medium">Total roof area (sqm)</span>
+        </label>
+        <%= f.number_field :total_roof_area_sqm, step: :any, class: "input input-bordered read-only-field", placeholder: "0.00", readonly: true, data: { "on-site-mobile-crane-breakdown-target": "field" } %>
+      </div>
+
+      <!-- Erection Rate -->
+      <div class="form-control">
+        <label class="label" for="on_site_mobile_crane_breakdown_erection_rate_sqm_per_day">
+          <span class="label-text font-medium">Erection rate (sqm per day)</span>
+        </label>
+        <%= f.number_field :erection_rate_sqm_per_day, step: :any, class: "input input-bordered read-only-field", placeholder: "0.00", readonly: true, data: { "on-site-mobile-crane-breakdown-target": "field" } %>
+      </div>
+
+      <!-- Program Duration (calculated, read-only) -->
+      <div class="form-control">
+        <label class="label" for="on_site_mobile_crane_breakdown_program_duration_days">
+          <span class="label-text font-medium">Program duration (days)</span>
+        </label>
+        <div class="input input-bordered bg-gray-100 cursor-not-allowed flex items-center">
+          <%= on_site_mobile_crane_breakdown.program_duration_days %>
+        </div>
+        <p class="text-xs text-gray-500 mt-1">Auto-calculated from roof area ÷ erection rate</p>
+      </div>
+
+      <!-- Ownership Type -->
+      <div class="form-control">
+        <label class="label" for="on_site_mobile_crane_breakdown_ownership_type">
+          <span class="label-text font-medium">Ownership type</span>
+        </label>
+        <%= f.select :ownership_type, ["rsb_owned", "rental"], {}, class: "select select-bordered read-only-field", readonly: true, data: { "on-site-mobile-crane-breakdown-target": "field" } %>
+      </div>
+
+      <!-- Splicing Crane Required -->
+      <div class="form-control">
+        <label class="label cursor-pointer">
+          <span class="label-text font-medium">Splicing crane required?</span>
+          <%= f.check_box :splicing_crane_required, { class: "checkbox checkbox-primary", data: { "on-site-mobile-crane-breakdown-target": "field" } }, disabled: true %>
+        </label>
+      </div>
+
+      <!-- Splicing Crane Size -->
+      <div class="form-control">
+        <label class="label" for="on_site_mobile_crane_breakdown_splicing_crane_size">
+          <span class="label-text font-medium">Splicing crane size</span>
+        </label>
+        <%= f.text_field :splicing_crane_size, class: "input input-bordered read-only-field", placeholder: "e.g., 50T", readonly: true, data: { "on-site-mobile-crane-breakdown-target": "field" } %>
+      </div>
+
+      <!-- Splicing Crane Days -->
+      <div class="form-control">
+        <label class="label" for="on_site_mobile_crane_breakdown_splicing_crane_days">
+          <span class="label-text font-medium">Splicing crane days</span>
+        </label>
+        <%= f.number_field :splicing_crane_days, class: "input input-bordered read-only-field", placeholder: "0", readonly: true, data: { "on-site-mobile-crane-breakdown-target": "field" } %>
+      </div>
+
+      <!-- Misc Crane Required -->
+      <div class="form-control">
+        <label class="label cursor-pointer">
+          <span class="label-text font-medium">Misc crane required?</span>
+          <%= f.check_box :misc_crane_required, { class: "checkbox checkbox-primary", data: { "on-site-mobile-crane-breakdown-target": "field" } }, disabled: true %>
+        </label>
+      </div>
+
+      <!-- Misc Crane Size -->
+      <div class="form-control">
+        <label class="label" for="on_site_mobile_crane_breakdown_misc_crane_size">
+          <span class="label-text font-medium">Misc crane size</span>
+        </label>
+        <%= f.text_field :misc_crane_size, class: "input input-bordered read-only-field", placeholder: "e.g., 30T", readonly: true, data: { "on-site-mobile-crane-breakdown-target": "field" } %>
+      </div>
+
+      <!-- Misc Crane Days -->
+      <div class="form-control">
+        <label class="label" for="on_site_mobile_crane_breakdown_misc_crane_days">
+          <span class="label-text font-medium">Misc crane days</span>
+        </label>
+        <%= f.number_field :misc_crane_days, class: "input input-bordered read-only-field", placeholder: "0", readonly: true, data: { "on-site-mobile-crane-breakdown-target": "field" } %>
+      </div>
+
+      <!-- Status Indicator (Unsaved/Saved) -->
+      <div data-dirty-form-target="indicator" class="hidden flex items-center gap-2 p-3 mt-6 bg-yellow-50 border border-yellow-200 rounded-md">
+        <i class="fas fa-exclamation-circle text-yellow-600"></i>
+        <span class="text-sm font-medium text-yellow-800">Unsaved changes</span>
+      </div>
+
+      <!-- Saved Confirmation (hidden by default) -->
+      <div data-dirty-form-target="savedIndicator" class="hidden flex items-center gap-2 p-3 mt-6 bg-green-50 border border-green-200 rounded-md">
+        <i class="fas fa-check-circle text-green-600"></i>
+        <span class="text-sm font-medium text-green-800">Changes saved</span>
+      </div>
+    <% end %>
   </div>
-  <div>
-    <strong class="block font-medium mb-1">Total roof area sqm:</strong>
-    <%= on_site_mobile_crane_breakdown.total_roof_area_sqm %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Erection rate sqm per day:</strong>
-    <%= on_site_mobile_crane_breakdown.erection_rate_sqm_per_day %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Program duration days:</strong>
-    <%= on_site_mobile_crane_breakdown.program_duration_days %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Ownership type:</strong>
-    <%= on_site_mobile_crane_breakdown.ownership_type %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Splicing crane required:</strong>
-    <%= on_site_mobile_crane_breakdown.splicing_crane_required? ? "Yes" : "No" %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Splicing crane size:</strong>
-    <%= on_site_mobile_crane_breakdown.splicing_crane_size %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Splicing crane days:</strong>
-    <%= on_site_mobile_crane_breakdown.splicing_crane_days %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Misc crane required:</strong>
-    <%= on_site_mobile_crane_breakdown.misc_crane_required? ? "Yes" : "No" %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Misc crane size:</strong>
-    <%= on_site_mobile_crane_breakdown.misc_crane_size %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Misc crane days:</strong>
-    <%= on_site_mobile_crane_breakdown.misc_crane_days %>
-  </div>
-</div>
+<% end %>
