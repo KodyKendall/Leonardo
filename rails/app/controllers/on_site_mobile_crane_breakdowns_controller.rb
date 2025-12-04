@@ -39,9 +39,11 @@ class OnSiteMobileCraneBreakdownsController < ApplicationController
     respond_to do |format|
       if @on_site_mobile_crane_breakdown.update(on_site_mobile_crane_breakdown_params)
         format.html { redirect_to @on_site_mobile_crane_breakdown, notice: "On site mobile crane breakdown was successfully updated.", status: :see_other }
+        format.turbo_stream { render turbo_stream: turbo_stream.replace(@on_site_mobile_crane_breakdown, partial: "on_site_mobile_crane_breakdown", locals: { on_site_mobile_crane_breakdown: @on_site_mobile_crane_breakdown }) }
         format.json { render :show, status: :ok, location: @on_site_mobile_crane_breakdown }
       else
         format.html { render :edit, status: :unprocessable_entity }
+        format.turbo_stream { render turbo_stream: turbo_stream.replace(@on_site_mobile_crane_breakdown, partial: "on_site_mobile_crane_breakdown", locals: { on_site_mobile_crane_breakdown: @on_site_mobile_crane_breakdown }) }
         format.json { render json: @on_site_mobile_crane_breakdown.errors, status: :unprocessable_entity }
       end
     end
