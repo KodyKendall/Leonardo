@@ -1,5 +1,5 @@
 class OnSiteMobileCraneBreakdownsController < ApplicationController
-  before_action :set_on_site_mobile_crane_breakdown, only: %i[ show edit update destroy ]
+  before_action :set_on_site_mobile_crane_breakdown, only: %i[ show edit update destroy builder ]
 
   # GET /on_site_mobile_crane_breakdowns or /on_site_mobile_crane_breakdowns.json
   def index
@@ -8,6 +8,19 @@ class OnSiteMobileCraneBreakdownsController < ApplicationController
 
   # GET /on_site_mobile_crane_breakdowns/1 or /on_site_mobile_crane_breakdowns/1.json
   def show
+  end
+
+  # GET /on_site_mobile_crane_breakdowns/1/builder
+  def builder
+    @crane_complements = CraneComplement.all
+    @crane_rates = CraneRate.all
+  end
+
+  # POST /tenders/:tender_id/ensure_breakdown
+  def ensure_breakdown
+    @tender = Tender.find(params[:tender_id])
+    @breakdown = @tender.on_site_mobile_crane_breakdown || @tender.create_on_site_mobile_crane_breakdown
+    redirect_to builder_on_site_mobile_crane_breakdown_path(@breakdown), notice: "Breakdown ready for configuration."
   end
 
   # GET /on_site_mobile_crane_breakdowns/new

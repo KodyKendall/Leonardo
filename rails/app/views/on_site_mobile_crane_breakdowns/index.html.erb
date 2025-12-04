@@ -13,13 +13,8 @@
   <div id="on_site_mobile_crane_breakdowns" class="min-w-full divide-y divide-gray-200 space-y-5">
     <% if @on_site_mobile_crane_breakdowns.any? %>
       <% @on_site_mobile_crane_breakdowns.each do |on_site_mobile_crane_breakdown| %>
-        <div class="flex flex-col sm:flex-row justify-between items-center pb-5 sm:pb-0">
+        <div class="w-full">
           <%= render on_site_mobile_crane_breakdown %>
-          <div class="w-full sm:w-auto flex flex-col sm:flex-row space-x-2 space-y-2">
-            <%= link_to "Show", on_site_mobile_crane_breakdown, class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= link_to "Edit", edit_on_site_mobile_crane_breakdown_path(on_site_mobile_crane_breakdown), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= button_to "Destroy", on_site_mobile_crane_breakdown, method: :delete, class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
-          </div>
         </div>
       <% end %>
     <% else %>
