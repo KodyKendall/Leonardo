@@ -4,6 +4,7 @@ class Tender < ApplicationRecord
   has_many :boqs, dependent: :destroy
   has_many :tender_line_items, dependent: :destroy
   has_one :tender_inclusions_exclusion, dependent: :destroy
+  has_one :on_site_mobile_crane_breakdown, dependent: :destroy
   
   # File attachment for QOB (Quote of Business)
   has_one_attached :qob_file
