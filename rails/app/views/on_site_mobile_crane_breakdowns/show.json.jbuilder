@@ -1,0 +1,1 @@
+json.partial! "on_site_mobile_crane_breakdowns/on_site_mobile_crane_breakdown", on_site_mobile_crane_breakdown: @on_site_mobile_crane_breakdown
