@@ -1,0 +1,57 @@
+<%= form_with(model: tender_crane_selection, class: "contents") do |form| %>
+  <% if tender_crane_selection.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(tender_crane_selection.errors.count, "error") %> prohibited this tender_crane_selection from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% tender_crane_selection.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :tender_id %>
+    <%= form.text_field :tender_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_crane_selection.errors[:tender_id].none?, "border-red-400 focus:outline-red-600": tender_crane_selection.errors[:tender_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :crane_rate_id %>
+    <%= form.text_field :crane_rate_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_crane_selection.errors[:crane_rate_id].none?, "border-red-400 focus:outline-red-600": tender_crane_selection.errors[:crane_rate_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :purpose %>
+    <%= form.text_field :purpose, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_crane_selection.errors[:purpose].none?, "border-red-400 focus:outline-red-600": tender_crane_selection.errors[:purpose].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :quantity %>
+    <%= form.number_field :quantity, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_crane_selection.errors[:quantity].none?, "border-red-400 focus:outline-red-600": tender_crane_selection.errors[:quantity].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :duration_days %>
+    <%= form.number_field :duration_days, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_crane_selection.errors[:duration_days].none?, "border-red-400 focus:outline-red-600": tender_crane_selection.errors[:duration_days].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :wet_rate_per_day %>
+    <%= form.text_field :wet_rate_per_day, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_crane_selection.errors[:wet_rate_per_day].none?, "border-red-400 focus:outline-red-600": tender_crane_selection.errors[:wet_rate_per_day].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :total_cost %>
+    <%= form.text_field :total_cost, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_crane_selection.errors[:total_cost].none?, "border-red-400 focus:outline-red-600": tender_crane_selection.errors[:total_cost].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :sort_order %>
+    <%= form.number_field :sort_order, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_crane_selection.errors[:sort_order].none?, "border-red-400 focus:outline-red-600": tender_crane_selection.errors[:sort_order].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>
