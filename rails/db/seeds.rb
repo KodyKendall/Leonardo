@@ -506,7 +506,8 @@ crane_rates_data = [
   { size: '30t', ownership_type: 'rental', dry_rate_per_day: 3650.00, diesel_per_day: 750.00 },
   { size: '25t', ownership_type: 'rental', dry_rate_per_day: 3400.00, diesel_per_day: 750.00 },
   { size: '20t', ownership_type: 'rsb_owned', dry_rate_per_day: 3150.00, diesel_per_day: 750.00 },
-  { size: '10t', ownership_type: 'rental', dry_rate_per_day: 1300.00, diesel_per_day: 750.00 }
+  { size: '10t', ownership_type: 'rental', dry_rate_per_day: 1300.00, diesel_per_day: 750.00 },
+  { size: '10t', ownership_type: 'rsb_owned', dry_rate_per_day: 2050.00, diesel_per_day: 750.00 }
 ]
 
 crane_rates_data.each do |attrs|
@@ -577,6 +578,52 @@ OnSiteMobileCraneBreakdown.find_or_create_by!(tender: tender4) do |breakdown|
   breakdown.misc_crane_required = false
 end
 
+# ===== TENDER CRANE SELECTIONS =====
+# Get the crane rates (10t RSB Owned = 2050/day, 25t Rented = 4150/day)
+crane_10t_rsb = CraneRate.find_by(size: '10t', ownership_type: 'rsb_owned')
+crane_25t_rental = CraneRate.find_by(size: '25t', ownership_type: 'rental')
+
+if crane_10t_rsb && crane_25t_rental
+  # Main crane selection (10t RSB Owned)
+  TenderCraneSelection.find_or_create_by!(tender: tender1, crane_rate: crane_10t_rsb, purpose: 'main', sort_order: 1) do |tcs|
+    tcs.quantity = 2
+    tcs.duration_days = 20
+    tcs.wet_rate_per_day = 2050.00
+    tcs.total_cost = 2050.00 * 2 * 20  # wet_rate × quantity × duration
+  end
+
+  # Splicing crane selection (25t Rented)
+  TenderCraneSelection.find_or_create_by!(tender: tender1, crane_rate: crane_25t_rental, purpose: 'splicing', sort_order: 2) do |tcs|
+    tcs.quantity = 1
+    tcs.duration_days = 14
+    tcs.wet_rate_per_day = 4150.00
+    tcs.total_cost = 4150.00 * 1 * 14  # wet_rate × quantity × duration
+  end
+
+  # Miscellaneous crane selection (10t RSB Owned)
+  TenderCraneSelection.find_or_create_by!(tender: tender1, crane_rate: crane_10t_rsb, purpose: 'miscellaneous', sort_order: 3) do |tcs|
+    tcs.quantity = 1
+    tcs.duration_days = 7
+    tcs.wet_rate_per_day = 2050.00
+    tcs.total_cost = 2050.00 * 1 * 7  # wet_rate × quantity × duration
+  end
+
+  # Additional selections for tender2
+  TenderCraneSelection.find_or_create_by!(tender: tender2, crane_rate: crane_25t_rental, purpose: 'main', sort_order: 1) do |tcs|
+    tcs.quantity = 3
+    tcs.duration_days = 30
+    tcs.wet_rate_per_day = 4150.00
+    tcs.total_cost = 4150.00 * 3 * 30
+  end
+
+  TenderCraneSelection.find_or_create_by!(tender: tender2, crane_rate: crane_10t_rsb, purpose: 'splicing', sort_order: 2) do |tcs|
+    tcs.quantity = 2
+    tcs.duration_days = 10
+    tcs.wet_rate_per_day = 2050.00
+    tcs.total_cost = 2050.00 * 2 * 10
+  end
+end
+
 puts "✅ Database seeded successfully!"
 puts ""
 puts "📊 SEEDED DATA SUMMARY:"
@@ -596,6 +643,7 @@ puts "  • Material Supply Rates: #{MaterialSupplyRate.count}"
 puts "  • Crane Rates: #{CraneRate.count}"
 puts "  • Crane Complements: #{CraneComplement.count}"
 puts "  • On-Site Mobile Crane Breakdowns: #{OnSiteMobileCraneBreakdown.count}"
+puts "  • Tender Crane Selections: #{TenderCraneSelection.count}"
 puts ""
 puts "🔑 LOGIN CREDENTIALS:"
 puts "  • Email: kody@llamapress.ai (Admin)"
