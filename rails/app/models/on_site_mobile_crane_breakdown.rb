@@ -1,5 +1,6 @@
 class OnSiteMobileCraneBreakdown < ApplicationRecord
   belongs_to :tender
+  has_many :tender_crane_selections, through: :tender
 
   validates :tender_id, presence: true, uniqueness: true
   validates :total_roof_area_sqm, :erection_rate_sqm_per_day, numericality: { greater_than_or_equal_to: 0 }

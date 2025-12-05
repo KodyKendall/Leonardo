@@ -1,0 +1,25 @@
+<%# Reusable index list partial for tender_crane_selections %>
+<%# Renders the list of selections with inline editing capabilities %>
+<%# Parameters: tender_crane_selections (array), on_site_mobile_crane_breakdown (object) %>
+
+<div id="tender_crane_selections" class="min-w-full divide-y divide-gray-200 space-y-5">
+  <% if tender_crane_selections.any? %>
+    <% tender_crane_selections.each do |tender_crane_selection| %>
+      <div class="w-full">
+        <%= render tender_crane_selection %>
+      </div>
+    <% end %>
+  <% else %>
+    <p class="text-center my-10">No tender crane selections found.</p>
+  <% end %>
+  
+  <!-- Add Row Button -->
+  <div class="flex justify-end pt-4">
+    <%= link_to new_tender_crane_selection_path(tender_id: on_site_mobile_crane_breakdown.tender.id), 
+      class: "btn btn-primary btn-sm gap-2",
+      data: { turbo: false } do %>
+      <i class="fas fa-plus"></i>
+      Add Row
+    <% end %>
+  </div>
+</div>
