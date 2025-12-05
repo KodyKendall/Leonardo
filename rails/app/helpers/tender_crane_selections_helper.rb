@@ -1,0 +1,2 @@
+module TenderCraneSelectionsHelper
+end
