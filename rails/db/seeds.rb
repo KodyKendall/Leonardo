@@ -34,6 +34,13 @@ approver = User.find_or_create_by!(email: 'mark.wilson@company.com') do |user|
   user.role = 'approver'
 end
 
+rich = User.find_or_create_by!(email: 'rspencer@rsbcontracts.com') do |user|
+  user.name = 'Rich Spencer'
+  user.password = 'Rich456'
+  user.password_confirmation = 'Rich456'
+  user.role = 'project_manager'
+end
+
 # ===== BUDGET CATEGORIES =====
 budget_cats = [
   { category_name: 'Labor', cost_code: 'LB001', description: 'Direct labor costs for project staff' },

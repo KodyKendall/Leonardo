@@ -22,12 +22,14 @@
 
   <!-- Section 2: Crane Complements -->
   <div class="mb-12">
-    <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded">
-      <h2 class="text-lg font-bold text-green-900 flex items-center gap-2">
-        <i class="fas fa-cubes"></i>
-        Crane Complements
-      </h2>
-      <p class="text-sm text-green-800 mt-2">Available crane complements by roof area range.</p>
+    <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded flex items-center justify-between">
+      <div>
+        <h2 class="text-lg font-bold text-green-900 flex items-center gap-2">
+          <i class="fas fa-cubes"></i>
+          Crane Complements
+        </h2>
+        <p class="text-sm text-green-800 mt-2">Available crane complements by roof area range. <%= link_to "Manage complements →", crane_complements_path, class: "link text-green-600 font-medium", data: { turbo: false } %></p>
+      </div>
     </div>
 
     <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -55,14 +57,17 @@
             </thead>
             <tbody class="divide-y divide-gray-200">
               <% @crane_complements.each do |complement| %>
-                <tr class="hover:bg-gray-50 transition-colors">
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <% is_matching = @on_site_mobile_crane_breakdown.erection_rate_sqm_per_day.present? && 
+                                 @on_site_mobile_crane_breakdown.erection_rate_sqm_per_day >= complement.area_min_sqm && 
+                                 @on_site_mobile_crane_breakdown.erection_rate_sqm_per_day <= complement.area_max_sqm %>
+                <tr class="<%= is_matching ? 'bg-yellow-100 border-l-4 border-yellow-500' : 'hover:bg-gray-50' %> transition-colors">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium <%= is_matching ? 'text-yellow-900' : 'text-gray-900' %>">
                     <%= "#{number_with_precision(complement.area_min_sqm, precision: 2)} - #{number_with_precision(complement.area_max_sqm, precision: 2)}" %>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm <%= is_matching ? 'text-yellow-800 font-medium' : 'text-gray-600' %>">
                     <%= number_with_precision(complement.area_min_sqm, precision: 2) %>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm <%= is_matching ? 'text-yellow-800 font-medium' : 'text-gray-600' %>">
                     <%= number_with_precision(complement.area_max_sqm, precision: 2) %>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
@@ -70,7 +75,7 @@
                       <%= complement.crane_recommendation %>
                     </span>
                   </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold <%= is_matching ? 'text-yellow-900' : 'text-gray-900' %>">
                     R <%= number_with_precision(complement.default_wet_rate_per_day, precision: 2) %>
                   </td>
                 </tr>
