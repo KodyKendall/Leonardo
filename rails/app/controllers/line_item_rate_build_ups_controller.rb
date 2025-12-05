@@ -50,6 +50,7 @@ class LineItemRateBuildUpsController < ApplicationController
         end
         format.json { render json: @line_item_rate_build_up, status: :ok }
       else
+        Rails.logger.error("LineItemRateBuildUp update failed for ID #{@line_item_rate_build_up.id}: #{@line_item_rate_build_up.errors.full_messages.inspect}")
         format.html { render :edit, status: :unprocessable_entity }
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace(
