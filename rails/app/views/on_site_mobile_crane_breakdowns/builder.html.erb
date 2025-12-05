@@ -105,9 +105,11 @@
       </div>
     </div>
 
-    <%= render 'tender_crane_selections/index_table', 
-        tender_crane_selections: @on_site_mobile_crane_breakdown.tender.tender_crane_selections,
-        on_site_mobile_crane_breakdown: @on_site_mobile_crane_breakdown %>
+    <turbo-frame id="tender_crane_selections">
+      <%= render 'tender_crane_selections/index', 
+          tender_crane_selections: @on_site_mobile_crane_breakdown.tender_crane_selections,
+          on_site_mobile_crane_breakdown: @on_site_mobile_crane_breakdown %>
+    </turbo-frame>
   </div>
 
   <!-- Section 4: Crane Rates -->
