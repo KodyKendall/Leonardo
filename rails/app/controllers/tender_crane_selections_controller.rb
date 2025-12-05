@@ -16,7 +16,8 @@ class TenderCraneSelectionsController < ApplicationController
 
   # GET /tender_crane_selections/new
   def new
-    @tender_crane_selection = TenderCraneSelection.new
+    @tender = Tender.find(params[:tender_id]) if params[:tender_id].present?
+    @tender_crane_selection = TenderCraneSelection.new(tender: @tender)
   end
 
   # GET /tender_crane_selections/1/edit

@@ -93,7 +93,22 @@
     </div>
   </div>
 
-  <!-- Section 3: Crane Rates -->
+  <!-- Section 3: Tender Crane Selections -->
+  <div class="mb-12">
+    <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 mb-6 rounded flex items-center justify-between">
+      <div>
+        <h2 class="text-lg font-bold text-indigo-900 flex items-center gap-2">
+          <i class="fas fa-list-check"></i>
+          Selected Cranes
+        </h2>
+        <p class="text-sm text-indigo-800 mt-2">Cranes selected for this breakdown with rates and costs.</p>
+      </div>
+    </div>
+
+    <%= render 'tender_crane_selections/index_table', on_site_mobile_crane_breakdown: @on_site_mobile_crane_breakdown %>
+  </div>
+
+  <!-- Section 4: Crane Rates -->
   <div class="mb-12">
     <div class="bg-purple-50 border-l-4 border-purple-500 p-4 mb-6 rounded">
       <h2 class="text-lg font-bold text-purple-900 flex items-center gap-2">
