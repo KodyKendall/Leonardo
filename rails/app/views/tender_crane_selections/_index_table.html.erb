@@ -1,8 +1,9 @@
 <%# Scoped index table for tender_crane_selections inside breakdown builder %>
 <%# This partial renders all tender_crane_selections for the parent breakdown %>
+<%# Parameters: tender_crane_selections (array), on_site_mobile_crane_breakdown (object) %>
 
 <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
-  <% if @on_site_mobile_crane_breakdown.tender.tender_crane_selections.any? %>
+  <% if tender_crane_selections.any? %>
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
@@ -31,7 +32,7 @@
           </tr>
         </thead>
         <tbody id="tender_crane_selections_table" class="divide-y divide-gray-200" data-controller="tender-crane-index">
-          <% @on_site_mobile_crane_breakdown.tender.tender_crane_selections.each do |tender_crane_selection| %>
+          <% tender_crane_selections.each do |tender_crane_selection| %>
             <tr id="<%= dom_id tender_crane_selection %>" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                 <%= tender_crane_selection.crane_rate&.size || "—" %>
@@ -78,13 +79,13 @@
               TOTALS:
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              <%= @on_site_mobile_crane_breakdown.tender.tender_crane_selections.sum(:duration_days) %>
+              <%= tender_crane_selections.sum(:duration_days) %>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              R <%= number_with_precision(@on_site_mobile_crane_breakdown.tender.tender_crane_selections.sum(:wet_rate_per_day), precision: 2) %>
+              R <%= number_with_precision(tender_crane_selections.sum(:wet_rate_per_day), precision: 2) %>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-              R <%= number_with_precision(@on_site_mobile_crane_breakdown.tender.tender_crane_selections.sum(:total_cost), precision: 2) %>
+              R <%= number_with_precision(tender_crane_selections.sum(:total_cost), precision: 2) %>
             </td>
             <td></td>
           </tr>
@@ -101,7 +102,7 @@
   
   <!-- Add Row Button -->
   <div class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end">
-    <%= link_to new_tender_crane_selection_path(tender_id: @on_site_mobile_crane_breakdown.tender.id), 
+    <%= link_to new_tender_crane_selection_path(tender_id: on_site_mobile_crane_breakdown.tender.id), 
       class: "btn btn-primary btn-sm gap-2",
       data: { turbo: false } do %>
       <i class="fas fa-plus"></i>
