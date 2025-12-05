@@ -8,6 +8,10 @@ class TenderCraneSelectionsController < ApplicationController
 
   # GET /tender_crane_selections/1 or /tender_crane_selections/1.json
   def show
+    respond_to do |format|
+      format.html
+      format.turbo_stream { render inline: "<%= render 'tender_crane_selection', tender_crane_selection: @tender_crane_selection %>" }
+    end
   end
 
   # GET /tender_crane_selections/new
@@ -40,9 +44,11 @@ class TenderCraneSelectionsController < ApplicationController
       if @tender_crane_selection.update(tender_crane_selection_params)
         format.html { redirect_to @tender_crane_selection, notice: "Tender crane selection was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @tender_crane_selection }
+        format.turbo_stream { render :update }
       else
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @tender_crane_selection.errors, status: :unprocessable_entity }
+        format.turbo_stream { render :update, status: :unprocessable_entity }
       end
     end
   end
