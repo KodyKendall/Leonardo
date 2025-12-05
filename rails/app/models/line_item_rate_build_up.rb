@@ -8,7 +8,7 @@ class LineItemRateBuildUp < ApplicationRecord
   def calculate_totals
     # Calculate subtotal by summing only the included components
     self.subtotal = 0
-    self.subtotal += material_supply_rate if material_supply_rate.present?
+    self.subtotal += material_supply_rate if material_supply_included?
     self.subtotal += fabrication_rate if fabrication_included?
     self.subtotal += overheads_rate if overheads_included?
     self.subtotal += shop_priming_rate if shop_priming_included?
