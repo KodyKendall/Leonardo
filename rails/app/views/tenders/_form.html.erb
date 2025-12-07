@@ -75,7 +75,7 @@
     <select name="tender[status]" class="select select-bordered w-full #{tender.errors[:status].any? ? 'select-error' : ''}">
       <option value="">-- Select Status --</option>
       <% Tender::STATUSES.each do |status| %>
-        <option value="<%= status %>" <%= 'selected' if tender.status == status %>>
+        <option value="<%= status %>" <%= 'selected' if tender.status == status || (tender.new_record? && status == 'Draft') %>>
           <%= status %>
         </option>
       <% end %>
@@ -87,13 +87,19 @@
     <% end %>
   </div>
 
-  <!-- Tender Value -->
+  <!-- Project Type Dropdown -->
   <div class="form-control">
-    <%= form.label :tender_value, "Tender Value", class: "label" %>
-    <%= form.number_field :tender_value, placeholder: "0.00", step: 0.01, class: "input input-bordered w-full #{tender.errors[:tender_value].any? ? 'input-error' : ''}" %>
-    <% if tender.errors[:tender_value].any? %>
+    <%= form.label :project_type, "Project Type", class: "label" %>
+    <select name="tender[project_type]" class="select select-bordered w-full #{tender.errors[:project_type].any? ? 'select-error' : ''}">
+      <% Tender::PROJECT_TYPES.each do |type| %>
+        <option value="<%= type %>" <%= 'selected' if tender.project_type == type || (tender.new_record? && type == 'Commercial') %>>
+          <%= type %>
+        </option>
+      <% end %>
+    </select>
+    <% if tender.errors[:project_type].any? %>
       <div class="label">
-        <span class="label-text-alt text-error"><%= tender.errors[:tender_value].first %></span>
+        <span class="label-text-alt text-error"><%= tender.errors[:project_type].first %></span>
       </div>
     <% end %>
   </div>
