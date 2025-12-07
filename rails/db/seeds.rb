@@ -64,17 +64,17 @@ tender1 = Tender.find_or_create_by!(e_number: 'E-2024-001') do |t|
   t.status = 'Draft'
   t.client_name = 'ABC Construction Ltd'
   t.tender_value = 500000.00
-  t.project_type = 'commercial'
+  t.project_type = 'Commercial'
   t.notes = 'High-rise commercial building project'
 end
 
 tender2 = Tender.find_or_create_by!(e_number: 'E-2024-002') do |t|
-  t.tender_name = 'XYZ Industrial Fabrication'
+  t.tender_name = 'XYZ Mining Operation'
   t.status = 'Draft'
   t.client_name = 'XYZ Infrastructure'
   t.tender_value = 1200000.00
-  t.project_type = 'industrial'
-  t.notes = 'Steel fabrication for industrial complex'
+  t.project_type = 'Mining'
+  t.notes = 'Steel fabrication for mining complex'
 end
 
 tender3 = Tender.find_or_create_by!(e_number: 'E-2024-003') do |t|
@@ -82,7 +82,7 @@ tender3 = Tender.find_or_create_by!(e_number: 'E-2024-003') do |t|
   t.status = 'Draft'
   t.client_name = 'Smart City Developers'
   t.tender_value = 350000.00
-  t.project_type = 'commercial'
+  t.project_type = 'Commercial'
   t.notes = 'Office complex in downtown area'
 end
 
@@ -91,7 +91,7 @@ tender4 = Tender.find_or_create_by!(e_number: 'E-2024-004') do |t|
   t.status = 'Draft'
   t.client_name = 'Heritage Renovations Inc'
   t.tender_value = 180000.00
-  t.project_type = 'commercial'
+  t.project_type = 'Commercial'
 end
 
 # ===== PROJECTS (now create with tenders and users) =====

@@ -3,12 +3,22 @@
     <h3 class="font-bold text-lg mb-4">Attach Existing BOQ</h3>
     
     <div class="form-control mb-4">
-      <input 
-        type="text" 
-        id="boq_search_input" 
-        placeholder="Search by BOQ name, client name, or QS name..." 
-        class="input input-bordered w-full"
-      />
+      <div class="flex gap-2">
+        <input 
+          type="text" 
+          id="boq_search_input" 
+          placeholder="Search by BOQ name, client name, or QS name..." 
+          class="input input-bordered w-full"
+        />
+        <button 
+          type="button" 
+          id="refresh_boqs_btn"
+          class="btn btn-square btn-outline"
+          title="Refresh BOQ list"
+        >
+          <i class="fa-solid fa-arrows-rotate"></i>
+        </button>
+      </div>
     </div>
 
     <div id="boq_search_results" class="space-y-2 max-h-96 overflow-y-auto border border-gray-200 rounded p-4 bg-gray-50">
@@ -65,30 +75,39 @@ document.addEventListener('DOMContentLoaded', function() {
       query = ''; // Load all BOQs with empty query
     }
 
+    const fetchUrl = `/boqs/search?q=${encodeURIComponent(query)}`;
+    
     debounceTimer = setTimeout(function() {
-      fetch(`/boqs/search?q=${encodeURIComponent(query)}`, {
+      fetch(fetchUrl, {
         headers: {
           'Accept': 'application/json',
           'X-Requested-With': 'XMLHttpRequest'
         }
       })
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then(data => {
-        if (data.length === 0) {
+        console.log('Search results:', data);
+        if (!Array.isArray(data) || data.length === 0) {
           resultsContainer.innerHTML = '<p class="text-gray-500 text-sm">No BOQs found</p>';
         } else {
           resultsContainer.innerHTML = data.map(boq => {
+            const boqName = (boq.boq_name || '').replace(/'/g, "\\'");
             const isAttached = boq.tender_id && boq.tender_id !== null;
             const buttonText = isAttached ? 'Attached' : 'Attach';
             const buttonClass = isAttached ? 'btn btn-sm btn-disabled' : 'btn btn-sm btn-primary';
             const onClickHandler = isAttached 
-              ? `openDetachModal(${boq.id}, '${boq.boq_name}', '${boq.tender_name}')` 
-              : `attachBoq(${boq.id}, '${boq.boq_name}')`;
+              ? `openDetachModal(${boq.id}, '${boqName}', '${(boq.tender_name || '').replace(/'/g, "\\'")}')`
+              : `attachBoq(${boq.id}, '${boqName}')`;
             
             return `
               <div class="flex items-center justify-between p-3 bg-white rounded border border-gray-200 hover:border-blue-400">
                 <div class="flex-1">
-                  <p class="font-medium text-gray-800">${boq.boq_name}</p>
+                  <p class="font-medium text-gray-800">${boq.boq_name || 'Unnamed BOQ'}</p>
                   <p class="text-xs text-gray-500">
                     ${boq.client_name ? 'Client: ' + boq.client_name : ''}
                     ${boq.qs_name ? (boq.client_name ? ' • ' : '') + 'QS: ' + boq.qs_name : ''}
@@ -108,7 +127,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       })
       .catch(error => {
-        resultsContainer.innerHTML = '<p class="text-red-500 text-sm">Error loading BOQs</p>';
+        resultsContainer.innerHTML = '<p class="text-red-500 text-sm">Error loading BOQs. Check console for details.</p>';
         console.error('Search error:', error);
       });
     }, query.length < 1 ? 0 : 300);
@@ -131,6 +150,22 @@ document.addEventListener('DOMContentLoaded', function() {
   window.loadBoqsForAttach = function() {
     performSearch('');
   };
+
+  // Refresh button click handler
+  const refreshBtn = document.getElementById('refresh_boqs_btn');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      searchInput.value = '';
+      refreshBtn.disabled = true;
+      refreshBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
+      performSearch('');
+      setTimeout(() => {
+        refreshBtn.disabled = false;
+        refreshBtn.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i>';
+      }, 1000);
+    });
+  }
 
   // Store the current BOQ being considered for detach/attach
   let pendingBoqForAttach = null;

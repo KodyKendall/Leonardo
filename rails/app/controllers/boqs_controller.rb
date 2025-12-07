@@ -310,17 +310,19 @@ class BoqsController < ApplicationController
   end
 
   def search
-    # Search for BOQs by name, client, or QS (showing 5 most recent, including attached ones)
+    # Search for BOQs by name, client, or QS (showing all results)
     query = params[:q].to_s.strip
     
     respond_to do |format|
       format.json do
-        boqs = Boq.includes(:tender).order(created_at: :desc).limit(5)
+        boqs = Boq.includes(:tender).order(created_at: :desc)
         
         if query.length > 0
           boqs = boqs.where("boq_name ILIKE ? OR client_name ILIKE ? OR qs_name ILIKE ?", 
             "%#{query}%", "%#{query}%", "%#{query}%")
         end
+        
+        boqs = boqs.limit(50)  # Limit after filtering
         
         # Format response to include tender information
         boqs_data = boqs.map do |boq|
