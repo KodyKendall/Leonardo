@@ -21,6 +21,9 @@ class Tender < ApplicationRecord
   # Status enum-like constant
   STATUSES = ['Draft', 'In Progress', 'Submitted', 'Awarded', 'Not Awarded'].freeze
   
+  # Project types enum-like constant
+  PROJECT_TYPES = ['Commercial', 'Mining'].freeze
+  
   private
   
   def generate_e_number
