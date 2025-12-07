@@ -3,65 +3,56 @@
     controller: "dirty-form",
     action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset"
   }) do |form| %>
-    <div class="grid grid-cols-12 gap-3 items-center py-3 px-3 bg-white border-b hover:bg-gray-50">
-      <!-- Material Supply Dropdown -->
-      <div class="col-span-3">
-        <%= form.collection_select :material_supply_id, MaterialSupply.all, :id, :name,
-            { prompt: "Select material" },
-            class: "select select-bordered select-sm w-full" %>
-      </div>
+    <!-- Material Row - Ultra Compact -->
+    <div class="bg-white border-b p-1 hover:bg-gray-50">
+      <div class="grid grid-cols-12 gap-1 items-center">
+        
+        <!-- Material Supply Dropdown -->
+        <div class="col-span-3">
+          <%= form.collection_select :material_supply_id, MaterialSupply.all, :id, :name,
+              { prompt: "Select" },
+              class: "select select-bordered select-xs w-full text-xs" %>
+        </div>
 
-      <!-- Thickness Field (%) -->
-      <div class="col-span-2">
-        <div class="join w-full">
+        <!-- Thickness Field -->
+        <div class="col-span-2">
           <%= form.number_field :thickness,
               placeholder: "Thickness",
               step: 0.01,
-              class: "input input-bordered input-sm w-full text-right join-item" %>
-          <span class="btn btn-sm no-animation join-item">%</span>
+              class: "input input-bordered input-xs w-full text-right text-xs" %>
         </div>
-      </div>
 
-      <!-- Rate Field (R) -->
-      <div class="col-span-2">
-        <div class="join w-full">
-          <span class="btn btn-sm no-animation join-item">R</span>
+        <!-- Rate Field -->
+        <div class="col-span-2">
           <%= form.number_field :rate,
               placeholder: "Rate",
               step: 0.01,
-              class: "input input-bordered input-sm w-full text-right join-item" %>
+              class: "input input-bordered input-xs w-full text-right text-xs" %>
         </div>
-      </div>
 
-      <!-- Quantity Field (%) -->
-      <div class="col-span-2">
-        <div class="join w-full">
+        <!-- Quantity Field -->
+        <div class="col-span-2">
           <%= form.number_field :quantity,
               placeholder: "Qty",
               step: 0.01,
-              class: "input input-bordered input-sm w-full text-right join-item" %>
-          <span class="btn btn-sm no-animation join-item">%</span>
+              class: "input input-bordered input-xs w-full text-right text-xs" %>
         </div>
-      </div>
 
-      <!-- Line Total (Calculated, Display Only) -->
-      <div class="col-span-1 text-right font-semibold text-gray-900">
-        R<%= number_with_precision(line_item_material.line_total, precision: 2, delimiter: ",") %>
-      </div>
+        <!-- Line Total -->
+        <div class="col-span-1 text-right font-semibold text-gray-900 text-xs">
+          <%= number_with_precision(line_item_material.line_total, precision: 2, delimiter: ",") %>
+        </div>
 
-      <!-- Save Button -->
-      <div class="col-span-1 text-center flex items-center justify-center gap-1">
-        <span class="hidden text-red-500 text-xs font-medium" data-dirty-form-target="indicator">unsaved</span>
-        <%= form.button type: :submit, class: "btn btn-ghost btn-xs text-green-600" do %>
-          <i class="fa-solid fa-check"></i>
-        <% end %>
-      </div>
-
-      <!-- Delete Button -->
-      <div class="col-span-1 text-center">
-        <%= button_to line_item_material, method: :delete, form: { class: "inline" }, data: { turbo_confirm: "Are you sure you want to delete this material?" }, class: "btn btn-ghost btn-xs text-red-600" do %>
-          <i class="fa-solid fa-trash"></i>
-        <% end %>
+        <!-- Action Buttons -->
+        <div class="col-span-2 flex items-center justify-end gap-0.5">
+          <span class="hidden w-2 h-2 rounded-full bg-red-500" data-dirty-form-target="indicator"></span>
+          <%= form.button type: :submit, class: "btn btn-ghost btn-xs text-green-600 p-1" do %>
+            <i class="fa-solid fa-check text-xs"></i>
+          <% end %>
+          <%= button_to line_item_material, method: :delete, form: { class: "inline" }, data: { turbo_confirm: "Delete?" }, class: "btn btn-ghost btn-xs text-red-600 p-1" do %>
+            <i class="fa-solid fa-trash text-xs"></i>
+          <% end %>
+        </div>
       </div>
     </div>
   <% end %>
