@@ -639,7 +639,7 @@ def build_workflow(checkpointer=None):
     builder.add_conditional_edges("agent", tools_condition)
     builder.add_edge("tools", "agent")
     
-    return builder.compile(checkpointer=checkpointer, recursion_limit=250)
+    return builder.compile(checkpointer=checkpointer)
 
 # Register all tools
 tools = [
