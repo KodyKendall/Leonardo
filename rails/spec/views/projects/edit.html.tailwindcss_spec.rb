@@ -1,18 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe "projects/edit", type: :view do
-  let(:project) {
-    Project.create!(
-      rsb_number: "MyString",
-      tender: nil,
-      project_status: "MyString",
-      budget_total: "9.99",
-      actual_spend: "9.99",
-      created_by: nil
-    )
-  }
+  let(:project) { create(:project) }
 
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:project, project)
   end
 

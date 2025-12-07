@@ -5,6 +5,7 @@ Rails.application.routes.draw do
     end
   end
   post "tenders/:tender_id/ensure_breakdown", to: "on_site_mobile_crane_breakdowns#ensure_breakdown", as: "ensure_breakdown"
+  resources :tender_crane_selections
   resources :crane_complements
   resources :crane_rates
   resources :line_item_material_breakdowns
@@ -21,6 +22,8 @@ Rails.application.routes.draw do
       patch :update_header_row
       get :export_boq_csv
       post :detach
+      post :create_line_items
+      patch :update_attributes
     end
   end
   resources :boq_items

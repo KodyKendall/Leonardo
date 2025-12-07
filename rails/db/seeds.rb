@@ -578,6 +578,229 @@ OnSiteMobileCraneBreakdown.find_or_create_by!(tender: tender4) do |breakdown|
   breakdown.misc_crane_required = false
 end
 
+# ===== BOQS (BILLS OF QUANTITIES) =====
+boq1 = Boq.find_or_create_by!(boq_name: 'ABC High-Rise - BOQ', file_name: 'abc_highrise_boq.pdf') do |b|
+  b.tender = tender1
+  b.status = 'uploaded'
+  b.client_name = 'ABC Construction Ltd'
+  b.client_reference = 'ABC-2024-REF-001'
+  b.qs_name = 'John Smith'
+  b.received_date = Date.new(2024, 1, 10)
+  b.uploaded_by = pm1
+  b.notes = 'Initial BOQ for high-rise commercial building'
+  b.header_row_index = 1
+end
+
+boq2 = Boq.find_or_create_by!(boq_name: 'XYZ Industrial - BOQ', file_name: 'xyz_industrial_boq.pdf') do |b|
+  b.tender = tender2
+  b.status = 'uploaded'
+  b.client_name = 'XYZ Infrastructure'
+  b.client_reference = 'XYZ-2024-REF-002'
+  b.qs_name = 'Sarah Jones'
+  b.received_date = Date.new(2024, 2, 15)
+  b.uploaded_by = pm2
+  b.notes = 'Steel fabrication BOQ for industrial complex'
+  b.header_row_index = 1
+end
+
+boq3 = Boq.find_or_create_by!(boq_name: 'Smart City Office - BOQ', file_name: 'smart_city_boq.pdf') do |b|
+  b.tender = tender3
+  b.status = 'uploaded'
+  b.client_name = 'Smart City Developers'
+  b.client_reference = 'SC-2024-REF-003'
+  b.qs_name = 'Mark Wilson'
+  b.received_date = Date.new(2024, 3, 5)
+  b.uploaded_by = pm1
+  b.notes = 'Office complex BOQ'
+  b.header_row_index = 1
+end
+
+boq4 = Boq.find_or_create_by!(boq_name: 'Heritage Renovations - BOQ', file_name: 'heritage_boq.pdf') do |b|
+  b.tender = tender4
+  b.status = 'uploaded'
+  b.client_name = 'Heritage Renovations Inc'
+  b.client_reference = 'HR-2024-REF-004'
+  b.qs_name = 'Sarah Jones'
+  b.received_date = Date.new(2024, 4, 1)
+  b.uploaded_by = pm2
+  b.notes = 'Heritage building renovation BOQ'
+  b.header_row_index = 1
+end
+
+# ===== BOQ ITEMS FOR BOQ1 =====
+BoqItem.find_or_create_by!(boq: boq1, item_number: 'BOQ-001') do |bi|
+  bi.item_description = 'Light Structural Steel - Up to 25 kg/m'
+  bi.unit_of_measure = 'tonne'
+  bi.quantity = 45.5
+  bi.section_category = 'Steel Sections'
+  bi.sequence_order = 1
+  bi.page_number = '1'
+  bi.notes = 'Supplied and erected on site'
+end
+
+BoqItem.find_or_create_by!(boq: boq1, item_number: 'BOQ-002') do |bi|
+  bi.item_description = 'Heavy Structural Steel - Over 25 kg/m'
+  bi.unit_of_measure = 'tonne'
+  bi.quantity = 28.3
+  bi.section_category = 'Steel Sections'
+  bi.sequence_order = 2
+  bi.page_number = '1'
+  bi.notes = 'Supplied and erected on site'
+end
+
+BoqItem.find_or_create_by!(boq: boq1, item_number: 'BOQ-003') do |bi|
+  bi.item_description = 'Bolts and Fasteners - M16 HD'
+  bi.unit_of_measure = 'kg'
+  bi.quantity = 250
+  bi.section_category = 'M16 HD Bolt'
+  bi.sequence_order = 3
+  bi.page_number = '2'
+  bi.notes = 'Grade 8.8 specifications'
+end
+
+BoqItem.find_or_create_by!(boq: boq1, item_number: 'BOQ-004') do |bi|
+  bi.item_description = 'Shop Priming - All steel members'
+  bi.unit_of_measure = 'tonne'
+  bi.quantity = 73.8
+  bi.section_category = 'Paintwork'
+  bi.sequence_order = 4
+  bi.page_number = '3'
+  bi.notes = 'Zinc-rich epoxy primer'
+end
+
+# ===== BOQ ITEMS FOR BOQ2 =====
+BoqItem.find_or_create_by!(boq: boq2, item_number: 'BOQ-001') do |bi|
+  bi.item_description = 'Structural Steel Beams and Columns'
+  bi.unit_of_measure = 'tonne'
+  bi.quantity = 125.75
+  bi.section_category = 'Steel Sections'
+  bi.sequence_order = 1
+  bi.page_number = '1'
+  bi.notes = 'Various sizes for main structure'
+end
+
+BoqItem.find_or_create_by!(boq: boq2, item_number: 'BOQ-002') do |bi|
+  bi.item_description = 'Hollow Sections - CHS'
+  bi.unit_of_measure = 'tonne'
+  bi.quantity = 45.25
+  bi.section_category = 'Steel Sections'
+  bi.sequence_order = 2
+  bi.page_number = '1'
+  bi.notes = 'Circular hollow sections'
+end
+
+BoqItem.find_or_create_by!(boq: boq2, item_number: 'BOQ-003') do |bi|
+  bi.item_description = 'Welding and Connections'
+  bi.unit_of_measure = 'metre'
+  bi.quantity = 2500
+  bi.section_category = 'Blank'
+  bi.sequence_order = 3
+  bi.page_number = '2'
+  bi.notes = 'All connections as per drawings'
+end
+
+BoqItem.find_or_create_by!(boq: boq2, item_number: 'BOQ-004') do |bi|
+  bi.item_description = 'Bolts - M20 HD'
+  bi.unit_of_measure = 'kg'
+  bi.quantity = 500
+  bi.section_category = 'M20 HD Bolt'
+  bi.sequence_order = 4
+  bi.page_number = '3'
+  bi.notes = 'High strength bolts'
+end
+
+BoqItem.find_or_create_by!(boq: boq2, item_number: 'BOQ-005') do |bi|
+  bi.item_description = 'Final Paint - All exposed steel'
+  bi.unit_of_measure = 'tonne'
+  bi.quantity = 171.0
+  bi.section_category = 'Paintwork'
+  bi.sequence_order = 5
+  bi.page_number = '4'
+  bi.notes = '2-pack polyurethane finish'
+end
+
+# ===== BOQ ITEMS FOR BOQ3 =====
+BoqItem.find_or_create_by!(boq: boq3, item_number: 'BOQ-001') do |bi|
+  bi.item_description = 'Universal Beams - 254 x 254'
+  bi.unit_of_measure = 'tonne'
+  bi.quantity = 22.5
+  bi.section_category = 'Steel Sections'
+  bi.sequence_order = 1
+  bi.page_number = '1'
+  bi.notes = 'Main floor beams'
+end
+
+BoqItem.find_or_create_by!(boq: boq3, item_number: 'BOQ-002') do |bi|
+  bi.item_description = 'Columns - UC 356 x 406'
+  bi.unit_of_measure = 'tonne'
+  bi.quantity = 18.75
+  bi.section_category = 'Steel Sections'
+  bi.sequence_order = 2
+  bi.page_number = '1'
+  bi.notes = 'Main support columns'
+end
+
+BoqItem.find_or_create_by!(boq: boq3, item_number: 'BOQ-003') do |bi|
+  bi.item_description = 'Plate Material - Various thicknesses'
+  bi.unit_of_measure = 'tonne'
+  bi.quantity = 15.3
+  bi.section_category = 'Steel Sections'
+  bi.sequence_order = 3
+  bi.page_number = '2'
+  bi.notes = 'Connections and splices'
+end
+
+BoqItem.find_or_create_by!(boq: boq3, item_number: 'BOQ-004') do |bi|
+  bi.item_description = 'Bolts - M24 HD'
+  bi.unit_of_measure = 'kg'
+  bi.quantity = 380
+  bi.section_category = 'M24 HD Bolt'
+  bi.sequence_order = 4
+  bi.page_number = '2'
+  bi.notes = 'Heavy duty connections'
+end
+
+BoqItem.find_or_create_by!(boq: boq3, item_number: 'BOQ-005') do |bi|
+  bi.item_description = 'Galvanizing - Hot dip'
+  bi.unit_of_measure = 'tonne'
+  bi.quantity = 56.55
+  bi.section_category = 'Paintwork'
+  bi.sequence_order = 5
+  bi.page_number = '3'
+  bi.notes = 'All members to be galvanized'
+end
+
+# ===== BOQ ITEMS FOR BOQ4 =====
+BoqItem.find_or_create_by!(boq: boq4, item_number: 'BOQ-001') do |bi|
+  bi.item_description = 'Structural Repairs - Steel reinforcement'
+  bi.unit_of_measure = 'tonne'
+  bi.quantity = 12.5
+  bi.section_category = 'Steel Sections'
+  bi.sequence_order = 1
+  bi.page_number = '1'
+  bi.notes = 'Heritage building repairs'
+end
+
+BoqItem.find_or_create_by!(boq: boq4, item_number: 'BOQ-002') do |bi|
+  bi.item_description = 'Bolts - M16 Chemical Anchor'
+  bi.unit_of_measure = 'kg'
+  bi.quantity = 120
+  bi.section_category = 'M16 Chemical'
+  bi.sequence_order = 2
+  bi.page_number = '1'
+  bi.notes = 'For masonry connections'
+end
+
+BoqItem.find_or_create_by!(boq: boq4, item_number: 'BOQ-003') do |bi|
+  bi.item_description = 'Traditional Paint Finish'
+  bi.unit_of_measure = 'tonne'
+  bi.quantity = 12.5
+  bi.section_category = 'Paintwork'
+  bi.sequence_order = 3
+  bi.page_number = '2'
+  bi.notes = 'Heritage-appropriate finish'
+end
+
 # ===== TENDER CRANE SELECTIONS =====
 # Get the crane rates (10t RSB Owned = 2050/day, 25t Rented = 4150/day)
 crane_10t_rsb = CraneRate.find_by(size: '10t', ownership_type: 'rsb_owned')
@@ -644,6 +867,8 @@ puts "  • Crane Rates: #{CraneRate.count}"
 puts "  • Crane Complements: #{CraneComplement.count}"
 puts "  • On-Site Mobile Crane Breakdowns: #{OnSiteMobileCraneBreakdown.count}"
 puts "  • Tender Crane Selections: #{TenderCraneSelection.count}"
+puts "  • BOQs: #{Boq.count}"
+puts "  • BOQ Items: #{BoquItem.count}"
 puts ""
 puts "🔑 LOGIN CREDENTIALS:"
 puts "  • Email: kody@llamapress.ai (Admin)"

@@ -1,17 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe "crane_rates/edit", type: :view do
-  let(:crane_rate) {
-    CraneRate.create!(
-      size: "MyString",
-      ownership_type: "MyString",
-      dry_rate_per_day: "9.99",
-      diesel_per_day: "9.99",
-      is_active: false
-    )
-  }
+  let(:crane_rate) { create(:crane_rate) }
 
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:crane_rate, crane_rate)
   end
 

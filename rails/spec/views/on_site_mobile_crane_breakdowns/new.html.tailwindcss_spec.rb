@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "on_site_mobile_crane_breakdowns/new", type: :view do
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:on_site_mobile_crane_breakdown, OnSiteMobileCraneBreakdown.new(
       tender_id: "",
       total_roof_area_sqm: "9.99",

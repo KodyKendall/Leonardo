@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "monthly_material_supply_rates/new", type: :view do
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:monthly_material_supply_rate, MonthlyMaterialSupplyRate.new())
   end
 

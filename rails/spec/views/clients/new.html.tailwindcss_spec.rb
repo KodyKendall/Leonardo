@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "clients/new", type: :view do
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:client, Client.new(
       business_name: "MyString",
       contact_name: "MyString",

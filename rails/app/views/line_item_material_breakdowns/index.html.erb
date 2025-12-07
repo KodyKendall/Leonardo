@@ -51,7 +51,7 @@
                   <td>
                     <% if breakdown.tender_line_item&.tender %>
                       <%= link_to tender_path(breakdown.tender_line_item.tender), class: "link link-secondary text-sm" do %>
-                        <%= truncate(breakdown.tender_line_item.tender.name, length: 25) %>
+                        <%= truncate(breakdown.tender_line_item.tender.tender_name, length: 25) %>
                       <% end %>
                     <% else %>
                       <span class="text-gray-400">—</span>

@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "budget_categories/new", type: :view do
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:budget_category, BudgetCategory.new(
       category_name: "MyString",
       cost_code: "MyString",

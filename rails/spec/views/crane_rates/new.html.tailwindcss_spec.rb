@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "crane_rates/new", type: :view do
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:crane_rate, CraneRate.new(
       size: "MyString",
       ownership_type: "MyString",

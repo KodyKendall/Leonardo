@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :monthly_material_supply_rate do
-    effective_from { "2025-11-14" }
-    effective_to { "2025-11-14" }
+    effective_from { Date.today }
+    effective_to { 1.month.from_now.to_date }
   end
 end

@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "budget_allowances/new", type: :view do
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:budget_allowance, BudgetAllowance.new(
       project: nil,
       budget_category: nil,

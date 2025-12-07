@@ -1,17 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe "budget_allowances/edit", type: :view do
-  let(:budget_allowance) {
-    BudgetAllowance.create!(
-      project: nil,
-      budget_category: nil,
-      budgeted_amount: "9.99",
-      actual_spend: "9.99",
-      variance: "9.99"
-    )
-  }
+  let(:budget_allowance) { create(:budget_allowance) }
 
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:budget_allowance, budget_allowance)
   end
 

@@ -1,16 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe "crane_complements/edit", type: :view do
-  let(:crane_complement) {
-    CraneComplement.create!(
-      area_min_sqm: "9.99",
-      area_max_sqm: "9.99",
-      crane_recommendation: "MyString",
-      default_wet_rate_per_day: "9.99"
-    )
-  }
+  let(:crane_complement) { create(:crane_complement) }
 
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:crane_complement, crane_complement)
   end
 

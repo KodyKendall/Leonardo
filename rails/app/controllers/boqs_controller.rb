@@ -58,7 +58,14 @@ class BoqsController < ApplicationController
     end
 
     # Build BOQ with permitted params (excluding csv_file)
-    @boq = Boq.new(boq_params)
+    # Sanitize boq_name to remove null bytes
+    sanitized_params = boq_params.to_h
+    sanitized_params[:boq_name] = sanitized_params[:boq_name]&.delete("\u0000") if sanitized_params[:boq_name]
+    sanitized_params[:client_name] = sanitized_params[:client_name]&.delete("\u0000") if sanitized_params[:client_name]
+    sanitized_params[:qs_name] = sanitized_params[:qs_name]&.delete("\u0000") if sanitized_params[:qs_name]
+    sanitized_params[:notes] = sanitized_params[:notes]&.delete("\u0000") if sanitized_params[:notes]
+
+    @boq = Boq.new(sanitized_params)
     @boq.uploaded_by = current_user
     @boq.file_name = file.original_filename
     @boq.file_path = "active_storage"  # Placeholder for Active Storage
@@ -112,11 +119,15 @@ class BoqsController < ApplicationController
 
   def create_line_items
     # API endpoint for agent to create BOQ line items
-    line_items_data = params.require(:line_items)
-    created_items = []
-
     respond_to do |format|
       begin
+        unless params.has_key?(:line_items)
+          raise ActionController::ParameterMissing.new(:line_items)
+        end
+
+        line_items_data = params[:line_items] || []
+        created_items = []
+
         ActiveRecord::Base.transaction do
           line_items_data.each_with_index do |item_data, index|
             line_item = @boq.boq_items.new(
@@ -133,6 +144,8 @@ class BoqsController < ApplicationController
           end
         end
         format.json { render json: { success: true, line_items: created_items, count: created_items.count }, status: :created }
+      rescue ActionController::ParameterMissing => e
+        format.json { render json: { success: false, error: e.message }, status: :unprocessable_entity }
       rescue StandardError => e
         format.json { render json: { success: false, error: e.message }, status: :unprocessable_entity }
       end
@@ -219,49 +232,55 @@ class BoqsController < ApplicationController
   def update_header_row
     # AJAX endpoint to update header_row_index and return updated CSV preview
     require 'csv'
-    respond_to do |format|
-      header_row_idx = params[:header_row_index].to_i
-      
-      # Validate header row index
-      if header_row_idx < 0
+    header_row_idx = params[:header_row_index].to_i
+
+    # Validate header row index
+    if header_row_idx < 0
+      respond_to do |format|
         format.json { render json: { error: "Header row index cannot be negative" }, status: :unprocessable_entity }
-        return
       end
-      
+      return
+    end
+
+    # Check if CSV file is attached and validate header row index before updating
+    unless @boq.csv_file.attached?
+      respond_to do |format|
+        format.json { render json: { error: "No CSV file attached" }, status: :not_found }
+      end
+      return
+    end
+
+    csv_content = @boq.csv_file.download.force_encoding('UTF-8')
+    all_rows = CSV.parse(csv_content)
+
+    if header_row_idx >= all_rows.length
+      respond_to do |format|
+        format.json { render json: { error: "Header row index exceeds file length" }, status: :unprocessable_entity }
+      end
+      return
+    end
+
+    respond_to do |format|
       if @boq.update(header_row_index: header_row_idx)
         # Generate updated CSV preview with new header row
-        if @boq.csv_file.attached?
-          csv_content = @boq.csv_file.download.force_encoding('UTF-8')
-          
-          # Parse CSV with proper quote handling
-          all_rows = CSV.parse(csv_content)
-          
-          if header_row_idx >= all_rows.length
-            format.json { render json: { error: "Header row index exceeds file length" }, status: :unprocessable_entity }
-            return
-          end
-          
-          # Extract headers from specified row
-          headers = all_rows[header_row_idx] || []
-          
-          # Build preview (first 20 rows after header)
-          preview_rows = []
-          all_rows.each_with_index do |row, idx|
-            next if idx < header_row_idx + 1 || preview_rows.length >= 20
-            next if row.compact.empty? # Skip if all cells are empty
-            
-            preview_rows << { columns: row, row_index: idx }
-          end
-          
-          format.json { render json: { 
-            success: true, 
-            headers: headers, 
-            preview_rows: preview_rows,
-            total_rows: all_rows.count
-          }, status: :ok }
-        else
-          format.json { render json: { error: "No CSV file attached" }, status: :not_found }
+        # Extract headers from specified row
+        headers = all_rows[header_row_idx] || []
+
+        # Build preview (first 20 rows after header)
+        preview_rows = []
+        all_rows.each_with_index do |row, idx|
+          next if idx < header_row_idx + 1 || preview_rows.length >= 20
+          next if row.compact.empty? # Skip if all cells are empty
+
+          preview_rows << { columns: row, row_index: idx }
         end
+
+        format.json { render json: {
+          success: true,
+          headers: headers,
+          preview_rows: preview_rows,
+          total_rows: all_rows.count
+        }, status: :ok }
       else
         format.json { render json: @boq.errors, status: :unprocessable_entity }
       end

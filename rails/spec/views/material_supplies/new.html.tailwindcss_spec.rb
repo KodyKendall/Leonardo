@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "material_supplies/new", type: :view do
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:material_supply, MaterialSupply.new(
       name: "MyString",
       waste_percentage: "9.99"

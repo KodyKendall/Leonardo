@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "claims/new", type: :view do
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:claim, Claim.new(
       claim_number: "MyString",
       project: nil,
