@@ -35,7 +35,6 @@
             <th class="px-4 py-3 text-left font-semibold text-gray-700">Tender Value</th>
             <th class="px-4 py-3 text-left font-semibold text-gray-700">Project Type</th>
             <th class="px-4 py-3 text-left font-semibold text-gray-700">Status</th>
-            <th class="px-4 py-3 text-center font-semibold text-gray-700">File</th>
             <th class="px-4 py-3 text-left font-semibold text-gray-700">Created</th>
             <th class="px-4 py-3 text-center font-semibold text-gray-700">Actions</th>
           </tr>
@@ -46,25 +45,13 @@
               <td class="px-4 py-3 text-blue-600 font-medium"><%= link_to tender.e_number, tender_path(tender), class: "hover:underline" %></td>
               <td class="px-4 py-3"><%= tender.tender_name %></td>
               <td class="px-4 py-3"><%= tender.client_name %></td>
-              <td class="px-4 py-3"><%= number_to_currency(tender.tender_value) if tender.tender_value %></td>
+              <td class="px-4 py-3"><%= number_to_currency(tender.tender_value, unit: "R") if tender.tender_value %></td>
               <td class="px-4 py-3"><%= tender.project_type %></td>
               <td class="px-4 py-3">
                 <% if tender.status.present? %>
                   <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium <%= case tender.status when 'Won' then 'bg-green-100 text-green-800' when 'Lost' then 'bg-red-100 text-red-800' else 'bg-yellow-100 text-yellow-800' end %>">
                     <%= tender.status %>
                   </span>
-                <% end %>
-              </td>
-              <td class="px-4 py-3 text-center">
-                <% if tender.qob_file.attached? %>
-                  <div class="flex items-center justify-center gap-2">
-                    <i class="fa-regular fa-clipboard text-gray-600"></i>
-                    <% filename = tender.qob_file.filename.to_s %>
-                    <% truncated = filename.length > 20 ? filename[0..7] + "..." + filename[-8..-1] : filename %>
-                    <%= link_to truncated, rails_blob_path(tender.qob_file, disposition: "attachment"), class: "text-blue-600 hover:text-blue-800 text-sm font-medium", title: filename %>
-                  </div>
-                <% else %>
-                  <span class="text-gray-400 text-sm">—</span>
                 <% end %>
               </td>
               <td class="px-4 py-3 text-sm text-gray-600"><%= tender.created_at.strftime('%b %d, %Y') %></td>
