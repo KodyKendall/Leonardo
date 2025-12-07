@@ -1,14 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe "material_supplies/edit", type: :view do
-  let(:material_supply) {
-    MaterialSupply.create!(
-      name: "MyString",
-      waste_percentage: "9.99"
-    )
-  }
+  let(:material_supply) { create(:material_supply) }
 
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:material_supply, material_supply)
   end
 

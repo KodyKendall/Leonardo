@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "line_item_rate_build_ups/new", type: :view do
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:line_item_rate_build_up, LineItemRateBuildUp.new(
       tender_line_item: nil,
       material_supply_rate: "9.99",

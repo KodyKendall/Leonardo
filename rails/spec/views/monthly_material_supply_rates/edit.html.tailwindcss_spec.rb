@@ -1,8 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe "monthly_material_supply_rates/edit", type: :view do
+  before(:each) do
+    @user = create(:user)
+    sign_in(@user)
+  end
   let(:monthly_material_supply_rate) {
-    MonthlyMaterialSupplyRate.create!()
+    create(:monthly_material_supply_rate)
   }
 
   before(:each) do

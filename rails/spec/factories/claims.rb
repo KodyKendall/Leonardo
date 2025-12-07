@@ -1,13 +1,9 @@
 FactoryBot.define do
   factory :claim do
-    claim_number { "MyString" }
-    project { nil }
-    claim_date { "2025-11-06" }
-    claim_status { "MyString" }
-    total_claimed { "9.99" }
-    total_paid { "9.99" }
-    amount_due { "9.99" }
-    submitted_by { nil }
-    notes { "MyText" }
+    sequence(:claim_number) { |n| "CLM#{n.to_s.rjust(5, '0')}" }
+    project
+    claim_date { Date.current }
+    claim_status { "draft" }
+    submitted_by { create(:user) }
   end
 end

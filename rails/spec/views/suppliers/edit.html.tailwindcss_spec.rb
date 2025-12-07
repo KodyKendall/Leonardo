@@ -1,13 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe "suppliers/edit", type: :view do
-  let(:supplier) {
-    Supplier.create!(
-      name: "MyString"
-    )
-  }
+  let(:supplier) { create(:supplier) }
 
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:supplier, supplier)
   end
 

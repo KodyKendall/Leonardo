@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "projects/new", type: :view do
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:project, Project.new(
       rsb_number: "MyString",
       tender: nil,

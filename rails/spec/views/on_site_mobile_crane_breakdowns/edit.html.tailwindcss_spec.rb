@@ -1,23 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe "on_site_mobile_crane_breakdowns/edit", type: :view do
-  let(:on_site_mobile_crane_breakdown) {
-    OnSiteMobileCraneBreakdown.create!(
-      tender_id: "",
-      total_roof_area_sqm: "9.99",
-      erection_rate_sqm_per_day: "9.99",
-      program_duration_days: 1,
-      ownership_type: "MyString",
-      splicing_crane_required: false,
-      splicing_crane_size: "MyString",
-      splicing_crane_days: 1,
-      misc_crane_required: false,
-      misc_crane_size: "MyString",
-      misc_crane_days: 1
-    )
-  }
+  let(:on_site_mobile_crane_breakdown) { create(:on_site_mobile_crane_breakdown) }
 
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:on_site_mobile_crane_breakdown, on_site_mobile_crane_breakdown)
   end
 

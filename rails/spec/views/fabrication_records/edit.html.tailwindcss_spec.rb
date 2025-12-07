@@ -1,17 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe "fabrication_records/edit", type: :view do
-  let(:fabrication_record) {
-    FabricationRecord.create!(
-      project: nil,
-      tonnes_fabricated: "9.99",
-      allowed_rate: "9.99",
-      allowed_amount: "9.99",
-      actual_spend: "9.99"
-    )
-  }
+  let(:fabrication_record) { create(:fabrication_record) }
 
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:fabrication_record, fabrication_record)
   end
 

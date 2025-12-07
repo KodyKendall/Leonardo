@@ -1,8 +1,8 @@
 FactoryBot.define do
   factory :tender_crane_selection do
-    tender { nil }
-    crane_rate { nil }
-    purpose { "MyString" }
+    tender
+    crane_rate
+    purpose { "Purpose" }
     quantity { 1 }
     duration_days { 1 }
     wet_rate_per_day { "9.99" }

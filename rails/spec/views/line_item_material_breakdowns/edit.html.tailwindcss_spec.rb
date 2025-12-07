@@ -1,9 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe "line_item_material_breakdowns/edit", type: :view do
+  before(:each) do
+    @user = create(:user)
+    sign_in(@user)
+  end
   let(:line_item_material_breakdown) {
-    LineItemMaterialBreakdown.create!(
-      tender_line_item: nil
+    create(:line_item_material_breakdown
     )
   }
 
