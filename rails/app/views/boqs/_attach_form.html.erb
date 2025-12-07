@@ -22,7 +22,7 @@
     </div>
 
     <div id="boq_search_results" class="space-y-2 max-h-96 overflow-y-auto border border-gray-200 rounded p-4 bg-gray-50">
-      <p class="text-gray-500 text-sm">Loading BOQs...</p>
+      <p class="text-gray-500 text-sm">Click refresh or start typing to load BOQs...</p>
     </div>
 
     <div class="modal-action mt-4">
@@ -64,130 +64,104 @@
 document.addEventListener('DOMContentLoaded', function() {
   const searchInput = document.getElementById('boq_search_input');
   const resultsContainer = document.getElementById('boq_search_results');
-  const modal = document.getElementById('boq_attach_modal');
+  const refreshBtn = document.getElementById('refresh_boqs_btn');
   let debounceTimer;
 
-  function performSearch(query) {
-    clearTimeout(debounceTimer);
-
-    if (query.length < 1) {
-      resultsContainer.innerHTML = '<p class="text-gray-500 text-sm">Loading BOQs...</p>';
-      query = ''; // Load all BOQs with empty query
-    }
-
-    const fetchUrl = `/boqs/search?q=${encodeURIComponent(query)}`;
+  function loadBoqs(query = '') {
+    resultsContainer.innerHTML = '<p class="text-gray-500 text-sm">Loading BOQs...</p>';
     
-    debounceTimer = setTimeout(function() {
-      fetch(fetchUrl, {
-        headers: {
-          'Accept': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-        }
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Search results:', data);
-        if (!Array.isArray(data) || data.length === 0) {
-          resultsContainer.innerHTML = '<p class="text-gray-500 text-sm">No BOQs found</p>';
+    fetch(`/boqs/search?q=${encodeURIComponent(query)}`, {
+      headers: {
+        'Accept': 'application/json',
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => {
+      if (!response.ok) throw new Error('Network response was not ok');
+      return response.json();
+    })
+    .then(data => {
+      console.log('BOQs loaded:', data);
+      if (!data || data.length === 0) {
+        resultsContainer.innerHTML = '<p class="text-gray-500 text-sm">No BOQs found</p>';
+        return;
+      }
+      
+      resultsContainer.innerHTML = data.map(boq => {
+        const isAttached = boq.tender_id && boq.tender_id !== null;
+        const buttonText = isAttached ? 'Attached' : 'Attach';
+        const buttonClass = isAttached ? 'btn btn-sm btn-disabled' : 'btn btn-sm btn-primary';
+        
+        let clickHandler = '';
+        if (isAttached) {
+          clickHandler = `openDetachModal(${boq.id}, '${(boq.boq_name || '').replace(/'/g, "\\'")}', '${(boq.tender_name || '').replace(/'/g, "\\'")}')`
         } else {
-          resultsContainer.innerHTML = data.map(boq => {
-            const boqName = (boq.boq_name || '').replace(/'/g, "\\'");
-            const isAttached = boq.tender_id && boq.tender_id !== null;
-            const buttonText = isAttached ? 'Attached' : 'Attach';
-            const buttonClass = isAttached ? 'btn btn-sm btn-disabled' : 'btn btn-sm btn-primary';
-            const onClickHandler = isAttached 
-              ? `openDetachModal(${boq.id}, '${boqName}', '${(boq.tender_name || '').replace(/'/g, "\\'")}')`
-              : `attachBoq(${boq.id}, '${boqName}')`;
-            
-            return `
-              <div class="flex items-center justify-between p-3 bg-white rounded border border-gray-200 hover:border-blue-400">
-                <div class="flex-1">
-                  <p class="font-medium text-gray-800">${boq.boq_name || 'Unnamed BOQ'}</p>
-                  <p class="text-xs text-gray-500">
-                    ${boq.client_name ? 'Client: ' + boq.client_name : ''}
-                    ${boq.qs_name ? (boq.client_name ? ' • ' : '') + 'QS: ' + boq.qs_name : ''}
-                  </p>
-                  ${isAttached ? `<p class="text-xs text-orange-600 mt-1"><i class="fa-solid fa-link"></i> Attached to: ${boq.tender_name}</p>` : ''}
-                </div>
-                <button 
-                  type="button"
-                  onclick="${onClickHandler}"
-                  class="${buttonClass}"
-                >
-                  ${buttonText}
-                </button>
-              </div>
-            `;
-          }).join('');
+          clickHandler = `attachBoq(${boq.id}, '${(boq.boq_name || '').replace(/'/g, "\\'")}')`
         }
-      })
-      .catch(error => {
-        resultsContainer.innerHTML = '<p class="text-red-500 text-sm">Error loading BOQs. Check console for details.</p>';
-        console.error('Search error:', error);
-      });
-    }, query.length < 1 ? 0 : 300);
-  }
-
-  // Load all BOQs when modal opens
-  if (modal) {
-    modal.addEventListener('show', function() {
-      performSearch('');
+        
+        return `
+          <div class="flex items-center justify-between p-3 bg-white rounded border border-gray-200">
+            <div class="flex-1">
+              <p class="font-medium text-gray-800">${boq.boq_name || 'Unnamed'}</p>
+              <p class="text-xs text-gray-500">
+                ${boq.client_name ? 'Client: ' + boq.client_name : ''}
+                ${boq.qs_name ? (boq.client_name ? ' • ' : '') + 'QS: ' + boq.qs_name : ''}
+              </p>
+              ${isAttached ? `<p class="text-xs text-orange-600 mt-1"><i class="fa-solid fa-link"></i> Attached to: ${boq.tender_name}</p>` : ''}
+            </div>
+            <button type="button" onclick="${clickHandler}" class="${buttonClass}">${buttonText}</button>
+          </div>
+        `;
+      }).join('');
+    })
+    .catch(error => {
+      console.error('Error loading BOQs:', error);
+      resultsContainer.innerHTML = '<p class="text-red-500 text-sm">Error loading BOQs. Check console.</p>';
     });
   }
 
-  if (searchInput) {
-    searchInput.addEventListener('input', function() {
-      performSearch(this.value.trim());
-    });
-  }
-
-  // Expose function to load BOQs when modal opens
-  window.loadBoqsForAttach = function() {
-    performSearch('');
-  };
-
-  // Refresh button click handler
-  const refreshBtn = document.getElementById('refresh_boqs_btn');
+  // Refresh button
   if (refreshBtn) {
     refreshBtn.addEventListener('click', function(e) {
       e.preventDefault();
       searchInput.value = '';
-      refreshBtn.disabled = true;
-      refreshBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i>';
-      performSearch('');
-      setTimeout(() => {
-        refreshBtn.disabled = false;
-        refreshBtn.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i>';
-      }, 1000);
+      loadBoqs('');
     });
   }
 
-  // Store the current BOQ being considered for detach/attach
+  // Search input
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      clearTimeout(debounceTimer);
+      const query = this.value.trim();
+      debounceTimer = setTimeout(() => {
+        loadBoqs(query);
+      }, 300);
+    });
+  }
+
+  // Global function for button trigger
+  window.loadBoqsForAttach = function() {
+    loadBoqs('');
+  };
+
+  // Detach modal
   let pendingBoqForAttach = null;
 
   window.openDetachModal = function(boqId, boqName, tenderName) {
-    // Store BOQ info for when user confirms detach
     pendingBoqForAttach = { id: boqId, name: boqName };
-    
-    // Show detach modal
     document.getElementById('detach_tender_name').innerText = tenderName;
     const detachModal = document.getElementById('boq_detach_modal');
-    if (detachModal && typeof detachModal.showModal === 'function') {
+    if (detachModal.showModal) {
       detachModal.showModal();
-    } else {
-      detachModal.classList.add('modal-open');
     }
   };
 
-  // Handle confirm detach button
-  document.getElementById('confirm_detach_btn').addEventListener('click', function() {
-    if (pendingBoqForAttach) {
-      // Detach from current tender (set tender_id to nil)
+  const confirmDetachBtn = document.getElementById('confirm_detach_btn');
+  if (confirmDetachBtn) {
+    confirmDetachBtn.addEventListener('click', function() {
+      if (!pendingBoqForAttach) return;
+      
       fetch(`/boqs/${pendingBoqForAttach.id}/detach`, {
         method: 'POST',
         headers: {
@@ -196,23 +170,21 @@ document.addEventListener('DOMContentLoaded', function() {
           'X-Requested-With': 'XMLHttpRequest'
         }
       })
-      .then(response => response.json())
+      .then(r => r.json())
       .then(data => {
         if (data.success) {
-          // Close detach modal
           document.getElementById('boq_detach_modal').close();
-          // Now attach to this tender
           attachBoq(pendingBoqForAttach.id, pendingBoqForAttach.name);
         } else {
-          alert('Error detaching BOQ: ' + (data.message || 'Unknown error'));
+          alert('Error: ' + (data.message || 'Could not detach'));
         }
       })
-      .catch(error => {
+      .catch(err => {
+        console.error('Detach error:', err);
         alert('Error detaching BOQ');
-        console.error('Detach error:', error);
       });
-    }
-  });
+    });
+  }
 
   window.attachBoq = function(boqId, boqName) {
     const tenderId = <%= @tender.id %>;
@@ -226,19 +198,18 @@ document.addEventListener('DOMContentLoaded', function() {
       },
       body: JSON.stringify({ boq_id: boqId })
     })
-    .then(response => response.json())
+    .then(r => r.json())
     .then(data => {
       if (data.success) {
         document.getElementById('boq_attach_modal').close();
-        // Reload the page to show the newly attached BOQ
         window.location.reload();
       } else {
-        alert('Error: ' + (data.message || 'Could not attach BOQ'));
+        alert('Error: ' + (data.message || 'Could not attach'));
       }
     })
-    .catch(error => {
+    .catch(err => {
+      console.error('Attach error:', err);
       alert('Error attaching BOQ');
-      console.error('Attach error:', error);
     });
   };
 });
