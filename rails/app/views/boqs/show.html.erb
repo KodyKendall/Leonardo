@@ -19,6 +19,24 @@
 <!-- Font Awesome for icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+<!-- Custom styles for LlamaBot tool icons -->
+<style>
+  [data-llamabot="tool-icon"] {
+    width: 16px !important;
+    height: 16px !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+  }
+
+  [data-llamabot="tool-compact"] {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    padding: 0.5rem !important;
+    font-size: 0.875rem !important;
+  }
+</style>
+
 <div class="container mx-auto p-6">
   <div class="flex justify-between items-center mb-6">
     <div>
@@ -1060,7 +1078,22 @@
             
             const chat = LlamaBot.create('[data-llamabot="chat-container"]', config);
             console.log('✅ BOQ Chat: Initialized successfully');
-            console.log('Chat instance:', chat);
+
+            // WORKAROUND: Fix ToolMessageRenderer._extractFilename to handle non-string paths
+            // This prevents crashes when BOQ tools return database objects instead of file paths
+            if (chat.messageRenderer?.toolRenderer) {
+              const originalExtractFilename = chat.messageRenderer.toolRenderer._extractFilename;
+              chat.messageRenderer.toolRenderer._extractFilename = function(path) {
+                // Handle non-string paths (database tool outputs)
+                if (typeof path !== 'string') {
+                  console.log('⚠️ Non-string path detected, returning empty string');
+                  return '';
+                }
+                // Call original for string paths (file tools)
+                return originalExtractFilename.call(this, path);
+              };
+              console.log('✅ Applied ToolMessageRenderer fix for BOQ database tools');
+            }
           } catch (createError) {
             console.error('❌ BOQ Chat: LlamaBot.create error:', createError);
             console.error('Error name:', createError.name);
