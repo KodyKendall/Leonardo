@@ -516,8 +516,7 @@
         AI BOQ Parser Assistant
       </h2>
       <p class="text-sm text-gray-600 mb-4">
-        Chat with our AI assistant to parse the CSV file and automatically create line items. 
-        The AI will analyze the file structure and help you organize the data.
+        Chat with the AI assistant to parse the CSV file and automatically create line items. The default work flow is to click the "Parse BOQ" button, once a message has autopopulated, click "Send", and then if the AI assistant's response looks good, type "Yes" and click "Send".
       </p>
       
       <!-- LlamaBot Chat Container -->
@@ -565,7 +564,13 @@
             data-llamabot="suggested-prompt"
             class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
           >
-            <i class="fas fa-search mr-1"></i> Parse BOQ
+            <i class="fas fa-search mr-1"></i> Step 1: Parse BOQ
+          </button>
+          <button 
+            id="confirm-parse-btn"
+            class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
+          >
+            <i class="fas fa-check mr-1"></i> Step 2: Yes, please parse into BOQ Line Items
           </button>
         </div>
       </div>
@@ -1087,33 +1092,44 @@
   // Use event delegation to avoid timing issues with dynamic page navigation
   document.addEventListener('click', async function(e) {
     const analyzeBtn = e.target.closest('#analyze-structure-btn');
-    if (!analyzeBtn) return;
+    const confirmBtn = e.target.closest('#confirm-parse-btn');
     
-    e.preventDefault();
-    
-    const boqId = window.location.pathname.split('/').pop();
-    const headerRowInput = document.getElementById('header-row-input');
-    const headerRowIdx = headerRowInput ? parseInt(headerRowInput.value, 10) || 0 : 0;
-    
-    try {
-      // Fetch the CSV as JSON
-      const response = await fetch(`/boqs/${boqId}/csv_as_json?header_row_index=${headerRowIdx}`);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+    if (analyzeBtn) {
+      e.preventDefault();
+      
+      const boqId = window.location.pathname.split('/').pop();
+      const headerRowInput = document.getElementById('header-row-input');
+      const headerRowIdx = headerRowInput ? parseInt(headerRowInput.value, 10) || 0 : 0;
+      
+      try {
+        // Fetch the CSV as JSON
+        const response = await fetch(`/boqs/${boqId}/csv_as_json?header_row_index=${headerRowIdx}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const jsonArray = await response.json();
+        const jsonString = JSON.stringify(jsonArray, null, 2);
+        
+        // Set the input field with the message template
+        const inputField = document.querySelector('[data-llamabot="message-input"]');
+        if (inputField) {
+          inputField.value = `Please parse this for the BOQ with ID = ${boqId}, Here is the raw CSV data: <CSV> ${jsonString} </CSV>`;
+          inputField.focus();
+        }
+      } catch (error) {
+        console.error('Error fetching CSV data:', error);
+        showToast('Failed to fetch CSV data for parsing', 'error');
       }
+    } else if (confirmBtn) {
+      e.preventDefault();
       
-      const jsonArray = await response.json();
-      const jsonString = JSON.stringify(jsonArray, null, 2);
-      
-      // Set the input field with the message template
+      // Set the input field with "Yes" message
       const inputField = document.querySelector('[data-llamabot="message-input"]');
       if (inputField) {
-        inputField.value = `Please parse this for the BOQ with ID = ${boqId}, Here is the raw CSV data: <CSV> ${jsonString} </CSV>`;
+        inputField.value = 'Yes, please parse into BOQ Line Items';
         inputField.focus();
       }
-    } catch (error) {
-      console.error('Error fetching CSV data:', error);
-      showToast('Failed to fetch CSV data for parsing', 'error');
     }
   });
 </script>
