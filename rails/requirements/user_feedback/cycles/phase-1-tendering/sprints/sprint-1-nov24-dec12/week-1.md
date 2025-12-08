@@ -1,4 +1,4 @@
-# Sprint 1, Week 1a: Database & Infrastructure (Nov 24-28)
+# Sprint 1, Week 1: Database & Infrastructure (Nov 24-28)
 
 **Duration:** 1 week  
 **Focus:** Database schema, migrations, seed data setup  

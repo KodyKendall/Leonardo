@@ -12,9 +12,9 @@
 
 | Week | Dates | Status | Key Deliverables |
 |------|-------|--------|------------------|
-| 1a | Nov 24-28 | ✅ COMPLETE | Database, seed data, Tender Builder SPA |
-| 1b | Dec 1-5 | ✅ COMPLETE | Authentication, roles, BOQ upload |
-| 1c | Dec 8-12 | 🟡 IN PROGRESS | BOQ parsing, crane calculations, rate engine |
+| 1 | Nov 24-28 | ✅ COMPLETE | Database, seed data, Tender Builder SPA |
+| 2 | Dec 1-5 | ✅ COMPLETE | Authentication, roles, BOQ upload |
+| 3 | Dec 8-12 | 🟡 IN PROGRESS | BOQ parsing, crane calculations, rate engine |
 
 ---
 
@@ -35,7 +35,7 @@ Sprint 1 establishes the foundational infrastructure for the RSB Tendering Syste
 
 ## Week Breakdown
 
-### Week 1a (Nov 24-28): Database & Tender Builder SPA
+### Week 1 (Nov 24-28): Database & Tender Builder SPA
 **Status:** ✅ COMPLETE
 
 **Delivered:**
@@ -47,9 +47,9 @@ Sprint 1 establishes the foundational infrastructure for the RSB Tendering Syste
 - Material Breakdown component with add/remove functionality
 - Real-time calculations via Stimulus controllers
 
-See [week-1a.md](week-1a.md) for details.
+See [week-1.md](week-1.md) for details.
 
-### Week 1b (Dec 1-5): Authentication & BOQ Upload
+### Week 2 (Dec 1-5): Authentication & BOQ Upload
 **Status:** ✅ COMPLETE
 
 **Delivered:**
@@ -60,9 +60,9 @@ See [week-1a.md](week-1a.md) for details.
 - BOQ upload with CSV preview and header detection
 - BOQ model with status tracking
 
-See [week-1b.md](week-1b.md) for details.
+See [week-2.md](week-2.md) for details.
 
-### Week 1c (Dec 8-12): BOQ Parsing, Crane Calculations, Rate Engine
+### Week 3 (Dec 8-12): BOQ Parsing, Crane Calculations, Rate Engine
 **Status:** 🟡 IN PROGRESS
 
 **Delivered:**
@@ -80,7 +80,7 @@ See [week-1b.md](week-1b.md) for details.
 | Rate Auto-Population | [RATE_AUTOPOPULATION_SCOPE.md](../../scopes/RATE_AUTOPOPULATION_SCOPE.md) | High | 2-3 |
 | Crane Cost Calculations | [CRANE_CALC_SCOPE.md](../../scopes/CRANE_CALC_SCOPE.md) | High | 2-3 |
 
-See [week-1c.md](week-1c.md) for details.
+See [week-3.md](week-3.md) for details.
 
 ---
 

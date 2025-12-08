@@ -1,4 +1,4 @@
-# Sprint 1, Week 1b: Authentication & Core Models (Dec 1-5)
+# Sprint 1, Week 2: Authentication & Core Models (Dec 1-5)
 
 **Duration:** 1 week
 **Focus:** User authentication, roles, core Tender/Client/LineItem models
