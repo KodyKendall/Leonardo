@@ -1,10 +1,26 @@
 # Phase 1: RSB Tendering System - Scope Document
 
-**Timeline:** 6 weeks (2 sprints of 3 weeks each)  
-**Sprint 1:** Nov 24 - Dec 12 (3 weeks)  
-**Sprint 2:** Dec 15 - Jan 2 (3 weeks)  
-**Status:** Ready for Development  
-**Document Version:** 1.0
+**Timeline:** 6 weeks (2 sprints of 3 weeks each)
+**Sprint 1:** Nov 24 - Dec 12 (3 weeks)
+**Sprint 2:** Dec 15 - Jan 2 (3 weeks)
+**Status:** IN PROGRESS (Week 3 of 6)
+**Document Version:** 1.1
+**Last Updated:** December 8, 2025
+
+---
+
+## Implementation Status Summary
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| **A. BOQ Import & Setup** | 🟡 Partial | Upload works, AI parsing needs refinement |
+| **B. Rate Management** | 🟢 Complete | Material supplies, suppliers, rates CRUD done |
+| **C. Tender Configuration** | 🟡 Partial | Inclusions/exclusions UI built, crane breakdown in progress |
+| **D. Line Item Rate Build-Up** | 🟡 Partial | UI complete, auto-calculations pending |
+| **E. P&G (Preliminaries)** | 🔴 Not Started | Planned for Sprint 2 |
+| **F. Tender Output** | 🔴 Not Started | Planned for Sprint 2 |
+
+See [Vertical Slice Scopes](#vertical-slice-scopes) for detailed breakdown of remaining work.
 
 ---
 
@@ -575,5 +591,40 @@ rounded_pg_rate = CEILING(pg_rate_per_tonne, 50)
 
 ---
 
-**Document Status:** Ready for Development  
-**Last Updated:** Current Date
+---
+
+## 10. Vertical Slice Scopes
+
+The remaining work is organized into thin, full-stack vertical slices that can be built and demoed independently.
+
+### Active Vertical Slices (Week 3)
+
+| Slice | Scope Doc | Priority | Est. Days |
+|-------|-----------|----------|-----------|
+| BOQ Parsing Improvements | [BOQ_PARSING_SCOPE.md](BOQ_PARSING_SCOPE.md) | High | 2-3 |
+| Rate Auto-Population | [RATE_AUTOPOPULATION_SCOPE.md](RATE_AUTOPOPULATION_SCOPE.md) | High | 2-3 |
+| Crane Cost Calculations | [CRANE_CALC_SCOPE.md](CRANE_CALC_SCOPE.md) | High | 2-3 |
+| UX/Turbo Fixes | [UX_FIXES_SCOPE.md](UX_FIXES_SCOPE.md) | High | 1-2 |
+
+### Planned Vertical Slices (Sprint 2)
+
+| Slice | Scope Doc | Priority | Est. Days |
+|-------|-----------|----------|-----------|
+| P&G Configuration | TBD | Medium | 2-3 |
+| Equipment Selection | TBD | Medium | 2-3 |
+| Tender PDF Output | TBD | Medium | 2-3 |
+| Rounding Rules Engine | TBD | Medium | 1-2 |
+
+### Completed Vertical Slices
+
+| Slice | Completed | Notes |
+|-------|-----------|-------|
+| Tender Builder SPA | Week 1a | Line items, materials, rate build-up UI |
+| User Authentication | Week 1b | Devise, roles, permissions |
+| Master Data CRUD | Week 1a-1b | Suppliers, materials, rates |
+| BOQ Upload | Week 1b | CSV upload, preview, header detection |
+
+---
+
+**Document Status:** In Progress
+**Last Updated:** December 8, 2025

@@ -1,0 +1,898 @@
+Richard Spencer is the CEO/President of RSB Construction (Steel Construction Company)
+Darren Spencer is the Business Analyst, consultant, and project manager for this project (and Richard's brother)
+Kody is the Software Solutions Architect and Software Developer building the project.
+
+Kody Kendall  0:00  
+Yeah, that's good. So Darren, you're staying with with rich while you're there,
+
+Darren Spencer  0:06  
+yeah, yeah, this is my work spot, actually that Rich has taken over. Very cool.
+
+Richard Spencer  0:19  
+And close this so I can disconnect my connection with a VPN, just to maybe
+
+Kody Kendall  0:26  
+sweet, very cool. So probably, probably kind of what makes sense is just kind of doing what we did last week, where I know I'm sharing my screen right now, but what we can do is I sent you a URL in WhatsApp, and this is a little bit different from the URL I sent you last week, but it should take you to a sign in screen, yes, and it's a pretty basic sign in screen, but it's the same credentials that I sent you last week, and it's in the message as well. It's just your email, and then the password is your rich, so with the capital R, and then 456,
+
+Darren  1:12  
+we're in. Ah, okay, now it's come up. It's now come up with another sign in screen. Same, same details,
+
+Kody Kendall  1:17  
+yes, yes. So on the right hand side, this is kind of, this is the tendering app. And then on the left hand side, this is the chat interface, kind of the AI chat interface, yeah, for Leonardo and so this is a little bit of a meta view, in ways where the left hand side is where you can basically put in your ideas, your feedback of the application, any any questions that you might have, or little points of confusion. And this AI assistant, Leonardo, will remember and write down essentially all of your ideas and thoughts and feedback, if that makes sense, right?
+
+Darren  2:12  
+Kody, just to check that this, this can the chat has context of what we're just looking at, right? Or how can you use that in the best way?
+
+Kody Kendall  2:19  
+Yeah, yeah. So, what's as you're kind of using the application that's on the right, the AI assistant will know exactly what page you're looking at. So you could just say things like, oh, you know, this page is confusing, or this page doesn't work quite right, or this calculation is off, little pieces of feedback like that, and Leonardo, the AI, will basically know what you're looking at, and then he just kind of writes it down and saves that so that me and Darren can can look at it later and kind of keep all of that organized. So this is kind of a good tool for long term planning, just kind of, you know, helping set up the roadmap of where, where we want to take this, as well as giving, giving real time feedback and logging issues.
+
+Darren  3:10  
+Also, Kody, I'll just tell her to as well, reach this pointer here. Let's say you have a very specific thing, which is like, this must be blue. It should be green. Just click on that pointer and then click on the blue. You can see it like highlights it, click the last like, little blocks, yeah. You can all that sort of things. So now knows you're talking about this specific feedback for future. It'd be nice if this was green.
+
+Richard Spencer  3:36  
+Can then send message on this
+
+Darren  3:37  
+thing, yeah, feedback.
+
+Darren  3:38  
+Okay, cool. There's other modes that Kody
+
+Darren  3:40  
+uses when he's when he's when he's doing stuff, but he hasn't given you access so you don't break anything
+
+Kody Kendall  3:51  
+very cool. Um, and then Darren, I'm not sure if you were showing him any of the like, Darren made a list of I
+
+Darren  4:01  
+just, just said. What I said was a lot told in full context, was that you had made really good progress over the last week or so.
+
+Richard Spencer  4:07  
+Okay, and I read, I read a little bit about the agenda. I read it, no, no,
+
+Richard Spencer  4:16  
+I think I'll just open that.
+
+Kody Kendall  4:21  
+And one thing, what we could do is rich, if you want to share your screen, and then, yeah, we we can kind of go through the different items on the agenda and have you kind of drive, you know, in the in the tender app, and that way you can just kind of see and kind of point out what I'm talking about on
+
+Richard Spencer  4:40  
+each let me do that. Sweet, we'll do that.
+
+Darren  4:48  
+Can you see? Jody,
+
+Kody Kendall  4:50  
+yes, let's see here. Okay, perfect. Okay, very cool. So, couple of, couple of quick items. And let's, let's just start from the top, if you just want to start new tender. And what we can do is, and then you'll click that, start new tender button again. Okay? And if you scroll down now a little bit more, there should be a button to attach, or, sorry, to upload a BOQ. Yes, perfect. And if you click that, and then, just trying to simplify this process a little bit, all you have to do is pick a CSV file. Let me, I think, send you a quick one. Oh, and then last week, we had tried to do a BOQ file, and it had too many BOQ items, and it threw an error that that issue isn't actually fixed right? The second I thought I had to fix for it, when we went to test it, there was a couple of other issues so, but that's definitely on top of the, you know, top of my to do list. But let me send you one. I just sent you one on WhatsApp. This one, I think, has 29 items.
+
+Darren  6:13  
+That's a nice, safe feature. Mine you could only save to download. Yeah, I wonder if it's a Mac.
+
+Kody Kendall  6:22  
+Yeah. The worst.
+
+Richard Spencer  6:27  
+Which one did you see this one? Yeah,
+
+Kody Kendall  6:30  
+yeah. Let's do that one. Perfect. And you click upload. And then this takes you right to the BOQ. And then, if you remember, last week, we talked about that header row. And now, if you scroll down a little bit, notice that on the left hand side we added numbers so clear, so the header in this one, actually, yeah, actually, I'll let you, I'll let you just kind of go from here, and then I'll observe and see if we there's any improvements I can see while I'm Watching you do
+
+Richard Spencer  7:09  
+it. Counter description. So what I'm assuming
+
+Richard Spencer  7:26  
+I mean, this would be my first one.
+
+Darren  7:30  
+Oh, no, but that's good to know, but we actually just need this one. Rick, can scroll up this line, this will be your first one, yeah, basically just what I selection, yes, is that what this needs to do? Just needs to tell us where's the headings, because it'll figure out.
+
+Richard Spencer  7:45  
+It's got to know the quantity, where the quantity and the rates and all that, yeah, yeah. Oh, okay, that's
+
+Darren  7:50  
+good to know. Did you do that? Kody, so basically, what Richard thought was it's where the first actual line item is, which makes sense. Obviously, I thought this year would maybe be, yeah, because that's the first one of turns and the first like, all the rest of the stuff, yeah.
+
+Richard Spencer  8:05  
+Okay, so it's the headings, yeah. All it needs is the headings, like, so, that, Oh, so, but that says that the header row,
+
+Darren  8:11  
+yeah, yeah, okay.
+
+Richard Spencer  8:16  
+Contains column headers, yeah. Okay, perfect.
+
+Kody Kendall  8:23  
+Okay, very cool. And then, actually, yeah, I'll just
+
+Richard Spencer  8:31  
+keep observing. So fast, even easier, just take the step one day. Oh, there's a little thing. Yeah.
+
+Kody Kendall  8:47  
+One one update from last week as well. It's pretty subtle, but if you scroll up just a little bit, you'll notice there's that little pencil, sorry, in the BOQ and it says, Get BOQ items. So basically, all that saying is that the AI took a step to check the the items that are it's basically just like a little piece of feedback so that you can kind of see the AI as it takes certain steps, and it should become more relevant When we get to the next step here.
+
+Richard Spencer  9:20  
+Okay, and
+
+Kody Kendall  9:33  
+I believe this would be, this is usually Elmari That's kind of doing this initial pass, right,
+
+Richard Spencer  9:39  
+correct, Josh she and, I mean, this will this becoming ja, she should be doing this, okay, but it seems like it's going to become, she might become relevant in your redundant, in this thing, perfect. We're fired. She starts these things up. So bad, it'll be good to get out of it.
+
+Richard Spencer  10:03  
+Very cool. Takes
+
+Richard Spencer  10:05  
+more time to try and rework things and get it right then. Okay, so, yeah, so this is pretty cool, whether it's new manager escape, that's cool explaining what it's done you need ready to create. Should I proceed? And then we say, yes, do we need to answer it yet? Yeah?
+
+Kody Kendall  10:26  
+You can, you can type yes. There's also that little step to quick action, but it does the same thing. So either, either options.
+
+Kody Kendall  10:40  
+Okay, so where this one kind of small difference that we should see here is these start to come in is for each line item. Now you can see there's that little pencil again, yes, and saying, create BOQ. So it's doing that one step at a time as it's adding each line item. And that's okay.
+
+Richard Spencer  11:01  
+So every time we see that it's one new line item, it's doing correct.
+
+Darren  11:05  
+So just check out if there's, if there's seven create BOQ items, and we push refresh down at the bottom, there's going to be seven new items in there.
+
+Kody Kendall  11:12  
+Yes, yes. So now if you Yeah, and then there's that refresh button stuff to click that, and it did refresh
+
+Richard Spencer  11:20  
+Nice. Yeah.
+
+Kody Kendall  11:27  
+Now I wouldn't quite yet.
+
+Richard Spencer  11:32  
+No, this, um, this. How much processing power does this thing use? Or not really that much to do this in terms of, well, yeah, the let's look RAM and whatever.
+
+Darren  11:46  
+Yeah, I'm gonna, I'll Kody, I'll explain what I understand, and then you tell me if I'm wrong. But basically, reason this sits in like a little virtual computer that will host specifically for RSB, okay, and that's included in that, that monthly fee we spoke about. That's it sits there. I think it's a four gig, right? Kody, what you got on there that?
+
+Kody Kendall  12:04  
+ECG, yeah, it's like a little tiny computer that's just in, I think it just does this in a data center somewhere, and then, and then, as far as so this, this specific step is using AI. So this is using open AI, very similar to chat, just their, their kind of, their version that lets us tie into it. And then as far as these, let me just look, there's a, there's a pretty small cost for every time you parse a BOQ. Let me just look, I don't think it's that crazy. Oh, it's not. Calculating these. I mean, the the amount of tokens are, overall, pretty small, so, but this not, not too crazy. We can't have to get you the exact one. Okay.
+
+Richard Spencer  12:56  
+So this thing says, yeah, 25 okay, I did 25 Yeah, it says 17, nine items ready to be transferred.
+
+Kody Kendall  13:07  
+Yeah, that's a little off. Scroll up a bit. Let's see if, if the agent sent a, okay, perfect. So sent. It's fine,
+
+Kody Kendall  13:14  
+yeah, it says turning five. Try scrolling
+
+Kody Kendall  13:17  
+down and clicking refresh again. And let's see if that number, Oh, that's right, you'd click that and it still says seven. Says 17.
+
+Richard Spencer  13:23  
+I slow to 25
+
+Kody Kendall  13:26  
+Yeah, that's just a little discrepancy. If you click the little refresh button on the top right, kind of, it's like the virtual browser. Kind of, near the top there's a little button, yeah, click that one. I wonder if that's just a Stell piece of information. I'll scroll to the bottom to the yeah to the next steps message,
+
+Richard Spencer  13:48  
+are they Yeah, which?
+
+Kody Kendall  13:49  
+I think it would have been fine either way, but yeah, that's good to know. That was a little Yeah.
+
+Richard Spencer  13:53  
+There would have been fun, I think, yeah, yeah.
+
+Kody Kendall  13:56  
+And little things like that, though, are good for us to keep track of. So even on the left hand side, where you're talking to Leonardo, you could say, you could put in that little message. You could say, Yeah, you could select that next step
+
+Richard Spencer  14:10  
+select, but now it shows 25 I should have done it properly when it was 17.
+
+Kody Kendall  14:14  
+Yeah, that would have been great. But you can still log the feedback. And basically just, you can select that little area perfect, and then just Say, you know, there was a discrepancy when, yeah, I
+
+Kody Kendall  14:48  
+that perfect. Yeah, awesome. So then it can, it can kind of just work in the in the background a little bit, and okay, it's just kind of reading, reading some stuff through the app, trying to, you know, understand exactly what's going on, and then it's going to write it down. So the next step would be, yeah, open builder. Oh, it refreshes the Okay, it's good for me to see. It looks like while it, while it's working in the background. Sometimes it kind of refreshes the application.
+
+Richard Spencer  15:19  
+I saw that changed, yeah, yeah, yeah.
+
+Kody Kendall  15:21  
+It kind of like refresh the page, which is helpful when you're kind of developing it, but it could be a little bit annoying if you're trying to move on and test things while it's kind of working in the background. So I'll make a little
+
+Richard Spencer  15:32  
+note of that. Yeah, that's okay. So refresh. Okay, so that's all good day. And cool. So then, yeah,
+
+Richard Spencer  15:46  
+we go to the builder, or do we go in here first?
+
+Kody Kendall  15:50  
+So you could, you could spot check these, you know, Elmari or Demi, or whoever this, this would be a step if, like, something was inaccurate,
+
+Richard Spencer  16:00  
+this, then, would this be more for us to check this category, to make sure that the category is allocated correctly before going to the builder, or not really?
+
+Kody Kendall  16:12  
+Yeah, probably category is going to be the main the main thing
+
+Darren  16:17  
+is it possible to update the category later? Is this the only time,
+
+Kody Kendall  16:21  
+um, you can update it later in the tender building stage. So it's not catastrophic if, if it's not perfect, but, you know, there's definitely an element where double checking the AI's choices could make sense. Yeah. Maybe Elmari, this is part of her description. Like part of her thing is she's just double check this
+
+Richard Spencer  16:44  
+is, this is actually what. This is where she actually stuffs it up. So I'm hoping we get to so her allocation of the categories is a disaster. So that's why I'm hoping that we get AI to take over that. Because that's what. She messes it up. Secret. She's not really, she's more of a PA that we've put into, you know, she does a bit of payroll and this and that and the next thing, and then she sets us up. So she doesn't actually understand what she's setting up.
+
+Kody Kendall  17:14  
+Yeah, that's, that's awesome to know. So on the and one thing too, we could even log that really quick to Leonardo. So on the left hand side, if you scroll down a bit, I just want to see what he did. I think he had written, okay, so he had wrote something down, and then you could put into Leonardo again. Just say, you know this BOQ line item categorization is important for AI categorized correctly in the future, or something like that, and you could even say el Marie struggles or something to that effect.
+
+Richard Spencer  17:56  
+So does it know who Elmari is? I saw you said you had created different permission levels for Elmari and Demi,
+
+Kody Kendall  18:02  
+yes, yes, yeah, it's aware of Elmari and we've, you know, we've, we've kind of logged her role and her job description, and same with Demi and with You and Ron. So, yeah, it has the context. I
+
+Richard Spencer  18:23  
+sweet, right? So we just send that to what to sort of keep it in the back of its mind, I suppose,
+
+Kody Kendall  18:30  
+100% Yeah, that, and that will be super helpful, yeah, right. And then it's always your discrepancy as well how deeply you want to engage with Leonardo like it'll ask follow up questions and different things, but if you scroll down, there's usually a little green check box that will say, Yeah, said edit feedback log. That means that it successfully saved your feedback already. But if you want to, you could continue to respond to questions go. I mean, you could go really, really deep and give it all sorts of information if you wanted to, but also don't feel like you have to, if it feels like a chore, like you know, you can go as deep as you want to, or as little, little as you need to. If that makes sense,
+
+Richard Spencer  19:17  
+yeah, it's nice to when you start talking to it, then you get deeper and deeper in,
+
+Kody Kendall  19:23  
+yeah, absolutely, absolutely, yeah. And you could even, you could even say things like, ideally, the AI would do this in the future, right? Or little, little things like that, or, I mean, really anything. And this
+
+Richard Spencer  19:36  
+is most, have to give it some idea as to what, what the challenges would be and how to make a pick,
+
+Darren  19:44  
+yeah, even, I mean, this would be not ideal, but even when it auto chooses, then you can say, normally I would do this as whatever, like, let's say steel sections. You could even tell us not under these circumstances, normally I would do, I wouldn't do steel sections. I will use this as whatever, yeah. Or you can even say, well, it's not in the list yet. We need to add the M 12 volt for something like this, yes.
+
+Richard Spencer  20:07  
+Now just a question, if we are here, could I, if I Kody, if I was to, let's say I was to, I wanted to I wanted to give it some feedback to one of these questions. And there was a like I went into the break. Let's just have a look here. If we edit it, where's my little Save Changes? Oh, okay, so this is not where you can actually click to see the breakdown. This is literally okay.
+
+Richard Spencer  20:41  
+Do cancel
+
+Richard Spencer  20:44  
+editing, because then, but would I be able to say, do a snapshot, for example, and then say shit I don't know, like circulate and say this, or, you know, this, the name, yeah, and then paste it into Leonardo, whatever. Able to do that?
+
+Kody Kendall  21:08  
+Um, so right now, can't, you can't upload images yet, but that's, that's definitely something that will be ready soon. But this is still super valuable. So if you do have screenshots like this, you should save these and then send them to us on WhatsApp. But that's a great that's a great point to make. And yes, definitely we're going to make it where you can just take screenshots and upload them directly to Leonardo and but that's Yeah, ready, yeah,
+
+Richard Spencer  21:34  
+pick it on insight, this fabrication, you know, yes, the word Yeah,
+
+Kody Kendall  21:41  
+that would be kind of how you do a screenshot right now. Is kind of just selecting the element in a way. But yeah, I know it's not as, not as flexible, yeah, yeah,
+
+Richard Spencer  21:50  
+that's cool. I just wanted to ask before I do it, and then I see it doesn't, doesn't work. So that's fine. That's cool.
+
+Kody Kendall  21:58  
+Makes sense. Very cool. Um, cool. So, yeah, this is kind of just the BOQ, getting the data in, you know, getting the data into the system, and then the next step is pulling it into the actual tender line item, kind of building mode, and to
+
+Richard Spencer  22:19  
+open build it. Yeah, perfect. We assume we all good, yeah, and we just Yes, got it the next time. Yes.
+
+Kody Kendall  22:27  
+So this is kind of the blank tender starting point, and we're always looking for ways to try to make it really clear what the next step is. That's a big part of apps that are easy. So there's always work to be done in that area, and especially with us being early, there's still going to be some confusion always about the exact next step. But I did try to add a little helpful message where it says the next step is to copy this from the BOQ. So it just kind of knows, hey, we have this BOQ. It has 25 items. We need to click this copy button. Okay?
+
+Richard Spencer  23:01  
+So 10 days no longer, but your BOQ is 25 items ready to copy, and we go copy. So that's attached. What would this ADD? Liner is that now, once you've already pulled the BOQ in, you can add new line items.
+
+Kody Kendall  23:15  
+Yes, if you needed to manually kind of delete items or add them, that's just a way to make it a little more flexible, but the main workflow will probably just be coming from the BOQ, uh, parser.
+
+Richard Spencer  23:29  
+Okay, yeah,
+
+Kody Kendall  23:32  
+okay, perfect. So this, this pulled in the items from the BOQ, and there's a little rate build up arrow, and that's going to show this breakdown area. And so this breakdown area now, some of the next steps that we have to do is kind of think through how we're going to, like, have a set of kind of pre configured things that might match certain BOQ items right now it's starting is pretty blank, so this is still kind of the manual data entry step, but you can click that little Add Material button. This would be kind of your material breakdown, and then, oh, it looks like it refreshed. That's a little bit of a user so let me just make a note of that. Clicking it kind of refreshed the page.
+
+Richard Spencer  24:23  
+Refresh to pay, yeah,
+
+Kody Kendall  24:24  
+that's kind of an annoying experience. I'm just going to log that when clicking Add Material refreshes the whole page, which is it kind of takes you away from your context, so it looks like
+
+Richard Spencer  24:41  
+it's adding the it
+
+Richard Spencer  24:45  
+adds it. It definitely adds
+
+Richard Spencer  24:47  
+the material line. But yeah, then it takes you back to,
+
+Kody Kendall  24:55  
+yes, I'll make a, make a note of that, so that it doesn't kind of redirect you. Um, so, and then notice that there's, it's kind of hard to see on the screen. This is definitely one downside of having it in Leonardo mode, is that the screen is a lot smaller. But if you look at kind of the the virtual browser up at the top, where it has, like the tender slash builder. Yeah. And then if you hover over the tab that says your app, there's a little yes, there's a little button, yeah, if you click that, then this gives you a much larger view of the of the thing it did look like. It took you to one of the previous pages. You just scroll down and took us
+
+Richard Spencer  25:40  
+to the previous page. Here we go, yeah,
+
+Kody Kendall  25:45  
+there we go. And then now, if you click the rate, build up, drop down, it should hopefully give you a little more space. There you go,
+
+Richard Spencer  25:51  
+yeah, there now you see material waste. Rachel, I was wondering what was, okay, cool.
+
+Kody Kendall  25:57  
+Yeah, it's a little this is definitely something that having a larger screen will be better, which sometimes having the large Leonardo chat box on the left is going to take up screen size. So definitely, Elmarie Demi, whoever is like doing this, they'll they'll probably mainly be doing this without the Leonardo chat bot on the side, especially as we're live and in production.
+
+Richard Spencer  26:20  
+So you can't, you can't separate this Leonardo into a another window like that. You could put it say on one screen, yeah, and then have your other screen.
+
+Kody Kendall  26:33  
+Um, the way to the way to do that would be the way to do that would be like, if you have a second monitor. You could grab this new tab that you had,
+
+Richard Spencer  26:41  
+yes, and you drag this one to the next screen, yeah,
+
+Kody Kendall  26:45  
+yeah, yeah. That would be, that would be one way to do that. But okay, yeah, you just maybe, in the future too, we'll have it where you can collapse the Leonardo window and make it like, Nah, hide a little
+
+Richard Spencer  26:59  
+No, this is fine. Open it in a new tab, drag it to another screen, and then move it over. That's fine.
+
+Richard Spencer  27:06  
+Okay, makes sense. Okay. So, yeah, okay.
+
+Richard Spencer  27:12  
+So, yeah, you manually choose this stuff,
+
+Kody Kendall  27:15  
+yes, which, we did make progress on this this week. So if you, if you update the rate and the quantity, and you can, yeah, you could do the waste percentage as it is, starting to do some calculations. And we're kind of getting into a phase with me and Darren, where I'm starting to iterate a little closer with Darren to just make sure that the exact formulas are being applied correctly. So there's definitely still some work to do on this, but if you do, maybe put in a quantity.
+
+Richard Spencer  27:50  
+Is this
+
+Richard Spencer  27:50  
+quantity 85% so this should be the breakdown split.
+
+Darren  27:54  
+Yeah, there was no name in the Excel I was looking at. There wasn't a name for it, so I just left it as quantity, but we
+
+Richard Spencer  28:01  
+can put it over there. So this should be, like the, it'll
+
+Darren  28:09  
+be perfect for feedback for, you know, I'm just
+
+Richard Spencer  28:12  
+trying to think of what I would call it.
+
+Kody Kendall  28:18  
+Would that be like a person, like a percentage breakdown of how much this applies versus the other materials. Is that kind of what that is?
+
+Richard Spencer  28:26  
+Yeah, so you'll have a percentage of beams and a percentage of plates and a percentage of whatever. It all adds up to 100 or if you want to, every now and then, we make it a little bit. We make the material like the beams 100 and then add 12% applied sounds like 112 it's interesting, but very, very rarely, just trying to think of a word, maybe just material split. But yes, as you can't have that, that's too long, then split could be your split
+
+Kody Kendall  28:58  
+ratio, maybe, or something like that.
+
+Richard Spencer  29:00  
+Share your ratio, material ratio. Yeah.
+
+Richard Spencer  30:00  
+That was sort of clear,
+
+Kody Kendall  30:03  
+yeah, yeah, for sure. And in the future too, if there was ever a note or something, then we can always clarify on our calls or WhatsApp or because me and me and Darren should be able to have access to anything that you put in here. And kind of Yeah, what?
+
+Richard Spencer  30:18  
+Leonardo, yeah. Cool.
+
+Kody Kendall  30:24  
+Okay, very, very cool. Um, so there's still a little bit of work to be done in there. You could just put in, yeah, put in some quantity, and then the little red dot, you'll kind of notice at the end that basically is just saying that it you've made edits, but you haven't, kind of saved those yet. So you just click the little green check mark whenever you're ready.
+
+Richard Spencer  30:45  
+Okay, so yeah, you click it then locks it in.
+
+Kody Kendall  30:50  
+Boom, yes, seeing it, did that refresh again, which is one of those. So yeah, I'm gonna really emphasize that, because that's gonna throw everyone off.
+
+Richard Spencer  30:59  
+Okay, that's what. Yeah, that one is gone page. So, what is this done? Is it taken?
+
+Kody Kendall  31:07  
+I see, so that's a little bit of a So, so it refreshed the page, and then you lost some of that work. So, so one that's a little bit of an issue improve,
+
+Darren  31:18  
+is this, Kody, is this quantity 85 times? Or is it 85% looks like 85 times? I think,
+
+Kody Kendall  31:24  
+I think it did 85 times, because it, when it was set up as quantity, it thought that it's like a literal quantity item. And so it's doing, it's doing calculations in the sense that the app is calculating like the values. And this is, which is
+
+Darren  31:39  
+great, and it's, this
+
+Kody Kendall  31:41  
+is where me and Darren will have to hone in on the I think Darren has all this lockdown, and there's just a little bit of, there'll be, there'll be some iterating to nail the exact formulas,
+
+Darren  31:50  
+even that kind of yeah as a very bad, you know, as a workaround, right now, we could do 0.85 and it
+
+Kody Kendall  32:00  
+would work, yeah, and click that and Darren. Here's, here's an annoying every time he every time he clicks that, it refreshes the whole page.
+
+Richard Spencer  32:09  
+But that is right job, because then that would be your piece of your Well, let's see.
+
+Richard Spencer  32:25  
+Are so the numbers are right.
+
+Richard Spencer  32:28  
+Let's choose that move. How do I get to this thing?
+
+Richard Spencer  32:37  
+I mean, just get this little thing away. Oh, you
+
+Kody Kendall  32:42  
+might have to drag it somewhere else. Yeah.
+
+Darren  32:47  
+One thing is, if you, if you like, Hold on the share button and then you like, drag it up, click it and disappear.
+
+Richard Spencer  32:59  
+Okay, let's go. Okay, and then we go, feed supply, drop it off, yeah, we'll just put in
+
+Richard Spencer  33:23  
+Okay, okay, yeah. So then there's your
+
+Richard Spencer  33:27  
+allowance per ton for material, and then that should be pulling through to here, right,
+
+Kody Kendall  33:34  
+yeah, yes, yes. And that's, let's see allowance. You said allowance.
+
+Darren  33:45  
+Kody, what happened? Is it gone? Now, did I open?
+
+Kody Kendall  33:50  
+Let's see where are you at here? Oh, I
+
+Richard Spencer  33:53  
+went to the Leonardo mode. Okay, so it's not
+
+Kody Kendall  33:57  
+you go, if you go back to Leonardo, just make sure that you refresh the virtual browser on the right hand side because you've been making changes on the different Yeah, yes, that's still
+
+Richard Spencer  34:06  
+okay, okay, okay, okay, yeah,
+
+Kody Kendall  34:09  
+yes, here
+
+Richard Spencer  34:11  
+we go, just so we can make a note here, this material supply would come in there.
+
+Darren  34:19  
+Yes, that's how we've Yeah, put that on the list of that, but that's not in yet, right,
+
+Kody Kendall  34:23  
+correct, yeah. The the rate build up needs
+
+Darren  34:26  
+also, this will round up to the nearest 50. That's how it's currently done today.
+
+Richard Spencer  34:32  
+There that can stay. That's how it's done in Excel, by the way. Does this also round up to, so that rounds, okay, well, that's fine. Then we leave it as that this rounds up to the nearest 50 and this. So that's a just a question. Are we going to be able to change the rounding, like, for some of the items, maybe chemical anchors, or whatever you want, the rounding to maybe be 10 instead of 50? Okay, that's good to know. We don't have that yet. Or, like a square meter rich for corrosion protection. Which per square meter it might you might want to round it up to the nearest five or the nearest 10 instead of the nearest 50.
+
+Kody Kendall  35:09  
+We do have a set of business rules that do have different rounding rates for specific parts. I don't know if we have those ones captured. You could go to ask Leonardo, and then you like the little chat box, and you could say, what are the rounding rules that we have?
+
+Darren  35:23  
+I think Kody, from what I remember, I think we had, like three. Like one was like the margin, the material supply rate, margin. I mean material supply, the breakdown, and, yeah, maybe one other one. So that's good to know. We must miss maybe building one, one margin, one round up margin for each thing here, next to the margin number, have the rounding number, yeah,
+
+Kody Kendall  35:49  
+oh, here we go. We have, yeah. We have this whole like business rules thing. Let me see Yeah, like, rate rounding all line items rounded up to the nearest 50 Rand. Crane edge rounding, rate rounded to the nearest 20. Rand cherry picker, rounding round to the nearest 10 round. Those are all we have for rounding. So, yeah, we probably want to add, oh, yeah, there it is. You just found it, yeah. So, so then in there you could say we also need to have rounding for x, y, z. You know, I
+
+Richard Spencer  37:30  
+sweet. Oh, that refreshed. Okay, okay, let me go into this full screen. Yeah, me and Leonardo gonna get into big chats here.
+
+Richard Spencer  37:48  
+Mean feedback. Mark, good. Oh, no, okay, go back here. Okay.
+
+Richard Spencer  37:55  
+So, yeah, we plug it in. Boom. You must carry on. Kody, you you've got Yes, the points you want us to get, get into Yes.
+
+Kody Kendall  38:04  
+Okay, so, so definitely, still some, you know, some kind of polishing on material breakdown, kind of like the quantity should be renamed, and then that mark up well, and this is kind of getting the stuff with that Darren can help me with. But the markup percentage will also want to find a way to, like, apply that in a smart way. But that's that's kind of just getting into some stuff with Darren that mean him can work on this. Oh, yeah, yeah, okay. And then the rate build up. The rate build up, um, doesn't have its calculations built in yet. So, like, for example, material supply should auto pull automatically. Like you shouldn't have to type that in. Also the included check boxes. I understand that we need to change those to be a number, because it's, it's like, going to multiply across. And those can sometimes change depending on, you know, it might be point seven, five instead of just one, or, you know, point 1.25, things like that. So a little bit of work on the rate build up and so and then the other thing is, we also need to, like, pull in some of the stuff from the Crain calculations, which, that's probably the next place I'd want to show you, and get some feedback on, yeah, is if you go, if you scroll up to the top again, the very, very top, there's a little, oh, there's that back to tender button. Let's click on that. It's kind of subtle. There it is. Yeah, if you click that one, if you scroll down to the very, very bottom of this page, we have, like a mobile crane breakdown button. Oh, cool. And let's, let's click on this. And so this is, we spent a lot of time on this this week, and essentially, we have kind of some of, you know, kind of the key inputs for the on site breakdown, such as the roof area, square meter, the erection rate per day, things like that. And then based on that. So what you would do is you click that little edit pencil on the top right, kind of next to that trash can. Yeah, you click Edit. And then from here, you can now go into the total roof area, and you can put in, you know, kind of common values, perfect. And then now on the top right, there's that green check box. If you click that little green check box, it's kind of like, kind of like the line item where it's just saying that you're done. And then the calculator that program duration, if you saw that. And then, same thing, yeah, you can select splicing crane or miss Crain. And then, if you, if you go, and so
+
+Richard Spencer  40:33  
+would I click that one? Oh, no, this, okay, yeah, they were just checking it, yeah.
+
+Kody Kendall  40:39  
+And then there is, there is an option to, like, put splicing crane, like, additional information in there. But okay, and then so the if you scroll up a bit, go back up to the top right, yeah, click, click the edit pencil again, and then click the check mark, and that will like, save that and then scroll down a bit
+
+Richard Spencer  41:01  
+unsafe changes, disappears. Okay, yeah, yeah.
+
+Kody Kendall  41:04  
+And then also gives you those inputs that you could enter in. And then you hit the check mark again if you if you needed to enter these or not. I know this is in the on site breakdown that you normally do, so this is where you would enter, oh, you might have to hit the edit pencil again. In fact, that's, that's that's another little area to improve. I'm gonna make a note of that. Let's make it a little easier to edit.
+
+Richard Spencer  41:28  
+So 34 we'll say,
+
+Richard Spencer  41:35  
+okay, then we've done it, and then we go, Yes, and that's done,
+
+Kody Kendall  41:41  
+perfect. Yes, yes.
+
+Richard Spencer  41:45  
+Compliments, okay, yeah, yeah.
+
+Kody Kendall  41:48  
+So these are kind of, you don't really edit them here, but it's just kind of here for for reference, and where you'll actually edit the Crain's, if you scroll down a bit, and this needs a little bit of work, but there's the selected Crain's right there, yes. So we'll, we'll add a button eventually, or like a calculation, to automatically add crains. But what you'll do right now, just to show you there's that little Add Row button, yeah, yeah. If you click that, that'll create a crane and then as a link back to the tender, and then it has a little Crain drop down if you click on that. Oh, nice, yeah. And those are, those are editable, like below there's that little table that says Crain rates, and that's just kind of showing what's in the lookup table, but we'll make it so that it's editable for you or Ruan and you know, maybe not, I know, like Demi and Elmarie, they wouldn't need to edit that, but it's just kind of there for reference.
+
+Richard Spencer  42:49  
+So like, if you were, if you were in this section, and then you say, because you wouldn't select it from, yeah, yeah, you'd maybe edit it and say, Okay, for this project, we're going to use an RSB owned 50 ton or whatever, then you would edit it, boom, put it there. And then here you just choose 50 ton RSB owned or whatever, would it update this drop down?
+
+Kody Kendall  43:13  
+Yes, yes. So if we added additional crains, then it would update, it would update the drop down, or if we edited them. So in fact, if you if you are sorry, you have a question, if you hit that edit pencil on the Crain, yeah, click that, and then go back to the Crain, drop down, and let's select, like, 50 ton. So, yeah, like, there's 50 ton rental, yeah. And then it says you have unsafe changes. So what we want it to do, it to do. It doesn't do this yet, but we want it to fill in all of those values. Like, yes, you know, duration days, the wet rate per day, the total cost that will come from the Crain rates table by default. And then once that's added, I know that sometimes on jobs you do have to make adjustments, they don't always match that lookup table perfectly. And so that's where you would overwrite those values. But those aren't pulling in right the second. That's something we'll be working on this week. And then, yeah, you also have the main crane versus the splicing. And the quantity would be like, you know, however many you needed for the job. Yes, duration days. I know that that could be a little bit different. So little things like that. It's like we're kind of laying the foundation and the database layer, but then there's a whole bunch of business logic and rules and kind of auto calculations that we still have to fill in the gaps with,
+
+Darren  44:34  
+and also just to add in yet this we've kind of built so that it lines up almost exactly with the other tools that you guys use, like those things called Telehandlers
+
+Richard Spencer  44:44  
+and the other two cherry pickers and scissor lift, scissor
+
+Darren  44:47  
+lift, jazz, isn't it? So that it'll look, it'll be like followers, very similar looking. Take, Oh, nice. So see the item, quantity, duration of days, rate per day. That'll look kind of similar to this class.
+
+Richard Spencer  44:58  
+So that, okay, so, but what we're saying is obviously your, if you now click it that that would be okay, and then quantity would be number of them, duration, cool. And then with this rate, read that rate would come from here. Yeah, yes,
+
+Richard Spencer  45:15  
+yeah, did read that or whatever? Yeah, okay,
+
+Darren  45:19  
+cool, yeah. Just my thinking was that we don't even, we don't need to show this Crain rates table on this, you know, tender specific page, because it's just like a lookup table. But there would be a little link that says, you know, view Crain rates table or whatever. But you could click, but that would be good if you only, you would be updated the Crain rates overall. People could update the, you know, the negative safety and he could update the wedge rate for this specific job, yeah, just for the tender, yeah, yeah. This is, like the master table, which only you would be able to update, or you enter on,
+
+Richard Spencer  45:49  
+okay, so, but whenever there's an accurate price change, yeah, yeah. But being able to edit it in the tender is cool, yeah, because then you Yeah, that'll pull through to your budgets later. Yeah?
+
+Kody Kendall  46:03  
+Be. So, yeah, still a little bit a little bit of fine tuning, kind of honing that in exactly, but kind of, you know, having a good foundation definitely, let me see. Okay. So, yeah. So some of the next steps is, like making sure that this selected Crain is pulling from the Crain rates, that it makes sense. And then the other thing we need to do is, after these are set, we want to be able to pull this into the rate build up, which I know it's kind of a key input into that, that stuff. So that's yeah, just yeah,
+
+Darren  46:39  
+just to check your security this, this Crain's obviously should update as well the total cost, right, once you built in the calculation,
+
+Kody Kendall  46:45  
+yeah, that that should auto calculate that total cost based on the rate per day duration. Yeah, that, that time stuff, yeah, yeah, yeah. And then, and then those total costs, that'll be, I guess, what's feeding into the rate build up calculations and those types of things. Okay, yeah, very cool. Okay, so that's kind of, that's kind of where we're at, the Crain calculator. Let me see what else we have. Oh, these are just kind of quick things, but the tender we do have the commercial versus mining type added in there now. So you can kind of modify those. We'll have to, we still have to add in, like, specific business rules that will calculate things differently depending on commercial or mining. But we do have that kind of as, like a that's saving the database, and you can't edit that type. And then those are the only two types for commercial mining right now. But those
+
+Richard Spencer  47:35  
+are the only two, yeah.
+
+Kody Kendall  47:37  
+Okay, Okay, sweet. Simple. Will
+
+Richard Spencer  47:39  
+you just change this to a capital. SB,
+
+Kody Kendall  47:42  
+sure. Absolutely over there. So, Owner, ownership type, Rsb, yes.
+
+Richard Spencer  47:51  
+And we got capital R, capital S, capital B.
+
+Richard Spencer  48:00  
+And now, okay, I
+
+Kody Kendall  48:04  
+have a note of that, so we'll make sure to do that.
+
+Richard Spencer  48:06  
+Would that be something I could like say to Leo?
+
+Kody Kendall  48:10  
+100% Yeah, yeah, yeah.
+
+Richard Spencer  48:13  
+In fact, would it then be able to change it
+
+Kody Kendall  48:18  
+right now, just send the feedback to you right now, I have it disabled to where it it wouldn't change it, but that's definitely on the roadmap where, I mean, that's a pretty small change, right? Like, little spelling, yeah, little like, so, so definitely that's that's on the roadmap where, rather than just saving the feedback, we could have lean article just on the spot update it to be Rsb owned.
+
+Richard Spencer  48:39  
+But I suppose that's risky, because then we could make a comment, and as Darren said earlier, it breaks the system.
+
+Kody Kendall  48:45  
+It can be risky in ways, but there's and this is where there's just some work ahead of us still, but we can basically have Leonardo make that decision and be like, this is a pretty simple. Just interface change, right? We're just changing a very small thing. So let's let Richard change it, as opposed to, if you said, you know, completely re design the database and change all the names, and then he would say, you know, hey, I'll log that as feedback. But let's not do that right this second, you know, because the other thing too is we'll, we'll have it eventually where we have a live production app that's like, your live data, and then we'll have different kind of separated, like development apps, kind of like this one, and that way too, even if we did give you more authority to make changes with Leonardo, then we always have, like, everything separated. So you're not going to, like, break anything that, you know, like, it won't push out the update immediately. It'll kind of have it in a separate, safe place, and then we can, you know, test and decide if we wanted to keep those changes or not. If that makes sense. Yeah, yeah,
+
+Richard Spencer  49:52  
+yeah. 100%
+
+Kody Kendall  49:55  
+sweet. Um. So the only, I mean, the the only other main thing to show you is just on the very top right kind of navigation bar, there's that little user icon. It's kind of subtle, but this, yeah, yeah, perfect. If you click that one, yeah, then it just says, Welcome. And then there's that little settings gear. And this settings gear is going to show you the other users in the application. And you can see that there's my sign in there, and that's set as admin. And then at the bottom, it has yours as well. That has you set as an admin. And then we have Demi, who says a quantity surveyor, and then Elmarie, that's set as kind of an office staff, yes, so this is kind of just laying the foundation to where we'll add in the exact permissions for things like, you know, the crainer build up, and maybe you want Elmarie to not be able to change certain things that Demi can, and we can even have one for the material buyer, the I know you have, like, a separate buyer that is from Maria prices, yeah. So we'll, we'll get her an account as well, and we'll have her as a role of, like, you know, supply buyer or something like that. And then that way she only has her portion she can edit. But so, yeah, this is just kind of showing that we're laying the foundation for different super cool abilities and things.
+
+Richard Spencer  51:17  
+So I think you find, you know, if you've got that permission set for call it now just for Maria separately as the buyer,
+
+Richard Spencer  51:28  
+we could probably have a
+
+Richard Spencer  51:31  
+more extensive catalog as to like the chemical anchors. At the moment in our
+
+Richard Spencer  51:39  
+BOQs, the supply price hasn't changed in years. It's just what we use. We don't even know what it really costs. But I suppose if there's a thing where she just goes in and updates the pricing, she could do that, and I can actually have real costs for everything that we Well, not everything, but most of the stuff that we actually buy and allow for in these tenders.
+
+Kody Kendall  52:04  
+Yeah, absolutely, absolutely. And then it can fit.
+
+Richard Spencer  52:06  
+I don't trust her with hundreds of Excel documents, and that's just going to be a mess. So if I've got one thing where she logs in and just updates updates and then sort of logs out, that's perfect, absolutely.
+
+Kody Kendall  52:19  
+And we could even have it like maybe send you an email or notify or something, right? Yes, you know. And then you can double check them or, or even that way, you just know, oh yeah, she went did the or even something that just says the last time they were updated, and kind of tells you these are November's rates, or, you know, whatever, yes, need to do there,
+
+Richard Spencer  52:38  
+sweet yo, last, last update, then I know if she's actually updated it for December's right? So if it's still the old ones,
+
+Kody Kendall  52:46  
+yeah, absolutely, yeah.
+
+Darren  52:48  
+That was a clever feel to put it that updated one. Kody, nice.
+
+Kody Kendall  52:53  
+Yeah, sweet. Very cool. Okay, so that's kind of the main stuff I was going to show you, and then I just kind of you a high level plan of what we're wanting to do for this next week. So we're coming into week three, and kind of the main things right now is the BOQ parsing. We I need to make sure that we can ingest larger BOQs, because I know that they can be larger than the ones that we've been testing on, and that's what we saw last week. So that's definitely still, you know, really one of the top things, because it's such a core beginning part that everything stems from there. So that's a huge priority this week. We also need to finish up the Crain calculations, such as having it calculate the total making sure it's pulling the wet rate per day from the actual lookup table that, like all those are calculating accurately. We also still have work on the tender builder, specifically the line material breakdown, where it's like calculating that kind of total price, and then the rate pricing as well. And then, yes, I'd also like to start implementing some of the PNG stuff and the non Crain access equipment. So we won't have like, all the calculations working perfectly on those things by the end of this week, but we want to start having, like, kind of similar to the Crain calculations, where we just kind of get a base like to stand on, and then we'll continue kind of layering those in. But the other thing too, that'd be really great is you you know, I'm one part of the philosophy, as well as to try to get live data flowing through this as soon as possible. And that's gonna, that's gonna stress test a lot of things. And so we're not, like, you know, trying to replace your spreadsheet system immediately, or the, you know, the tendering spreadsheet, like, as of, like, Monday next week. But it'd be great if we could start getting, like, BOQs maybe forwarded to us, and then we can start, like, putting those through the system and kind of showing your team some of the calculations and outputs. And like I said, it's not going to be perfect at first, but putting that live data through it is going to be like, a really great accelerator to everything that we're trying to do, because then, yeah, we can show it to Demi. We can, you know, and then if it's if it's working well, or if we're getting, like, let's say, even just the BOQ parsing, if that's more stable, that's when we can start to actually roll it out and have Elmarie, you know, put in the BOQ and then, you know, it's just like we're trying to, kind of get to the next steps of each thing. So there's always going to be iterating and trying to, like, nail it and make it perfect. But the sooner we can start running BOQs through that, the better. So one thing that could be super helpful is, kind of, as your team gets BOQs and you start to do them, you know, maybe Elmarie can, like, forward the BOQ to me and Darren, and then we can, like, that way we're getting kind of live BOQs that me and Darren can start putting in.
+
+Richard Spencer  55:50  
+And so, I mean, not, yeah, I can, I can send you guys hundreds of BOQs if you want. So we've so I just want to see, I mean, in terms of what you got, oh, what did I do now?
+
+Richard Spencer  56:09  
+And it is getting away, in terms of
+
+Richard Spencer  56:15  
+the sort of feedback you'd like to see, I want to just see if, like, obviously, you wouldn't just want a blank BOQ that wouldn't really well maybe or not a blank. But I mean, if I showed so,
+
+Richard Spencer  56:40  
+you would, I mean, like we do these all the time.
+
+Richard Spencer  56:47  
+This is our output.
+
+Richard Spencer  56:50  
+Now, this input was a PDF, but I mean, I could
+
+Richard Spencer  56:59  
+definitely send you, for example, the BOQ that we receive, when I could share the whole folder, but I could share the BOQ that we receive, and then our BOQ with its output. Would that help? Would you be able to run that if someone, would you be able to run that kind of thing through AI for it to be able to pick up from the receiving deals view where certain data was allocated in our thing,
+
+Darren  57:30  
+maybe, yeah, with, with your clawed code, it might be able to a Cody, yes, what PDF, what you got was it, Nah.
+
+Richard Spencer  57:39  
+So, like, that's, this is just what we that's what it looks like when we send it out. That's, that's not really relevant, but, yeah, the idea would be, this is our breakdown based on that one which we received.
+
+Darren  57:53  
+Yeah, I think that'd be helpful, like Kody, because then we could run it, and if we run it through our system,
+
+Richard Spencer  57:59  
+and it should come up with certain numbers, yeah? But I mean, yeah, so I can definitely share, I can share loads with you.
+
+Kody Kendall  58:07  
+Kody, yeah, and I think, I think having historical ones would definitely be great to give us some more testing data to then compare the outputs. I also think like getting, getting ones that you guys are doing live could also be good, because it'll be really top of mind for Demi, for Elmarie, yeah, and then that would allow us to, like, we wouldn't, at least not immediately. We wouldn't have Demi. We wouldn't want to waste her time where she's, like, putting stuff in if it's clearly not ready. But it could allow me and Darren to be putting stuff in and then maybe sending an email to Demi and saying, Hey, here's what we have. How does that compare to this? And then that will surface a lot of her saying, Oh, well, actually, I had to do this because of this rule, or, if that makes sense, and then also bringing us closer to to Elmarie and Demi in the sense of like, we want them to start, like, wrapping their head around the system and like, so if we have BOQs that they're actively working on that are like, fresh and new, then the hope is that that will, like, start to prime their brain and kind of prime, you know, RSB as an organization, to kind of start getting into the software and wrapping their heads around so definitely, I think historical ones is great, because we can test it and kind of confirm things. But there's also a unique advantage to having fresh ones the Elmarie and Demi are currently looking at, because then it's helping them starting to map the old process and the new process, if that makes sense,
+
+Richard Spencer  59:33  
+and being on board with the early stages, because then it sort of cements the steps that need to be followed from early on, and they feel like they're giving input.
+
+Kody Kendall  59:43  
+Absolutely, yeah, that's that, right? There is probably one of the most key points that Darren just is, like, we want them to feel like, you know, excited, and like they're, like, shaping it a little bit, and
+
+Richard Spencer  59:52  
+they're contributing, yeah, yeah.
+
+Kody Kendall  59:56  
+Um, so, you know, definitely not like, a big, you know, hey, send us every single BOQ as they come in, even if it's just one or two a week, or even just one a week, you know, it doesn't have to be like a every single BOQ that ever comes in, you know, send it. But that, I think, could definitely help. The other thing too is, we had our meeting with Demi, I think, about two weeks ago, and we need to, like, kind of get into a rhythm with her as well, where we start kind of showing her her piece of it, because she, she seems to be a really core piece of of all of this. So I'm just kind of, you know she, she'd had like, a meeting last week, but just kind of want to follow up with you and just kind of see how to approach that best. Like, you know how often you want us to meet with her, if you want to be on those waiting with her,
+
+Richard Spencer  1:00:45  
+when, when this week, must I tell her to meet?
+
+Kody Kendall  1:00:48  
+Um, originally we had planned Thursday at 6pm South Africa time. That was originally what we had planned. Um, she told me that that time was was probably best for her, although I think something had come up this week that prevented that. But yeah,
+
+Darren  1:01:06  
+trying to move it to Friday, and we kind of said, Hey,
+
+Kody Kendall  1:01:10  
+I see, yeah, yeah,
+
+Darren  1:01:12  
+she emailed and secured her tomorrow instead.
+
+Kody Kendall  1:01:14  
+Yeah, she had emailed and tried to and then, and then we kind of were like, well, let's, let's talk to rich and see
+
+Richard Spencer  1:01:20  
+was that now, last Thursday, yeah, yeah. She had to go fetch her son. He was sick or something. She had to fetch him from school, yeah.
+
+Kody Kendall  1:01:27  
+And totally fine too. You know, we're flexible, that you guys are the clients, and we're accommodating and all that. But yeah, so
+
+Richard Spencer  1:01:35  
+just let me know, because I think I don't want her to take a chance.
+
+Darren  1:01:38  
+And yeah, from she said, for my speech, she wasn't like that. She said, Can we do tomorrow? She didn't like suggested a different type. I said couple times. I don't, I don't think we need it. That's fine. We could. We'll speak to Richard. We spoke to Richard Monday. We'll speak to him on Monday again, and then we'll then next time. Yeah, and then Thursday, this weekend, Kody, that's good.
+
+Kody Kendall  1:02:00  
+Yeah, yeah, that was perfect.
+
+Kody Kendall  1:02:07  
+And then rich, you're totally welcome to be on those calls as well if you do want to be, but I know you're super busy as well.
+
+Richard Spencer  1:02:13  
+So and I wanted to, I think, with Demi, the thing, it would be good for her to give her independent opinion. And I'll, like I say, let her come up with her stuff and and I'll deal with some of the other things that I think are important for, for the system and for what I need. Okay, you get two different kinds of input. I don't want to steer the way. She's giving you feedback and whatever, yeah, but if she becomes lazy, then I'll get involved.
+
+Kody Kendall  1:02:45  
+No, she was pretty excited. She she thought this was, yeah, you know, she could definitely see the potential. And she was, yeah, was acting really engaged. So, yeah, I just wanted to double check with you, since you're the boss, you know, make sure that, you know, those meetings make sense to you and all that.
+
+Richard Spencer  1:03:02  
+Yeah? They do. No, they do.
+
+Kody Kendall  1:03:05  
+Sweet, very cool. They
+
+Richard Spencer  1:03:06  
+do. Yeah, so that's cool. I mean, I don't I think when we get to, when we get to a little bit further down the line, then I'll jump on with and hear what her input is, and try and gather what she's what she's feeding but
+
+Richard Spencer  1:03:24  
+sweet for now,
+
+Richard Spencer  1:03:26  
+she wants to make it. She wants to use it to make life as easy as possible, right? I think she would like it if she could import in it and, say, generate tender. And she just chooses a markup percentage and then clips in which,
+
+Kody Kendall  1:03:43  
+yeah, maybe, maybe, you know, given enough time, you know, maybe one day we'll be
+
+Richard Spencer  1:03:49  
+there. So that'd be amazing.
+
+Kody Kendall  1:03:52  
+Very cool. Well, that's, that's all I have. But, you know,
+
+Richard Spencer  1:03:56  
+thanks, Kody. I'm digging it.
+
+Kody Kendall  1:03:59  
+That's cool. Yeah, I think the project I
+
+Richard Spencer  1:04:02  
+must actually give for run these login details, because he also likes to play around on this kind of stuff.
+
+Kody Kendall  1:04:09  
+Yeah, that that'd be great to do a meeting with him as well at some point, maybe, maybe in a week or two, made a little more progress, but, but, yeah, it'd be great to I don't think I've met him.
+
+Richard Spencer  1:04:21  
+I'll work on it with you for a couple of weeks first, and then I'll, I'll let him jump on when there's a bit more, because he's gonna, he's going to pick through it quite intensely. So, yeah, he's gonna give lots of he's gonna give you a lot of stuff, which, yeah, he was telling us too late, but then, so that's
+
+Kody Kendall  1:04:42  
+that's what I do. One more thing, if you scroll down to the bottom of this email, basically, I had just attached a there is that phase one scope overview. So that was kind of the original, the original game plan that we've kind of been rolling with. So we just finished week two of this. If you click into that link. Yeah, and I think you're added as a you can, you can add suggestions and comments and different things. So this is a pretty, pretty simple document, but just just kind of what I've been working on in terms of trying to get, like, the calculations, the tenders, like all the kind of core foundational pieces. And then this was originally, kind of the first two phases were planned for for six weeks. So we just finished the second week, so we're going into week three. Yeah, just, just have this here for your reference, all of that. But yeah, we're excited to keep making a lot of progress and moving fast. And we want to, we want to try to make, make a good system that can go live with you guys as soon as possible.
+
+Richard Spencer  1:05:43  
+Super cool question. Now, let's say so we had rate management. If I want to do so, like I'm assuming you go in here and then if you move this out domain. Now, if you make a change, let's say I add something in, yeah, or let's say just over Here, would it? And I say I don't know. Or
+
+Richard Spencer  1:06:31  
+would that?
+
+Richard Spencer  1:06:34  
+Would I make it like a different color would attract the change?
+
+Kody Kendall  1:06:39  
+Probably, probably the right place to put that would be somewhere else, maybe directly, maybe directly in Leonardo as well, because we actually have a much bigger version of this that's pretty, pretty in depth and overwhelming, but this is more just, yeah, it's all in the that's the one that Leonardo was Reading from, where it found those business rules. So probably, probably little things like that would be put into better put into Leonardo. And then I'll also make a view that like, eventually you can see what Leonardo's reading exactly right now. It's kind of like question and answer like you would ask Leonardo if we already have certain requirements in there, or what if you want to add things, but, yeah, does that make sense? That would probably be the primary place to put
+
+Richard Spencer  1:07:28  
+so you could even call any suggestions in the system, yeah,
+
+Kody Kendall  1:07:32  
+yeah, yeah. And that'll be, that'll be great, because, you know, the big vision is Leonardo being really like a key part of your company, almost like an employee of sorts. It's like helping track these types of things, and eventually, too, it'd be great for Leonard to be able to do, you know, full end to end workflows. Maybe not replacing Elmarie entirely or her stuff, but just like, really being an assistant that can help her.
+
+Richard Spencer  1:07:59  
+And so I'd like to replace her entirely on the on the tender side, if I could, it would be like, really it. At the moment, she's doing it because we, we just a little bit busy. But, you know, ideally, we get her out of it. Because I don't really think, from what I see, then the system is able to do with the passing and allocating. It's really not, it's not far off. I mean, there might be a couple of little tweaks here and there, and I think it would be able to allocate most of it on its own.
+
+Kody Kendall  1:08:36  
+Yeah, yeah. So we can, I mean, maybe that's a good goal for us to work towards. Is have Leonardo replace her on the Tendering process. But yeah, like you said, I agree. It's, you know, a big part of it's the parsing, and then there's just some, maybe some other small things that we can iterate on. But I think, yeah, I think, I think we're aligned there, for sure,
+
+Richard Spencer  1:08:55  
+because, like, the calculations and stuff she doesn't get involved with that she doesn't get involved with. Were there anything just are plates included. If yes, you know, then your material split must be whatever, or should have a 15% allowance for plate. So, you know, like those things, and she doesn't get those things right, but you know, so those kinds of rules can be set into this, and it can look for keywords and this, and it would be able to sort of self select and self allocate the material splits and what category it should be in, and that kind of stuff.
+
+Kody Kendall  1:09:33  
+Yeah, absolutely, absolutely, yeah.
+
+Richard Spencer  1:09:38  
+And I've told Demi, she needs to train Elmarie, because I'm not going to train anyone, but so maybe that's what she's excited. She's hoping you get this over the over the line quickly so she doesn't have to train Elmarie.
+
+Kody Kendall  1:09:49  
+Yeah, and we'll, we'll make an account for Demi too. So she can, she can, maybe she can train Leonardo, and then Leonardo can trade Katrina.
+
+Richard Spencer  1:10:05  
+It's cool. Like. RY, thank you, yeah, develops, yeah,
+
+Kody Kendall  1:10:10  
+yeah, it's been great talking. And okay, so we'll plan next week, same time. And just as always, yeah, feel free to log into Leonardo, test things, add feedback. And then we also always have the WhatsApp. You can message, message me on,
+
+Richard Spencer  1:10:24  
+okay, so next week I'm driving, maybe we must maybe do it
+
+Richard Spencer  1:10:33  
+maybe, or later on I can maybe do it later on Monday, I'll be driving, so I'll probably ja, I think on Monday, maybe a little bit later than normal.
+
+Richard Spencer  1:10:46  
+Okay, I'll make a note next Monday. I don't know your calendar looks but if this is 6pm essay time, it would probably be like eight ish, nine ish, what? What's that time for you?
+
+Kody Kendall  1:11:01  
+So right now it would be, yeah, right now it's 10am so 6pm Your time is nine, my time that's when we usually meet, so that we could do an hour earlier, or we could do it maybe an hour later, or two hours later, whatever,
+
+Darren  1:11:16  
+three hours later. Okay, let's do okay,
+
+Kody Kendall  1:11:20  
+I'll send it for two hours later for next week.
+
+Richard Spencer  1:11:26  
+Yeah, that should be able to if it doesn't let me just change it, yeah,
+
+Richard Spencer  1:11:32  
+should, if we do this,
+
+Richard Spencer  1:11:38  
+because it's all running on the web, would I be able to log on with my iPad and then open the system and go on like that?
+
+Kody Kendall  1:11:49  
+Yeah, yeah, you definitely could. One thing to just be aware of is the screen size on iPads quite a bit smaller, so you might get a little bit of weirdness, but it's worth trying maybe. I mean, especially for like, simpler parts of it, like the BOQ or the Crain rates, that's not going to matter as much on a smaller screen. But definitely the tender build up might have some issues, but we can also log those issues and try to make it a little bit better for smaller devices. It's probably, I'm
+
+Richard Spencer  1:12:15  
+just thinking. I'm just thinking for our meeting, if I, if I don't,
+
+Kody  1:12:19  
+Oh, I see
+
+Richard Spencer  1:12:20  
+I don't have access to sort of a charge or whatever for my laptop, and I want to jump on on the iPad, but if the functionality is going to be a little bit tough on there, then I'll just,
+
+Kody Kendall  1:12:32  
+well, we could try it. I'd say, let's just try it. You know, if I think that's better,
+
+Richard Spencer  1:12:37  
+if I can't, if I can't get on, then we'll try it. I'll try, yeah,
+
+Kody Kendall  1:12:40  
+yeah, yeah, but
+
+Richard Spencer  1:12:42  
+yeah, I've even got the iPad with a small screen. It's like,
+
+Kody Kendall  1:12:47  
+sweet. Yeah, cool. Very cool.
+
+Kody Kendall  1:12:52  
+So I'll plan to meet with Demi on Thursday. I'll send an invite to her, and I'll follow up with her, and then our meeting next week, two hours later than normal, and then, yeah, just reach out if you have any questions or anything in between those times.
+
+Richard Spencer  1:13:07  
+Okay, fantastic. Very cool. Thank you, Kody, good
+
+Kody Kendall  1:13:12  
+to see you rich. Darren, good to see you fun. Have a good day. Going to a wedding, right?
+
+Richard Spencer  1:13:19  
+You're going to a wedding. Oh, yeah, yeah,
+
+Darren  1:13:22  
+okay, that's still a couple of weeks away. It's only in 10 days.
+
+Kody Kendall  1:13:27  
+Okay, okay, very cool, cool, cool. All right, talk to you guys later.
+
+Richard Spencer  1:13:31  
+Don't, don't let him pretend like he's unavailable.
+
+Richard Spencer  1:13:41  
+See you guys. Cheers, man, right, you.
+
