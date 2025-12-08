@@ -80,7 +80,7 @@ Add/Update:
 
 **2.3 Update Week Documents**
 ```
-Files: /rails/requirements/user_feedback/cycles/phase-1-tendering/sprints/sprint-X/week-Xa.md
+Files: /rails/requirements/user_feedback/cycles/phase-1-tendering/sprints/sprint-X/week-N.md
 
 Add/Update:
 - Vertical Slice Breakdown table with links to scope docs
@@ -254,9 +254,9 @@ Day 4-5: Integration (P&G, output)
 ```markdown
 | Week | Dates | Status | Key Deliverables |
 |------|-------|--------|------------------|
-| 1a | Nov 24-28 | ✅ COMPLETE | [Deliverables] |
-| 1b | Dec 1-5 | ✅ COMPLETE | [Deliverables] |
-| 1c | Dec 8-12 | 🟡 IN PROGRESS | [Deliverables] |
+| 1 | Nov 24-28 | ✅ COMPLETE | [Deliverables] |
+| 2 | Dec 1-5 | ✅ COMPLETE | [Deliverables] |
+| 3 | Dec 8-12 | 🟡 IN PROGRESS | [Deliverables] |
 ```
 
 **Vertical Slice Table:**
@@ -290,7 +290,7 @@ rails/requirements/
 │   └── Dec-08-25-Richard-Spencer.txt
 └── user_feedback/cycles/phase-1-tendering/
     ├── scopes/
-    │   ├── PHASE-1-TENDERING_SCOPE.md    # Master phase scope
+    │   ├── Phase-1-Scope.md              # Master phase scope
     │   ├── TENDER_BUILDER_SCOPE.md       # Vertical slice
     │   ├── CRANE_CALC_SCOPE.md           # Vertical slice
     │   ├── BOQ_PARSING_SCOPE.md          # Vertical slice
@@ -299,12 +299,14 @@ rails/requirements/
     └── sprints/
         ├── sprint-1-nov24-dec12/
         │   ├── SPRINT-1.md               # Sprint overview
-        │   ├── week-1a.md
-        │   ├── week-1b.md
-        │   └── week-1c.md
+        │   ├── week-1.md
+        │   ├── week-2.md
+        │   └── week-3.md
         └── sprint-2-dec15-jan2/
             ├── SPRINT-2.md
-            └── week-2a.md, etc.
+            ├── week-4.md
+            ├── week-5.md
+            └── week-6.md
 ```
 
 ---
@@ -326,9 +328,9 @@ rails/requirements/
 - [ ] Note missing business rules
 
 ### Update Documents
-- [ ] Update PHASE-1-TENDERING_SCOPE.md status table
+- [ ] Update Phase-1-Scope.md status table
 - [ ] Update SPRINT-X.md with current status
-- [ ] Update week-Xc.md with vertical slices
+- [ ] Update week-N.md with vertical slices
 - [ ] Add new items to FEEDBACK_LOG.md
 - [ ] Update REQUIREMENTS.md if business rules changed
 
