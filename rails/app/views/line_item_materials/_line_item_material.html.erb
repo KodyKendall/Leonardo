@@ -51,8 +51,8 @@
         </div>
 
         <!-- Line Total -->
-        <div class="col-span-1 text-right font-semibold text-gray-900 text-xs">
-          <%= number_with_precision(line_item_material.line_total, precision: 2, delimiter: ",") %>
+        <div class="col-span-1 text-right font-semibold text-gray-900 text-xs" data-line-item-material-total>
+          R<%= number_with_precision(line_item_material.line_total, precision: 2, delimiter: ",") %>
         </div>
 
         <!-- Action Buttons -->

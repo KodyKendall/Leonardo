@@ -1,4 +1,5 @@
 class LineItemMaterialsController < ApplicationController
+  include ActionView::RecordIdentifier
   before_action :set_line_item_material, only: %i[ show edit update destroy ]
 
   # GET /line_item_materials or /line_item_materials.json
@@ -35,7 +36,12 @@ class LineItemMaterialsController < ApplicationController
               partial: 'line_item_materials/line_item_material',
               locals: { line_item_material: @line_item_material }
             ),
-            turbo_stream.remove("no_materials_message_#{@breakdown&.id}")
+            turbo_stream.remove("no_materials_message_#{@breakdown&.id}"),
+            turbo_stream.update(
+              "material_breakdown_totals_#{@breakdown&.id}",
+              partial: 'line_item_material_breakdowns/totals_section',
+              locals: { line_item_material_breakdown: @breakdown }
+            )
           ]
         end
         format.html do
@@ -58,6 +64,7 @@ class LineItemMaterialsController < ApplicationController
 
   # PATCH/PUT /line_item_materials/1 or /line_item_materials/1.json
   def update
+    @breakdown = @line_item_material.line_item_material_breakdown
     respond_to do |format|
       if @line_item_material.update(line_item_material_params)
         format.turbo_stream do
@@ -68,7 +75,12 @@ class LineItemMaterialsController < ApplicationController
               partial: 'line_item_materials/line_item_material',
               locals: { line_item_material: @line_item_material }
             ),
-            turbo_stream.update("flash", partial: "shared/flash")
+            turbo_stream.update("flash", partial: "shared/flash"),
+            turbo_stream.update(
+              "material_breakdown_totals_#{@breakdown&.id}",
+              partial: 'line_item_material_breakdowns/totals_section',
+              locals: { line_item_material_breakdown: @breakdown }
+            )
           ]
         end
         format.html { redirect_to @line_item_material, notice: "Line item material was successfully updated.", status: :see_other }
@@ -93,6 +105,7 @@ class LineItemMaterialsController < ApplicationController
 
   # DELETE /line_item_materials/1 or /line_item_materials/1.json
   def destroy
+    @breakdown = @line_item_material.line_item_material_breakdown
     @line_item_material.destroy!
 
     respond_to do |format|
@@ -100,7 +113,12 @@ class LineItemMaterialsController < ApplicationController
         flash.now[:notice] = "Material deleted successfully."
         render turbo_stream: [
           turbo_stream.remove("line_item_material_#{@line_item_material.id}"),
-          turbo_stream.update("flash", partial: "shared/flash")
+          turbo_stream.update("flash", partial: "shared/flash"),
+          turbo_stream.update(
+            "material_breakdown_totals_#{@breakdown&.id}",
+            partial: 'line_item_material_breakdowns/totals_section',
+            locals: { line_item_material_breakdown: @breakdown }
+          )
         ]
       end
       format.html { redirect_to line_item_materials_path, notice: "Line item material was successfully destroyed.", status: :see_other }

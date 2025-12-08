@@ -75,7 +75,7 @@
             <!-- Line Total -->
             <div class="col-span-1.5 flex flex-col justify-end">
               <div class="text-xs text-gray-500 font-semibold">Line Total</div>
-              <div class="font-bold text-gray-900 text-sm bg-success bg-opacity-10 p-2 rounded text-center">R<%= number_with_precision(tender_line_item.total_amount, precision: 2) %></div>
+              <div class="font-bold text-gray-900 text-sm p-2 rounded text-center">R<%= number_with_precision(tender_line_item.total_amount, precision: 2, delimiter: ",") %></div>
             </div>
           </div>
 

@@ -1,5 +1,5 @@
 <%= turbo_frame_tag dom_id(line_item_material_breakdown) do %>
-  <div class="card bg-base-100 shadow-md mb-4">
+  <div class="card bg-base-100 shadow-md mb-4" data-controller="line-item-material-breakdown">
     <!-- Header -->
     <div class="card-body pb-3">
       <div class="flex items-center justify-between">
@@ -26,7 +26,9 @@
     <div class="border-t" id="line_item_materials_container_<%= line_item_material_breakdown.id %>">
       <% if line_item_material_breakdown.line_item_materials.any? %>
         <% line_item_material_breakdown.line_item_materials.each do |material| %>
-          <%= render partial: 'line_item_materials/line_item_material', locals: { line_item_material: material } %>
+          <div data-line-item-material-breakdown-target="materialRow">
+            <%= render partial: 'line_item_materials/line_item_material', locals: { line_item_material: material } %>
+          </div>
         <% end %>
       <% else %>
         <div class="px-6 py-4 text-center text-gray-500 text-sm" id="no_materials_message_<%= line_item_material_breakdown.id %>">
@@ -45,25 +47,6 @@
       <% end %>
     </div>
 
-    <!-- Totals Section -->
-    <div class="px-6 py-4 bg-gray-50 border-t space-y-2">
-      <div class="flex justify-between text-sm">
-        <span class="font-semibold text-gray-700">SUBTOTAL:</span>
-        <span class="font-semibold text-gray-900">R<%= number_with_precision(line_item_material_breakdown.subtotal, precision: 2, delimiter: ",") %></span>
-      </div>
-
-      <div class="flex justify-between text-sm">
-        <span class="font-semibold text-gray-700">MARGIN %:</span>
-        <div class="join">
-          <input type="number" placeholder="0" step="0.1" class="input input-bordered input-xs w-20 text-right join-item" disabled />
-          <span class="btn btn-xs no-animation join-item">%</span>
-        </div>
-      </div>
-
-      <div class="flex justify-between text-lg font-bold border-t pt-2">
-        <span class="text-gray-900">TOTAL:</span>
-        <span class="text-blue-600">R<%= number_with_precision(line_item_material_breakdown.total, precision: 2, delimiter: ",") %></span>
-      </div>
-    </div>
+    <%= render 'line_item_material_breakdowns/totals_section', line_item_material_breakdown: line_item_material_breakdown %>
   </div>
 <% end %>
