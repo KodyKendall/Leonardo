@@ -62,9 +62,13 @@ class TendersController < ApplicationController
 
   # POST /tenders/quick_create
   def quick_create
-    @tender = Tender.new(status: 'Draft', tender_name: "New Tender")
+    @tender = Tender.new(status: 'Draft', tender_name: 'Temp')
+    @tender.save  # This triggers generate_e_number
     
-    if @tender.save
+    # Now set tender_name to the generated e_number
+    @tender.update(tender_name: @tender.e_number)
+    
+    if @tender.persisted?
       redirect_to @tender, notice: "Draft tender created. Complete the details below."
     else
       redirect_to tenders_path, alert: "Unable to create tender."
