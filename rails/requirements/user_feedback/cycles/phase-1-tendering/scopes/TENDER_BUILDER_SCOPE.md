@@ -2,10 +2,44 @@
 
 > **VERTICAL SLICE REQUIREMENT**: This scope defines a standalone, demo-able full stack feature covering Tender creation, Tender Line Items, Line Item Rate Build-ups, and Material Breakdown/Material Items. It's independently buildable and demo-able in 2-3 weeks, without depending on BOQ parsing or equipment/crainage calculations.
 
-**Timeline:** 2-3 weeks (one focused development sprint)  
-**Status:** Ready for Development  
-**Document Version:** 1.0  
-**Last Updated:** December 1, 2025
+**Timeline:** 2-3 weeks (one focused development sprint)
+**Status:** MOSTLY COMPLETE - Core UI Done, Calculations Pending
+**Document Version:** 1.1
+**Last Updated:** December 8, 2025
+
+---
+
+## Implementation Status
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| Tender CRUD | ✅ Complete | Create, edit, delete tenders working |
+| E-number Generation | ✅ Complete | Auto-generates E + Year + Sequence |
+| Line Items CRUD | ✅ Complete | Add, edit, delete line items |
+| Material Breakdown UI | ✅ Complete | Add/remove materials, proportion input |
+| Rate Build-up UI | ✅ Complete | 11 rate components with checkboxes |
+| Real-time Calculations | 🟡 Partial | Subtotal calc works, auto-population pending |
+| Material Rate Auto-fill | 🔴 Pending | Needs to pull from material_supplies table |
+| Rounding Logic | 🔴 Pending | R50/R20/R10 rules not implemented |
+| Grand Total Updates | 🟡 Partial | Basic sum works, needs Turbo Stream polish |
+
+### What's Working (Dec 8 Demo)
+- Create tender with project name, client, tender date
+- Add line items with description, unit, quantity, category
+- Expand rate build-up section per line item
+- Add/remove materials with dropdown selection
+- Enter material proportion (currently labeled "Qty" - needs rename)
+- Rate build-up shows all 11 components with include checkboxes
+- Basic subtotal calculation via Stimulus controller
+
+### What's Pending
+- Auto-populate material supply rate from lookup table
+- Auto-populate processing rates from lookup table
+- Apply waste percentage to material rates
+- Apply rounding rules (R50 default)
+- CFLC fabrication auto-zero rule
+- Material proportion validation (must sum to 100%)
+- Rename "Qty" column to "Material Ratio" or "Proportion"
 
 ---
 

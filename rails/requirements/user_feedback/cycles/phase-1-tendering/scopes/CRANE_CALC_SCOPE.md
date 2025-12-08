@@ -1,17 +1,50 @@
-# CRANE EQUIPMENT CALCULATIONS SCOPE - Complete Reformatted Document
-
-This is the complete scope document to be written to `/config/workspace/rails/requirements/CRANE_EQUIPMENT_CALCULATIONS_SCOPE.md`.
-
----
-
 # Crane Equipment Calculations - Vertical Slice Scope
 
 > **VERTICAL SLICE REQUIREMENT**: This scope defines a standalone, demo-able full stack feature covering crane selection, cost calculation, and crainage rate distribution. It's independently buildable and demo-able in 2 weeks, building on existing Tender infrastructure.
 
 **Timeline:** 2 weeks (one focused development sprint)
-**Status:** Ready for Development
-**Document Version:** 2.0
-**Last Updated:** December 2025
+**Status:** IN PROGRESS - UI Built, Calculations Pending
+**Document Version:** 2.1
+**Last Updated:** December 8, 2025
+
+---
+
+## Implementation Status
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| Crane Rates Model | ✅ Complete | 7 sizes × 2 ownership types seeded |
+| Crane Complements Model | ✅ Complete | Model exists, needs seed data verification |
+| On-Site Breakdown Model | ✅ Complete | roof_area, erection_rate, program_duration fields |
+| On-Site Breakdown UI | ✅ Complete | Edit form with inline editing |
+| Tender Crane Selections | ✅ Complete | CRUD for crane selections working |
+| Crane Rates Table Display | ✅ Complete | Shows all crane sizes and rates |
+| Add Crane Selection | ✅ Complete | Add row with crane dropdown |
+| Program Duration Calc | 🟡 Partial | Formula exists, needs auto-update |
+| Crane Complement Lookup | 🔴 Pending | Auto-lookup based on erection rate |
+| Wet Rate Auto-fill | 🔴 Pending | Should auto-populate from crane_rates |
+| Total Cost Calculation | 🔴 Pending | duration × wet_rate × quantity |
+| Crainage Rate/Tonne | 🔴 Pending | total_cost / tonnage with R20 rounding |
+| P&G Integration | 🔴 Pending | Create P&G item from crane costs |
+| Mutual Exclusion | 🔴 Pending | Line items OR P&G toggle |
+
+### What's Working (Dec 8 Demo)
+- On-site breakdown form with roof area and erection rate inputs
+- Crane rates lookup table displayed for reference
+- Add/remove crane selections
+- Crane type dropdown (populated from crane_rates)
+- RSB Owned vs Rental designation
+- Splicing crane toggle and fields
+- Miscellaneous crane toggle and fields
+
+### What's Pending (This Week Priority)
+1. Auto-calculate program duration from roof_area / erection_rate
+2. Auto-lookup crane complement based on erection rate bracket
+3. Auto-populate wet_rate when crane selected
+4. Calculate total_cost = wet_rate × duration × quantity
+5. Sum all crane costs for total crainage
+6. Calculate crainage_rate_per_tonne with R20 rounding
+7. Feed crane costs into P&G or line item rates
 
 ---
 

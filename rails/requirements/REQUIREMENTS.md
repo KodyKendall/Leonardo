@@ -1101,9 +1101,12 @@ line_amount = R326,067
 
 | Rule ID | Rule Name | Description | Formula/Logic |
 |---------|-----------|-------------|---------------|
-| BR-001 | Rate Rounding | All line item rates rounded up to nearest R50 | `CEILING(rate, 50)` |
+| BR-001 | Rate Rounding | All line item rates rounded up to nearest R50 (default) | `CEILING(rate, 50)` |
 | BR-002 | Crainage Rounding | Crainage rate rounded to nearest R20 | `CEILING(rate, 20)` |
 | BR-003 | Cherry Picker Rounding | Cherry picker rate rounded to nearest R10 | `CEILING(rate, 10)` |
+| BR-003a | Corrosion Protection Rounding | Corrosion protection items rounded to nearest R10 or R20 | `CEILING(rate, 10)` or `CEILING(rate, 20)` |
+| BR-003b | Chemical Anchor Rounding | Chemical anchor items rounded to nearest R10 or R20 | `CEILING(rate, 10)` or `CEILING(rate, 20)` |
+| BR-003c | Mechanical Anchor Rounding | Mechanical anchor items rounded to nearest R10 or R20 | `CEILING(rate, 10)` or `CEILING(rate, 20)` |
 | BR-004 | Waste Application | Waste percentage applied to base material supply rate before aggregation | `base_rate  (1 + waste_percentage)` |
 | BR-005 | Toggle Application | Boolean flags multiply rate by 0 or 1 | `rate  include_flag` |
 | BR-006 | Margin Calculation | Applied to subtotal before rounding | `subtotal  (1 + margin_pct)` |

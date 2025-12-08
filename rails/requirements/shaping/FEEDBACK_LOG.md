@@ -71,7 +71,7 @@ User feedback, pain points, bugs, and UX issues.
 
 **Context:** Current system rounds all rates to nearest R50. However, for certain categories like:
 - Corrosion Protection line items
-- Chemical anchor line items  
+- Chemical anchor line items
 - Mechanical anchor line items
 
 ...a smaller rounding increment (R10 or R20) would be more appropriate for competitive pricing.
@@ -83,5 +83,52 @@ User feedback, pain points, bugs, and UX issues.
 **Desired outcome:** Flexible rounding that reflects business requirements without manual override of every line item
 
 **Category:** Feature Request - Business Rules
+
+---
+
+## 2025-12-08 - Bug: Page Refresh on Save Changes
+
+**Feedback:** Clicking "Save Changes" (green checkmark) causes a full page refresh, losing user context
+
+**Context:** In the tender builder, when editing line items or material breakdowns:
+- User makes edits to a line item
+- Clicks the green checkmark to save
+- Entire page refreshes, scrolling user back to top
+- User loses context of what they were working on
+
+**Related:** Same issue as "Add Material" refresh bug
+
+**Desired outcome:** Save operation should use Turbo Streams to update only the relevant portion without full page reload
+
+**Category:** Bug - UX/Turbo Streams
+
+---
+
+## 2025-12-08 - Enhancement: RSB Capitalization
+
+**Feedback:** "Rsb owned" should be "RSB Owned" in crane ownership dropdown
+
+**Context:** In the crane selection dropdown, the ownership type displays as "Rsb owned" instead of properly capitalized "RSB Owned"
+
+**Desired outcome:** Correct capitalization to "RSB Owned" throughout the application
+
+**Category:** Enhancement - UI Polish
+
+---
+
+## 2025-12-08 - Feature Request: Leonardo Direct Changes
+
+**Feedback:** Richard asked if Leonardo could make small UI changes directly (like fixing capitalization)
+
+**Context:** During demo, Richard asked if he could tell Leonardo to fix the RSB capitalization and have it apply immediately. Currently this is disabled for safety.
+
+**Current Status:** Feature disabled - Leonardo only logs feedback
+
+**Future Consideration:**
+- Enable for small, safe changes (text labels, capitalization)
+- Keep disabled for structural changes
+- Implement dev/prod environment separation first
+
+**Category:** Feature Request - Future Phase
 
 ---
