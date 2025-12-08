@@ -15,9 +15,10 @@ class LineItemMaterial < ApplicationRecord
   validates :rate, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :quantity, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
-  # Calculate line total: quantity × rate
+  # Calculate line total: rate * (1 + margin%) * quantity
   def line_total
     return 0 unless quantity.present? && rate.present?
-    (quantity * rate).round(2)
+    margin_percent = waste_percentage.to_f / 100
+    (quantity * rate * (1 + margin_percent)).round(2)
   end
 end
