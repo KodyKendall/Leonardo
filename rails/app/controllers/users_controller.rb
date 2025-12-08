@@ -49,11 +49,17 @@ class UsersController < ApplicationController
 
   # DELETE /users/1 or /users/1.json
   def destroy
-    @user.destroy!
-
-    respond_to do |format|
-      format.html { redirect_to users_path, notice: "User was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
+    begin
+      @user.destroy!
+      respond_to do |format|
+        format.html { redirect_to users_path, notice: "User was successfully destroyed.", status: :see_other }
+        format.json { head :no_content }
+      end
+    rescue ActiveRecord::RecordNotDestroyed => e
+      respond_to do |format|
+        format.html { redirect_to users_path, alert: "Cannot delete user: This user has associated records (projects, claims, or BOQs). Please reassign or remove those records first.", status: :see_other }
+        format.json { render json: { error: "Cannot delete user with associated records" }, status: :unprocessable_entity }
+      end
     end
   end
 

@@ -13,27 +13,6 @@ admin_user = User.find_or_create_by!(email: 'kody@llamapress.ai') do |user|
   user.admin = true
 end
 
-pm1 = User.find_or_create_by!(email: 'john.smith@company.com') do |user|
-  user.name = 'John Smith'
-  user.password = '123456'
-  user.password_confirmation = '123456'
-  user.role = 'project_manager'
-end
-
-pm2 = User.find_or_create_by!(email: 'sarah.jones@company.com') do |user|
-  user.name = 'Sarah Jones'
-  user.password = '123456'
-  user.password_confirmation = '123456'
-  user.role = 'project_manager'
-end
-
-approver = User.find_or_create_by!(email: 'mark.wilson@company.com') do |user|
-  user.name = 'Mark Wilson'
-  user.password = '123456'
-  user.password_confirmation = '123456'
-  user.role = 'approver'
-end
-
 rich = User.find_or_create_by!(email: 'rspencer@rsbcontracts.com') do |user|
   user.name = 'Rich Spencer'
   user.password = 'Rich456'
@@ -116,7 +95,7 @@ project1 = Project.find_or_create_by!(rsb_number: 'RSB-2024-001') do |p|
   p.project_end_date = Date.new(2024, 12, 31)
   p.budget_total = 500000.00
   p.actual_spend = 250000.00
-  p.created_by = pm1
+  p.created_by = rich
 end
 
 project2 = Project.find_or_create_by!(rsb_number: 'RSB-2024-002') do |p|
@@ -126,7 +105,7 @@ project2 = Project.find_or_create_by!(rsb_number: 'RSB-2024-002') do |p|
   p.project_end_date = Date.new(2025, 2, 28)
   p.budget_total = 1200000.00
   p.actual_spend = 450000.00
-  p.created_by = pm2
+  p.created_by = rich
 end
 
 project3 = Project.find_or_create_by!(rsb_number: 'RSB-2024-003') do |p|
@@ -136,7 +115,7 @@ project3 = Project.find_or_create_by!(rsb_number: 'RSB-2024-003') do |p|
   p.project_end_date = Date.new(2024, 9, 30)
   p.budget_total = 180000.00
   p.actual_spend = 0.00
-  p.created_by = pm1
+  p.created_by = rich
 end
 
 # Update tenders with their awarded projects
@@ -209,8 +188,8 @@ vo1 = VariationOrder.find_or_create_by!(vo_number: 'VO-2024-001') do |vo|
   vo.vo_status = 'approved'
   vo.vo_amount = 25000.00
   vo.description = 'Additional structural reinforcement required by client'
-  vo.created_by = pm1
-  vo.approved_by = approver
+  vo.created_by = rich
+  vo.approved_by = rich
   vo.approver_notes = 'Approved. Client acceptance required before work commences.'
   vo.approved_at = 5.days.ago
 end
@@ -220,7 +199,7 @@ vo2 = VariationOrder.find_or_create_by!(vo_number: 'VO-2024-002') do |vo|
   vo.vo_status = 'pending'
   vo.vo_amount = 15000.00
   vo.description = 'Expedited delivery of materials'
-  vo.created_by = pm1
+  vo.created_by = rich
 end
 
 vo3 = VariationOrder.find_or_create_by!(vo_number: 'VO-2024-003') do |vo|
@@ -228,8 +207,8 @@ vo3 = VariationOrder.find_or_create_by!(vo_number: 'VO-2024-003') do |vo|
   vo.vo_status = 'approved'
   vo.vo_amount = 45000.00
   vo.description = 'Additional fabrication capacity for accelerated timeline'
-  vo.created_by = pm2
-  vo.approved_by = approver
+  vo.created_by = rich
+  vo.approved_by = rich
   vo.approver_notes = 'Approved with condition that schedule is maintained.'
   vo.approved_at = 10.days.ago
 end
@@ -242,7 +221,7 @@ claim1 = Claim.find_or_create_by!(claim_number: 'CLM-2024-001') do |c|
   c.total_claimed = 85000.00
   c.total_paid = 0.00
   c.amount_due = 85000.00
-  c.submitted_by = pm1
+  c.submitted_by = rich
   c.notes = 'First progress claim for works completed in April'
 end
 
@@ -253,7 +232,7 @@ claim2 = Claim.find_or_create_by!(claim_number: 'CLM-2024-002') do |c|
   c.total_claimed = 95000.00
   c.total_paid = 95000.00
   c.amount_due = 0.00
-  c.submitted_by = pm1
+  c.submitted_by = rich
   c.notes = 'Second progress claim for works completed in May'
 end
 
@@ -264,7 +243,7 @@ claim3 = Claim.find_or_create_by!(claim_number: 'CLM-2024-003') do |c|
   c.total_claimed = 150000.00
   c.total_paid = 0.00
   c.amount_due = 150000.00
-  c.submitted_by = pm2
+  c.submitted_by = rich
   c.notes = 'First progress claim for fabrication works'
 end
 
@@ -600,7 +579,7 @@ boq1 = Boq.find_or_create_by!(boq_name: 'ABC High-Rise - BOQ', file_name: 'abc_h
   b.client_reference = 'ABC-2024-REF-001'
   b.qs_name = 'John Smith'
   b.received_date = Date.new(2024, 1, 10)
-  b.uploaded_by = pm1
+  b.uploaded_by = rich
   b.notes = 'Initial BOQ for high-rise commercial building'
   b.header_row_index = 1
 end
@@ -612,7 +591,7 @@ boq2 = Boq.find_or_create_by!(boq_name: 'XYZ Industrial - BOQ', file_name: 'xyz_
   b.client_reference = 'XYZ-2024-REF-002'
   b.qs_name = 'Sarah Jones'
   b.received_date = Date.new(2024, 2, 15)
-  b.uploaded_by = pm2
+  b.uploaded_by = rich
   b.notes = 'Steel fabrication BOQ for industrial complex'
   b.header_row_index = 1
 end
@@ -624,7 +603,7 @@ boq3 = Boq.find_or_create_by!(boq_name: 'Smart City Office - BOQ', file_name: 's
   b.client_reference = 'SC-2024-REF-003'
   b.qs_name = 'Mark Wilson'
   b.received_date = Date.new(2024, 3, 5)
-  b.uploaded_by = pm1
+  b.uploaded_by = rich
   b.notes = 'Office complex BOQ'
   b.header_row_index = 1
 end
@@ -636,7 +615,7 @@ boq4 = Boq.find_or_create_by!(boq_name: 'Heritage Renovations - BOQ', file_name:
   b.client_reference = 'HR-2024-REF-004'
   b.qs_name = 'Sarah Jones'
   b.received_date = Date.new(2024, 4, 1)
-  b.uploaded_by = pm2
+  b.uploaded_by = rich
   b.notes = 'Heritage building renovation BOQ'
   b.header_row_index = 1
 end
