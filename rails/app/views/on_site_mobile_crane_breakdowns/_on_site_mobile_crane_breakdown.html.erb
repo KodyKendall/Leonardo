@@ -76,18 +76,10 @@
         <p class="text-xs text-gray-500 mt-1">Auto-calculated from roof area ÷ erection rate</p>
       </div>
 
-      <!-- Ownership Type -->
-      <div class="form-control">
-        <label class="label" for="on_site_mobile_crane_breakdown_ownership_type">
-          <span class="label-text font-medium">Ownership type</span>
-        </label>
-        <%= f.select :ownership_type, ["rsb_owned", "rental"], {}, class: "select select-bordered read-only-field", readonly: true, data: { "on-site-mobile-crane-breakdown-target": "field" } %>
-      </div>
-
       <!-- Splicing Crane Required -->
-      <div class="form-control">
+      <div class="form-control my-8">
         <label class="label cursor-pointer">
-          <span class="label-text font-medium">Splicing crane required?</span>
+          <span class="label-text font-bold text-lg">Splicing crane required?</span>
           <%= f.check_box :splicing_crane_required, { class: "checkbox checkbox-primary", data: { "on-site-mobile-crane-breakdown-target": "field" } }, disabled: true %>
         </label>
       </div>
@@ -109,9 +101,9 @@
       </div>
 
       <!-- Misc Crane Required -->
-      <div class="form-control">
+      <div class="form-control my-8">
         <label class="label cursor-pointer">
-          <span class="label-text font-medium">Misc crane required?</span>
+          <span class="label-text font-bold text-lg">Misc crane required?</span>
           <%= f.check_box :misc_crane_required, { class: "checkbox checkbox-primary", data: { "on-site-mobile-crane-breakdown-target": "field" } }, disabled: true %>
         </label>
       </div>
