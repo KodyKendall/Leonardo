@@ -1,3 +1,15 @@
+<style>
+  /* Hide number input spinners */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+</style>
+
 <%= turbo_frame_tag "line_item_material_#{line_item_material.id}" do %>
   <%= form_with(model: line_item_material, method: :patch, class: "contents", data: {
     controller: "dirty-form",
@@ -14,10 +26,10 @@
               class: "select select-bordered select-xs w-full text-xs" %>
         </div>
 
-        <!-- Thickness Field -->
+        <!-- Waste % Field -->
         <div class="col-span-2">
-          <%= form.number_field :thickness,
-              placeholder: "Thickness",
+          <%= form.number_field :waste_percentage,
+              placeholder: "Waste %",
               step: 0.01,
               class: "input input-bordered input-xs w-full text-right text-xs" %>
         </div>

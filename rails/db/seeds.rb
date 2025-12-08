@@ -450,7 +450,7 @@ LineItemMaterial.find_or_create_by!(
   tender_line_item_id: line_item_1.id,
   material_supply_id: material_supplies[3].id
 ) do |m|
-  m.thickness = 12.5
+  m.waste_percentage = 7.50
   m.rate = 8200.00
   m.quantity = 30.0
   m.proportion = 0.65
@@ -461,7 +461,7 @@ LineItemMaterial.find_or_create_by!(
   tender_line_item_id: line_item_1.id,
   material_supply_id: material_supplies[4].id
 ) do |m|
-  m.thickness = 15.0
+  m.waste_percentage = 7.50
   m.rate = 8800.00
   m.quantity = 15.5
   m.proportion = 0.35
@@ -476,7 +476,7 @@ LineItemMaterial.find_or_create_by!(
   tender_line_item_id: line_item_2.id,
   material_supply_id: material_supplies[3].id
 ) do |m|
-  m.thickness = 20.0
+  m.waste_percentage = 7.50
   m.rate = 9200.00
   m.quantity = 28.3
   m.proportion = 1.0
@@ -491,7 +491,7 @@ LineItemMaterial.find_or_create_by!(
   tender_line_item_id: line_item_3.id,
   material_supply_id: material_supplies[0].id
 ) do |m|
-  m.thickness = 0.0
+  m.waste_percentage = 0.0
   m.rate = 42.00
   m.quantity = 500
   m.proportion = 1.0
