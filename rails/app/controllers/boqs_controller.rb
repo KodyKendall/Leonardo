@@ -74,11 +74,7 @@ class BoqsController < ApplicationController
     @boq.csv_file.attach(file)
 
     if @boq.save
-      if @tender
-        redirect_to tender_path(@tender), notice: "BOQ uploaded successfully."
-      else
-        redirect_to @boq, notice: "BOQ uploaded successfully. Ready to parse."
-      end
+      redirect_to @boq, notice: "BOQ uploaded successfully. Ready to parse."
     else
       if @tender
         render :new, status: :unprocessable_entity
