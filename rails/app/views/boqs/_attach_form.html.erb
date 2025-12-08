@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const searchInput = document.getElementById('boq_search_input');
   const resultsContainer = document.getElementById('boq_search_results');
   const refreshBtn = document.getElementById('refresh_boqs_btn');
+  const modal = document.getElementById('boq_attach_modal');
   let debounceTimer;
 
   function loadBoqs(query = '') {
@@ -124,6 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (refreshBtn) {
     refreshBtn.addEventListener('click', function(e) {
       e.preventDefault();
+      e.stopPropagation();
       searchInput.value = '';
       loadBoqs('');
     });
@@ -140,8 +142,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Global function for button trigger
+  // Global function for button trigger - loads BOQs
   window.loadBoqsForAttach = function() {
+    console.log('Loading BOQs for attach...');
     loadBoqs('');
   };
 
