@@ -32,7 +32,7 @@ elmari = User.find_or_create_by!(email: 'elmari@rsbcontracts.com') do |user|
   user.name = 'Elmari'
   user.password = 'Elmari456'
   user.password_confirmation = 'Elmari456'
-  user.role = 'project_manager'
+  user.role = 'office'
 end
 
 # ===== BUDGET CATEGORIES =====
