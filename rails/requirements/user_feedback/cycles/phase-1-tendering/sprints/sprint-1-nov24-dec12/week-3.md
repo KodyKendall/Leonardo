@@ -1,4 +1,4 @@
-# Sprint 1, Week 1c: BOQ Upload, Parsing & Crane Calculations (Dec 8-12)
+# Sprint 1, Week 3: BOQ Upload, Parsing & Crane Calculations (Dec 8-12)
 
 **Duration:** 1 week
 **Focus:** BOQ upload, AI parsing, crane breakdown, rate calculations foundation

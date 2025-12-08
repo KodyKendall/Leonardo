@@ -1,4 +1,4 @@
-# Sprint 2, Week 2c: TBD
+# Sprint 2, Week 6: TBD
 
 **Duration:** 1 week
 **Focus:** TBD
