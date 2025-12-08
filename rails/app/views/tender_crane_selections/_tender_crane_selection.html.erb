@@ -16,13 +16,16 @@
         <% end %>
       </div>
 
-      <%# Crane Rate ID (read-only) - Link to Crane Rate %>
+      <%# Crane Rate ID (Dropdown) %>
       <div class="form-group flex-1">
-        <% if tender_crane_selection.crane_rate %>
-          <%= link_to tender_crane_selection.crane_rate.size, crane_rate_path(tender_crane_selection.crane_rate), class: "link link-primary text-sm font-medium", data: { turbo: false } %>
-        <% else %>
-          <span class="text-gray-400 text-sm">—</span>
-        <% end %>
+        <%= f.collection_select :crane_rate_id, 
+          CraneRate.all.order(:size, :ownership_type),
+          :id,
+          lambda { |rate| "#{rate.size} (#{rate.ownership_type.titleize})" },
+          { prompt: "Select crane..." },
+          class: "select select-bordered select-sm w-full readonly:bg-gray-100",
+          readonly: true,
+          data: { inline_edit_target: "field" } %>
       </div>
 
       <%# Purpose (Editable) %>
