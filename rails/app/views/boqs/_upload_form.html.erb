@@ -17,23 +17,13 @@
       <div class="form-control">
         <%= form.label :boq_name, "BOQ Name", class: "label" %>
         <div class="label-text text-sm text-gray-600 mb-2">Give this BOQ a descriptive name</div>
-        <%= form.text_field :boq_name, placeholder: "e.g., Project XYZ - BOQ v1", class: "input input-bordered w-full" %>
+        <%= form.text_field :boq_name, placeholder: "e.g., Project XYZ - BOQ v1", class: "input input-bordered w-full", id: "boq_name_field", value: "#{@tender.tender_name} - BOQ" %>
       </div>
 
       <div class="form-control">
         <%= form.label :csv_file, "CSV File", class: "label" %>
         <div class="label-text text-sm text-gray-600 mb-2">Upload a CSV file with your BOQ data</div>
         <%= form.file_field :csv_file, accept: ".csv", class: "file-input file-input-bordered w-full", required: true %>
-      </div>
-
-      <div class="form-control">
-        <%= form.label :client_name, "Client Name", class: "label" %>
-        <%= form.text_field :client_name, placeholder: "Optional", class: "input input-bordered w-full" %>
-      </div>
-
-      <div class="form-control">
-        <%= form.label :qs_name, "QS Name", class: "label" %>
-        <%= form.text_field :qs_name, placeholder: "Optional", class: "input input-bordered w-full" %>
       </div>
 
       <div class="modal-action">
