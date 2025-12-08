@@ -21,19 +21,16 @@
 
           <!-- All Fields in One Row -->
           <div class="grid grid-cols-12 gap-2">
-            <!-- Item # -->
+            <!-- Page -->
             <div class="col-span-1">
-              <label class="label label-text text-xs font-semibold">Item #</label>
-              <%= f.text_field :item_number, class: "input input-sm input-bordered w-full" %>
+              <label class="label label-text text-xs font-semibold">Page</label>
+              <%= f.text_field :page_number, class: "input input-sm input-bordered w-full" %>
             </div>
 
-            <!-- Category -->
-            <div class="col-span-2">
-              <label class="label label-text text-xs font-semibold">Category</label>
-              <%= f.select :section_category,
-                  options_for_select(TenderLineItem.section_categories.keys, tender_line_item.section_category),
-                  { include_blank: "Select..." },
-                  class: "select select-sm select-bordered w-full" %>
+            <!-- Item # -->
+            <div class="col-span-1">
+              <label class="label label-text text-xs font-semibold">Item</label>
+              <%= f.text_field :item_number, class: "input input-sm input-bordered w-full" %>
             </div>
 
             <!-- Description -->
@@ -42,10 +39,10 @@
               <%= f.text_field :item_description, class: "input input-sm input-bordered w-full" %>
             </div>
 
-            <!-- Notes -->
-            <div class="col-span-2">
-              <label class="label label-text text-xs font-semibold">Notes</label>
-              <%= f.text_field :notes, class: "input input-sm input-bordered w-full" %>
+            <!-- Unit -->
+            <div class="col-span-1">
+              <label class="label label-text text-xs font-semibold">Unit</label>
+              <%= f.text_field :unit_of_measure, class: "input input-sm input-bordered w-full" %>
             </div>
 
             <!-- Quantity -->
@@ -54,22 +51,10 @@
               <%= f.number_field :quantity, step: 0.01, min: 0, class: "input input-sm input-bordered w-full" %>
             </div>
 
-            <!-- Unit -->
-            <div class="col-span-1">
-              <label class="label label-text text-xs font-semibold">Unit</label>
-              <%= f.text_field :unit_of_measure, class: "input input-sm input-bordered w-full" %>
-            </div>
-
             <!-- Rate -->
             <div class="col-span-1.5">
-              <label class="label label-text text-xs font-semibold">Rate (R)</label>
+              <label class="label label-text text-xs font-semibold">Rate</label>
               <%= f.number_field :rate, step: 0.01, min: 0, class: "input input-sm input-bordered w-full" %>
-            </div>
-
-            <!-- Page -->
-            <div class="col-span-1">
-              <label class="label label-text text-xs font-semibold">Page</label>
-              <%= f.text_field :page_number, class: "input input-sm input-bordered w-full" %>
             </div>
 
             <!-- Line Total -->
