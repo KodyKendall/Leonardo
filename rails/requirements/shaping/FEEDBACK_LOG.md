@@ -4,7 +4,7 @@ User feedback, pain points, bugs, and UX issues.
 
 ---
 
-## 2025-12-19 - Bug: Missing Route for Crane Selection
+## 2025-12-01 - Bug: Missing Route for Crane Selection
 
 **Feedback:** NoMethodError when viewing tender crane selections builder page
 
@@ -22,7 +22,7 @@ User feedback, pain points, bugs, and UX issues.
 
 ---
 
-## 2025-12-23 - Bug: BOQ Completion Message Inaccurate
+## 2025-12-08 - Bug: BOQ Completion Message Inaccurate
 
 **Feedback:** Message displayed "17 line items ready to be transferred" but the actual BOQ contained 25 line items
 
@@ -36,7 +36,7 @@ User feedback, pain points, bugs, and UX issues.
 
 ---
 
-## 2025-12-23 - Pain Point: BOQ Category Allocation Unclear
+## 2025-12-08 - Pain Point: BOQ Category Allocation Unclear
 
 **Feedback:** Elmarie does not always understand how to allocate the correct category for each line item during BOQ parsing
 
@@ -53,7 +53,7 @@ User feedback, pain points, bugs, and UX issues.
 
 ---
 
-## 2025-12-23 - UX Issue: Material Split Column Header "Qty" is Confusing
+## 2025-12-08 - UX Issue: Material Split Column Header "Qty" is Confusing
 
 **Feedback:** Column header "Qty" for the material split/breakdown is misleading and unclear
 
@@ -65,7 +65,7 @@ User feedback, pain points, bugs, and UX issues.
 
 ---
 
-## 2025-12-23 - Feature Request: Category-Based Rounding Rules
+## 2025-12-08 - Feature Request: Category-Based Rounding Rules
 
 **Feedback:** Need ability to use finer rounding increments (R10 or R20) for specific line item categories, not just the default R50
 
