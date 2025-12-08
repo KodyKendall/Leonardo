@@ -38,30 +38,30 @@
 
   <div class="my-5 flex items-center gap-2">
     <%= form.label :splicing_crane_required %>
-    <%= form.check_box :splicing_crane_required, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": on_site_mobile_crane_breakdown.errors[:splicing_crane_required].none?, "border-red-400 focus:outline-red-600": on_site_mobile_crane_breakdown.errors[:splicing_crane_required].any?}] %>
+    <%= form.check_box :splicing_crane_required, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": on_site_mobile_crane_breakdown.errors[:splicing_crane_required].none?, "border-red-400 focus:outline-red-600": on_site_mobile_crane_breakdown.errors[:splicing_crane_required].any?}], id: "splicing_crane_required_checkbox" %>
   </div>
 
-  <div class="my-5">
+  <div class="my-5" id="splicing_crane_size_field" style="<%= 'display: none;' unless on_site_mobile_crane_breakdown.splicing_crane_required %>">
     <%= form.label :splicing_crane_size %>
     <%= form.text_field :splicing_crane_size, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": on_site_mobile_crane_breakdown.errors[:splicing_crane_size].none?, "border-red-400 focus:outline-red-600": on_site_mobile_crane_breakdown.errors[:splicing_crane_size].any?}] %>
   </div>
 
-  <div class="my-5">
+  <div class="my-5" id="splicing_crane_days_field" style="<%= 'display: none;' unless on_site_mobile_crane_breakdown.splicing_crane_required %>">
     <%= form.label :splicing_crane_days %>
     <%= form.number_field :splicing_crane_days, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": on_site_mobile_crane_breakdown.errors[:splicing_crane_days].none?, "border-red-400 focus:outline-red-600": on_site_mobile_crane_breakdown.errors[:splicing_crane_days].any?}] %>
   </div>
 
   <div class="my-5 flex items-center gap-2">
     <%= form.label :misc_crane_required %>
-    <%= form.check_box :misc_crane_required, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": on_site_mobile_crane_breakdown.errors[:misc_crane_required].none?, "border-red-400 focus:outline-red-600": on_site_mobile_crane_breakdown.errors[:misc_crane_required].any?}] %>
+    <%= form.check_box :misc_crane_required, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": on_site_mobile_crane_breakdown.errors[:misc_crane_required].none?, "border-red-400 focus:outline-red-600": on_site_mobile_crane_breakdown.errors[:misc_crane_required].any?}], id: "misc_crane_required_checkbox" %>
   </div>
 
-  <div class="my-5">
+  <div class="my-5" id="misc_crane_size_field" style="<%= 'display: none;' unless on_site_mobile_crane_breakdown.misc_crane_required %>">
     <%= form.label :misc_crane_size %>
     <%= form.text_field :misc_crane_size, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": on_site_mobile_crane_breakdown.errors[:misc_crane_size].none?, "border-red-400 focus:outline-red-600": on_site_mobile_crane_breakdown.errors[:misc_crane_size].any?}] %>
   </div>
 
-  <div class="my-5">
+  <div class="my-5" id="misc_crane_days_field" style="<%= 'display: none;' unless on_site_mobile_crane_breakdown.misc_crane_required %>">
     <%= form.label :misc_crane_days %>
     <%= form.number_field :misc_crane_days, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": on_site_mobile_crane_breakdown.errors[:misc_crane_days].none?, "border-red-400 focus:outline-red-600": on_site_mobile_crane_breakdown.errors[:misc_crane_days].any?}] %>
   </div>
@@ -70,3 +70,31 @@
     <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
   </div>
 <% end %>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const splicingCheckbox = document.getElementById('splicing_crane_required_checkbox');
+    const splicingSizeField = document.getElementById('splicing_crane_size_field');
+    const splicingDaysField = document.getElementById('splicing_crane_days_field');
+    
+    const miscCheckbox = document.getElementById('misc_crane_required_checkbox');
+    const miscSizeField = document.getElementById('misc_crane_size_field');
+    const miscDaysField = document.getElementById('misc_crane_days_field');
+    
+    // Splicing crane toggle
+    if (splicingCheckbox) {
+      splicingCheckbox.addEventListener('change', function() {
+        splicingSizeField.style.display = this.checked ? 'block' : 'none';
+        splicingDaysField.style.display = this.checked ? 'block' : 'none';
+      });
+    }
+    
+    // Misc crane toggle
+    if (miscCheckbox) {
+      miscCheckbox.addEventListener('change', function() {
+        miscSizeField.style.display = this.checked ? 'block' : 'none';
+        miscDaysField.style.display = this.checked ? 'block' : 'none';
+      });
+    }
+  });
+</script>

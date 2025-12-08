@@ -80,12 +80,12 @@
       <div class="form-control my-8">
         <label class="label cursor-pointer">
           <span class="label-text font-bold text-lg">Splicing crane required?</span>
-          <%= f.check_box :splicing_crane_required, { class: "checkbox checkbox-primary", data: { "on-site-mobile-crane-breakdown-target": "field" } }, disabled: true %>
+          <%= f.check_box :splicing_crane_required, { class: "checkbox checkbox-primary", data: { "on-site-mobile-crane-breakdown-target": "field" }, id: "splicing_crane_required_checkbox" }, disabled: true %>
         </label>
       </div>
 
       <!-- Splicing Crane Size -->
-      <div class="form-control">
+      <div class="form-control" id="splicing_crane_size_field" style="<%= 'display: none;' unless on_site_mobile_crane_breakdown.splicing_crane_required %>">
         <label class="label" for="on_site_mobile_crane_breakdown_splicing_crane_size">
           <span class="label-text font-medium">Splicing crane size</span>
         </label>
@@ -93,7 +93,7 @@
       </div>
 
       <!-- Splicing Crane Days -->
-      <div class="form-control">
+      <div class="form-control" id="splicing_crane_days_field" style="<%= 'display: none;' unless on_site_mobile_crane_breakdown.splicing_crane_required %>">
         <label class="label" for="on_site_mobile_crane_breakdown_splicing_crane_days">
           <span class="label-text font-medium">Splicing crane days</span>
         </label>
@@ -104,12 +104,12 @@
       <div class="form-control my-8">
         <label class="label cursor-pointer">
           <span class="label-text font-bold text-lg">Misc crane required?</span>
-          <%= f.check_box :misc_crane_required, { class: "checkbox checkbox-primary", data: { "on-site-mobile-crane-breakdown-target": "field" } }, disabled: true %>
+          <%= f.check_box :misc_crane_required, { class: "checkbox checkbox-primary", data: { "on-site-mobile-crane-breakdown-target": "field" }, id: "misc_crane_required_checkbox" }, disabled: true %>
         </label>
       </div>
 
       <!-- Misc Crane Size -->
-      <div class="form-control">
+      <div class="form-control" id="misc_crane_size_field" style="<%= 'display: none;' unless on_site_mobile_crane_breakdown.misc_crane_required %>">
         <label class="label" for="on_site_mobile_crane_breakdown_misc_crane_size">
           <span class="label-text font-medium">Misc crane size</span>
         </label>
@@ -117,7 +117,7 @@
       </div>
 
       <!-- Misc Crane Days -->
-      <div class="form-control">
+      <div class="form-control" id="misc_crane_days_field" style="<%= 'display: none;' unless on_site_mobile_crane_breakdown.misc_crane_required %>">
         <label class="label" for="on_site_mobile_crane_breakdown_misc_crane_days">
           <span class="label-text font-medium">Misc crane days</span>
         </label>
@@ -138,3 +138,31 @@
     <% end %>
   </div>
 <% end %>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const splicingCheckbox = document.getElementById('splicing_crane_required_checkbox');
+    const splicingSizeField = document.getElementById('splicing_crane_size_field');
+    const splicingDaysField = document.getElementById('splicing_crane_days_field');
+    
+    const miscCheckbox = document.getElementById('misc_crane_required_checkbox');
+    const miscSizeField = document.getElementById('misc_crane_size_field');
+    const miscDaysField = document.getElementById('misc_crane_days_field');
+    
+    // Splicing crane toggle
+    if (splicingCheckbox) {
+      splicingCheckbox.addEventListener('change', function() {
+        splicingSizeField.style.display = this.checked ? 'block' : 'none';
+        splicingDaysField.style.display = this.checked ? 'block' : 'none';
+      });
+    }
+    
+    // Misc crane toggle
+    if (miscCheckbox) {
+      miscCheckbox.addEventListener('change', function() {
+        miscSizeField.style.display = this.checked ? 'block' : 'none';
+        miscDaysField.style.display = this.checked ? 'block' : 'none';
+      });
+    }
+  });
+</script>
