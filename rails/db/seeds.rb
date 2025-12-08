@@ -17,14 +17,15 @@ rich = User.find_or_create_by!(email: 'rspencer@rsbcontracts.com') do |user|
   user.name = 'Rich Spencer'
   user.password = 'Rich456'
   user.password_confirmation = 'Rich456'
-  user.role = 'project_manager'
+  user.role = 'admin'
+  user.admin = true
 end
 
 demi = User.find_or_create_by!(email: 'demi@rsbcontracts.com') do |user|
   user.name = 'Demi'
   user.password = 'Demi456'
   user.password_confirmation = 'Demi456'
-  user.role = 'project_manager'
+  user.role = 'quantity_surveyor'
 end
 
 elmari = User.find_or_create_by!(email: 'elmari@rsbcontracts.com') do |user|
