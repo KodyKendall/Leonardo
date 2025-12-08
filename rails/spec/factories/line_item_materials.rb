@@ -1,7 +1,8 @@
 FactoryBot.define do
   factory :line_item_material do
-    tender_line_item { nil }
-    material_supply { nil }
+    line_item_material_breakdown
+    tender_line_item
+    material_supply
     proportion { "9.99" }
   end
 end

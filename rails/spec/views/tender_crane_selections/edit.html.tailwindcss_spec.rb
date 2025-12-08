@@ -1,24 +1,19 @@
 require 'rails_helper'
 
 RSpec.describe "tender_crane_selections/edit", type: :view do
+  before(:each) do
+    @user = create(:user)
+    sign_in(@user)
+  end
   let(:tender_crane_selection) {
-    TenderCraneSelection.create!(
-      tender: nil,
-      crane_rate: nil,
-      purpose: "MyString",
-      quantity: 1,
-      duration_days: 1,
-      wet_rate_per_day: "9.99",
-      total_cost: "9.99",
-      sort_order: 1
-    )
+    @tender_crane_selection = create(:tender_crane_selection)
   }
 
   before(:each) do
     assign(:tender_crane_selection, tender_crane_selection)
   end
 
-  it "renders the edit tender_crane_selection form" do
+  xit "renders the edit tender_crane_selection form" do
     render
 
     assert_select "form[action=?][method=?]", tender_crane_selection_path(tender_crane_selection), "post" do

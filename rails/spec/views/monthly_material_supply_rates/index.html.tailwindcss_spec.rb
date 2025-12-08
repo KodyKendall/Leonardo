@@ -2,9 +2,11 @@ require 'rails_helper'
 
 RSpec.describe "monthly_material_supply_rates/index", type: :view do
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:monthly_material_supply_rates, [
-      MonthlyMaterialSupplyRate.create!(),
-      MonthlyMaterialSupplyRate.create!()
+      create(:monthly_material_supply_rate),
+      create(:monthly_material_supply_rate)
     ])
   end
 

@@ -1,9 +1,9 @@
 FactoryBot.define do
   factory :material_supply_rate do
-    rate { "9.99" }
-    unit { "MyString" }
-    material_supply { nil }
-    supplier { nil }
-    monthly_material_supply_rate { nil }
+    material_supply
+    supplier
+    monthly_material_supply_rate
+    unit { "tonne" }
+    rate { 1500.0 }
   end
 end

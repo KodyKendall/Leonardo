@@ -1,20 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe "claims/edit", type: :view do
-  let(:claim) {
-    Claim.create!(
-      claim_number: "MyString",
-      project: nil,
-      claim_status: "MyString",
-      total_claimed: "9.99",
-      total_paid: "9.99",
-      amount_due: "9.99",
-      submitted_by: nil,
-      notes: "MyText"
-    )
-  }
+  let(:claim) { create(:claim) }
 
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:claim, claim)
   end
 

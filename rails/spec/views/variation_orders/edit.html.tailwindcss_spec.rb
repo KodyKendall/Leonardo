@@ -1,20 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe "variation_orders/edit", type: :view do
-  let(:variation_order) {
-    VariationOrder.create!(
-      vo_number: "MyString",
-      project: nil,
-      vo_status: "MyString",
-      vo_amount: "9.99",
-      description: "MyText",
-      created_by: nil,
-      approved_by: nil,
-      approver_notes: "MyText"
-    )
-  }
+  let(:variation_order) { create(:variation_order) }
 
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:variation_order, variation_order)
   end
 

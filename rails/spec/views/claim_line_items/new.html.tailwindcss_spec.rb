@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "claim_line_items/new", type: :view do
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:claim_line_item, ClaimLineItem.new(
       claim: nil,
       line_item_description: "MyString",

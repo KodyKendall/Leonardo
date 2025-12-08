@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "crane_complements/new", type: :view do
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:crane_complement, CraneComplement.new(
       area_min_sqm: "9.99",
       area_max_sqm: "9.99",
