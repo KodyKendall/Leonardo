@@ -13,6 +13,7 @@ require 'rails_helper'
 # sticking to rails and rspec-rails APIs to keep things simple and stable.
 
 RSpec.describe "/projects", type: :request do
+  let(:user) { create(:user) }
   
   # This should return the minimal set of attributes required to create a valid
   # Project. As you add validations to Project, be sure to
@@ -24,6 +25,8 @@ RSpec.describe "/projects", type: :request do
   let(:invalid_attributes) {
     skip("Add a hash of attributes invalid for your model")
   }
+
+  before { sign_in(user) }
 
   describe "GET /index" do
     it "renders a successful response" do

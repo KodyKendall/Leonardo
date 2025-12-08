@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "line_item_material_breakdowns/new", type: :view do
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:line_item_material_breakdown, LineItemMaterialBreakdown.new(
       tender_line_item: nil
     ))

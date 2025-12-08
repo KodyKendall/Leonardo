@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "variation_orders/new", type: :view do
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:variation_order, VariationOrder.new(
       vo_number: "MyString",
       project: nil,

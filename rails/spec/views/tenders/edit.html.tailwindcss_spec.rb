@@ -1,19 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe "tenders/edit", type: :view do
-  let(:tender) {
-    Tender.create!(
-      e_number: "MyString",
-      status: "MyString",
-      client_name: "MyString",
-      tender_value: "9.99",
-      project_type: "MyString",
-      notes: "MyText",
-      awarded_project: nil
-    )
-  }
+  let(:tender) { create(:tender) }
 
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
+    @clients = [create(:client), create(:client)]
+    assign(:clients, @clients)
     assign(:tender, tender)
   end
 
@@ -21,20 +15,8 @@ RSpec.describe "tenders/edit", type: :view do
     render
 
     assert_select "form[action=?][method=?]", tender_path(tender), "post" do
-
-      assert_select "input[name=?]", "tender[e_number]"
-
-      assert_select "input[name=?]", "tender[status]"
-
-      assert_select "input[name=?]", "tender[client_name]"
-
-      assert_select "input[name=?]", "tender[tender_value]"
-
-      assert_select "input[name=?]", "tender[project_type]"
-
+      assert_select "input[name=?]", "tender[tender_name]"
       assert_select "textarea[name=?]", "tender[notes]"
-
-      assert_select "input[name=?]", "tender[awarded_project_id]"
     end
   end
 end

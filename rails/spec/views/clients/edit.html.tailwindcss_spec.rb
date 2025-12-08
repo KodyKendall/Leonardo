@@ -1,15 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe "clients/edit", type: :view do
-  let(:client) {
-    Client.create!(
-      business_name: "MyString",
-      contact_name: "MyString",
-      contact_email: "MyString"
-    )
-  }
+  let(:client) { create(:client) }
 
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:client, client)
   end
 

@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "material_supply_rates/new", type: :view do
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:material_supply_rate, MaterialSupplyRate.new(
       rate: "9.99",
       unit: "MyString",

@@ -1,15 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe "budget_categories/edit", type: :view do
-  let(:budget_category) {
-    BudgetCategory.create!(
-      category_name: "MyString",
-      cost_code: "MyString",
-      description: "MyText"
-    )
-  }
+  let(:budget_category) { create(:budget_category) }
 
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:budget_category, budget_category)
   end
 

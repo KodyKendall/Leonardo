@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe "suppliers/new", type: :view do
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:supplier, Supplier.new(
       name: "MyString"
     ))

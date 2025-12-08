@@ -1,17 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe "material_supply_rates/edit", type: :view do
-  let(:material_supply_rate) {
-    MaterialSupplyRate.create!(
-      rate: "9.99",
-      unit: "MyString",
-      material_supply: nil,
-      supplier: nil,
-      monthly_material_supply_rate: nil
-    )
-  }
+  let(:material_supply_rate) { create(:material_supply_rate) }
 
   before(:each) do
+    @user = create(:user)
+    sign_in(@user)
     assign(:material_supply_rate, material_supply_rate)
   end
 
