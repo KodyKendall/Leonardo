@@ -21,17 +21,19 @@
 
       <!-- BOQ Status Section -->
       <% if @tender.boqs.any? %>
-        <div class="alert alert-success mb-4">
-          <div class="flex items-start justify-between">
-            <div class="flex items-start gap-3">
-              <i class="fa-solid fa-file-check text-lg"></i>
-              <div>
-                <h3 class="font-bold">BOQ Attached</h3>
-                <p class="text-sm"><%= @tender.boqs.first.boq_name %> — <%= @tender.boqs.first.boq_items.count %> items</p>
+        <%= link_to boq_path(@tender.boqs.first), class: "no-underline hover:opacity-90 transition-opacity" do %>
+          <div class="alert alert-success mb-4 cursor-pointer">
+            <div class="flex items-start justify-between">
+              <div class="flex items-start gap-3">
+                <i class="fa-solid fa-file-check text-lg"></i>
+                <div>
+                  <h3 class="font-bold">BOQ Attached</h3>
+                  <p class="text-sm"><%= @tender.boqs.first.boq_name %> — <%= @tender.boqs.first.boq_items.count %> items</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        <% end %>
       <% end %>
 
       <!-- Action Buttons -->
@@ -75,12 +77,32 @@
         <%= render @line_items %>
 
       <% else %>
-        <div class="alert alert-info">
-          <div>
-            <h3 class="font-bold">No Line Items</h3>
-            <div class="text-sm">Start by adding your first line item to build out this tender.</div>
+        <% if @tender.boqs.any? && @tender.boqs.first.boq_items.any? %>
+          <!-- Aggressive CTA when BOQ exists but no line items -->
+          <div class="alert alert-warning border-2 border-warning bg-warning/10 p-6">
+            <div class="flex items-center justify-between">
+              <div class="flex items-start gap-4">
+                <i class="fa-solid fa-arrow-right text-2xl text-warning"></i>
+                <div>
+                  <h3 class="font-bold text-lg">Next Step: Copy from BOQ</h3>
+                  <p class="text-sm mt-1">This tender has no line items yet, but your BOQ has <%= @tender.boqs.first.boq_items.count %> items ready to copy.</p>
+                </div>
+              </div>
+              <%= button_to "Copy from BOQ Now",
+                  mirror_boq_items_tender_path(@tender),
+                  method: :post,
+                  class: "btn btn-warning btn-lg flex-shrink-0" %>
+            </div>
           </div>
-        </div>
+        <% else %>
+          <!-- Default message when no BOQ or BOQ has no items -->
+          <div class="alert alert-info">
+            <div>
+              <h3 class="font-bold">No Line Items</h3>
+              <div class="text-sm">Start by adding your first line item to build out this tender.</div>
+            </div>
+          </div>
+        <% end %>
       <% end %>
     </div>
 
@@ -100,8 +122,9 @@
     updateGrandTotal();
   });
 
-  document.addEventListener('turbo:submit-end', function() {
-    setTimeout(updateGrandTotal, 100);
+  document.addEventListener('turbo:submit-end', function(event) {
+    // Auto-refresh page after any form submission (Copy from BOQ, Add Line Item, etc.)
+    setTimeout(() => location.reload(), 500);
   });
 
   function updateGrandTotal() {
