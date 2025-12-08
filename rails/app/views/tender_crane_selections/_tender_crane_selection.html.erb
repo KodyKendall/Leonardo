@@ -28,10 +28,12 @@
           data: { inline_edit_target: "field" } %>
       </div>
 
-      <%# Purpose (Editable) %>
+      <%# Purpose (Editable Dropdown) %>
       <div class="form-group flex-1">
-        <%= f.text_field :purpose, 
-          class: "input input-bordered input-sm w-full readonly:bg-gray-100", 
+        <%= f.select :purpose, 
+          [['Splicing', 'splicing'], ['Main', 'main']], 
+          { prompt: 'Select...' },
+          class: "select select-bordered select-sm w-full readonly:bg-gray-100", 
           readonly: true,
           data: { inline_edit_target: "field" } %>
       </div>

@@ -36,7 +36,7 @@ class TenderCraneSelectionsController < ApplicationController
       default_crane_rate = CraneRate.where(is_active: true).first
       params_to_use = params_to_use.merge(
         crane_rate_id: default_crane_rate&.id,
-        purpose: "miscellaneous",
+        purpose: "main",
         quantity: 1,
         duration_days: 0,
         wet_rate_per_day: 0,
