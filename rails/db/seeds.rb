@@ -827,7 +827,7 @@ if crane_10t_rsb && crane_25t_rental && crane_35t_rental && crane_50t_rental
   end
 
   # Miscellaneous: 1x 10t RSB Owned for 7 days
-  TenderCraneSelection.find_or_create_by!(tender: tender1, crane_rate: crane_10t_rsb, purpose: 'miscellaneous', sort_order: 3) do |tcs|
+  TenderCraneSelection.find_or_create_by!(tender: tender1, crane_rate: crane_10t_rsb, purpose: 'main', sort_order: 3) do |tcs|
     tcs.quantity = 1
     tcs.duration_days = 7
     tcs.wet_rate_per_day = 2050.00
@@ -852,7 +852,7 @@ if crane_10t_rsb && crane_25t_rental && crane_35t_rental && crane_50t_rental
   end
 
   # Miscellaneous: 2x 10t RSB Owned for 10 days
-  TenderCraneSelection.find_or_create_by!(tender: tender2, crane_rate: crane_10t_rsb, purpose: 'miscellaneous', sort_order: 3) do |tcs|
+  TenderCraneSelection.find_or_create_by!(tender: tender2, crane_rate: crane_10t_rsb, purpose: 'main', sort_order: 3) do |tcs|
     tcs.quantity = 2
     tcs.duration_days = 10
     tcs.wet_rate_per_day = 2050.00
@@ -869,7 +869,7 @@ if crane_10t_rsb && crane_25t_rental && crane_35t_rental && crane_50t_rental
   end
 
   # Miscellaneous: 1x 10t RSB Owned for 5 days
-  TenderCraneSelection.find_or_create_by!(tender: tender3, crane_rate: crane_10t_rsb, purpose: 'miscellaneous', sort_order: 2) do |tcs|
+  TenderCraneSelection.find_or_create_by!(tender: tender3, crane_rate: crane_10t_rsb, purpose: 'main', sort_order: 2) do |tcs|
     tcs.quantity = 1
     tcs.duration_days = 5
     tcs.wet_rate_per_day = 2050.00
