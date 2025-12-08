@@ -11,7 +11,7 @@ class LineItemMaterial < ApplicationRecord
       self.tender_line_item_id = line_item_material_breakdown.tender_line_item_id
     end
   end
-  validates :thickness, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :waste_percentage, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :rate, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :quantity, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 

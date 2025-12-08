@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_08_124902) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_08_132557) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -246,7 +246,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_08_124902) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "line_item_material_breakdown_id", null: false
-    t.decimal "thickness"
+    t.decimal "waste_percentage", precision: 5, scale: 2, default: "0.0"
     t.decimal "rate"
     t.decimal "quantity"
     t.index ["line_item_material_breakdown_id"], name: "index_line_item_materials_on_line_item_material_breakdown_id"
