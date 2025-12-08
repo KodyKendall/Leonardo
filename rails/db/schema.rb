@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_04_170731) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_08_124902) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -355,6 +355,21 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_04_170731) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "tender_crane_selections", force: :cascade do |t|
+    t.bigint "tender_id", null: false
+    t.bigint "crane_rate_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "purpose", limit: 20, default: "main", null: false
+    t.integer "quantity", default: 1, null: false
+    t.integer "duration_days", null: false
+    t.decimal "wet_rate_per_day", precision: 12, scale: 2, null: false
+    t.decimal "total_cost", precision: 14, scale: 2, default: "0.0"
+    t.integer "sort_order", default: 0
+    t.index ["crane_rate_id"], name: "index_tender_crane_selections_on_crane_rate_id"
+    t.index ["tender_id"], name: "index_tender_crane_selections_on_tender_id"
+  end
+
   create_table "tender_inclusions_exclusions", force: :cascade do |t|
     t.bigint "tender_id", null: false
     t.boolean "fabrication_included"
@@ -467,6 +482,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_04_170731) do
   add_foreign_key "on_site_mobile_crane_breakdowns", "tenders", on_delete: :cascade
   add_foreign_key "projects", "tenders"
   add_foreign_key "projects", "users", column: "created_by_id"
+  add_foreign_key "tender_crane_selections", "crane_rates"
+  add_foreign_key "tender_crane_selections", "tenders"
   add_foreign_key "tender_inclusions_exclusions", "tenders"
   add_foreign_key "tender_line_items", "tenders"
   add_foreign_key "tenders", "clients"
