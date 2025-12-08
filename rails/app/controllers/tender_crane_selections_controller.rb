@@ -26,15 +26,35 @@ class TenderCraneSelectionsController < ApplicationController
 
   # POST /tender_crane_selections or /tender_crane_selections.json
   def create
-    @tender_crane_selection = TenderCraneSelection.new(tender_crane_selection_params)
+    # Capture on_site_mobile_crane_breakdown_id for Turbo Stream response (don't save it)
+    @on_site_mobile_crane_breakdown_id = params[:tender_crane_selection][:on_site_mobile_crane_breakdown_id]
+    
+    # If creating from builder "Add Row", use default values
+    params_to_use = tender_crane_selection_params
+    if params_to_use.except(:tender_id).compact_blank.empty?
+      # Get the first active crane rate as default
+      default_crane_rate = CraneRate.where(is_active: true).first
+      params_to_use = params_to_use.merge(
+        crane_rate_id: default_crane_rate&.id,
+        purpose: "miscellaneous",
+        quantity: 1,
+        duration_days: 0,
+        wet_rate_per_day: 0,
+        total_cost: 0
+      )
+    end
+    
+    @tender_crane_selection = TenderCraneSelection.new(params_to_use)
 
     respond_to do |format|
       if @tender_crane_selection.save
         format.html { redirect_to @tender_crane_selection, notice: "Tender crane selection was successfully created." }
         format.json { render :show, status: :created, location: @tender_crane_selection }
+        format.turbo_stream { render :create }
       else
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @tender_crane_selection.errors, status: :unprocessable_entity }
+        format.turbo_stream { render :create, status: :unprocessable_entity }
       end
     end
   end
