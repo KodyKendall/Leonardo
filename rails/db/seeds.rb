@@ -41,6 +41,20 @@ rich = User.find_or_create_by!(email: 'rspencer@rsbcontracts.com') do |user|
   user.role = 'project_manager'
 end
 
+demi = User.find_or_create_by!(email: 'demi@rsbcontracts.com') do |user|
+  user.name = 'Demi'
+  user.password = 'Demi456'
+  user.password_confirmation = 'Demi456'
+  user.role = 'project_manager'
+end
+
+elmari = User.find_or_create_by!(email: 'elmari@rsbcontracts.com') do |user|
+  user.name = 'Elmari'
+  user.password = 'Elmari456'
+  user.password_confirmation = 'Elmari456'
+  user.role = 'project_manager'
+end
+
 # ===== BUDGET CATEGORIES =====
 budget_cats = [
   { category_name: 'Labor', cost_code: 'LB001', description: 'Direct labor costs for project staff' },
