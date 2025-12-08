@@ -17,7 +17,7 @@ class BoqsController < ApplicationController
     @boq_items = @boq.boq_items.order(:sequence_order)
     respond_to do |format|
       format.html
-      format.json { render json: @boq.to_json(include: :boq_items) }
+      format.json { render json: @boq.to_json(include: :boq_items, methods: [:tender_id]) }
     end
   end
 

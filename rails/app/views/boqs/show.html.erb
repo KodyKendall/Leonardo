@@ -114,18 +114,36 @@
       <!-- Header Row Selector -->
       <% if @boq.csv_file.attached? %>
         <div class="mb-4 flex items-end gap-3">
-          <div class="form-control w-32">
+          <div class="form-control w-56">
             <label class="label">
               <span class="label-text font-semibold text-sm">Header Row</span>
             </label>
-            <input 
-              type="number" 
-              id="header-row-input" 
-              min="0" 
-              value="<%= @boq.header_row_index || 0 %>"
-              class="input input-sm input-bordered"
-              placeholder="Row number"
-            />
+            <div class="flex items-center gap-2">
+              <input 
+                type="number" 
+                id="header-row-input" 
+                min="0" 
+                value="<%= @boq.header_row_index || 0 %>"
+                class="input input-sm input-bordered flex-1"
+                placeholder="Row number"
+              />
+              <button 
+                id="header-row-down-btn"
+                class="btn btn-sm btn-outline"
+                onclick="decrementHeaderRow()"
+                title="Decrease row number"
+              >
+                <i class="fas fa-minus"></i>
+              </button>
+              <button 
+                id="header-row-up-btn"
+                class="btn btn-sm btn-outline"
+                onclick="incrementHeaderRow()"
+                title="Increase row number"
+              >
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
             <label class="label">
               <span class="label-text-alt text-xs text-gray-500">Which row contains column headers?</span>
             </label>
@@ -272,6 +290,16 @@
         </div>
 
         <script>
+          function incrementHeaderRow() {
+            const input = document.getElementById('header-row-input');
+            input.value = Math.max(0, parseInt(input.value, 10) + 1);
+          }
+
+          function decrementHeaderRow() {
+            const input = document.getElementById('header-row-input');
+            input.value = Math.max(0, parseInt(input.value, 10) - 1);
+          }
+
           function copyAllToClipboard() {
             const boqId = window.location.pathname.split('/').pop();
             const headerRowIdx = parseInt(document.getElementById('header-row-input').value, 10) || 0;
@@ -998,12 +1026,51 @@
           
           document.getElementById('items-container').innerHTML = tableHTML;
           
-          // Show next step card if items exist and tender is present
-          const nextStepCard = document.getElementById('next-step-card');
-          if (nextStepCard && data.tender_id) {
-            nextStepCard.style.display = 'block';
-            // Smooth scroll to next step card
-            nextStepCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          // Create next step card if items exist, tender is present, and card doesn't already exist
+          if (items.length > 0 && data.tender_id) {
+            let nextStepCard = document.getElementById('next-step-card');
+            
+            // Only create the card if it doesn't already exist
+            if (!nextStepCard) {
+              const cardsContainer = document.querySelector('.card.bg-base-100.shadow');
+              if (cardsContainer && cardsContainer.parentNode) {
+                nextStepCard = document.createElement('div');
+                nextStepCard.id = 'next-step-card';
+                nextStepCard.className = 'card bg-base-100 shadow-sm mb-6 border-l-4 border-blue-500';
+                nextStepCard.innerHTML = `
+                  <div class="card-body">
+                    <div class="flex items-start justify-between gap-4">
+                      <div class="flex-1">
+                        <h3 class="card-title text-lg mb-2">
+                          <i class="fas fa-arrow-right text-blue-600"></i>
+                          Next Step
+                        </h3>
+                        <p class="text-gray-700">
+                          Copy BOQ into <strong>${data.tender_name || 'Tender'}</strong>
+                        </p>
+                        <p class="text-sm text-gray-500 mt-2">
+                          ${items.length} line items ready to be transferred to the tender builder.
+                        </p>
+                      </div>
+                      <div>
+                        <a href="/tenders/${data.tender_id}/builder" class="btn btn-primary gap-2">
+                          <i class="fas fa-hammer"></i>
+                          <span>Open Builder</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                `;
+                
+                // Insert after the items card
+                cardsContainer.parentNode.insertBefore(nextStepCard, cardsContainer.nextSibling);
+              }
+            }
+            
+            // Scroll to next step card
+            if (nextStepCard) {
+              nextStepCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
           }
         }
         
