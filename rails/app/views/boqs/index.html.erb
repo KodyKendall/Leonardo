@@ -21,7 +21,7 @@
         <tbody>
           <% @boqs.each do |boq| %>
             <tr>
-              <td class="font-semibold"><%= boq.boq_name %></td>
+              <td class="font-semibold"><%= link_to boq.boq_name, boq_path(boq), class: "link link-primary" %></td>
               <td><%= boq.client_name || "—" %></td>
               <td class="text-sm text-gray-600"><%= boq.file_name %></td>
               <td>
