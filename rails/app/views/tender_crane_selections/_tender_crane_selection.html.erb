@@ -7,22 +7,22 @@
     <%# Single Row Grid for All Fields with Action Buttons %>
     <div class="flex gap-2 items-end" data-inline-edit-target="fieldsContainer">
       
-      <%# Tender ID (read-only) %>
+      <%# Tender ID (read-only) - Link to Tender %>
       <div class="form-group flex-1">
-        <input 
-          type="text" 
-          value="<%= tender_crane_selection.tender_id %>" 
-          readonly
-          class="input input-bordered input-sm w-full readonly:bg-gray-100" />
+        <% if tender_crane_selection.tender %>
+          <%= link_to tender_crane_selection.tender.tender_name, tender_path(tender_crane_selection.tender), class: "link link-primary text-sm font-medium", data: { turbo: false } %>
+        <% else %>
+          <span class="text-gray-400 text-sm">—</span>
+        <% end %>
       </div>
 
-      <%# Crane Rate ID (read-only) %>
+      <%# Crane Rate ID (read-only) - Link to Crane Rate %>
       <div class="form-group flex-1">
-        <input 
-          type="text" 
-          value="<%= tender_crane_selection.crane_rate_id %>" 
-          readonly
-          class="input input-bordered input-sm w-full readonly:bg-gray-100" />
+        <% if tender_crane_selection.crane_rate %>
+          <%= link_to tender_crane_selection.crane_rate.size, crane_rate_path(tender_crane_selection.crane_rate), class: "link link-primary text-sm font-medium", data: { turbo: false } %>
+        <% else %>
+          <span class="text-gray-400 text-sm">—</span>
+        <% end %>
       </div>
 
       <%# Purpose (Editable) %>

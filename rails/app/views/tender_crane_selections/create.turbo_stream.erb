@@ -1,0 +1,16 @@
+<% if @tender_crane_selection.persisted? %>
+  <% if @on_site_mobile_crane_breakdown_id.present? %>
+    <% on_site_mobile_crane_breakdown = OnSiteMobileCraneBreakdown.find(@on_site_mobile_crane_breakdown_id) %>
+    <%= turbo_stream.replace "tender_crane_selections" do %>
+      <%= render 'tender_crane_selections/index', 
+          tender_crane_selections: on_site_mobile_crane_breakdown.tender_crane_selections,
+          on_site_mobile_crane_breakdown: on_site_mobile_crane_breakdown %>
+    <% end %>
+  <% else %>
+    <%= turbo_stream.append "tender_crane_selections" do %>
+      <div class="w-full">
+        <%= render @tender_crane_selection %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>
