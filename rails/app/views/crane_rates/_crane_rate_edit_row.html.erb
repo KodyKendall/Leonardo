@@ -17,7 +17,7 @@
 
             <div class="form-control">
               <%= form.label :ownership_type, "Ownership Type" %>
-              <%= form.select :ownership_type, ["rsb_owned", "rental"], { prompt: "Select type" }, class: "select select-bordered select-sm w-full" %>
+              <%= form.select :ownership_type, [["RSB Owned", "rsb_owned"], ["Rental", "rental"]], { prompt: "Select type" }, class: "select select-bordered select-sm w-full" %>
             </div>
 
             <div class="form-control">
