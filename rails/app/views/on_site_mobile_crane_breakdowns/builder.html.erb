@@ -159,7 +159,7 @@
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium <%= rate.ownership_type == 'rental' ? 'bg-orange-100 text-orange-800' : 'bg-indigo-100 text-indigo-800' %>">
-                      <%= rate.ownership_type.titleize %>
+                      <%= rate.ownership_type == 'rsb_owned' ? 'RSB Owned' : 'Rental' %>
                     </span>
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
