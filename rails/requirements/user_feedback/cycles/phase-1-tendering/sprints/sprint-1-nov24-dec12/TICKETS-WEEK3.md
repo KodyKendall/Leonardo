@@ -12,7 +12,7 @@
 **Type:** Bug Fix
 **Severity:** High
 **Est:** 0.5 day
-**Status:** Not Started
+**Status:** In Review/QA
 
 **Problem:**
 Clicking the checkmark to save changes causes a full page reload.
@@ -72,7 +72,7 @@ Full form POST, page reloads completely.
 **Type:** UX Iteration
 **Severity:** Medium
 **Est:** 0.25 day
-**Status:** Not Started
+**Status:** In Review/QA
 
 **Problem:**
 The "Qty" column in material breakdown is misleading - it represents proportion/percentage, not quantity.
@@ -101,7 +101,7 @@ The "Qty" column in material breakdown is misleading - it represents proportion/
 **Type:** Bug Fix
 **Severity:** Low
 **Est:** 0.25 day
-**Status:** Not Started
+**Status:** In Review/QA
 
 **Problem:**
 Crane ownership dropdown shows "Rsb owned" instead of "RSB Owned".
@@ -132,7 +132,7 @@ Enum value being titleized (`rsb_owned.titleize` -> "Rsb Owned")
 **Type:** UX Iteration
 **Severity:** Medium
 **Est:** 0.25 day
-**Status:** Not Started
+**Status:** In Review/QA
 
 **Problem:**
 The "Next Step" card on `/boqs/:id` displays the number of BOQ line items parsed, which can be confusing or misleading (count display has shown incorrect numbers in the past).
@@ -791,13 +791,13 @@ end
 
 ## Summary
 
-| Ticket | Type | Severity | Est |
-|--------|------|----------|-----|
-| TICKET-UX-001 | Bug Fix | High | 0.5 day |
-| TICKET-UX-002 | UX Iteration | Medium | 0.25 day |
-| TICKET-UX-003 | Bug Fix | Low | 0.25 day |
-| TICKET-UX-004 | Bug Fix | High | 0.5 day |
-| TICKET-BOQ-001 | UX Iteration | Medium | 0.25 day |
+| Ticket | Type | Severity | Est | Status |
+|--------|------|----------|-----|--------|
+| TICKET-UX-001 | Bug Fix | High | 0.5 day | In Review/QA |
+| TICKET-UX-002 | UX Iteration | Medium | 0.25 day | In Review/QA |
+| TICKET-UX-003 | Bug Fix | Low | 0.25 day | In Review/QA |
+| TICKET-UX-004 | Bug Fix | High | 0.5 day | Not Started |
+| TICKET-BOQ-001 | UX Iteration | Medium | 0.25 day | In Review/QA |
 | TICKET-BOQ-002 | Testing | High | 1 day |
 | TICKET-BOQ-003 | Enhancement | Medium | 0.5 day |
 | TICKET-RATE-001 | Feature | High | 0.5 day |

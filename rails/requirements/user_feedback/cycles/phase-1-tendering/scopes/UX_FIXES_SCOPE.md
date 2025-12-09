@@ -3,10 +3,10 @@
 > **VERTICAL SLICE**: Fix page refresh issues and UI polish items. Thin slice focused on user experience.
 
 **Timeline:** 1-2 days
-**Status:** NOT STARTED
+**Status:** IN REVIEW
 **Priority:** High
-**Document Version:** 1.0
-**Last Updated:** December 8, 2025
+**Document Version:** 1.1
+**Last Updated:** December 9, 2025
 
 ---
 
@@ -14,11 +14,11 @@
 
 | Issue | Status | Severity |
 |-------|--------|----------|
-| Page refresh on Add Material | 🔴 Bug | High |
-| Page refresh on Save Changes | 🔴 Bug | High |
-| "Qty" column should be "Material Ratio" | 🔴 Bug | Medium |
-| "Rsb owned" should be "RSB Owned" | 🔴 Bug | Low |
-| BOQ count display incorrect | 🔴 Bug | Medium |
+| Page refresh on Add Material | 🔴 Not Started | High |
+| Page refresh on Save Changes | 🟡 In Review | High |
+| "Qty" column should be "Proportion" | 🟡 In Review | Medium |
+| "Rsb owned" should be "RSB Owned" | 🟡 In Review | Low |
+| BOQ count display incorrect | 🟡 In Review | Medium |
 
 ---
 

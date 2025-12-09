@@ -18,7 +18,7 @@ Work is organized into thin, full-stack vertical slices. Each slice has its own 
 
 | Slice | Scope Doc | Priority | Est. Days | Status |
 |-------|-----------|----------|-----------|--------|
-| UX/Turbo Fixes | [UX_FIXES_SCOPE.md](../../scopes/UX_FIXES_SCOPE.md) | High | 1-2 | Not Started |
+| UX/Turbo Fixes | [UX_FIXES_SCOPE.md](../../scopes/UX_FIXES_SCOPE.md) | High | 1-2 | In Review |
 | BOQ Parsing Fixes | [BOQ_PARSING_SCOPE.md](../../scopes/BOQ_PARSING_SCOPE.md) | High | 1-2 | Not Started |
 | Rate Auto-Population | [RATE_AUTOPOPULATION_SCOPE.md](../../scopes/RATE_AUTOPOPULATION_SCOPE.md) | High | 2-3 | Not Started |
 | Crane Cost Calculations | [CRANE_CALC_SCOPE.md](../../scopes/CRANE_CALC_SCOPE.md) | High | 2-3 | In Progress |
@@ -158,10 +158,10 @@ Input fields for:
 | Issue | Status | Priority |
 |-------|--------|----------|
 | Page refresh on Add Material | Pending | High |
-| Page refresh on Save Changes | Pending | High |
-| BOQ count discrepancy display | Pending | Medium |
-| "Qty" -> "Material Ratio" label | Pending | Medium |
-| "Rsb" -> "RSB" capitalization | Pending | Low |
+| Page refresh on Save Changes | In Review | High |
+| BOQ count discrepancy display | In Review | Medium |
+| "Qty" -> "Proportion" label | In Review | Medium |
+| "Rsb" -> "RSB" capitalization | In Review | Low |
 
 ---
 
@@ -236,4 +236,4 @@ Input fields for:
 ---
 
 **Week 1c Status:** IN PROGRESS
-**Last Updated:** December 8, 2025
+**Last Updated:** December 9, 2025
