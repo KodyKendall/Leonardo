@@ -42,11 +42,13 @@
               class: "input input-bordered input-xs w-full text-right text-xs" %>
         </div>
 
-        <!-- Quantity Field -->
+        <!-- Proportion Field -->
         <div class="col-span-2">
-          <%= form.number_field :quantity,
-              placeholder: "Qty",
-              step: 0.01,
+          <%= form.number_field :proportion,
+              placeholder: "Proportion",
+              step: 0.0001,
+              min: 0,
+              max: 1,
               class: "input input-bordered input-xs w-full text-right text-xs" %>
         </div>
 
