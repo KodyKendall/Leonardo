@@ -122,9 +122,8 @@
     updateGrandTotal();
   });
 
-  document.addEventListener('turbo:submit-end', function(event) {
-    // Auto-refresh page after any form submission (Copy from BOQ, Add Line Item, etc.)
-    setTimeout(() => location.reload(), 500);
+  document.addEventListener('turbo:frame-load', function() {
+    updateGrandTotal();
   });
 
   function updateGrandTotal() {
