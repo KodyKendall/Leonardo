@@ -81,7 +81,7 @@
       <!-- Collapse Wrapper for Breakdown Details -->
       <div class="collapse" data-line-item-id="<%= tender_line_item.id %>" id="collapse_<%= tender_line_item.id %>">
         <!-- Checkbox Toggle (hidden but controls collapse) -->
-        <input type="checkbox" class="line-item-toggle" id="toggle_<%= tender_line_item.id %>" />
+        <input type="checkbox" class="line-item-toggle" id="toggle_<%= tender_line_item.id %>" <%= "checked" if local_assigns[:open_breakdown] %> />
         
         <!-- Header Section (empty to prevent event interception) -->
         <div class="collapse-title p-0"></div>
