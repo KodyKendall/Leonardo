@@ -68,13 +68,19 @@
 
           <!-- Save Button & Dirty Indicator -->
           <div class="flex items-center gap-3 mt-3">
-            <%= f.submit "Save", class: "btn btn-primary btn-sm", data: { dirty_form_target: "submit" } %>
             <span class="hidden text-warning text-sm font-medium" data-dirty-form-target="indicator">
               Unsaved changes
             </span>
-            <button type="button" class="btn btn-ghost btn-sm ml-auto material-breakdown-toggle" onclick="document.getElementById('toggle_<%= tender_line_item.id %>').click()">
-              <i class="fas fa-chevron-down"></i>
-              Rate Buildup
+            <div class="ml-auto">
+              <%= f.submit "Save", class: "btn btn-primary btn-sm", data: { dirty_form_target: "submit" } %>
+            </div>
+          </div>
+
+          <!-- View Rate Buildup Button (Own Row) -->
+          <div class="mt-3">
+            <button type="button" class="btn btn-success btn-sm material-breakdown-toggle !text-white font-bold" onclick="document.getElementById('toggle_<%= tender_line_item.id %>').click()" style="color: white;">
+              <i class="fas fa-chevron-down text-white"></i>
+              View Rate Buildup
             </button>
           </div>
         <% end %>

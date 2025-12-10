@@ -22,54 +22,21 @@
 
       <!-- BOQ Status Section -->
       <% if @tender.boqs.any? %>
-        <%= link_to boq_path(@tender.boqs.first), class: "no-underline hover:opacity-90 transition-opacity" do %>
-          <div class="alert alert-success mb-4 cursor-pointer">
-            <div class="flex items-start justify-between">
-              <div class="flex items-start gap-3">
-                <i class="fa-solid fa-file-check text-lg"></i>
-                <div>
-                  <h3 class="font-bold">BOQ Attached</h3>
-                  <p class="text-sm"><%= @tender.boqs.first.boq_name %> — <%= @tender.boqs.first.boq_items.count %> items</p>
-                </div>
-              </div>
+        <div class="mb-6 bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+          <div class="flex items-start gap-3">
+            <i class="fa-solid fa-file-check text-blue-600 text-lg flex-shrink-0 mt-0.5"></i>
+            <div>
+              <h3 class="font-semibold text-blue-900 mb-1">BOQ Attached</h3>
+              <p class="text-sm text-blue-800">
+                <%= link_to @tender.boqs.first.boq_name, boq_path(@tender.boqs.first), class: "text-blue-600 hover:text-blue-800 hover:underline font-medium" %>
+                <span class="text-blue-700">· <%= @tender.boqs.first.boq_items.count %> items</span>
+              </p>
             </div>
           </div>
-        <% end %>
+        </div>
       <% end %>
 
-      <!-- Action Buttons -->
-      <div class="flex gap-2 flex-wrap">
-        <%= button_to "＋ Add Line Item",
-            tender_tender_line_items_path(@tender),
-            method: :post,
-            class: "btn btn-primary" %>
 
-        <% if @tender.boqs.any? %>
-          <%= button_to "Copy from BOQ",
-              mirror_boq_items_tender_path(@tender),
-              method: :post,
-              class: "btn btn-info",
-              data: { "turbo-method": "post" } %>
-        <% end %>
-
-        <%= link_to "Save", 
-            @tender,
-            method: :patch,
-            class: "btn btn-outline" %>
-
-        <%= link_to "Export", 
-            @tender,
-            class: "btn btn-outline" %>
-
-        <%= link_to "Recalculate", 
-            @tender,
-            method: :patch,
-            class: "btn btn-outline" %>
-
-        <%= link_to "Back to Tender", 
-            @tender,
-            class: "btn btn-ghost" %>
-      </div>
     </div>
 
     <!-- Line Items Section -->
@@ -92,7 +59,8 @@
               <%= button_to "Copy from BOQ Now",
                   mirror_boq_items_tender_path(@tender),
                   method: :post,
-                  class: "btn btn-warning btn-lg flex-shrink-0" %>
+                  class: "btn btn-warning btn-lg flex-shrink-0",
+                  data: { turbo: false } %>
             </div>
           </div>
         <% else %>
@@ -116,3 +84,42 @@
     </div>
   </div>
 </div>
+
+<script>
+  // Refresh page after Copy from BOQ completes
+  document.addEventListener('submit', function(e) {
+    const form = e.target;
+    
+    // Check if this is the "Copy from BOQ Now" form
+    if (form.action.includes('mirror_boq_items')) {
+      e.preventDefault();
+      
+      const formData = new FormData(form);
+      const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+      
+      fetch(form.action, {
+        method: 'POST',
+        headers: {
+          'X-CSRF-Token': csrfToken
+        },
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Refresh the page after a brief delay to ensure DB is updated
+          setTimeout(() => {
+            window.location.reload();
+          }, 500);
+        } else {
+          console.error('Error:', data.error);
+          alert('Error: ' + (data.error || 'Failed to copy BOQ items'));
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error copying BOQ items');
+      });
+    }
+  });
+</script>
