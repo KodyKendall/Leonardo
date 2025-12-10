@@ -555,6 +555,27 @@
     </div>
   </div>
 
+  <!-- Quick Actions / Suggested Prompts -->
+  <div class="card bg-base-100 shadow-sm mb-6 border-l-4 border-blue-500">
+    <div class="card-body">
+      <h3 class="card-title text-lg mb-4">
+        <i class="fas fa-list-check text-blue-600"></i>
+        Parsing Steps
+      </h3>
+      <div class="space-y-3">
+        <button 
+          id="analyze-structure-btn"
+          data-llamabot="suggested-prompt"
+          class="w-full px-4 py-3 text-left bg-blue-50 hover:bg-blue-100 text-blue-900 rounded-lg transition-colors border border-blue-200 flex items-center gap-2 font-medium"
+        >
+          <i class="fas fa-search text-blue-600"></i> 
+          <span>Step 2: Parse BOQ</span>
+        </button>
+        <p class="text-xs text-gray-600 ml-6">Click to populate the parsing request</p>
+      </div>
+    </div>
+  </div>
+
   <!-- AI BOQ Parser Chat Interface (LlamaBot) -->
   <div class="card bg-base-100 shadow-sm mb-6">
     <div class="card-body">
@@ -563,7 +584,7 @@
         AI BOQ Parser Assistant
       </h2>
       <p class="text-sm text-gray-600 mb-4">
-        Chat with the AI assistant to parse the CSV file and automatically create line items. The default work flow is to click the "Parse BOQ" button, once a message has autopopulated, click "Send", and then if the AI assistant's response looks good, type "Yes" and click "Send".
+        Chat with the AI assistant to parse the CSV file and automatically create line items. Follow the steps above to get started.
       </p>
       
       <!-- LlamaBot Chat Container -->
@@ -584,43 +605,44 @@
         <div data-llamabot="thinking-area" class="hidden bg-blue-50 border-t border-blue-200 px-4 py-3 text-sm text-blue-700"></div>
 
         <!-- Input Area -->
-        <div class="border-t border-gray-200 bg-white p-4 flex gap-2">
-          <textarea 
-            data-llamabot="message-input" 
-            placeholder="Ask the AI to parse the BOQ..." 
-            class="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none"
-            rows="4"
-          ></textarea>
-          <button 
-            data-llamabot="send-button" 
-            class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-            disabled
-          >
-            <i class="fas fa-paper-plane"></i>
-            <span class="hidden sm:inline">Send</span>
-          </button>
+        <div class="border-t border-gray-200 bg-white p-4">
+          <div class="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Step 3: Hit Send</div>
+          <div class="flex gap-2">
+            <textarea 
+              data-llamabot="message-input" 
+              placeholder="Ask the AI to parse the BOQ..." 
+              class="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm resize-none"
+              rows="4"
+            ></textarea>
+            <button 
+              data-llamabot="send-button" 
+              class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+              disabled
+            >
+              <i class="fas fa-paper-plane"></i>
+              <span class="hidden sm:inline">Send</span>
+            </button>
+          </div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- Quick Actions / Suggested Prompts -->
-      <div class="mt-4 pt-4 border-t border-gray-200">
-        <div class="text-xs font-semibold text-gray-600 mb-3 uppercase tracking-wide">Quick Actions</div>
-        <div class="flex flex-wrap gap-2">
-          <button 
-            id="analyze-structure-btn"
-            data-llamabot="suggested-prompt"
-            class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
-          >
-            <i class="fas fa-search mr-1"></i> Step 1: Parse BOQ
-          </button>
-          <button 
-            id="confirm-parse-btn"
-            class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full transition-colors"
-          >
-            <i class="fas fa-check mr-1"></i> Step 2: Yes, please parse into BOQ Line Items
-          </button>
-        </div>
-      </div>
+  <!-- Step 4: Verify and Parse -->
+  <div class="card bg-base-100 shadow-sm mb-6 border-l-4 border-green-500">
+    <div class="card-body">
+      <h3 class="card-title text-lg mb-4">
+        <i class="fas fa-check-circle text-green-600"></i>
+        Step 4: Verify and Parse into BOQ Items!
+      </h3>
+      <p class="text-sm text-gray-600 mb-4">After reviewing the AI's response above, click the button below to confirm and create the BOQ line items.</p>
+      <button 
+        id="confirm-parse-btn"
+        class="w-full px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center justify-center gap-2 font-medium"
+      >
+        <i class="fas fa-check"></i> 
+        <span>Confirm and Parse into BOQ Items</span>
+      </button>
     </div>
   </div>
 
@@ -1360,7 +1382,7 @@
     } else if (confirmBtn) {
       e.preventDefault();
       
-      // Set the input field with "Yes" message
+      // Set the input field with confirmation message
       const inputField = document.querySelector('[data-llamabot="message-input"]');
       if (inputField) {
         inputField.value = 'Yes, please parse into BOQ Line Items';
