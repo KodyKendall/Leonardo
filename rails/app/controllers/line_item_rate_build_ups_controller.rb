@@ -42,11 +42,18 @@ class LineItemRateBuildUpsController < ApplicationController
       if @line_item_rate_build_up.update(line_item_rate_build_up_params)
         format.html { redirect_to @line_item_rate_build_up, notice: "Line item rate build up was successfully updated.", status: :see_other }
         format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
-            dom_id(@line_item_rate_build_up),
-            partial: "line_item_rate_build_ups/line_item_rate_build_up",
-            locals: { line_item_rate_build_up: @line_item_rate_build_up }
-          )
+          render turbo_stream: [
+            turbo_stream.replace(
+              dom_id(@line_item_rate_build_up),
+              partial: "line_item_rate_build_ups/line_item_rate_build_up",
+              locals: { line_item_rate_build_up: @line_item_rate_build_up }
+            ),
+            turbo_stream.replace(
+              dom_id(@line_item_rate_build_up.tender_line_item),
+              partial: "tender_line_items/tender_line_item",
+              locals: { tender_line_item: @line_item_rate_build_up.tender_line_item, open_breakdown: true }
+            )
+          ]
         end
         format.json { render json: @line_item_rate_build_up, status: :ok }
       else

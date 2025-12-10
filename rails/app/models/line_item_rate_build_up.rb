@@ -2,6 +2,7 @@ class LineItemRateBuildUp < ApplicationRecord
   belongs_to :tender_line_item
 
   before_save :calculate_totals
+  after_save :sync_rate_to_tender_line_item
 
   private
 
@@ -28,5 +29,10 @@ class LineItemRateBuildUp < ApplicationRecord
 
     # Round to nearest whole number
     self.rounded_rate = total_before_rounding.round
+  end
+
+  def sync_rate_to_tender_line_item
+    return if rounded_rate.nil?
+    tender_line_item.update_column(:rate, rounded_rate)
   end
 end
