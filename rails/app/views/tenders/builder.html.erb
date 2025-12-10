@@ -1,4 +1,7 @@
 <div class="min-h-screen bg-gray-50 py-6">
+  <!-- Turbo Stream subscription for real-time grand total updates -->
+  <%= turbo_stream_from "tender_#{@tender.id}_builder" %>
+
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header Section -->
     <div class="mb-8">
@@ -11,12 +14,9 @@
           </p>
         </div>
 
-        <div class="text-right">
-          <div class="text-sm text-gray-600 mb-1">GRAND TOTAL</div>
-          <% grand_total = @line_items.sum { |item| (item.line_item_rate_build_up&.rounded_rate || 0) * item.quantity } %>
-          <div class="text-3xl font-bold text-gray-900" id="grand-total">
-            R<%= number_with_precision(grand_total, precision: 2) %>
-          </div>
+        <!-- Grand Total in targetable Turbo Frame -->
+        <div id="tender_<%= @tender.id %>_grand_total">
+          <%= render "tenders/grand_total", tender: @tender %>
         </div>
       </div>
 
@@ -116,38 +116,3 @@
     </div>
   </div>
 </div>
-
-<!-- Stimulus Controller for Grand Total Calculation -->
-<script>
-  document.addEventListener('turbo:load', function() {
-    updateGrandTotal();
-  });
-
-  document.addEventListener('turbo:frame-load', function() {
-    updateGrandTotal();
-  });
-
-  function updateGrandTotal() {
-    const lineItemFrames = document.querySelectorAll('[id^="tender_line_item_"]');
-    let total = 0;
-
-    lineItemFrames.forEach(frame => {
-      const totalCell = frame.querySelector('[class*="text-gray-900"][class*="text-lg"]');
-      if (totalCell) {
-        const currencyText = totalCell.textContent.trim();
-        const numericValue = parseFloat(currencyText.replace(/[^\d.-]/g, ''));
-        if (!isNaN(numericValue)) {
-          total += numericValue;
-        }
-      }
-    });
-
-    const grandTotalEl = document.getElementById('grand-total');
-    if (grandTotalEl) {
-      grandTotalEl.textContent = new Intl.NumberFormat('en-ZA', {
-        style: 'currency',
-        currency: 'ZAR'
-      }).format(total);
-    }
-  }
-</script>

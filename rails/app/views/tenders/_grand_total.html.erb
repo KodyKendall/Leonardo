@@ -1,0 +1,6 @@
+<div class="text-right">
+  <div class="text-sm text-gray-600 mb-1">GRAND TOTAL</div>
+  <div class="text-3xl font-bold text-gray-900">
+    R<%= number_with_precision(tender.grand_total || 0, precision: 2, delimiter: ',') %>
+  </div>
+</div>

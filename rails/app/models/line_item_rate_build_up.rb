@@ -3,8 +3,13 @@ class LineItemRateBuildUp < ApplicationRecord
 
   before_save :calculate_totals
   after_save :sync_rate_to_tender_line_item
+  after_save :update_tender_grand_total
 
   private
+
+  def update_tender_grand_total
+    tender_line_item.tender.recalculate_grand_total!
+  end
 
   def calculate_totals
     # Calculate subtotal by summing only the included components

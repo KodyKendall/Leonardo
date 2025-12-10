@@ -24,7 +24,23 @@ class Tender < ApplicationRecord
   # Project types enum-like constant
   PROJECT_TYPES = ['Commercial', 'Mining'].freeze
   
+  # Recalculate grand total as sum of all line item totals and broadcast update
+  def recalculate_grand_total!
+    new_total = tender_line_items.sum { |item| (item.line_item_rate_build_up&.rounded_rate || 0) * item.quantity }
+    update_column(:grand_total, new_total)
+    broadcast_update_grand_total
+  end
+
   private
+
+  def broadcast_update_grand_total
+    broadcast_update_to(
+      "tender_#{id}_builder",
+      target: "tender_#{id}_grand_total",
+      partial: "tenders/grand_total",
+      locals: { tender: self }
+    )
+  end
   
   def generate_e_number
     return if e_number.present?
