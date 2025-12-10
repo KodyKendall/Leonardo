@@ -14,6 +14,8 @@ class TenderLineItem < ApplicationRecord
   after_initialize :build_defaults, if: :new_record?
   after_create :create_line_item_rate_build_up, if: -> { line_item_rate_build_up.nil? }
   after_create :create_line_item_material_breakdown, if: -> { line_item_material_breakdown.nil? }
+  after_save :update_tender_grand_total
+  after_destroy :update_tender_grand_total
 
   enum section_category: {
     "Blank" => "Blank",
@@ -39,6 +41,10 @@ class TenderLineItem < ApplicationRecord
   end
 
   private
+
+  def update_tender_grand_total
+    tender.recalculate_grand_total!
+  end
 
   def build_defaults
     build_line_item_rate_build_up unless line_item_rate_build_up
