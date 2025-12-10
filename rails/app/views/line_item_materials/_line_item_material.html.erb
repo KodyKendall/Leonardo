@@ -14,7 +14,8 @@
   <%= form_with(model: line_item_material, method: :patch, class: "contents", data: {
     controller: "dirty-form",
     action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset"
-  }) do |form| %>
+  }, local: { tender_line_item_id: line_item_material.tender_line_item_id }) do |form| %>
+    <%= hidden_field_tag :tender_line_item_id, line_item_material.tender_line_item_id %>
     <!-- Material Row - Ultra Compact -->
     <div class="bg-white border-b p-1 hover:bg-gray-50">
       <div class="grid grid-cols-12 gap-1 items-center">

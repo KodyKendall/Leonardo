@@ -65,11 +65,12 @@ class LineItemMaterialsController < ApplicationController
   # PATCH/PUT /line_item_materials/1 or /line_item_materials/1.json
   def update
     @breakdown = @line_item_material.line_item_material_breakdown
+    @tender_line_item = @breakdown&.tender_line_item
     respond_to do |format|
       if @line_item_material.update(line_item_material_params)
         format.turbo_stream do
           flash.now[:notice] = "Material saved successfully."
-          render turbo_stream: [
+          streams = [
             turbo_stream.replace(
               "line_item_material_#{@line_item_material.id}",
               partial: 'line_item_materials/line_item_material',
@@ -82,6 +83,15 @@ class LineItemMaterialsController < ApplicationController
               locals: { line_item_material_breakdown: @breakdown }
             )
           ]
+          # Re-render parent tender line item if it exists
+          if @tender_line_item.present?
+            streams << turbo_stream.replace(
+              dom_id(@tender_line_item),
+              partial: 'tender_line_items/tender_line_item',
+              locals: { tender_line_item: @tender_line_item, open_breakdown: true }
+            )
+          end
+          render turbo_stream: streams
         end
         format.html { redirect_to @line_item_material, notice: "Line item material was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @line_item_material }

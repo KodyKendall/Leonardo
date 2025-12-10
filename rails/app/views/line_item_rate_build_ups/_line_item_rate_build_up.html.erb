@@ -63,10 +63,9 @@
                       <%= form.number_field component[:rate_field],
                           step: 0.01,
                           min: 0,
-                          readonly: true,
-                          class: "input input-sm input-bordered w-28 text-right bg-gray-100 cursor-not-allowed",
+                          class: "input input-sm input-bordered w-28 text-right",
                           data: {
-                            line_item_rate_build_up_target: "rateInput materialSupplyInput",
+                            line_item_rate_build_up_target: "rateInput",
                             action: "input->line-item-rate-build-up#calculate"
                           } %>
                     <% else %>

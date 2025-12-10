@@ -12,8 +12,7 @@ export default class extends Controller {
     "beforeRounding",
     "roundedRate",
     "dirtyIndicator",
-    "saveButton",
-    "materialSupplyInput"
+    "saveButton"
   ]
 
   connect() {
@@ -21,59 +20,9 @@ export default class extends Controller {
     this.initializing = true
     // Use setTimeout to ensure DOM is fully settled after turbo-stream replacement
     setTimeout(() => {
-      this.syncMaterialSupplyRate()
       this.calculateDisplay()
       this.initializing = false
-      this.observeMaterialBreakdownChanges()
     }, 0)
-  }
-
-  disconnect() {
-    if (this.observer) {
-      this.observer.disconnect()
-    }
-  }
-
-  // Sync material supply rate from Material Breakdown total
-  syncMaterialSupplyRate() {
-    if (!this.hasMaterialSupplyInputTarget) return
-
-    // Find the Material Breakdown total display in the sibling component
-    const materialBreakdownTotal = document.querySelector('[data-line-item-material-breakdown-target="totalDisplay"]')
-    
-    if (materialBreakdownTotal) {
-      // Extract the numeric value from "R1234.56" format
-      const totalText = materialBreakdownTotal.textContent.trim()
-      const numericValue = parseFloat(totalText.replace(/[^\d.-]/g, ''))
-      
-      if (!isNaN(numericValue)) {
-        this.materialSupplyInputTarget.value = numericValue.toFixed(2)
-        // Trigger a change event so calculations update
-        this.materialSupplyInputTarget.dispatchEvent(new Event('input', { bubbles: true }))
-      }
-    }
-  }
-
-  // Observe Material Breakdown for changes
-  observeMaterialBreakdownChanges() {
-    const materialBreakdownContainer = document.querySelector('[data-controller="line-item-material-breakdown"]')
-    
-    if (!materialBreakdownContainer) return
-
-    // Use MutationObserver to watch for changes to the total display
-    this.observer = new MutationObserver(() => {
-      this.syncMaterialSupplyRate()
-    })
-
-    // Watch the totals section for changes
-    const totalsSection = materialBreakdownContainer.querySelector('[id^="material_breakdown_totals_"]')
-    if (totalsSection) {
-      this.observer.observe(totalsSection, {
-        subtree: true,
-        characterData: true,
-        childList: true
-      })
-    }
   }
 
   markDirty() {
