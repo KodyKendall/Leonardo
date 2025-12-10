@@ -8,4 +8,15 @@ class Boq < ApplicationRecord
   validates :status, inclusion: { in: %w(uploaded parsing parsed error) }, allow_nil: false
 
   enum :status, { uploaded: "uploaded", parsing: "parsing", parsed: "parsed", error: "error" }
+
+  after_save :update_tender_status_on_attach
+
+  private
+
+  def update_tender_status_on_attach
+    # Auto-set tender status to "In Progress" when a BOQ is attached to it
+    if tender.present? && tender.status != 'In Progress'
+      tender.update(status: 'In Progress')
+    end
+  end
 end

@@ -29,18 +29,27 @@
           </div>
         <% end %>
       </div>
+
+      <% # Check if any BOQ has line items %>
+      <% has_line_items = @tender.boqs.any? { |boq| boq.boq_items.any? } %>
+      <% if has_line_items %>
+        <%= link_to "Next Step: Tender Builder", builder_tender_path(@tender), class: "btn btn-sm btn-primary w-full gap-2" %>
+      <% else %>
+        <% first_boq = @tender.boqs.first %>
+        <%= link_to "Parse BOQ", boq_path(first_boq), class: "btn btn-sm btn-primary w-full gap-2" %>
+      <% end %>
     <% else %>
       <p class="text-gray-500 text-sm mb-4">No BOQs uploaded yet</p>
-    <% end %>
 
-    <div class="flex gap-2">
-      <button class="btn btn-sm btn-primary flex-1" onclick="const modal = document.getElementById('boq_upload_modal'); if (modal) { if (typeof modal.showModal === 'function') { modal.showModal(); } else { modal.classList.add('modal-open'); } }">
-        <i class="fa-solid fa-upload"></i> Upload BOQ
-      </button>
-      <button class="btn btn-sm btn-outline flex-1" onclick="const modal = document.getElementById('boq_attach_modal'); if (modal) { if (typeof modal.showModal === 'function') { modal.showModal(); } else { modal.classList.add('modal-open'); } window.loadBoqsForAttach && window.loadBoqsForAttach(); }">
-        <i class="fa-solid fa-link"></i> Attach Existing
-      </button>
-    </div>
+      <div class="flex gap-2">
+        <button class="btn btn-sm btn-primary flex-1" onclick="const modal = document.getElementById('boq_upload_modal'); if (modal) { if (typeof modal.showModal === 'function') { modal.showModal(); } else { modal.classList.add('modal-open'); } }">
+          <i class="fa-solid fa-upload"></i> Upload BOQ
+        </button>
+        <button class="btn btn-sm btn-outline flex-1" onclick="const modal = document.getElementById('boq_attach_modal'); if (modal) { if (typeof modal.showModal === 'function') { modal.showModal(); } else { modal.classList.add('modal-open'); } window.loadBoqsForAttach && window.loadBoqsForAttach(); }">
+          <i class="fa-solid fa-link"></i> Attach Existing
+        </button>
+      </div>
+    <% end %>
   </div>
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
