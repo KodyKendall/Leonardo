@@ -20,4 +20,9 @@ class BoqItem < ApplicationRecord
     m36_hd_bolt: 'M36 HD Bolt',
     m42_hd_bolt: 'M42 HD Bolt'
   }
+
+  # Returns the human-readable name for the section category
+  def category_human_readable
+    self.class.section_categories[section_category] || section_category
+  end
 end
