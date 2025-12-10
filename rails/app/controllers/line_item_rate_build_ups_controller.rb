@@ -50,14 +50,17 @@ class LineItemRateBuildUpsController < ApplicationController
         end
         format.json { render json: @line_item_rate_build_up, status: :ok }
       else
-        Rails.logger.error("LineItemRateBuildUp update failed for ID #{@line_item_rate_build_up.id}: #{@line_item_rate_build_up.errors.full_messages.inspect}")
+        
         format.html { render :edit, status: :unprocessable_entity }
         format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
-            dom_id(@line_item_rate_build_up),
-            partial: "line_item_rate_build_ups/line_item_rate_build_up",
-            locals: { line_item_rate_build_up: @line_item_rate_build_up }
-          )
+          render turbo_stream: [
+            turbo_stream.replace(
+              dom_id(@line_item_rate_build_up),
+              partial: "line_item_rate_build_ups/line_item_rate_build_up",
+              locals: { line_item_rate_build_up: @line_item_rate_build_up }
+            ),
+            turbo_stream.append("errors", "<div class='alert alert-error'>Validation failed: #{@line_item_rate_build_up.errors.full_messages.join(', ')}</div>")
+          ]
         end
         format.json { render json: @line_item_rate_build_up.errors, status: :unprocessable_entity }
       end
