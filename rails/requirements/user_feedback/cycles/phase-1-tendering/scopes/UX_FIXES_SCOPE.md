@@ -14,11 +14,10 @@
 
 | Issue | Status | Severity |
 |-------|--------|----------|
-| Page refresh on Add Material | 🔴 Not Started | High |
-| Page refresh on Save Changes | 🟡 In Review | High |
-| "Qty" column should be "Proportion" | 🟡 In Review | Medium |
-| "Rsb owned" should be "RSB Owned" | 🟡 In Review | Low |
-| BOQ count display incorrect | 🟡 In Review | Medium |
+| Page refresh on Save Changes | ✅ Complete | High |
+| "Qty" column should be "Proportion" | ✅ Complete | Medium |
+| "Rsb owned" should be "RSB Owned" | ✅ Complete | Low |
+| BOQ count display incorrect | ✅ Complete | Medium |
 
 ---
 

@@ -13,8 +13,9 @@
 
         <div class="text-right">
           <div class="text-sm text-gray-600 mb-1">GRAND TOTAL</div>
+          <% grand_total = @line_items.sum { |item| (item.line_item_rate_build_up&.rounded_rate || 0) * item.quantity } %>
           <div class="text-3xl font-bold text-gray-900" id="grand-total">
-            R<%= number_with_precision(@line_items.sum(&:total_amount), precision: 2) %>
+            R<%= number_with_precision(grand_total, precision: 2) %>
           </div>
         </div>
       </div>
