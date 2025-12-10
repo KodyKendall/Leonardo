@@ -157,11 +157,11 @@
               </div>
               <button 
                 id="update-header-btn" 
-                class="btn btn-success gap-2"
+                class="btn btn-lg btn-success gap-2 font-bold shadow-md hover:shadow-lg text-white"
                 onclick="updateHeaderRow()"
               >
-                <i class="fas fa-refresh"></i>
-                Apply
+                <i class="fas fa-check-circle"></i>
+                Apply Header Row
               </button>
             </div>
           </div>
@@ -574,9 +574,9 @@
         <button 
           id="analyze-structure-btn"
           data-llamabot="suggested-prompt"
-          class="w-full px-4 py-3 text-left bg-blue-50 hover:bg-blue-100 text-blue-900 rounded-lg transition-colors border border-blue-200 flex items-center gap-2 font-medium"
+          class="w-full btn btn-lg btn-success gap-2 font-bold shadow-md hover:shadow-lg text-white"
         >
-          <i class="fas fa-search text-blue-600"></i> 
+          <i class="fas fa-magic"></i> 
           <span>Step 2: Parse BOQ</span>
         </button>
         <p class="text-xs text-gray-600 ml-6">Click to populate the parsing request</p>
@@ -614,7 +614,7 @@
 
         <!-- Input Area -->
         <div class="border-t border-gray-200 bg-white p-4">
-          <div class="text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Step 3: Hit Send</div>
+          <div class="text-xs font-semibold text-gray-600 mb-4 uppercase tracking-wide text-right">Step 3: Hit Send</div>
           <div class="flex gap-2">
             <textarea 
               data-llamabot="message-input" 
@@ -624,7 +624,7 @@
             ></textarea>
             <button 
               data-llamabot="send-button" 
-              class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+              class="btn btn-success btn-lg gap-2 font-bold shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-white"
               disabled
             >
               <i class="fas fa-paper-plane"></i>
@@ -751,7 +751,7 @@
                 Copy BOQ into <strong><%= tender.tender_name %></strong>
               </p>
               <p class="text-sm text-gray-500 mt-2">
-                Line items ready to be transferred to the tender builder.
+                Ready to be transferred to the tender builder.
               </p>
             </div>
             <div>
@@ -1171,7 +1171,7 @@
                           Copy BOQ into <strong>${data.tender_name || 'Tender'}</strong>
                         </p>
                         <p class="text-sm text-gray-500 mt-2">
-                          ${items.length} line items ready to be transferred to the tender builder.
+                          Ready to be transferred to the tender builder.
                         </p>
                       </div>
                       <div>
