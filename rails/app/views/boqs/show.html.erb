@@ -633,6 +633,14 @@
           <span id="items-count" class="badge badge-lg"><%= @boq_items.count %></span>
         </h2>
         <div class="flex gap-2">
+          <button 
+            id="copy-table-btn" 
+            class="btn btn-sm btn-outline gap-2"
+            onclick="copyTableToClipboard()"
+          >
+            <i class="fas fa-copy"></i>
+            Copy Table
+          </button>
           <%= link_to export_boq_csv_boq_path(@boq, format: :csv), class: "btn btn-sm btn-outline gap-2" do %>
             <i class="fas fa-download"></i>
             Download CSV
@@ -654,31 +662,28 @@
             <table class="table table-sm w-full">
               <thead>
                 <tr>
-                  <th>#</th>
                   <th>Page</th>
                   <th>Item Number</th>
                   <th>Description</th>
-                  <th>Category</th>
                   <th>UOM</th>
                   <th>Quantity</th>
+                  <th>Notes</th>
+                  <th>Category</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="items-tbody">
                 <% @boq_items.each_with_index do |item, idx| %>
                   <tr class="boq-item-row" data-item-id="<%= item.id %>" data-category-key="<%= item.section_category || "" %>" data-category-display="<%= BoqItem.section_categories[item.section_category] || "" %>">
-                    <td><%= idx + 1 %></td>
                     <td class="font-mono text-sm editable-cell" data-field="page_number" title="Click to edit"><%= item.page_number || "—" %></td>
                     <td class="font-mono text-sm editable-cell" data-field="item_number" title="Click to edit"><%= item.item_number || "—" %></td>
                     <td class="editable-cell" data-field="item_description" title="Click to edit">
                       <div class="text-sm"><%= truncate(item.item_description, length: 60) %></div>
-                      <% if item.notes %>
-                        <div class="text-xs text-gray-500 mt-1"><%= item.notes %></div>
-                      <% end %>
                     </td>
-                    <td class="editable-cell" data-field="section_category" title="Click to edit"><span class="badge badge-sm"><%= item.section_category || "—" %></span></td>
                     <td class="editable-cell" data-field="unit_of_measure" title="Click to edit"><%= item.unit_of_measure || "—" %></td>
                     <td class="text-right font-semibold editable-cell" data-field="quantity" title="Click to edit"><%= item.quantity || "—" %></td>
+                    <td class="text-xs text-gray-500"><%= truncate(item.notes, length: 40) if item.notes %></td>
+                    <td class="editable-cell" data-field="section_category" title="Click to edit"><span class="badge badge-sm"><%= item.category_human_readable || "—" %></span></td>
                     <td class="text-center">
                       <button class="btn btn-xs btn-ghost edit-row-btn" onclick="editRow(this, <%= item.id %>)" title="Edit this row">
                         <i class="fas fa-edit"></i>
@@ -731,6 +736,92 @@
   <% end %>
 
   <script>
+    // Copy table contents to clipboard with fallback
+    function copyTableToClipboard() {
+      const table = document.querySelector('#items-tbody');
+      const btn = document.getElementById('copy-table-btn');
+      const originalHTML = btn.innerHTML;
+      
+      if (!table) {
+        showToast('No table data to copy', 'error');
+        return;
+      }
+      
+      try {
+        let tableText = '';
+        const rows = table.querySelectorAll('tr');
+        
+        rows.forEach(row => {
+          const cells = row.querySelectorAll('td');
+          const rowData = [];
+          
+          // Get all cells except the last one (Actions column)
+          for (let i = 0; i < cells.length - 1; i++) {
+            let cellText = cells[i].textContent.trim();
+            // Remove extra whitespace and newlines
+            cellText = cellText.replace(/\s+/g, ' ');
+            rowData.push(cellText);
+          }
+          
+          tableText += rowData.join('\t') + '\n';
+        });
+        
+        // Try modern Clipboard API first
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(tableText).then(() => {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            showToast(`Copied ${rows.length} rows to clipboard`, 'success');
+            
+            setTimeout(() => {
+              btn.disabled = false;
+              btn.innerHTML = originalHTML;
+            }, 2000);
+          }).catch(err => {
+            console.warn('Clipboard API failed, using fallback:', err);
+            copyTableFallback(tableText, rows.length, btn, originalHTML);
+          });
+        } else {
+          // Fallback for restricted environments
+          copyTableFallback(tableText, rows.length, btn, originalHTML);
+        }
+      } catch (error) {
+        console.error('Error copying table:', error);
+        showToast('Failed to copy table data', 'error');
+      }
+    }
+
+    // Fallback method using textarea selection
+    function copyTableFallback(tableText, rowCount, btn, originalHTML) {
+      const textarea = document.createElement('textarea');
+      textarea.value = tableText;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      textarea.style.top = '0';
+      textarea.style.left = '0';
+      document.body.appendChild(textarea);
+      
+      try {
+        textarea.select();
+        textarea.setSelectionRange(0, 99999);
+        document.execCommand('copy');
+        
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        showToast(`Copied ${rowCount} rows to clipboard`, 'success');
+        
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = originalHTML;
+        }, 2000);
+      } catch (err) {
+        console.error('Fallback copy failed:', err);
+        showToast('Failed to copy to clipboard', 'error');
+      } finally {
+        document.body.removeChild(textarea);
+      }
+    }
+
     // Editable table functionality
     function editRow(button, itemId) {
       const row = button.closest('tr');
