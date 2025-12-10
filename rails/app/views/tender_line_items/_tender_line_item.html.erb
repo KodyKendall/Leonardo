@@ -58,11 +58,11 @@
             </div>
 
             <!-- Line Total -->
-            <div class="col-span-1.5 flex flex-col justify-end">
-              <div class="text-xs text-gray-500 font-semibold">Line Total</div>
+            <div class="col-span-2 flex flex-col justify-end">
+              <div class="text-xs text-gray-500 font-semibold mb-1">Line Total</div>
               <% final_rate = tender_line_item.line_item_rate_build_up&.rounded_rate || 0 %>
               <% line_total = final_rate * tender_line_item.quantity %>
-              <div class="font-bold text-gray-900 text-sm p-2 rounded text-center">R<%= number_with_precision(line_total, precision: 2, delimiter: ",") %></div>
+              <div class="font-bold text-green-700 text-lg p-3 rounded-lg text-center bg-green-50 border-2 border-green-200 shadow-sm">R<%= number_with_precision(line_total, precision: 2, delimiter: ",") %></div>
             </div>
           </div>
 
