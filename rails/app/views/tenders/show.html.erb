@@ -9,6 +9,40 @@
 
   <%= render "status_progress", tender: @tender %>
 
+  <div class="bg-white rounded-lg border border-gray-200 p-4 mb-6">
+    <h2 class="font-bold text-lg mb-4 flex items-center gap-2">
+      <i class="fa-solid fa-file-csv text-green-600"></i>
+      BOQs
+    </h2>
+
+    <% if @tender.boqs.any? %>
+      <div class="space-y-2 mb-4">
+        <% @tender.boqs.order(created_at: :desc).each do |boq| %>
+          <div class="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-200">
+            <div>
+              <p class="font-medium text-gray-800"><%= link_to boq.boq_name, boq_path(boq), class: "text-blue-600 hover:text-blue-800" %></p>
+              <p class="text-xs text-gray-500"><%= boq.status.capitalize %></p>
+            </div>
+            <span class="badge badge-sm" style="<%= case boq.status when 'parsed' then 'background-color: #d1fae5; color: #065f46;' when 'parsing' then 'background-color: #fef3c7; color: #92400e;' when 'error' then 'background-color: #fee2e2; color: #991b1b;' else 'background-color: #dbeafe; color: #1e40af;' end %>">
+              <%= boq.status.capitalize %>
+            </span>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-gray-500 text-sm mb-4">No BOQs uploaded yet</p>
+    <% end %>
+
+    <div class="flex gap-2">
+      <button class="btn btn-sm btn-primary flex-1" onclick="const modal = document.getElementById('boq_upload_modal'); if (modal) { if (typeof modal.showModal === 'function') { modal.showModal(); } else { modal.classList.add('modal-open'); } }">
+        <i class="fa-solid fa-upload"></i> Upload BOQ
+      </button>
+      <button class="btn btn-sm btn-outline flex-1" onclick="const modal = document.getElementById('boq_attach_modal'); if (modal) { if (typeof modal.showModal === 'function') { modal.showModal(); } else { modal.classList.add('modal-open'); } window.loadBoqsForAttach && window.loadBoqsForAttach(); }">
+        <i class="fa-solid fa-link"></i> Attach Existing
+      </button>
+    </div>
+  </div>
+
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     <div class="lg:col-span-2">
       <%= render @tender %>
@@ -56,40 +90,6 @@
           </div>
         </div>
       <% end %>
-
-      <div class="bg-white rounded-lg border border-gray-200 p-4">
-        <h2 class="font-bold text-lg mb-4 flex items-center gap-2">
-          <i class="fa-solid fa-file-csv text-green-600"></i>
-          BOQs
-        </h2>
-
-        <% if @tender.boqs.any? %>
-          <div class="space-y-2 mb-4">
-            <% @tender.boqs.order(created_at: :desc).each do |boq| %>
-              <div class="flex items-center justify-between p-3 bg-gray-50 rounded border border-gray-200">
-                <div>
-                  <p class="font-medium text-gray-800"><%= link_to boq.boq_name, boq_path(boq), class: "text-blue-600 hover:text-blue-800" %></p>
-                  <p class="text-xs text-gray-500"><%= boq.status.capitalize %></p>
-                </div>
-                <span class="badge badge-sm" style="<%= case boq.status when 'parsed' then 'background-color: #d1fae5; color: #065f46;' when 'parsing' then 'background-color: #fef3c7; color: #92400e;' when 'error' then 'background-color: #fee2e2; color: #991b1b;' else 'background-color: #dbeafe; color: #1e40af;' end %>">
-                  <%= boq.status.capitalize %>
-                </span>
-              </div>
-            <% end %>
-          </div>
-        <% else %>
-          <p class="text-gray-500 text-sm mb-4">No BOQs uploaded yet</p>
-        <% end %>
-
-        <div class="flex gap-2">
-          <button class="btn btn-sm btn-primary flex-1" onclick="const modal = document.getElementById('boq_upload_modal'); if (modal) { if (typeof modal.showModal === 'function') { modal.showModal(); } else { modal.classList.add('modal-open'); } }">
-            <i class="fa-solid fa-upload"></i> Upload BOQ
-          </button>
-          <button class="btn btn-sm btn-outline flex-1" onclick="const modal = document.getElementById('boq_attach_modal'); if (modal) { if (typeof modal.showModal === 'function') { modal.showModal(); } else { modal.classList.add('modal-open'); } window.loadBoqsForAttach && window.loadBoqsForAttach(); }">
-            <i class="fa-solid fa-link"></i> Attach BOQ
-          </button>
-        </div>
-      </div>
     </div>
   </div>
 
