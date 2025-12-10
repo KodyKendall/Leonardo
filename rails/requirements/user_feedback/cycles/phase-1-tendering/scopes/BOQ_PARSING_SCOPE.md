@@ -19,7 +19,7 @@
 | AI Parsing Chat | ✅ Complete | LlamaBot integration, boq_parser agent |
 | Line Item Creation | ✅ Complete | Creates TenderLineItem records |
 | Category Suggestion | ✅ Complete | AI suggests categories |
-| Item Count Display | 🔴 Bug | Shows wrong count (17 vs 25 actual) |
+| Item Count Display | ✅ Complete | Shows wrong count (17 vs 25 actual) |
 | Large BOQ Handling | 🔴 Pending | >25 items needs testing |
 | Parsing Progress | ✅ Complete | Step-by-step feedback working |
 | Transfer to Builder | ✅ Complete | Workflow from BOQ to Builder |

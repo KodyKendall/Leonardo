@@ -16,12 +16,12 @@ Week 1c implements the BOQ upload and AI parsing workflow, along with the on-sit
 
 Work is organized into thin, full-stack vertical slices. Each slice has its own scope document and can be built/demoed independently.
 
-| Slice | Scope Doc | Priority | Est. Days | Status |
-|-------|-----------|----------|-----------|--------|
-| UX/Turbo Fixes | [UX_FIXES_SCOPE.md](../../scopes/UX_FIXES_SCOPE.md) | High | 1-2 | In Review |
-| BOQ Parsing Fixes | [BOQ_PARSING_SCOPE.md](../../scopes/BOQ_PARSING_SCOPE.md) | High | 1-2 | Not Started |
-| Rate Auto-Population | [RATE_AUTOPOPULATION_SCOPE.md](../../scopes/RATE_AUTOPOPULATION_SCOPE.md) | High | 2-3 | Not Started |
-| Crane Cost Calculations | [CRANE_CALC_SCOPE.md](../../scopes/CRANE_CALC_SCOPE.md) | High | 2-3 | In Progress |
+| Slice | Scope Doc | Priority | Est. Days | Status | Assigned |
+|-------|-----------|----------|-----------|--------|----------|
+| UX/Turbo Fixes | [UX_FIXES_SCOPE.md](../../scopes/UX_FIXES_SCOPE.md) | High | 1-2 | ✅ Complete | Kody |
+| BOQ Parsing Fixes | [BOQ_PARSING_SCOPE.md](../../scopes/BOQ_PARSING_SCOPE.md) | High | 1-2 | 🟠 In Progress | Kody |
+| Tender Builder | [TENDER_BUILDER_SCOPE.md](../../scopes/TENDER_BUILDER_SCOPE.md) | High | 2-3 | 🔴 Not Started | Kody |
+| Crane Cost Calculations | [CRANE_CALC_SCOPE.md](../../scopes/CRANE_CALC_SCOPE.md) | High | 2-3 | 🔴 Not Started | Kody |
 
 ### Recommended Build Order (Thinnest First)
 

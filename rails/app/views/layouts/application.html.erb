@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html data-theme="light">
   <head>
-    <title><%= content_for(:title) || "RSB" %></title>
+    <title><%= content_for(:title) || "RSB - #{request.path == '/' ? 'Home' : request.path.split('/').filter_map { |p| p.present? ? p.capitalize : nil }.join(' > ')}" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <!-- Prevent caching to ensure fresh request_path and view_path -->
