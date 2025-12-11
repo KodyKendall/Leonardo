@@ -42,16 +42,14 @@
       <div class="form-group flex-1">
         <%= f.number_field :quantity, 
           class: "input input-bordered input-sm w-full readonly:bg-gray-100", 
-          readonly: true,
-          data: { inline_edit_target: "field" } %>
+          data: { inline_edit_target: "field", action: "change->inline-edit#calculateTotal" } %>
       </div>
 
       <%# Duration Days (Editable) %>
       <div class="form-group flex-1">
         <%= f.number_field :duration_days, 
           class: "input input-bordered input-sm w-full readonly:bg-gray-100", 
-          readonly: true,
-          data: { inline_edit_target: "field" } %>
+          data: { inline_edit_target: "field", action: "change->inline-edit#calculateTotal" } %>
       </div>
 
       <%# Wet Rate Per Day (Editable) %>
@@ -63,12 +61,13 @@
           data: { inline_edit_target: "field" } %>
       </div>
 
-      <%# Total Cost (Read-only) %>
+      <%# Total Cost (Read-only, calculated) %>
       <div class="form-group flex-1">
         <input 
           type="text" 
-          value="<%= tender_crane_selection.total_cost %>" 
+          value="R <%= number_with_precision(tender_crane_selection.total_cost, precision: 2) %>" 
           readonly
+          data-total-cost-display="true"
           class="input input-bordered input-sm w-full readonly:bg-gray-100" />
       </div>
 

@@ -1,3 +1,7 @@
 <%= turbo_stream.update dom_id(@tender_crane_selection) do %>
   <%= render @tender_crane_selection %>
 <% end %>
+
+<%= turbo_stream.update "crane_cost_summary" do %>
+  <%= render 'tender_crane_selections/summary', on_site_mobile_crane_breakdown: @tender_crane_selection.on_site_mobile_crane_breakdown %>
+<% end %>

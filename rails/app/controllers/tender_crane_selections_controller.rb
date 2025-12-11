@@ -35,10 +35,15 @@ class TenderCraneSelectionsController < ApplicationController
     if params_to_use.except(:tender_id, :on_site_mobile_crane_breakdown_id).compact_blank.empty?
       # Get the first active crane rate as default
       default_crane_rate = CraneRate.where(is_active: true).first
+      
+      # Set duration_days from the breakdown
+      duration_days = @on_site_mobile_crane_breakdown&.program_duration_days || 0
+      
       params_to_use = params_to_use.merge(
         crane_rate_id: default_crane_rate&.id,
         purpose: "main",
         quantity: 1,
+        duration_days: duration_days,
         on_site_mobile_crane_breakdown_id: @on_site_mobile_crane_breakdown_id
       )
     end
