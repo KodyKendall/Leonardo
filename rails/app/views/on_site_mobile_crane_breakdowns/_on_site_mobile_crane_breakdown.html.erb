@@ -70,7 +70,7 @@
         <label class="label" for="on_site_mobile_crane_breakdown_program_duration_days">
           <span class="label-text font-medium">Program duration (days)</span>
         </label>
-        <div class="input input-bordered bg-gray-100 cursor-not-allowed flex items-center">
+        <div class="input input-bordered bg-gray-100 cursor-not-allowed flex items-center" id="program_duration_display">
           <%= on_site_mobile_crane_breakdown.program_duration_days %>
         </div>
         <p class="text-xs text-gray-500 mt-1">Auto-calculated from roof area ÷ erection rate</p>
@@ -149,20 +149,63 @@
     const miscSizeField = document.getElementById('misc_crane_size_field');
     const miscDaysField = document.getElementById('misc_crane_days_field');
     
-    // Splicing crane toggle
+    const totalRoofAreaInput = document.querySelector('[name="on_site_mobile_crane_breakdown[total_roof_area_sqm]"]');
+    const erectionRateInput = document.querySelector('[name="on_site_mobile_crane_breakdown[erection_rate_sqm_per_day]"]');
+    const programDurationDisplay = document.getElementById('program_duration_display');
+    
+    // Function to update field visibility based on checkbox state
+    function updateFieldVisibility() {
+      if (splicingCheckbox) {
+        splicingSizeField.style.display = splicingCheckbox.checked ? 'block' : 'none';
+        splicingDaysField.style.display = splicingCheckbox.checked ? 'block' : 'none';
+      }
+      
+      if (miscCheckbox) {
+        miscSizeField.style.display = miscCheckbox.checked ? 'block' : 'none';
+        miscDaysField.style.display = miscCheckbox.checked ? 'block' : 'none';
+      }
+    }
+    
+    // Function to calculate and update program duration in real-time
+    function updateProgramDuration() {
+      const totalArea = parseFloat(totalRoofAreaInput?.value) || 0;
+      const erectionRate = parseFloat(erectionRateInput?.value) || 0;
+      
+      let duration = 0;
+      if (totalArea > 0 && erectionRate > 0) {
+        duration = Math.ceil(totalArea / erectionRate);
+      }
+      
+      if (programDurationDisplay) {
+        programDurationDisplay.textContent = duration;
+      }
+    }
+    
+    // Initialize field visibility on page load
+    updateFieldVisibility();
+    updateProgramDuration();
+    
+    // Splicing crane toggle - trigger on change
     if (splicingCheckbox) {
       splicingCheckbox.addEventListener('change', function() {
-        splicingSizeField.style.display = this.checked ? 'block' : 'none';
-        splicingDaysField.style.display = this.checked ? 'block' : 'none';
+        updateFieldVisibility();
       });
     }
     
-    // Misc crane toggle
+    // Misc crane toggle - trigger on change
     if (miscCheckbox) {
       miscCheckbox.addEventListener('change', function() {
-        miscSizeField.style.display = this.checked ? 'block' : 'none';
-        miscDaysField.style.display = this.checked ? 'block' : 'none';
+        updateFieldVisibility();
       });
+    }
+    
+    // Real-time program duration calculation
+    if (totalRoofAreaInput) {
+      totalRoofAreaInput.addEventListener('input', updateProgramDuration);
+    }
+    
+    if (erectionRateInput) {
+      erectionRateInput.addEventListener('input', updateProgramDuration);
     }
   });
 </script>
