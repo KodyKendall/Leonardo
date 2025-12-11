@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_11_172048) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_11_174851) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -420,6 +420,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_11_172048) do
     t.bigint "client_id"
     t.date "submission_deadline"
     t.decimal "grand_total", precision: 12, scale: 2, default: "0.0"
+    t.decimal "total_tonnage", precision: 12, scale: 3, default: "0.0"
     t.index ["awarded_project_id"], name: "index_tenders_on_awarded_project_id"
     t.index ["client_id"], name: "index_tenders_on_client_id"
     t.index ["e_number"], name: "index_tenders_on_e_number", unique: true

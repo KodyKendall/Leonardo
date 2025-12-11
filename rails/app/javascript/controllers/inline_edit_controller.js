@@ -134,6 +134,27 @@ export default class extends Controller {
     }
   }
 
+  calculateTotal() {
+    // Get quantity, duration_days, and wet_rate_per_day fields
+    const quantityField = this.formTarget.querySelector('input[name="tender_crane_selection[quantity]"]')
+    const durationField = this.formTarget.querySelector('input[name="tender_crane_selection[duration_days]"]')
+    const rateField = this.formTarget.querySelector('input[name="tender_crane_selection[wet_rate_per_day]"]')
+    const totalDisplay = this.formTarget.querySelector('[data-total-cost-display]')
+
+    if (quantityField && durationField && rateField && totalDisplay) {
+      const qty = parseFloat(quantityField.value) || 0
+      const days = parseFloat(durationField.value) || 0
+      const rate = parseFloat(rateField.value) || 0
+      const total = qty * days * rate
+
+      // Format and display the total cost
+      totalDisplay.value = 'R ' + total.toFixed(2)
+      
+      // Mark as dirty to show unsaved alert
+      this.markDirty({ target: quantityField })
+    }
+  }
+
   submitForm(event) {
     if (event) event.preventDefault()
     
