@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_10_174230) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_11_172048) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -367,7 +367,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_10_174230) do
     t.decimal "wet_rate_per_day", precision: 12, scale: 2, null: false
     t.decimal "total_cost", precision: 14, scale: 2, default: "0.0"
     t.integer "sort_order", default: 0
+    t.bigint "on_site_mobile_crane_breakdown_id"
     t.index ["crane_rate_id"], name: "index_tender_crane_selections_on_crane_rate_id"
+    t.index ["on_site_mobile_crane_breakdown_id"], name: "idx_on_on_site_mobile_crane_breakdown_id_69b25fc54e"
     t.index ["tender_id"], name: "index_tender_crane_selections_on_tender_id"
   end
 
@@ -485,6 +487,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_10_174230) do
   add_foreign_key "projects", "tenders"
   add_foreign_key "projects", "users", column: "created_by_id"
   add_foreign_key "tender_crane_selections", "crane_rates"
+  add_foreign_key "tender_crane_selections", "on_site_mobile_crane_breakdowns"
   add_foreign_key "tender_crane_selections", "tenders"
   add_foreign_key "tender_inclusions_exclusions", "tenders"
   add_foreign_key "tender_line_items", "tenders"

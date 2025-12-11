@@ -1,5 +1,5 @@
 <%# Reusable index list partial for tender_crane_selections %>
-<%# Renders the list of selections with inline editing capabilities %>
+<%# Renders the list of selections with inline editing capabilities and summary %>
 <%# Parameters: tender_crane_selections (array), on_site_mobile_crane_breakdown (object) %>
 
 <div id="tender_crane_selections">
@@ -28,11 +28,16 @@
   <% end %>
   
   <!-- Add Row Button -->
-  <div class="flex justify-end pt-4">
+  <div class="flex justify-end pt-4 pb-4">
     <%= form_with model: TenderCraneSelection.new, local: true, data: { turbo_stream: true } do |f| %>
       <%= f.hidden_field :tender_id, value: on_site_mobile_crane_breakdown.tender.id %>
       <%= f.hidden_field :on_site_mobile_crane_breakdown_id, value: on_site_mobile_crane_breakdown.id %>
       <%= f.submit "Add Row", class: "btn btn-primary btn-sm gap-2" %>
     <% end %>
+  </div>
+
+  <!-- Crane Cost Summary Section -->
+  <div id="crane_cost_summary">
+    <%= render 'tender_crane_selections/summary', on_site_mobile_crane_breakdown: on_site_mobile_crane_breakdown %>
   </div>
 </div>

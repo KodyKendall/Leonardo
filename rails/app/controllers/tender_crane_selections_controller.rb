@@ -26,21 +26,20 @@ class TenderCraneSelectionsController < ApplicationController
 
   # POST /tender_crane_selections or /tender_crane_selections.json
   def create
-    # Capture on_site_mobile_crane_breakdown_id for Turbo Stream response (don't save it)
+    # Capture on_site_mobile_crane_breakdown_id for Turbo Stream response
     @on_site_mobile_crane_breakdown_id = params[:tender_crane_selection][:on_site_mobile_crane_breakdown_id]
+    @on_site_mobile_crane_breakdown = OnSiteMobileCraneBreakdown.find(@on_site_mobile_crane_breakdown_id) if @on_site_mobile_crane_breakdown_id.present?
     
     # If creating from builder "Add Row", use default values
     params_to_use = tender_crane_selection_params
-    if params_to_use.except(:tender_id).compact_blank.empty?
+    if params_to_use.except(:tender_id, :on_site_mobile_crane_breakdown_id).compact_blank.empty?
       # Get the first active crane rate as default
       default_crane_rate = CraneRate.where(is_active: true).first
       params_to_use = params_to_use.merge(
         crane_rate_id: default_crane_rate&.id,
         purpose: "main",
         quantity: 1,
-        duration_days: 0,
-        wet_rate_per_day: 0,
-        total_cost: 0
+        on_site_mobile_crane_breakdown_id: @on_site_mobile_crane_breakdown_id
       )
     end
     
@@ -92,6 +91,6 @@ class TenderCraneSelectionsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def tender_crane_selection_params
-      params.require(:tender_crane_selection).permit(:tender_id, :crane_rate_id, :purpose, :quantity, :duration_days, :wet_rate_per_day, :total_cost, :sort_order)
+      params.require(:tender_crane_selection).permit(:tender_id, :crane_rate_id, :purpose, :quantity, :duration_days, :wet_rate_per_day, :total_cost, :sort_order, :on_site_mobile_crane_breakdown_id)
     end
 end
