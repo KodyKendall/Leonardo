@@ -22,8 +22,11 @@
           <!-- Back to Tender Button -->
           <% if on_site_mobile_crane_breakdown.tender %>
             <div class="mt-4">
-              <p class="text-xs font-medium text-gray-600 mb-2 uppercase tracking-wide">View Associated Tender</p>
-              <%= link_to on_site_mobile_crane_breakdown.tender.tender_name || "Back to Tender", tender_path(on_site_mobile_crane_breakdown.tender), class: "btn btn-sm btn-outline shadow-sm", data: { turbo: false } %>
+              <p class="text-xs font-medium text-gray-600 mb-2 uppercase tracking-wide">Navigate Back</p>
+              <div class="flex items-center gap-2">
+                <i class="fas fa-arrow-left text-gray-500 text-sm"></i>
+                <%= link_to "Back to #{on_site_mobile_crane_breakdown.tender.tender_name || 'Tender'}", tender_path(on_site_mobile_crane_breakdown.tender), class: "btn btn-sm btn-primary shadow-sm hover:shadow-md", data: { turbo: false } %>
+              </div>
             </div>
           <% end %>
         </div>
