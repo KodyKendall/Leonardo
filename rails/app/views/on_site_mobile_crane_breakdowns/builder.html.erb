@@ -114,91 +114,95 @@
 
   <!-- Section 4: Crane Rates -->
   <div class="mb-12">
-    <div class="bg-purple-50 border-l-4 border-purple-500 p-4 mb-6 rounded">
-      <h2 class="text-lg font-bold text-purple-900 flex items-center gap-2">
+    <div class="collapse bg-purple-50 border border-purple-200 rounded-lg">
+      <input type="checkbox" class="peer" />
+      <div class="collapse-title bg-purple-50 text-lg font-bold text-purple-900 flex items-center gap-2 cursor-pointer">
         <i class="fas fa-dollar-sign"></i>
-        Crane Rates
-      </h2>
-      <p class="text-sm text-purple-800 mt-2">Daily rates for different crane sizes and ownership types.</p>
-    </div>
-
-    <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
-      <% if @crane_rates.any? %>
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  Size
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  Ownership Type
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  Dry Rate / Day (R)
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  Diesel / Day (R)
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  Wet Rate / Day (R)
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  Effective From
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  Status
-                </th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-              <% @crane_rates.each do |rate| %>
-                <tr class="hover:bg-gray-50 transition-colors">
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                    <%= rate.size %>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium <%= rate.ownership_type == 'rental' ? 'bg-orange-100 text-orange-800' : 'bg-indigo-100 text-indigo-800' %>">
-                      <%= rate.ownership_type == 'rsb_owned' ? 'RSB Owned' : 'Rental' %>
-                    </span>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    R <%= number_with_precision(rate.dry_rate_per_day, precision: 2) %>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    R <%= number_with_precision(rate.diesel_per_day, precision: 2) %>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                    R <%= number_with_precision(rate.wet_rate_per_day, precision: 2) %>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    <%= rate.effective_from.strftime("%d %b %Y") %>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm">
-                    <% if rate.is_active %>
-                      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        <i class="fas fa-check-circle mr-1"></i>
-                        Active
-                      </span>
-                    <% else %>
-                      <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                        <i class="fas fa-times-circle mr-1"></i>
-                        Inactive
-                      </span>
-                    <% end %>
-                  </td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
+        View Crane Rates
+        <span class="text-sm font-normal text-purple-700 ml-auto">Click to expand</span>
+      </div>
+      <div class="collapse-content bg-white">
+        <div class="pt-6">
+          <p class="text-sm text-gray-600 mb-4">Daily rates for different crane sizes and ownership types.</p>
+          
+          <% if @crane_rates.any? %>
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                      Size
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                      Ownership Type
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                      Dry Rate / Day (R)
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                      Diesel / Day (R)
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                      Wet Rate / Day (R)
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                      Effective From
+                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                      Status
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                  <% @crane_rates.each do |rate| %>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                      <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                        <%= rate.size %>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium <%= rate.ownership_type == 'rental' ? 'bg-orange-100 text-orange-800' : 'bg-indigo-100 text-indigo-800' %>">
+                          <%= rate.ownership_type == 'rsb_owned' ? 'RSB Owned' : 'Rental' %>
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        R <%= number_with_precision(rate.dry_rate_per_day, precision: 2) %>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        R <%= number_with_precision(rate.diesel_per_day, precision: 2) %>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                        R <%= number_with_precision(rate.wet_rate_per_day, precision: 2) %>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                        <%= rate.effective_from.strftime("%d %b %Y") %>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <% if rate.is_active %>
+                          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <i class="fas fa-check-circle mr-1"></i>
+                            Active
+                          </span>
+                        <% else %>
+                          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            <i class="fas fa-times-circle mr-1"></i>
+                            Inactive
+                          </span>
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <div class="p-8 text-center text-gray-500">
+              <i class="fas fa-inbox text-4xl mb-4 opacity-50"></i>
+              <p class="font-medium">No crane rates found.</p>
+              <p class="text-sm mt-2"><%= link_to "Add one", new_crane_rate_path, class: "link text-blue-600" %></p>
+            </div>
+          <% end %>
         </div>
-      <% else %>
-        <div class="p-8 text-center text-gray-500">
-          <i class="fas fa-inbox text-4xl mb-4 opacity-50"></i>
-          <p class="font-medium">No crane rates found.</p>
-          <p class="text-sm mt-2"><%= link_to "Add one", new_crane_rate_path, class: "link text-blue-600" %></p>
-        </div>
-      <% end %>
+      </div>
     </div>
   </div>
 
