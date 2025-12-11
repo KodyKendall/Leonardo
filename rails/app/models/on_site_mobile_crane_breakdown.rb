@@ -10,6 +10,29 @@ class OnSiteMobileCraneBreakdown < ApplicationRecord
 
   before_save :calculate_program_duration
 
+  # Calculate total crane cost across all selections
+  def total_crane_cost
+    tender_crane_selections.sum(:total_cost)
+  end
+
+  # Calculate total daily crane rate (sum of wet_rate_per_day × quantity for all selections)
+  def total_daily_crane_rate
+    tender_crane_selections.sum { |selection| selection.wet_rate_per_day * selection.quantity }
+  end
+
+  # Calculate crane cost per tonne using CEILING to nearest R20
+  # Returns 0 if total_tonnage is not available or is zero
+  def crainage_rate_per_tonne
+    return 0 if total_crane_cost.zero?
+    
+    # Get total tonnage from tender (if available)
+    tonnage = tender.respond_to?(:total_tonnage) ? tender.total_tonnage.to_f : 0
+    return 0 if tonnage.zero?
+    
+    rate = total_crane_cost / tonnage
+    (rate / 20).ceil * 20
+  end
+
   private
 
   def calculate_program_duration

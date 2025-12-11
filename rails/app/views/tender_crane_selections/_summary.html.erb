@@ -1,0 +1,72 @@
+<%# Crane Cost Summary Section %>
+<%# Displays total crane calculations: daily rate, total cost, and cost per tonne %>
+<%# Parameters: on_site_mobile_crane_breakdown (object) %>
+
+<% if on_site_mobile_crane_breakdown.tender_crane_selections.any? %>
+  <div class="mt-8 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+    <h3 class="text-lg font-bold text-blue-900 mb-6 flex items-center gap-2">
+      <i class="fas fa-calculator text-blue-600"></i>
+      Crane Cost Summary
+    </h3>
+
+    <div class="grid grid-cols-3 gap-6">
+      <!-- Total Daily Crane Rate -->
+      <div class="bg-white p-4 rounded-lg border border-blue-100">
+        <p class="text-xs text-gray-600 uppercase tracking-wider font-semibold mb-2">
+          <i class="fas fa-calendar-day text-blue-600 mr-1"></i>
+          Total Daily Rate
+        </p>
+        <p class="text-2xl font-bold text-blue-900">
+          R <%= number_with_precision(on_site_mobile_crane_breakdown.total_daily_crane_rate, precision: 2) %>
+        </p>
+        <p class="text-xs text-gray-500 mt-2">Sum of all crane wet rates × quantity</p>
+      </div>
+
+      <!-- Total Crane Cost -->
+      <div class="bg-white p-4 rounded-lg border border-blue-100">
+        <p class="text-xs text-gray-600 uppercase tracking-wider font-semibold mb-2">
+          <i class="fas fa-coins text-green-600 mr-1"></i>
+          Total Crane Cost
+        </p>
+        <p class="text-2xl font-bold text-green-900">
+          R <%= number_with_precision(on_site_mobile_crane_breakdown.total_crane_cost, precision: 2) %>
+        </p>
+        <p class="text-xs text-gray-500 mt-2">For entire project duration</p>
+      </div>
+
+      <!-- Crane Cost Per Tonne -->
+      <div class="bg-white p-4 rounded-lg border border-blue-100">
+        <p class="text-xs text-gray-600 uppercase tracking-wider font-semibold mb-2">
+          <i class="fas fa-weight text-purple-600 mr-1"></i>
+          Cost Per Tonne
+        </p>
+        <p class="text-2xl font-bold text-purple-900">
+          R <%= number_with_precision(on_site_mobile_crane_breakdown.crainage_rate_per_tonne, precision: 2) %>
+        </p>
+        <p class="text-xs text-gray-500 mt-2">Rounded to nearest R20</p>
+      </div>
+    </div>
+
+    <!-- Breakdown by Purpose (Optional) -->
+    <div class="mt-6 pt-6 border-t border-blue-200">
+      <p class="text-sm font-semibold text-gray-700 mb-4">Breakdown by Purpose:</p>
+      <div class="grid grid-cols-3 gap-4">
+        <% ['main', 'splicing'].each do |purpose| %>
+          <% selections = on_site_mobile_crane_breakdown.tender_crane_selections.where(purpose: purpose) %>
+          <% cost = selections.sum(:total_cost) %>
+          <div class="text-sm">
+            <span class="font-medium text-gray-700 capitalize"><%= purpose %> Cranes:</span>
+            <span class="font-bold text-gray-900">R <%= number_with_precision(cost, precision: 2) %></span>
+            <span class="text-gray-500 text-xs ml-2">(<%= selections.count %> crane<%= selections.count != 1 ? 's' : '' %>)</span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% else %>
+  <div class="mt-8 p-6 bg-gray-50 border border-gray-200 rounded-lg text-center">
+    <i class="fas fa-info-circle text-gray-400 text-2xl mb-3"></i>
+    <p class="text-gray-600 font-medium">No crane selections yet</p>
+    <p class="text-sm text-gray-500 mt-2">Add crane selections above to see cost calculations</p>
+  </div>
+<% end %>
