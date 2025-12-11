@@ -1298,6 +1298,15 @@
                   boq_id: boqId
                 }
               },
+              // ERROR HANDLING: Register callback to handle and display error messages
+              onError: (error) => {
+                console.error('🔴 [LlamaBot Error Handler] Error received:', error);
+                console.error('🔴 Error type:', typeof error);
+                console.error('🔴 Error keys:', Object.keys(error || {}));
+                console.error('🔴 Error content:', error?.content || error?.message || error);
+                // The error callback is automatically called by LlamaBot when type="error" is received
+                // LlamaBot will automatically render the error message in the chat
+              },
               // Tailwind CSS classes for styling
               cssClasses: {
                 humanMessage: 'bg-indigo-100 text-indigo-900 p-3 rounded-lg mb-2 max-w-xs',
@@ -1311,6 +1320,33 @@
             
             const chat = LlamaBot.create('[data-llamabot="chat-container"]', config);
             console.log('✅ BOQ Chat: Initialized successfully');
+
+            // CRITICAL FIX: Parse JSON string messages from LlamaBot Rails gem
+            // The gem returns stringified JSON which must be parsed before passing to handlers
+            if (chat.messageHandler && chat.messageHandler.handleMessage) {
+              const originalHandleMessage = chat.messageHandler.handleMessage.bind(chat.messageHandler);
+              chat.messageHandler.handleMessage = function(data) {
+                // Parse data if it's a JSON string
+                if (typeof data === 'string') {
+                  try {
+                    data = JSON.parse(data);
+                  } catch (e) {
+                    console.warn('⚠️ Could not parse message data as JSON');
+                  }
+                }
+                
+                // Handle double-wrapped messages from LlamaBot Rails gem
+                if (data?.message && typeof data.message === 'string') {
+                  try {
+                    data = JSON.parse(data.message);
+                  } catch (e) {
+                    // Keep original data if parsing fails
+                  }
+                }
+                
+                return originalHandleMessage(data);
+              };
+            }
 
             // WORKAROUND: Fix ToolMessageRenderer._extractFilename to handle non-string paths
             // This prevents crashes when BOQ tools return database objects instead of file paths
@@ -1326,6 +1362,18 @@
                 return originalExtractFilename.call(this, path);
               };
               console.log('✅ Applied ToolMessageRenderer fix for BOQ database tools');
+            }
+
+            // DEBUGGING: Hook into handleEndMessage to see what's happening
+            if (chat.messageRenderer && chat.messageRenderer.handleEndMessage) {
+              const originalHandleEndMessage = chat.messageRenderer.handleEndMessage.bind(chat.messageRenderer);
+              chat.messageRenderer.handleEndMessage = function() {
+                console.log('🔍 [DEBUG] handleEndMessage called!');
+                console.log('Message history:', chat.messageRenderer.messageHistory);
+                console.log('Message history children:', chat.messageRenderer.messageHistory?.children);
+                return originalHandleEndMessage();
+              };
+              console.log('✅ Hooked into handleEndMessage for debugging');
             }
           } catch (createError) {
             console.error('❌ BOQ Chat: LlamaBot.create error:', createError);
