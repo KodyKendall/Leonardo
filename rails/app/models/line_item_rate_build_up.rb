@@ -1,6 +1,8 @@
 class LineItemRateBuildUp < ApplicationRecord
   belongs_to :tender_line_item
 
+  validates :margin_percentage, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }
+
   before_save :calculate_totals
   after_save :sync_rate_to_tender_line_item
   after_save :update_tender_grand_total
@@ -26,11 +28,11 @@ class LineItemRateBuildUp < ApplicationRecord
     self.subtotal += cherry_picker_rate if cherry_picker_included?
     self.subtotal += galvanizing_rate if galvanizing_included?
 
-    # Set margin amount (default to 0 if not set)
-    self.margin_amount ||= 0
+    # Set margin percentage (default to 0 if not set)
+    self.margin_percentage ||= 0
 
-    # Calculate total before rounding
-    self.total_before_rounding = subtotal + margin_amount
+    # Calculate total before rounding: subtotal * (1 + margin_percentage / 100)
+    self.total_before_rounding = subtotal * (1 + margin_percentage / 100.0)
 
     # Round to nearest whole number
     self.rounded_rate = total_before_rounding.round

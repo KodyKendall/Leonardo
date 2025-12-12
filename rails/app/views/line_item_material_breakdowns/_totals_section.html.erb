@@ -8,7 +8,7 @@
   <div class="flex justify-between text-xs items-center gap-2">
     <span class="text-gray-600">Markup:</span>
     <div class="join">
-      <input type="number" placeholder="0" step="0.1" class="input input-bordered input-xs w-16 text-right join-item text-xs" data-line-item-material-breakdown-target="marginInput" data-action="input->line-item-material-breakdown#recalculate" />
+      <input type="number" placeholder="0" step="0.1" value="<%= line_item_material_breakdown.margin_percentage %>" class="input input-bordered input-xs w-16 text-right join-item text-xs" data-line-item-material-breakdown-target="marginInput" data-action="input->line-item-material-breakdown#recalculate blur->line-item-material-breakdown#saveMargin" data-breakdown-id="<%= line_item_material_breakdown.id %>" />
       <span class="btn btn-xs no-animation join-item text-xs">%</span>
     </div>
   </div>

@@ -27,7 +27,11 @@
         { name: "Galvanizing", rate_field: :galvanizing_rate, included_field: :galvanizing_included }
       ] %>
 
-      <%= form_with model: line_item_rate_build_up, local: true, id: "line_item_rate_build_up_form" do |form| %>
+      <%= form_with model: line_item_rate_build_up, 
+                    local: true, 
+                    id: "line_item_rate_build_up_form",
+                    url: line_item_rate_build_up_path(line_item_rate_build_up),
+                    method: :patch do |form| %>
         <div class="overflow-x-auto">
           <table class="table table-sm w-full">
             <thead>
@@ -100,19 +104,21 @@
                 </td>
               </tr>
               <tr>
-                <td colspan="2" class="text-right font-medium">Margin:</td>
+                <td colspan="2" class="text-right font-medium">Margin (%):</td>
                 <td class="text-right">
-                  <%= form.number_field :margin_amount,
+                  <%= form.number_field :margin_percentage,
                       step: 0.01,
                       min: 0,
+                      max: 100,
+                      placeholder: "e.g., 10.5 for 10.5%",
                       class: "input input-sm input-bordered w-28 text-right",
                       data: {
                         line_item_rate_build_up_target: "marginInput",
-                        action: "input->line-item-rate-build-up#calculate"
+                        action: "input->line-item-rate-build-up#calculate blur->line-item-rate-build-up#saveOnMarginBlur"
                       } %>
                 </td>
-                <td class="text-right font-semibold text-orange-600" data-line-item-rate-build-up-target="marginDisplay">
-                  <%= number_to_currency(line_item_rate_build_up.margin_amount, unit: "R ", precision: 2) %>
+                <td class="text-right font-semibold text-orange-600" data-line-item-rate_build_up_target="marginDisplay">
+                  <%= "#{line_item_rate_build_up.margin_percentage}%" %>
                 </td>
               </tr>
               <tr>

@@ -45,6 +45,13 @@ export default class extends Controller {
     this.markDirty()
   }
 
+  updateMarginDisplay() {
+    if (this.hasMarginInputTarget && this.hasMarginDisplayTarget) {
+      const marginPct = parseFloat(this.marginInputTarget.value) || 0
+      this.marginDisplayTarget.textContent = `${marginPct}%`
+    }
+  }
+
   calculateDisplay() {
     let subtotal = 0
 
@@ -72,16 +79,16 @@ export default class extends Controller {
       this.subtotalTarget.textContent = `R ${subtotal.toFixed(2)}`
     }
 
-    // Get margin
-    const margin = this.hasMarginInputTarget ? (parseFloat(this.marginInputTarget.value) || 0) : 0
+    // Get margin percentage
+    const marginPct = this.hasMarginInputTarget ? (parseFloat(this.marginInputTarget.value) || 0) : 0
 
-    // Update margin display
+    // Update margin display (show the percentage, not a dollar amount)
     if (this.hasMarginDisplayTarget) {
-      this.marginDisplayTarget.textContent = `R ${margin.toFixed(2)}`
+      this.marginDisplayTarget.textContent = `${marginPct}%`
     }
 
-    // Calculate total before rounding
-    const totalBeforeRounding = subtotal + margin
+    // Calculate total before rounding: subtotal * (1 + marginPct / 100)
+    const totalBeforeRounding = subtotal * (1 + marginPct / 100)
     if (this.hasBeforeRoundingTarget) {
       this.beforeRoundingTarget.textContent = `R ${totalBeforeRounding.toFixed(2)}`
     }
@@ -91,5 +98,39 @@ export default class extends Controller {
     if (this.hasRoundedRateTarget) {
       this.roundedRateTarget.textContent = `R ${roundedRate.toFixed(2)}`
     }
+  }
+
+  saveOnMarginBlur(event) {
+    // Get the form element (the entire line_item_rate_build_up form)
+    const form = this.element.closest('form')
+    if (!form) return
+
+    // Submit via PATCH request with Turbo Stream support
+    fetch(form.action, {
+      method: 'PATCH',
+      headers: {
+        'Accept': 'text/vnd.turbo-stream.html',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: new FormData(form)
+    })
+    .then(response => response.text())
+    .then(html => {
+      // Parse the response HTML which contains turbo-stream elements
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(html, 'text/html')
+      
+      // Find each turbo-stream element and apply it
+      const streams = doc.querySelectorAll('turbo-stream')
+      streams.forEach(stream => {
+        // Use Turbo's built-in stream processing by cloning into document
+        const clone = document.importNode(stream, true)
+        // Append to body so Turbo processes it
+        document.body.appendChild(clone)
+        // Process happens asynchronously, remove after a tick
+        requestAnimationFrame(() => clone.remove())
+      })
+    })
+    .catch(error => console.error('Error saving margin percentage:', error))
   }
 }

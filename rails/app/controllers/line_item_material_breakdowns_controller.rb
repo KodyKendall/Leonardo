@@ -38,19 +38,34 @@ class LineItemMaterialBreakdownsController < ApplicationController
   def update
     respond_to do |format|
       if @line_item_material_breakdown.update(line_item_material_breakdown_params)
+        # Sync material supply rate to rate buildup if margin was updated
+        rate_buildup = nil
+        if params[:line_item_material_breakdown]&.key?(:margin_percentage)
+          rate_buildup = @line_item_material_breakdown.tender_line_item.line_item_rate_build_up
+          if rate_buildup.present?
+            rate_buildup.update(material_supply_rate: @line_item_material_breakdown.total)
+          end
+        end
+
         format.turbo_stream do
-          flash.now[:notice] = "Material breakdown saved successfully."
-          render turbo_stream: [
-            turbo_stream.replace(
+          turbo_updates = []
+          # If margin was updated, update both material breakdown and rate buildup frames
+          if rate_buildup.present?
+            turbo_updates << turbo_stream.replace(
               dom_id(@line_item_material_breakdown),
               partial: 'line_item_material_breakdowns/show',
-              locals: { line_item_material_breakdown: @line_item_material_breakdown }
-            ),
-            turbo_stream.update("flash", partial: "shared/flash")
-          ]
+              locals: { line_item_material_breakdown: @line_item_material_breakdown, show_success: true }
+            )
+            turbo_updates << turbo_stream.replace(
+              dom_id(rate_buildup),
+              partial: 'line_item_rate_build_ups/line_item_rate_build_up',
+              locals: { line_item_rate_build_up: rate_buildup }
+            )
+          end
+          render turbo_stream: turbo_updates
         end
         format.html { redirect_to @line_item_material_breakdown, notice: "Line item material breakdown was successfully updated.", status: :see_other }
-        format.json { render :show, status: :ok, location: @line_item_material_breakdown }
+        format.json { render json: { id: @line_item_material_breakdown.id, margin_percentage: @line_item_material_breakdown.margin_percentage, total: @line_item_material_breakdown.total }, status: :ok }
       else
         format.turbo_stream do
           flash.now[:alert] = "Failed to save: #{@line_item_material_breakdown.errors.full_messages.join(', ')}"
@@ -94,6 +109,6 @@ class LineItemMaterialBreakdownsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def line_item_material_breakdown_params
-      params.require(:line_item_material_breakdown).permit(:tender_line_item_id)
+      params.require(:line_item_material_breakdown).permit(:tender_line_item_id, :margin_percentage)
     end
 end

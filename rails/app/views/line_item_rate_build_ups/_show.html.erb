@@ -57,7 +57,22 @@
 
       <div class="flex justify-between text-sm">
         <span class="font-semibold text-gray-700">MARGIN %:</span>
-        <input type="number" placeholder="0%" step="0.1" class="input input-bordered input-xs w-24 text-right" />
+        <form id="markup_form_<%= line_item_rate_build_up.id %>" 
+              action="<%= line_item_rate_build_up_path(line_item_rate_build_up) %>" 
+              method="patch"
+              data-controller="markup-form" 
+              class="inline"
+              data-turbo="true">
+          <%= hidden_field_tag :authenticity_token, form_authenticity_token %>
+          <input type="number" 
+                 name="line_item_rate_build_up[margin_percentage]" 
+                 placeholder="0%" 
+                 step="0.1" 
+                 value="<%= line_item_rate_build_up.margin_percentage || 0 %>"
+                 class="input input-bordered input-xs w-24 text-right" 
+                 data-action="blur->markup-form#saveOnBlur"
+                 data-markup-form-target="input" />
+        </form>
       </div>
 
       <div class="flex justify-between text-lg font-bold border-t pt-2">
