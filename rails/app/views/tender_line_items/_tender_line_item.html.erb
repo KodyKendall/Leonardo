@@ -10,11 +10,11 @@
                       } do |f| %>
           <!-- Delete Button (Top Right) -->
           <div class="flex justify-end mb-3">
-            <%= button_to tender_tender_line_item_path(tender_line_item.tender, tender_line_item),
-                          method: :delete,
-                          class: "btn btn-xs btn-ghost text-error",
-                          form: { data: { turbo_confirm: "Delete this line item?" } },
-                          title: "Delete" do %>
+            <%= link_to tender_tender_line_item_path(tender_line_item.tender, tender_line_item),
+                        method: :delete,
+                        class: "btn btn-xs btn-ghost text-error",
+                        data: { turbo_method: :delete, turbo_confirm: "Delete this line item?" },
+                        title: "Delete" do %>
               <i class="fas fa-trash"></i>
             <% end %>
           </div>
