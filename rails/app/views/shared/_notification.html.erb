@@ -1,0 +1,28 @@
+<div class="alert alert-<%= type %> shadow-lg mb-2" role="alert" data-notification>
+  <div class="flex items-center gap-2">
+    <% case type.to_s
+    when 'success'
+      icon_class = 'fa-check-circle text-green-600'
+    when 'error'
+      icon_class = 'fa-exclamation-circle text-red-600'
+    when 'warning'
+      icon_class = 'fa-exclamation-triangle text-yellow-600'
+    else
+      icon_class = 'fa-info-circle text-blue-600'
+    end %>
+    <i class="fas <%= icon_class %> text-lg flex-shrink-0"></i>
+    <span><%= message %></span>
+  </div>
+</div>
+
+<script>
+  // Auto-remove notification after 4 seconds
+  setTimeout(() => {
+    const notification = document.querySelector('[data-notification]');
+    if (notification) {
+      notification.style.transition = 'opacity 0.3s ease-out';
+      notification.style.opacity = '0';
+      setTimeout(() => notification.remove(), 300);
+    }
+  }, 4000);
+</script>

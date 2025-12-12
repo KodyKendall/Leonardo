@@ -28,6 +28,55 @@ export default class extends Controller {
     this.calculateTotals()
   }
 
+  // Auto-save margin on blur
+  saveMargin(event) {
+    const marginInput = event.target
+    const breakdownId = marginInput.getAttribute('data-breakdown-id')
+    const marginValue = parseFloat(marginInput.value) || 0
+
+    // Validate margin is between 0-100
+    if (marginValue < 0 || marginValue > 100) {
+      console.warn('Margin must be between 0 and 100')
+      marginInput.classList.add('input-error')
+      setTimeout(() => marginInput.classList.remove('input-error'), 1500)
+      return
+    }
+
+    // Use Turbo's built-in fetch with turbo_stream format
+    const form = new FormData()
+    form.append('_method', 'PATCH')
+    form.append('line_item_material_breakdown[margin_percentage]', marginValue)
+
+    fetch(`/line_item_material_breakdowns/${breakdownId}`, {
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+        'Accept': 'text/vnd.turbo-stream.html'
+      },
+      body: form
+    })
+    .then(async response => {
+      if (response.ok) {
+        // Parse response as turbo stream
+        const text = await response.text()
+        Turbo.renderStreamMessage(text)
+        
+        // Show brief visual feedback (green border flash)
+        marginInput.classList.add('input-success')
+        setTimeout(() => marginInput.classList.remove('input-success'), 1000)
+      } else {
+        console.error('Failed to save margin:', response.status)
+        marginInput.classList.add('input-error')
+        setTimeout(() => marginInput.classList.remove('input-error'), 1500)
+      }
+    })
+    .catch(error => {
+      console.error('Error saving margin:', error)
+      marginInput.classList.add('input-error')
+      setTimeout(() => marginInput.classList.remove('input-error'), 1500)
+    })
+  }
+
   calculateTotals() {
     let subtotal = 0
 

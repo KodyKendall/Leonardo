@@ -42,18 +42,22 @@ class LineItemRateBuildUpsController < ApplicationController
       if @line_item_rate_build_up.update(line_item_rate_build_up_params)
         format.html { redirect_to @line_item_rate_build_up, notice: "Line item rate build up was successfully updated.", status: :see_other }
         format.turbo_stream do
-          render turbo_stream: [
+          material_breakdown = @line_item_rate_build_up.tender_line_item&.line_item_material_breakdown
+          streams = [
             turbo_stream.replace(
               dom_id(@line_item_rate_build_up),
               partial: "line_item_rate_build_ups/line_item_rate_build_up",
               locals: { line_item_rate_build_up: @line_item_rate_build_up }
-            ),
-            turbo_stream.replace(
-              dom_id(@line_item_rate_build_up.tender_line_item),
-              partial: "tender_line_items/tender_line_item",
-              locals: { tender_line_item: @line_item_rate_build_up.tender_line_item, open_breakdown: true }
             )
           ]
+          if material_breakdown
+            streams << turbo_stream.replace(
+              dom_id(material_breakdown),
+              partial: "line_item_material_breakdowns/line_item_material_breakdown",
+              locals: { line_item_material_breakdown: material_breakdown, show_success: true }
+            )
+          end
+          render turbo_stream: streams
         end
         format.json { render json: @line_item_rate_build_up, status: :ok }
       else
@@ -92,6 +96,6 @@ class LineItemRateBuildUpsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def line_item_rate_build_up_params
-      params.require(:line_item_rate_build_up).permit(:tender_line_item_id, :material_supply_rate, :material_supply_included, :fabrication_rate, :fabrication_included, :overheads_rate, :overheads_included, :shop_priming_rate, :shop_priming_included, :onsite_painting_rate, :onsite_painting_included, :delivery_rate, :delivery_included, :bolts_rate, :bolts_included, :erection_rate, :erection_included, :crainage_rate, :crainage_included, :cherry_picker_rate, :cherry_picker_included, :galvanizing_rate, :galvanizing_included, :subtotal, :margin_amount, :total_before_rounding, :rounded_rate)
+      params.require(:line_item_rate_build_up).permit(:tender_line_item_id, :material_supply_rate, :material_supply_included, :fabrication_rate, :fabrication_included, :overheads_rate, :overheads_included, :shop_priming_rate, :shop_priming_included, :onsite_painting_rate, :onsite_painting_included, :delivery_rate, :delivery_included, :bolts_rate, :bolts_included, :erection_rate, :erection_included, :crainage_rate, :crainage_included, :cherry_picker_rate, :cherry_picker_included, :galvanizing_rate, :galvanizing_included, :subtotal, :margin_percentage, :total_before_rounding, :rounded_rate)
     end
 end
