@@ -1,4 +1,6 @@
 class LineItemMaterialBreakdownsController < ApplicationController
+  include ActionView::RecordIdentifier
+  
   before_action :set_line_item_material_breakdown, only: %i[ show edit update destroy ]
 
   # GET /line_item_material_breakdowns or /line_item_material_breakdowns.json
@@ -49,24 +51,27 @@ class LineItemMaterialBreakdownsController < ApplicationController
 
         format.turbo_stream do
           turbo_updates = []
-          # If margin was updated, update material breakdown, rate buildup, and tender line item frames
+          # Always refresh the material breakdown to show success
+          turbo_updates << turbo_stream.replace(
+            @line_item_material_breakdown,
+            partial: 'line_item_material_breakdowns/line_item_material_breakdown',
+            locals: { line_item_material_breakdown: @line_item_material_breakdown, show_success: true }
+          )
+          
+          # If margin was updated, update rate buildup and tender line item frames
           if rate_buildup.present?
             tender_line_item = @line_item_material_breakdown.tender_line_item
             turbo_updates << turbo_stream.replace(
-              dom_id(@line_item_material_breakdown),
-              partial: 'line_item_material_breakdowns/_line_item_material_breakdown',
-              locals: { line_item_material_breakdown: @line_item_material_breakdown, show_success: true }
-            )
-            turbo_updates << turbo_stream.replace(
-              dom_id(rate_buildup),
+              rate_buildup,
               partial: 'line_item_rate_build_ups/line_item_rate_build_up',
               locals: { line_item_rate_build_up: rate_buildup }
             )
             # Broadcast tender line item frame to update rate and line total display
+            # Keep the breakdown section expanded since user is actively editing it
             turbo_updates << turbo_stream.replace(
-              dom_id(tender_line_item),
-              partial: 'tender_line_items/_tender_line_item',
-              locals: { tender_line_item: tender_line_item }
+              tender_line_item,
+              partial: 'tender_line_items/tender_line_item',
+              locals: { tender_line_item: tender_line_item, open_breakdown: true }
             )
           end
           render turbo_stream: turbo_updates

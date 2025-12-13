@@ -5,21 +5,37 @@
     <span class="font-semibold text-gray-900" data-line-item-material-breakdown-target="subtotalDisplay">R<%= number_with_precision(line_item_material_breakdown.subtotal, precision: 2, delimiter: ",") %></span>
   </div>
 
-  <div class="flex justify-between text-xs items-center gap-2">
+  <%= form_with model: line_item_material_breakdown,
+               url: line_item_material_breakdown_path(line_item_material_breakdown),
+               method: :patch,
+               class: "flex justify-between text-xs items-center gap-2",
+               data: {
+                 turbo_stream: true,
+                 controller: "margin-form",
+                 action: "turbo:submit-end->margin-form#handleSuccess"
+               } do |f| %>
     <span class="text-gray-600">Markup:</span>
     <div class="flex items-center gap-2">
       <div class="join">
-        <input type="number" placeholder="0" step="0.1" value="<%= line_item_material_breakdown.margin_percentage %>" class="input input-bordered input-xs w-16 text-right join-item text-xs border-gray-300" data-line-item-material-breakdown-target="marginInput" data-action="input->line-item-material-breakdown#markDirty input->line-item-material-breakdown#recalculate keydown->line-item-material-breakdown#handleKeydown" data-breakdown-id="<%= line_item_material_breakdown.id %>" />
+        <%= f.number_field :margin_percentage,
+            placeholder: "0",
+            step: 0.1,
+            class: "input input-bordered input-xs w-16 text-right join-item text-xs border-gray-300",
+            data: {
+              line_item_material_breakdown_target: "marginInput",
+              margin_form_target: "input",
+              action: "input->line-item-material-breakdown#markDirty input->line-item-material-breakdown#recalculate keydown->margin-form#submitOnEnter"
+            } %>
         <span class="btn btn-xs no-animation join-item text-xs">%</span>
       </div>
-      <button type="button" class="btn btn-xs btn-ghost transition-all opacity-0 pointer-events-none" 
+      <button type="submit" class="btn btn-xs btn-ghost transition-all opacity-0 pointer-events-none"
         data-line-item-material-breakdown-target="saveButton"
-        data-action="click->line-item-material-breakdown#saveMargin"
+        data-margin-form-target="submitButton"
         title="Save markup">
         <i class="fa-solid fa-check text-success text-sm"></i>
       </button>
     </div>
-  </div>
+  <% end %>
 
   <div class="flex justify-between items-center border-t pt-3">
     <span class="text-sm font-semibold text-gray-700">Material Supply Total:</span>
