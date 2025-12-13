@@ -7,9 +7,17 @@
 
   <div class="flex justify-between text-xs items-center gap-2">
     <span class="text-gray-600">Markup:</span>
-    <div class="join">
-      <input type="number" placeholder="0" step="0.1" value="<%= line_item_material_breakdown.margin_percentage %>" class="input input-bordered input-xs w-16 text-right join-item text-xs" data-line-item-material-breakdown-target="marginInput" data-action="input->line-item-material-breakdown#recalculate blur->line-item-material-breakdown#saveMargin" data-breakdown-id="<%= line_item_material_breakdown.id %>" />
-      <span class="btn btn-xs no-animation join-item text-xs">%</span>
+    <div class="flex items-center gap-2">
+      <div class="join">
+        <input type="number" placeholder="0" step="0.1" value="<%= line_item_material_breakdown.margin_percentage %>" class="input input-bordered input-xs w-16 text-right join-item text-xs border-gray-300" data-line-item-material-breakdown-target="marginInput" data-action="input->line-item-material-breakdown#markDirty input->line-item-material-breakdown#recalculate keydown->line-item-material-breakdown#handleKeydown" data-breakdown-id="<%= line_item_material_breakdown.id %>" />
+        <span class="btn btn-xs no-animation join-item text-xs">%</span>
+      </div>
+      <button type="button" class="btn btn-xs btn-ghost transition-all opacity-0 pointer-events-none" 
+        data-line-item-material-breakdown-target="saveButton"
+        data-action="click->line-item-material-breakdown#saveMargin"
+        title="Save markup">
+        <i class="fa-solid fa-check text-success text-sm"></i>
+      </button>
     </div>
   </div>
 
