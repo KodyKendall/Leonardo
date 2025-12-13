@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   resources :on_site_mobile_crane_breakdowns do
     member do
       get :builder
+      post :populate_crane_selections
     end
   end
   post "tenders/:tender_id/ensure_breakdown", to: "on_site_mobile_crane_breakdowns#ensure_breakdown", as: "ensure_breakdown"

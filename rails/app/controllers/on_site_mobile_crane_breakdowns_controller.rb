@@ -1,5 +1,5 @@
 class OnSiteMobileCraneBreakdownsController < ApplicationController
-  before_action :set_on_site_mobile_crane_breakdown, only: %i[ show edit update destroy builder ]
+  before_action :set_on_site_mobile_crane_breakdown, only: %i[ show edit update destroy builder populate_crane_selections ]
 
   # GET /on_site_mobile_crane_breakdowns or /on_site_mobile_crane_breakdowns.json
   def index
@@ -14,6 +14,86 @@ class OnSiteMobileCraneBreakdownsController < ApplicationController
   def builder
     @crane_complements = CraneComplement.all
     @crane_rates = CraneRate.all
+  end
+
+  # POST /on_site_mobile_crane_breakdowns/1/populate_crane_selections
+  def populate_crane_selections
+    breakdown = @on_site_mobile_crane_breakdown
+    tender = breakdown.tender
+    
+    # Find the matching crane complement
+    matching_complement = CraneComplement.find_by("? >= area_min_sqm AND ? <= area_max_sqm",
+                                                   breakdown.erection_rate_sqm_per_day,
+                                                   breakdown.erection_rate_sqm_per_day)
+    
+    unless matching_complement
+      flash.alert = "No matching crane complement found for this area."
+      return render turbo_stream: turbo_stream.replace("flash", partial: "shared/flash")
+    end
+
+    # Parse the crane_recommendation text
+    # Expected format: "2 × 10t + 1 × 25t + 2 × 35t"
+    recommendation = matching_complement.crane_recommendation
+    pattern = /(\d+)\s*[×x]\s*(\d+)t/i
+    matches = recommendation.scan(pattern)
+
+    if matches.empty?
+      flash.alert = "Could not parse crane recommendation."
+      return render turbo_stream: turbo_stream.replace("flash", partial: "shared/flash")
+    end
+
+    missing_rates = []
+    created_count = 0
+
+    matches.each do |quantity_str, size_str|
+      quantity = quantity_str.to_i
+      size = "#{size_str}t"
+
+      # Find matching crane rate
+      crane_rate = CraneRate.find_by(size: size, ownership_type: breakdown.ownership_type, is_active: true)
+
+      if crane_rate.nil?
+        missing_rates << size
+        next
+      end
+
+      # Create the tender crane selection
+      selection = TenderCraneSelection.new(
+        tender_id: tender.id,
+        crane_rate_id: crane_rate.id,
+        quantity: quantity,
+        purpose: "main",
+        on_site_mobile_crane_breakdown_id: breakdown.id
+      )
+
+      if selection.save
+        created_count += 1
+      end
+    end
+
+    # Build flash message
+    flash_message = "Added #{created_count} crane selection(s)."
+    if missing_rates.any?
+      flash_message += " Warning: No active rates found for: #{missing_rates.join(', ')}"
+      flash.notice = flash_message
+    else
+      flash.notice = flash_message
+    end
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.replace("flash", partial: "shared/flash"),
+          turbo_stream.replace("tender_crane_selections", 
+            partial: "tender_crane_selections/index",
+            locals: { 
+              tender_crane_selections: breakdown.tender_crane_selections,
+              on_site_mobile_crane_breakdown: breakdown
+            }
+          )
+        ]
+      end
+    end
   end
 
   # POST /tenders/:tender_id/ensure_breakdown
