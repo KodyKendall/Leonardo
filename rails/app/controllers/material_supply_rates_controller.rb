@@ -66,6 +66,6 @@ class MaterialSupplyRatesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def material_supply_rate_params
-      params.require(:material_supply_rate).permit(:rate, :unit, :material_supply_id, :supplier_id, :monthly_material_supply_rate_id)
+      params.require(:material_supply_rate).permit(:rate, :unit, :material_supply_id, :supplier_id, :monthly_material_supply_rate_id, :is_winner)
     end
 end
