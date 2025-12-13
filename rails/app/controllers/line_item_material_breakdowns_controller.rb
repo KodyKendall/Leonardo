@@ -53,7 +53,7 @@ class LineItemMaterialBreakdownsController < ApplicationController
           if rate_buildup.present?
             turbo_updates << turbo_stream.replace(
               dom_id(@line_item_material_breakdown),
-              partial: 'line_item_material_breakdowns/show',
+              partial: 'line_item_material_breakdowns/_line_item_material_breakdown',
               locals: { line_item_material_breakdown: @line_item_material_breakdown, show_success: true }
             )
             turbo_updates << turbo_stream.replace(

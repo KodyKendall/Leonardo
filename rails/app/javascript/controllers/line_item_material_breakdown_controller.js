@@ -5,11 +5,17 @@ export default class extends Controller {
     "materialRow",
     "subtotalDisplay",
     "marginInput",
-    "totalDisplay"
+    "totalDisplay",
+    "saveButton"
   ]
 
   connect() {
     this.calculateTotals()
+    this.savedMarginValue = this.marginInputTarget.value
+    
+    // Ensure save button starts hidden with opacity
+    this.saveButtonTarget.classList.add('opacity-0', 'pointer-events-none')
+    this.saveButtonTarget.classList.remove('hidden')
     
     // Listen for custom events from Turbo Stream
     this.element.addEventListener("material:added", () => this.calculateTotals())
@@ -28,9 +34,42 @@ export default class extends Controller {
     this.calculateTotals()
   }
 
-  // Auto-save margin on blur
-  saveMargin(event) {
-    const marginInput = event.target
+  // Mark input as dirty when value changes from saved value
+  markDirty() {
+    const currentValue = this.marginInputTarget.value.trim()
+    const savedValue = this.savedMarginValue.trim()
+    const isDirty = currentValue !== savedValue
+    
+    if (isDirty) {
+      this.marginInputTarget.classList.add('border-amber-400', 'border-2')
+      this.marginInputTarget.classList.remove('border-gray-300')
+      this.saveButtonTarget.classList.remove('opacity-0', 'pointer-events-none')
+    } else {
+      this.marginInputTarget.classList.remove('border-amber-400', 'border-2')
+      this.marginInputTarget.classList.add('border-gray-300')
+      this.saveButtonTarget.classList.add('opacity-0', 'pointer-events-none')
+    }
+  }
+
+  // Clear dirty state after successful save
+  clearDirty() {
+    this.savedMarginValue = this.marginInputTarget.value
+    this.marginInputTarget.classList.remove('border-amber-400', 'border-2')
+    this.marginInputTarget.classList.add('border-gray-300')
+    this.saveButtonTarget.classList.add('opacity-0', 'pointer-events-none')
+  }
+
+  // Handle Enter key to save
+  handleKeydown(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault()
+      this.saveMargin()
+    }
+  }
+
+  // Save margin on explicit checkmark button click or Enter key
+  saveMargin() {
+    const marginInput = this.marginInputTarget
     const breakdownId = marginInput.getAttribute('data-breakdown-id')
     const marginValue = parseFloat(marginInput.value) || 0
 
@@ -56,22 +95,29 @@ export default class extends Controller {
       body: form
     })
     .then(async response => {
+      console.log('Save response status:', response.status, response.ok)
       if (response.ok) {
         // Parse response as turbo stream
         const text = await response.text()
         Turbo.renderStreamMessage(text)
+        
+        // Clear dirty state on successful save
+        this.clearDirty()
+        console.log('Dirty state cleared after save')
         
         // Show brief visual feedback (green border flash)
         marginInput.classList.add('input-success')
         setTimeout(() => marginInput.classList.remove('input-success'), 1000)
       } else {
         console.error('Failed to save margin:', response.status)
+        // Keep dirty state and show error
         marginInput.classList.add('input-error')
         setTimeout(() => marginInput.classList.remove('input-error'), 1500)
       }
     })
     .catch(error => {
       console.error('Error saving margin:', error)
+      // Keep dirty state and show error
       marginInput.classList.add('input-error')
       setTimeout(() => marginInput.classList.remove('input-error'), 1500)
     })
