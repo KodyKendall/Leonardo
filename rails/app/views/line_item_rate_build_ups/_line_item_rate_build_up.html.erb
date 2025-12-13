@@ -72,10 +72,10 @@
                       <%= form.number_field component[:rate_field],
                           step: 0.01,
                           min: 0,
-                          class: "input input-sm input-bordered w-28 text-right",
+                          class: "input input-sm input-bordered w-28 text-right bg-gray-100 cursor-not-allowed opacity-75",
+                          readonly: true,
                           data: {
-                            line_item_rate_build_up_target: "rateInput",
-                            action: "input->line-item-rate-build-up#calculate"
+                            line_item_rate_build_up_target: "rateInput"
                           } %>
                     <% else %>
                       <%= form.number_field component[:rate_field],
@@ -89,9 +89,16 @@
                     <% end %>
                   </td>
                   <td class="text-right font-semibold" data-line-item-rate-build-up-target="amountCell">
-                    <span class="<%= 'text-gray-400' unless is_included %>">
-                      <%= is_included ? number_to_currency(rate_value, unit: "R ", precision: 2) : "—" %>
-                    </span>
+                    <% if is_material_supply %>
+                      <% material_supply_total = line_item_rate_build_up.tender_line_item.line_item_material_breakdown&.total || 0 %>
+                      <span class="<%= 'text-gray-400' unless is_included %>">
+                        <%= is_included ? number_to_currency(material_supply_total, unit: "R ", precision: 2) : "—" %>
+                      </span>
+                    <% else %>
+                      <span class="<%= 'text-gray-400' unless is_included %>">
+                        <%= is_included ? number_to_currency(rate_value, unit: "R ", precision: 2) : "—" %>
+                      </span>
+                    <% end %>
                   </td>
                 </tr>
               <% end %>
