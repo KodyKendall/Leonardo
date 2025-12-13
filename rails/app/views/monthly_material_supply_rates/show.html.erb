@@ -37,20 +37,34 @@
               <% existing_rate = @existing_rates[[material.id, supplier.id]] %>
               <% rate_id = existing_rate&.id %>
               <td class="border-r border-gray-200 px-4 py-3 text-center">
-                <div class="flex items-center justify-center gap-1">
-                  <span class="text-gray-700 font-medium">R</span>
-                  <input
-                    type="number"
-                    class="rate-input w-28 text-center px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value="<%= existing_rate&.rate %>"
-                    placeholder="-"
-                    step="0.01"
-                    min="0"
-                    data-material-id="<%= material.id %>"
-                    data-supplier-id="<%= supplier.id %>"
-                    data-rate-id="<%= rate_id %>"
-                    data-monthly-rate-id="<%= @monthly_material_supply_rate.id %>"
-                  />
+                <div class="flex items-center justify-center gap-2">
+                  <div class="flex items-center gap-1">
+                    <span class="text-gray-700 font-medium">R</span>
+                    <input
+                      type="number"
+                      class="rate-input w-28 text-center px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value="<%= existing_rate&.rate %>"
+                      placeholder="-"
+                      step="0.01"
+                      min="0"
+                      data-material-id="<%= material.id %>"
+                      data-supplier-id="<%= supplier.id %>"
+                      data-rate-id="<%= rate_id %>"
+                      data-monthly-rate-id="<%= @monthly_material_supply_rate.id %>"
+                    />
+                  </div>
+                  <% if existing_rate&.rate.to_f > 0 %>
+                    <input
+                      type="checkbox"
+                      class="winner-checkbox w-4 h-4 cursor-pointer"
+                      <%= 'checked' if existing_rate&.is_winner %>
+                      data-rate-id="<%= rate_id %>"
+                      data-material-id="<%= material.id %>"
+                      data-supplier-id="<%= supplier.id %>"
+                      data-monthly-rate-id="<%= @monthly_material_supply_rate.id %>"
+                      title="Select as winning supplier for this material"
+                    />
+                  <% end %>
                 </div>
               </td>
             <% end %>
@@ -70,27 +84,34 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const inputs = document.querySelectorAll('.rate-input');
+  const checkboxes = document.querySelectorAll('.winner-checkbox');
   let saveTimeout;
 
+  // Handle rate inputs
   inputs.forEach(input => {
-    input.addEventListener('change', function() {
-      saveRateDirectly(this);
-    });
-
     input.addEventListener('blur', function() {
       clearTimeout(saveTimeout);
-      if (this.value && this.value !== this.dataset.lastSavedValue) {
+      // Save on blur regardless of value (handles both adding and deleting)
+      if (this.value !== this.dataset.lastSavedValue) {
         saveRateDirectly(this);
       }
     });
 
     input.addEventListener('input', function() {
       clearTimeout(saveTimeout);
+      // Debounced save on input (800ms)
       saveTimeout = setTimeout(() => {
-        if (this.value && this.value !== this.dataset.lastSavedValue) {
+        if (this.value !== this.dataset.lastSavedValue) {
           saveRateDirectly(this);
         }
       }, 800);
+    });
+  });
+
+  // Handle winner checkbox clicks
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      saveWinnerSelection(this);
     });
   });
 
@@ -101,10 +122,42 @@ document.addEventListener('DOMContentLoaded', function() {
     const rate = input.value;
     const rateId = input.dataset.rateId;
 
-    // Skip if empty
-    if (!rate || rate === '') return;
+    // Skip if empty AND no existing rate (nothing to save)
+    if ((!rate || rate === '') && !rateId) return;
 
     showSaving();
+
+    // If the field is empty and there's an existing rate, delete it
+    if ((!rate || rate === '') && rateId) {
+      fetch(`/material_supply_rates/${rateId}.json`, {
+        method: 'DELETE',
+        headers: {
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          showSaved();
+          input.dataset.rateId = '';
+          input.dataset.lastSavedValue = '';
+          
+          // Remove checkbox if it exists
+          const cellDiv = input.parentElement.parentElement;
+          const existingCheckbox = cellDiv.querySelector('.winner-checkbox');
+          if (existingCheckbox) {
+            existingCheckbox.remove();
+          }
+        } else {
+          showError('Failed to delete');
+          console.error('Response:', response);
+        }
+      })
+      .catch(error => {
+        showError('Delete failed');
+        console.error('Error:', error);
+      });
+      return;
+    }
 
     // Create or update MaterialSupplyRate via Rails controller
     const formData = new FormData();
@@ -117,8 +170,8 @@ document.addEventListener('DOMContentLoaded', function() {
     formData.append('authenticity_token', document.querySelector('meta[name="csrf-token"]').content);
 
     const url = rateId 
-      ? `/material_supply_rates/${rateId}`
-      : `/material_supply_rates`;
+      ? `/material_supply_rates/${rateId}.json`
+      : `/material_supply_rates.json`;
 
     fetch(url, {
       method: 'POST',
@@ -126,10 +179,37 @@ document.addEventListener('DOMContentLoaded', function() {
     })
     .then(response => {
       if (response.ok) {
-        showSaved();
-        input.classList.add('bg-green-50');
-        input.dataset.lastSavedValue = rate;
-        setTimeout(() => input.classList.remove('bg-green-50'), 1000);
+        return response.json().then(data => {
+          showSaved();
+          input.classList.add('bg-green-50');
+          input.dataset.lastSavedValue = rate;
+          setTimeout(() => input.classList.remove('bg-green-50'), 1000);
+          
+          // Update the rate ID if it was a create operation
+          if (!rateId && data.id) {
+            input.dataset.rateId = data.id;
+          }
+          
+          // Handle checkbox visibility for both create and update operations
+          const cellDiv = input.parentElement.parentElement;
+          const existingCheckbox = cellDiv.querySelector('.winner-checkbox');
+          const rateValue = parseFloat(rate);
+          
+          if (rateValue > 0) {
+            // Show checkbox - create if doesn't exist
+            if (!existingCheckbox) {
+              const currentRateId = input.dataset.rateId;
+              if (currentRateId) {
+                addWinnerCheckbox(input, currentRateId);
+              }
+            }
+          } else {
+            // Hide checkbox - remove if exists
+            if (existingCheckbox) {
+              existingCheckbox.remove();
+            }
+          }
+        });
       } else {
         showError('Failed to save');
         console.error('Response:', response);
@@ -139,6 +219,70 @@ document.addEventListener('DOMContentLoaded', function() {
       showError('Save failed');
       console.error('Error:', error);
     });
+  }
+
+  function saveWinnerSelection(checkbox) {
+    const rateId = checkbox.dataset.rateId;
+    const isChecked = checkbox.checked;
+
+    showSaving();
+
+    // Build form data
+    const formData = new FormData();
+    formData.append('_method', 'PATCH');
+    formData.append('material_supply_rate[is_winner]', isChecked);
+    formData.append('authenticity_token', document.querySelector('meta[name="csrf-token"]').content);
+
+    fetch(`/material_supply_rates/${rateId}.json`, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => {
+      if (response.ok) {
+        showSaved();
+        checkbox.classList.add('ring-2', 'ring-green-500');
+        setTimeout(() => {
+          checkbox.classList.remove('ring-2', 'ring-green-500');
+        }, 1000);
+        
+        // If this checkbox is now checked, uncheck other checkboxes in the same row
+        if (isChecked) {
+          const materialId = checkbox.dataset.materialId;
+          const row = checkbox.closest('tr');
+          const otherCheckboxes = row.querySelectorAll('.winner-checkbox');
+          otherCheckboxes.forEach(cb => {
+            if (cb !== checkbox && cb.checked) {
+              cb.checked = false;
+            }
+          });
+        }
+      } else {
+        showError('Failed to save winner');
+        checkbox.checked = !isChecked; // Revert the checkbox
+        console.error('Response:', response);
+      }
+    })
+    .catch(error => {
+      showError('Save failed');
+      checkbox.checked = !isChecked; // Revert the checkbox
+      console.error('Error:', error);
+    });
+  }
+
+  function addWinnerCheckbox(input, rateId) {
+    const container = input.parentElement.parentElement;
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'winner-checkbox w-4 h-4 cursor-pointer';
+    checkbox.dataset.rateId = rateId;
+    checkbox.dataset.materialId = input.dataset.materialId;
+    checkbox.dataset.supplierId = input.dataset.supplierId;
+    checkbox.dataset.monthlyRateId = input.dataset.monthlyRateId;
+    checkbox.title = 'Select as winning supplier for this material';
+    checkbox.addEventListener('change', function() {
+      saveWinnerSelection(this);
+    });
+    container.appendChild(checkbox);
   }
 
   function showSaving() {

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_12_172528) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_13_170905) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -306,7 +306,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_12_172528) do
     t.bigint "monthly_material_supply_rate_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_winner", default: false, null: false
     t.index ["material_supply_id"], name: "index_material_supply_rates_on_material_supply_id"
+    t.index ["monthly_material_supply_rate_id", "material_supply_id", "is_winner"], name: "index_material_supply_rates_on_winner"
     t.index ["monthly_material_supply_rate_id"], name: "index_material_supply_rates_on_monthly_material_supply_rate_id"
     t.index ["supplier_id"], name: "index_material_supply_rates_on_supplier_id"
   end
