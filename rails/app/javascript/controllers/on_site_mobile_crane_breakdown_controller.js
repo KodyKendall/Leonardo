@@ -27,16 +27,24 @@ export default class extends Controller {
   }
 
   updateEditMode() {
-    // Toggle field readonly state
+    // Toggle field readonly/disabled state
     this.fieldTargets.forEach(field => {
       if (this.isEditMode) {
         // Remove readonly to enable editing
         field.removeAttribute('readonly')
         field.classList.remove('read-only-field')
+        // For checkboxes, remove disabled attribute
+        if (field.type === 'checkbox') {
+          field.removeAttribute('disabled')
+        }
       } else {
         // Add readonly to disable editing
         field.setAttribute('readonly', 'readonly')
         field.classList.add('read-only-field')
+        // For checkboxes, add disabled attribute
+        if (field.type === 'checkbox') {
+          field.setAttribute('disabled', 'disabled')
+        }
       }
     })
 
