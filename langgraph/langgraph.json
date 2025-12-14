@@ -1,7 +1,10 @@
 {
   "dependencies": ["."],
   "graphs": {
-    "boq_parser": "./user_agents/boq_parser/nodes.py:build_workflow",
+    "boq_parser": {
+      "workflow": "./user_agents/boq_parser/nodes.py:build_workflow",
+      "recursion_limit": 250
+    },
     "leo": "./user_agents/leo/nodes.py:build_workflow",
     "rails_agent": "./agents/leonardo/rails_agent/nodes.py:build_workflow",
     "rails_ai_builder_agent": "./agents/leonardo/rails_ai_builder_agent/nodes.py:build_workflow",
