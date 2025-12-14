@@ -37,10 +37,11 @@ class LineItemRateBuildUp < ApplicationRecord
 
   def calculate_totals
     # Calculate subtotal by summing all components with their multipliers
-    self.subtotal = 0
+    # Material supply rate is the BASE cost and is always included (multiplier default 1.0)
+    self.subtotal = (material_supply_rate || 0).to_f
     
     # All components now use decimal multipliers (default to 0 if nil/not set)
-    self.subtotal += (material_supply_rate * (material_supply_included || 0).to_f)
+    # Add all other cost components with their multipliers
     self.subtotal += (fabrication_rate * (fabrication_included || 0).to_f)
     self.subtotal += (overheads_rate * (overheads_included || 0).to_f)
     self.subtotal += (shop_priming_rate * (shop_priming_included || 0).to_f)

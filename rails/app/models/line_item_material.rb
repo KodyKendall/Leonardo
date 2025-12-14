@@ -42,7 +42,8 @@ class LineItemMaterial < ApplicationRecord
     # Calculate the total from all materials in the breakdown (including margin)
     total_material_cost = line_item_material_breakdown.total
 
-    # Update the material supply rate in the rate buildup
-    rate_buildup.update(material_supply_rate: total_material_cost)
+    # Set the material supply rate and save to trigger before_save :calculate_totals callback
+    rate_buildup.material_supply_rate = total_material_cost
+    rate_buildup.save
   end
 end

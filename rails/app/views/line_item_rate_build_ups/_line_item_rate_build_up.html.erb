@@ -14,7 +14,7 @@
       </div>
 
       <% rate_components = [
-        { name: "Material Supply", rate_field: :material_supply_rate, included_field: :material_supply_included, is_multiplier: true },
+        { name: "Material Supply", rate_field: :material_supply_rate, included_field: :material_supply_included, is_multiplier: true, readonly: true },
         { name: "Fabrication", rate_field: :fabrication_rate, included_field: :fabrication_included, is_multiplier: true },
         { name: "Overheads", rate_field: :overheads_rate, included_field: :overheads_included, is_multiplier: true },
         { name: "Shop Priming", rate_field: :shop_priming_rate, included_field: :shop_priming_included, is_multiplier: true },
@@ -48,11 +48,16 @@
                 <% rate_value = line_item_rate_build_up.send(component[:rate_field]) || 0 %>
                 <% is_included = line_item_rate_build_up.send(component[:included_field]) %>
                 <% is_multiplier = component[:is_multiplier] %>
+                <% is_readonly = component[:readonly] %>
                 <tr class="hover:bg-base-200" data-line-item-rate-build-up-target="row">
                   <td class="font-medium">
                     <div class="flex items-center gap-1">
                       <%= component[:name] %>
-                      <% if is_multiplier %>
+                      <% if is_readonly %>
+                        <span class="tooltip tooltip-warning" data-tip="Calculated automatically">
+                          <i class="fas fa-lock text-xs text-warning"></i>
+                        </span>
+                      <% elsif is_multiplier %>
                         <span class="tooltip tooltip-info" data-tip="Enter a decimal multiplier (e.g., 0.75 = 75%, 1.0 = 100%, 1.25 = 125%)">
                           <i class="fas fa-info-circle text-xs text-info"></i>
                         </span>
@@ -60,27 +65,35 @@
                     </div>
                   </td>
                   <td class="text-center">
-                    <!-- All components: Multiplier field -->
-                    <%= form.number_field component[:included_field],
-                        step: 0.01,
-                        min: 0,
-                        max: 5.0,
-                        placeholder: "1.0",
-                        class: "input input-sm input-bordered w-20 text-center",
-                        data: {
-                          line_item_rate_build_up_target: "multiplierInput",
-                          action: "input->line-item-rate-build-up#calculate"
-                        } %>
+                    <% if is_readonly %>
+                      <span class="text-sm font-medium"><%= number_to_currency(is_included || 0, unit: "", precision: 2) %></span>
+                    <% else %>
+                      <!-- All components: Multiplier field -->
+                      <%= form.number_field component[:included_field],
+                          step: 0.01,
+                          min: 0,
+                          max: 5.0,
+                          placeholder: "1.0",
+                          class: "input input-sm input-bordered w-20 text-center",
+                          data: {
+                            line_item_rate_build_up_target: "multiplierInput",
+                            action: "input->line-item-rate-build-up#calculate"
+                          } %>
+                    <% end %>
                   </td>
                   <td class="text-right">
-                    <%= form.number_field component[:rate_field],
-                        step: 0.01,
-                        min: 0,
-                        class: "input input-sm input-bordered w-28 text-right",
-                        data: {
-                          line_item_rate_build_up_target: "rateInput",
-                          action: "input->line-item-rate-build-up#calculate"
-                        } %>
+                    <% if is_readonly %>
+                      <span class="text-sm font-medium"><%= number_to_currency(rate_value || 0, unit: "R ", precision: 2) %></span>
+                    <% else %>
+                      <%= form.number_field component[:rate_field],
+                          step: 0.01,
+                          min: 0,
+                          class: "input input-sm input-bordered w-28 text-right",
+                          data: {
+                            line_item_rate_build_up_target: "rateInput",
+                            action: "input->line-item-rate-build-up#calculate"
+                          } %>
+                    <% end %>
                   </td>
                   <td class="text-right font-semibold" data-line-item-rate-build-up-target="amountCell">
                     <% component_rate = rate_value || 0 %>
