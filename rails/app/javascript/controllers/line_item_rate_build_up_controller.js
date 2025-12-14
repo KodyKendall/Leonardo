@@ -13,134 +13,114 @@ export default class extends Controller {
     "beforeRounding",
     "roundedRate",
     "dirtyIndicator",
+    "totalDirtyIndicator",
     "saveButton"
   ]
 
   connect() {
-    this.isDirty = false
-    this.initializing = true
-    // Use setTimeout to ensure DOM is fully settled after turbo-stream replacement
-    setTimeout(() => {
-      this.calculateDisplay()
-      this.initializing = false
-    }, 0)
+    // Store initial form state
+    this.storeInitialState()
+    
+    // Find the form inside this element (not a parent)
+    const form = this.element.querySelector('form')
+    
+    if (form) {
+      // Listen for input changes on all inputs
+      form.addEventListener('input', (e) => {
+        this.checkDirtyState()
+      })
+      form.addEventListener('change', (e) => {
+        this.checkDirtyState()
+      })
+      
+      // Reset dirty state after successful save (Turbo Stream response)
+      document.addEventListener('turbo:submit-end', (e) => {
+        if (e.detail.success) {
+          this.storeInitialState()
+          this.checkDirtyState()
+        }
+      })
+    }
   }
 
-  markDirty() {
-    if (this.initializing) return
+  storeInitialState() {
+    const form = this.element.querySelector('form')
+    if (form) {
+      this.initialFormData = new FormData(form)
+      this.initialState = Object.fromEntries(this.initialFormData)
+    }
+  }
 
-    if (!this.isDirty) {
-      this.isDirty = true
+  checkDirtyState() {
+    const form = this.element.querySelector('form')
+    if (!form) {
+      return
+    }
+
+    const currentFormData = new FormData(form)
+    const currentState = Object.fromEntries(currentFormData)
+    
+    // Check if any field has changed from initial state
+    const isDirty = JSON.stringify(this.initialState) !== JSON.stringify(currentState)
+    
+    // Update dirty indicators and button state
+    try {
+      // Update main dirty indicator text
       if (this.hasDirtyIndicatorTarget) {
-        this.dirtyIndicatorTarget.classList.remove("hidden")
-      }
-      if (this.hasSaveButtonTarget) {
-        this.saveButtonTarget.classList.add("btn-warning")
-        this.saveButtonTarget.classList.remove("btn-primary")
-      }
-    }
-  }
-
-  calculate() {
-    this.calculateDisplay()
-    this.markDirty()
-  }
-
-  updateMarginDisplay() {
-    if (this.hasMarginInputTarget && this.hasMarginDisplayTarget) {
-      const marginPct = parseFloat(this.marginInputTarget.value) || 0
-      this.marginDisplayTarget.textContent = `${marginPct}%`
-    }
-  }
-
-  calculateDisplay() {
-    let subtotal = 0
-
-    // Iterate through each row and calculate amounts
-    this.rowTargets.forEach((row, index) => {
-      const rateInput = this.rateInputTargets[index]
-      const amountCell = this.amountCellTargets[index]
-
-      if (rateInput && amountCell) {
-        const rate = parseFloat(rateInput.value) || 0
-
-        // All components now use multiplier inputs (no more checkboxes)
-        const multiplierInput = row.querySelector('[data-line-item-rate-build-up-target="multiplierInput"]')
-
-        let componentAmount = 0
-
-        if (multiplierInput) {
-          // All components: use multiplier logic
-          const multiplier = parseFloat(multiplierInput.value) || 0
-          componentAmount = rate * multiplier
-          
-          if (multiplier > 0) {
-            subtotal += componentAmount
-            amountCell.innerHTML = `<span>R ${componentAmount.toFixed(2)}</span>`
+        if (isDirty) {
+          this.dirtyIndicatorTarget.classList.remove('hidden')
+        } else {
+          this.dirtyIndicatorTarget.classList.add('hidden')
+        }
+      } else {
+        // Fallback: find it manually
+        const indicator = this.element.querySelector('[data-line_item_rate_build_up_target="dirtyIndicator"]')
+        if (indicator) {
+          if (isDirty) {
+            indicator.classList.remove('hidden')
           } else {
-            amountCell.innerHTML = `<span class="text-gray-400">—</span>`
+            indicator.classList.add('hidden')
           }
         }
       }
-    })
-
-    // Update subtotal
-    if (this.hasSubtotalTarget) {
-      this.subtotalTarget.textContent = `R ${subtotal.toFixed(2)}`
+      
+      // Update button color based on dirty state
+      if (this.hasSaveButtonTarget) {
+        if (isDirty) {
+          this.saveButtonTarget.classList.remove('btn-primary')
+          this.saveButtonTarget.classList.add('btn-warning')
+        } else {
+          this.saveButtonTarget.classList.remove('btn-warning')
+          this.saveButtonTarget.classList.add('btn-primary')
+        }
+      }
+      
+      // Update asterisk next to "Final Rate:" based on dirty state
+      if (this.hasTotalDirtyIndicatorTarget) {
+        if (isDirty) {
+          this.totalDirtyIndicatorTarget.classList.remove('hidden')
+        } else {
+          this.totalDirtyIndicatorTarget.classList.add('hidden')
+        }
+      }
+    } catch (e) {
+      console.error("Error updating dirty indicator:", e)
     }
+  }
 
-    // Get margin percentage
-    const marginPct = this.hasMarginInputTarget ? (parseFloat(this.marginInputTarget.value) || 0) : 0
-
-    // Update margin display (show the percentage, not a dollar amount)
-    if (this.hasMarginDisplayTarget) {
-      this.marginDisplayTarget.textContent = `${marginPct}%`
-    }
-
-    // Calculate total before rounding: subtotal * (1 + marginPct / 100)
-    const totalBeforeRounding = subtotal * (1 + marginPct / 100)
-    if (this.hasBeforeRoundingTarget) {
-      this.beforeRoundingTarget.textContent = `R ${totalBeforeRounding.toFixed(2)}`
-    }
-
-    // Round to nearest whole number
-    const roundedRate = Math.round(totalBeforeRounding)
-    if (this.hasRoundedRateTarget) {
-      this.roundedRateTarget.textContent = `R ${roundedRate.toFixed(2)}`
+  saveOnBlur(event) {
+    // Auto-save rate or multiplier field on blur via Turbo
+    const form = this.element.closest('form')
+    if (form) {
+      form.requestSubmit()
     }
   }
 
   saveOnMarginBlur(event) {
-    // Get the form element (the entire line_item_rate_build_up form)
+    // Save margin field via Turbo form submission
     const form = this.element.closest('form')
-    if (!form) return
-
-    // Submit via PATCH request with Turbo Stream support
-    fetch(form.action, {
-      method: 'PATCH',
-      headers: {
-        'Accept': 'text/vnd.turbo-stream.html',
-        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
-      },
-      body: new FormData(form)
-    })
-    .then(response => response.text())
-    .then(html => {
-      // Parse the response HTML which contains turbo-stream elements
-      const parser = new DOMParser()
-      const doc = parser.parseFromString(html, 'text/html')
-      
-      // Find each turbo-stream element and apply it
-      const streams = doc.querySelectorAll('turbo-stream')
-      streams.forEach(stream => {
-        // Use Turbo's built-in stream processing by cloning into document
-        const clone = document.importNode(stream, true)
-        // Append to body so Turbo processes it
-        document.body.appendChild(clone)
-        // Process happens asynchronously, remove after a tick
-        requestAnimationFrame(() => clone.remove())
-      })
-    })
-    .catch(error => console.error('Error saving margin percentage:', error))
+    if (form) {
+      form.requestSubmit()
+    }
   }
 }
