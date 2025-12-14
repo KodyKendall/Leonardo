@@ -102,7 +102,9 @@
               <!-- Rate Build-Up (Left) -->
               <div>
                 <% if tender_line_item.line_item_rate_build_up %>
-                  <%= render tender_line_item.line_item_rate_build_up, show_success: local_assigns[:show_success] %>
+                  <%= turbo_frame_tag dom_id(tender_line_item.line_item_rate_build_up) do %>
+                    <%= render tender_line_item.line_item_rate_build_up, show_success: local_assigns[:show_success] %>
+                  <% end %>
                 <% else %>
                   <div class="alert alert-warning">No rate build-up found</div>
                 <% end %>

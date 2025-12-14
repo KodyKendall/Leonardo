@@ -5,6 +5,7 @@ export default class extends Controller {
     "row",
     "rateInput",
     "includedCheckbox",
+    "multiplierInput",
     "amountCell",
     "subtotal",
     "marginInput",
@@ -58,18 +59,27 @@ export default class extends Controller {
     // Iterate through each row and calculate amounts
     this.rowTargets.forEach((row, index) => {
       const rateInput = this.rateInputTargets[index]
-      const checkbox = this.includedCheckboxTargets[index]
       const amountCell = this.amountCellTargets[index]
 
-      if (rateInput && checkbox && amountCell) {
+      if (rateInput && amountCell) {
         const rate = parseFloat(rateInput.value) || 0
-        const isIncluded = checkbox.checked
 
-        if (isIncluded) {
-          subtotal += rate
-          amountCell.innerHTML = `<span>R ${rate.toFixed(2)}</span>`
-        } else {
-          amountCell.innerHTML = `<span class="text-gray-400">—</span>`
+        // All components now use multiplier inputs (no more checkboxes)
+        const multiplierInput = row.querySelector('[data-line-item-rate-build-up-target="multiplierInput"]')
+
+        let componentAmount = 0
+
+        if (multiplierInput) {
+          // All components: use multiplier logic
+          const multiplier = parseFloat(multiplierInput.value) || 0
+          componentAmount = rate * multiplier
+          
+          if (multiplier > 0) {
+            subtotal += componentAmount
+            amountCell.innerHTML = `<span>R ${componentAmount.toFixed(2)}</span>`
+          } else {
+            amountCell.innerHTML = `<span class="text-gray-400">—</span>`
+          }
         }
       }
     })
