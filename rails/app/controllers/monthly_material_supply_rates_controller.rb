@@ -50,6 +50,16 @@ class MonthlyMaterialSupplyRatesController < ApplicationController
 
   # PATCH/PUT /monthly_material_supply_rates/1 or /monthly_material_supply_rates/1.json
   def update
+    # Parse month string (e.g., "2025-12") from HTML5 month field to Date object
+    if params[:monthly_material_supply_rate][:effective_from].present?
+      month_string = params[:monthly_material_supply_rate][:effective_from]
+      if month_string.match?(/\A\d{4}-\d{2}\z/)
+        parsed_date = Date.strptime(month_string, "%Y-%m")
+        params[:monthly_material_supply_rate][:effective_from] = parsed_date.beginning_of_month
+        params[:monthly_material_supply_rate][:effective_to] = parsed_date.end_of_month
+      end
+    end
+
     respond_to do |format|
       if @monthly_material_supply_rate.update(monthly_material_supply_rate_params)
         # Process bulk material supply rates if present
