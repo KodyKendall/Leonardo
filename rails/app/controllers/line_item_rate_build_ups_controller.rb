@@ -42,7 +42,8 @@ class LineItemRateBuildUpsController < ApplicationController
       if @line_item_rate_build_up.update(line_item_rate_build_up_params)
         format.html { redirect_to @line_item_rate_build_up, notice: "Line item rate build up was successfully updated.", status: :see_other }
         format.turbo_stream do
-          material_breakdown = @line_item_rate_build_up.tender_line_item&.line_item_material_breakdown
+          tender_line_item = @line_item_rate_build_up.tender_line_item
+          material_breakdown = tender_line_item&.line_item_material_breakdown
           streams = [
             turbo_stream.replace(
               dom_id(@line_item_rate_build_up),
@@ -55,6 +56,14 @@ class LineItemRateBuildUpsController < ApplicationController
               dom_id(material_breakdown),
               partial: "line_item_material_breakdowns/line_item_material_breakdown",
               locals: { line_item_material_breakdown: material_breakdown, show_success: true }
+            )
+          end
+          # Also update the tender line item frame to refresh line total
+          if tender_line_item
+            streams << turbo_stream.replace(
+              dom_id(tender_line_item),
+              partial: "tender_line_items/tender_line_item",
+              locals: { tender_line_item: tender_line_item, open_breakdown: true }
             )
           end
           render turbo_stream: streams
