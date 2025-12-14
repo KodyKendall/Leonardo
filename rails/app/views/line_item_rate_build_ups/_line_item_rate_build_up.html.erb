@@ -14,24 +14,25 @@
       </div>
 
       <% rate_components = [
-        { name: "Material Supply", rate_field: :material_supply_rate, included_field: :material_supply_included },
-        { name: "Fabrication", rate_field: :fabrication_rate, included_field: :fabrication_included },
-        { name: "Overheads", rate_field: :overheads_rate, included_field: :overheads_included },
-        { name: "Shop Priming", rate_field: :shop_priming_rate, included_field: :shop_priming_included },
-        { name: "Onsite Painting", rate_field: :onsite_painting_rate, included_field: :onsite_painting_included },
-        { name: "Delivery", rate_field: :delivery_rate, included_field: :delivery_included },
-        { name: "Bolts", rate_field: :bolts_rate, included_field: :bolts_included },
-        { name: "Erection", rate_field: :erection_rate, included_field: :erection_included },
-        { name: "Crainage", rate_field: :crainage_rate, included_field: :crainage_included },
-        { name: "Cherry Picker", rate_field: :cherry_picker_rate, included_field: :cherry_picker_included },
-        { name: "Galvanizing", rate_field: :galvanizing_rate, included_field: :galvanizing_included }
+        { name: "Material Supply", rate_field: :material_supply_rate, included_field: :material_supply_included, is_multiplier: true },
+        { name: "Fabrication", rate_field: :fabrication_rate, included_field: :fabrication_included, is_multiplier: true },
+        { name: "Overheads", rate_field: :overheads_rate, included_field: :overheads_included, is_multiplier: true },
+        { name: "Shop Priming", rate_field: :shop_priming_rate, included_field: :shop_priming_included, is_multiplier: true },
+        { name: "Onsite Painting", rate_field: :onsite_painting_rate, included_field: :onsite_painting_included, is_multiplier: true },
+        { name: "Delivery", rate_field: :delivery_rate, included_field: :delivery_included, is_multiplier: true },
+        { name: "Bolts", rate_field: :bolts_rate, included_field: :bolts_included, is_multiplier: true },
+        { name: "Erection", rate_field: :erection_rate, included_field: :erection_included, is_multiplier: true },
+        { name: "Crainage", rate_field: :crainage_rate, included_field: :crainage_included, is_multiplier: true },
+        { name: "Cherry Picker", rate_field: :cherry_picker_rate, included_field: :cherry_picker_included, is_multiplier: true },
+        { name: "Galvanizing", rate_field: :galvanizing_rate, included_field: :galvanizing_included, is_multiplier: true }
       ] %>
 
       <%= form_with model: line_item_rate_build_up, 
                     local: true, 
                     id: "line_item_rate_build_up_form",
                     url: line_item_rate_build_up_path(line_item_rate_build_up),
-                    method: :patch do |form| %>
+                    method: :patch,
+                    data: { turbo: true } do |form| %>
         <div class="overflow-x-auto">
           <table class="table table-sm w-full">
             <thead>
@@ -46,59 +47,48 @@
               <% rate_components.each_with_index do |component, index| %>
                 <% rate_value = line_item_rate_build_up.send(component[:rate_field]) || 0 %>
                 <% is_included = line_item_rate_build_up.send(component[:included_field]) %>
-                <% is_material_supply = index == 0 %>
+                <% is_multiplier = component[:is_multiplier] %>
                 <tr class="hover:bg-base-200" data-line-item-rate-build-up-target="row">
                   <td class="font-medium">
                     <div class="flex items-center gap-1">
                       <%= component[:name] %>
-                      <% if is_material_supply %>
-                        <span class="badge badge-sm badge-info gap-1">
-                          <i class="fas fa-bolt text-xs"></i>
-                          Auto
+                      <% if is_multiplier %>
+                        <span class="tooltip tooltip-info" data-tip="Enter a decimal multiplier (e.g., 0.75 = 75%, 1.0 = 100%, 1.25 = 125%)">
+                          <i class="fas fa-info-circle text-xs text-info"></i>
                         </span>
                       <% end %>
                     </div>
                   </td>
                   <td class="text-center">
-                    <%= form.check_box component[:included_field],
-                        class: "checkbox checkbox-sm",
+                    <!-- All components: Multiplier field -->
+                    <%= form.number_field component[:included_field],
+                        step: 0.01,
+                        min: 0,
+                        max: 5.0,
+                        placeholder: "1.0",
+                        class: "input input-sm input-bordered w-20 text-center",
                         data: {
-                          line_item_rate_build_up_target: "includedCheckbox",
-                          action: "change->line-item-rate-build-up#calculate"
+                          line_item_rate_build_up_target: "multiplierInput",
+                          action: "input->line-item-rate-build-up#calculate"
                         } %>
                   </td>
                   <td class="text-right">
-                    <% if is_material_supply %>
-                      <%= form.number_field component[:rate_field],
-                          step: 0.01,
-                          min: 0,
-                          class: "input input-sm input-bordered w-28 text-right bg-gray-100 cursor-not-allowed opacity-75",
-                          readonly: true,
-                          data: {
-                            line_item_rate_build_up_target: "rateInput"
-                          } %>
-                    <% else %>
-                      <%= form.number_field component[:rate_field],
-                          step: 0.01,
-                          min: 0,
-                          class: "input input-sm input-bordered w-28 text-right",
-                          data: {
-                            line_item_rate_build_up_target: "rateInput",
-                            action: "input->line-item-rate-build-up#calculate"
-                          } %>
-                    <% end %>
+                    <%= form.number_field component[:rate_field],
+                        step: 0.01,
+                        min: 0,
+                        class: "input input-sm input-bordered w-28 text-right",
+                        data: {
+                          line_item_rate_build_up_target: "rateInput",
+                          action: "input->line-item-rate-build-up#calculate"
+                        } %>
                   </td>
                   <td class="text-right font-semibold" data-line-item-rate-build-up-target="amountCell">
-                    <% if is_material_supply %>
-                      <% material_supply_total = line_item_rate_build_up.tender_line_item.line_item_material_breakdown&.total || 0 %>
-                      <span class="<%= 'text-gray-400' unless is_included %>">
-                        <%= is_included ? number_to_currency(material_supply_total, unit: "R ", precision: 2) : "—" %>
-                      </span>
-                    <% else %>
-                      <span class="<%= 'text-gray-400' unless is_included %>">
-                        <%= is_included ? number_to_currency(rate_value, unit: "R ", precision: 2) : "—" %>
-                      </span>
-                    <% end %>
+                    <% component_rate = rate_value || 0 %>
+                    <% multiplier = (is_included || 0).to_f %>
+                    <% amount = component_rate * multiplier %>
+                    <span class="<%= 'text-gray-400' if multiplier == 0 %>">
+                      <%= multiplier > 0 ? number_to_currency(amount, unit: "R ", precision: 2) : "—" %>
+                    </span>
                   </td>
                 </tr>
               <% end %>
@@ -124,7 +114,7 @@
                         action: "input->line-item-rate-build-up#calculate blur->line-item-rate-build-up#saveOnMarginBlur"
                       } %>
                 </td>
-                <td class="text-right font-semibold text-orange-600" data-line-item-rate_build_up_target="marginDisplay">
+                <td class="text-right font-semibold text-orange-600" data-line_item_rate_build_up_target="marginDisplay">
                   <%= "#{line_item_rate_build_up.margin_percentage}%" %>
                 </td>
               </tr>
@@ -147,7 +137,7 @@
             <%= form.submit "Save",
                 class: "btn btn-primary btn-sm",
                 data: { line_item_rate_build_up_target: "saveButton" } %>
-            <span class="hidden text-warning text-sm font-medium" data-line-item-rate-build-up-target="dirtyIndicator">
+            <span class="hidden text-warning text-sm font-medium" data-line_item_rate_build_up_target="dirtyIndicator">
               Unsaved changes
             </span>
             <% if line_item_rate_build_up.tender_line_item.present? %>
