@@ -1104,38 +1104,42 @@
             nextStepCard.style.display = 'none';
           }
         } else {
-          // Build table HTML
+          // Build table HTML - MATCH INITIAL TEMPLATE COLUMN ORDER EXACTLY
           let tableHTML = `
             <div class="overflow-x-auto">
               <table class="table table-sm w-full">
                 <thead>
                   <tr>
-                    <th>#</th>
                     <th>Page</th>
                     <th>Item Number</th>
                     <th>Description</th>
-                    <th>Category</th>
                     <th>UOM</th>
                     <th>Quantity</th>
+                    <th>Notes</th>
+                    <th>Category</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody id="items-tbody">
           `;
           
           items.forEach((item, idx) => {
-            const notes = item.notes ? `<div class="text-xs text-gray-500 mt-1">${item.notes}</div>` : '';
             tableHTML += `
-              <tr>
-                <td>${idx + 1}</td>
-                <td class="font-mono text-sm">${item.page_number || "—"}</td>
-                <td class="font-mono text-sm">${item.item_number || "—"}</td>
-                <td>
+              <tr class="boq-item-row" data-item-id="${item.id}" data-category-key="${item.section_category || ""}" data-category-display="${item.section_category || ""}">
+                <td class="font-mono text-sm editable-cell" data-field="page_number" title="Click to edit">${item.page_number || "—"}</td>
+                <td class="font-mono text-sm editable-cell" data-field="item_number" title="Click to edit">${item.item_number || "—"}</td>
+                <td class="editable-cell" data-field="item_description" title="Click to edit">
                   <div class="text-sm">${item.item_description ? item.item_description.substring(0, 60) : "—"}</div>
-                  ${notes}
                 </td>
-                <td><span class="badge badge-sm">${item.section_category || "—"}</span></td>
-                <td>${item.unit_of_measure || "—"}</td>
-                <td class="text-right font-semibold">${item.quantity || "—"}</td>
+                <td class="editable-cell" data-field="unit_of_measure" title="Click to edit">${item.unit_of_measure || "—"}</td>
+                <td class="text-right font-semibold editable-cell" data-field="quantity" title="Click to edit">${item.quantity || "—"}</td>
+                <td class="text-xs text-gray-500">${item.notes ? item.notes.substring(0, 40) : ''}</td>
+                <td class="editable-cell" data-field="section_category" title="Click to edit"><span class="badge badge-sm">${item.section_category || "—"}</span></td>
+                <td class="text-center">
+                  <button class="btn btn-xs btn-ghost edit-row-btn" onclick="editRow(this, ${item.id})" title="Edit this row">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                </td>
               </tr>
             `;
           });
