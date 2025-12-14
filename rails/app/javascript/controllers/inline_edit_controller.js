@@ -174,14 +174,17 @@ export default class extends Controller {
       body: formData
     })
     .then(response => {
-      console.log("Response status:", response.status)
       if (response.ok) {
         return response.text()
       }
       throw new Error("Save failed")
     })
     .then(html => {
-      console.log("Response HTML:", html)
+      // Process Turbo Stream response using global Turbo
+      if (window.Turbo) {
+        window.Turbo.renderStreamMessage(html)
+      }
+      
       // Update original values with new values
       this.fieldTargets.forEach((field) => {
         this.originalValues[field.name] = field.value

@@ -1,0 +1,7 @@
+<%= turbo_stream.remove dom_id(@tender_crane_selection) %>
+
+<%= turbo_stream.update "crane_cost_summary" do %>
+  <% if @tender_crane_selection.on_site_mobile_crane_breakdown.present? %>
+    <%= render 'tender_crane_selections/summary', on_site_mobile_crane_breakdown: @tender_crane_selection.on_site_mobile_crane_breakdown %>
+  <% end %>
+<% end %>

@@ -117,6 +117,7 @@
       </div>
     </div>
 
+    <%= turbo_stream_from @on_site_mobile_crane_breakdown, "crane_cost_summary" %>
     <turbo-frame id="tender_crane_selections">
       <%= render 'tender_crane_selections/index', 
           tender_crane_selections: @on_site_mobile_crane_breakdown.tender_crane_selections,
