@@ -39,8 +39,8 @@ class LineItemMaterial < ApplicationRecord
     rate_buildup = tender_line_item.line_item_rate_build_up
     return unless rate_buildup.present?
 
-    # Calculate the total from all materials in the breakdown
-    total_material_cost = line_item_material_breakdown.subtotal
+    # Calculate the total from all materials in the breakdown (including margin)
+    total_material_cost = line_item_material_breakdown.total
 
     # Update the material supply rate in the rate buildup
     rate_buildup.update(material_supply_rate: total_material_cost)
