@@ -15,6 +15,7 @@ class LineItemRateBuildUp < ApplicationRecord
   before_save :normalize_multipliers
   before_save :calculate_totals
   after_save :sync_rate_to_tender_line_item
+  after_save :broadcast_to_tender_line_item
   after_save :update_tender_grand_total
 
   private
@@ -66,5 +67,17 @@ class LineItemRateBuildUp < ApplicationRecord
   def sync_rate_to_tender_line_item
     return if rounded_rate.nil?
     tender_line_item.update_column(:rate, rounded_rate)
+  end
+
+  def broadcast_to_tender_line_item
+    return unless tender_line_item.present?
+    
+    # Broadcast update to parent TenderLineItem frame
+    # Use ActionView::RecordIdentifier to generate dom_id in model context
+    tender_line_item.broadcast_replace_to(
+      ActionView::RecordIdentifier.dom_id(tender_line_item),
+      partial: "tender_line_items/tender_line_item",
+      locals: { tender_line_item: tender_line_item, open_breakdown: true }
+    )
   end
 end
