@@ -83,8 +83,17 @@ class LineItemMaterialsController < ApplicationController
               locals: { line_item_material_breakdown: @breakdown }
             )
           ]
-          # Re-render parent tender line item if it exists
+          # Re-render rate buildup and tender line item if they exist
+          # This ensures all calculations from material save cascade to UI
           if @tender_line_item.present?
+            rate_buildup = @tender_line_item.line_item_rate_build_up
+            if rate_buildup.present?
+              streams << turbo_stream.replace(
+                dom_id(rate_buildup),
+                partial: 'line_item_rate_build_ups/line_item_rate_build_up',
+                locals: { line_item_rate_build_up: rate_buildup }
+              )
+            end
             streams << turbo_stream.replace(
               dom_id(@tender_line_item),
               partial: 'tender_line_items/tender_line_item',

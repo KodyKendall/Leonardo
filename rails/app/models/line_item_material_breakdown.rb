@@ -28,7 +28,8 @@ class LineItemMaterialBreakdown < ApplicationRecord
     rate_buildup = tender_line_item.line_item_rate_build_up
     return unless rate_buildup.present?
 
-    # Update the material supply rate with the current total (includes margin)
-    rate_buildup.update(material_supply_rate: total)
+    # Set the material supply rate with the current total (includes margin) and save to trigger before_save :calculate_totals callback
+    rate_buildup.material_supply_rate = total
+    rate_buildup.save
   end
 end
