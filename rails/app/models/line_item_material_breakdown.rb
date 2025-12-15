@@ -15,10 +15,12 @@ class LineItemMaterialBreakdown < ApplicationRecord
     line_item_materials.sum(&:line_total).round(2)
   end
 
-  # Calculate total with margin
+  # Calculate total with margin, rounded UP to nearest R50
   def total
     margin_amount = subtotal * (margin_percentage / 100)
-    (subtotal + margin_amount).round(2)
+    total_with_margin = subtotal + margin_amount
+    # Round UP to nearest R50
+    (total_with_margin / 50.0).ceil * 50
   end
 
   private

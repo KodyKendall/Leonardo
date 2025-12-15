@@ -93,7 +93,10 @@ export default class extends Controller {
 
     // Calculate total with margin
     const marginAmount = subtotal * (marginPercent / 100)
-    const total = subtotal + marginAmount
+    const totalBeforeRounding = subtotal + marginAmount
+
+    // Round UP to nearest R50
+    const total = Math.ceil(totalBeforeRounding / 50) * 50
 
     // Update total display
     if (this.hasTotalDisplayTarget) {
