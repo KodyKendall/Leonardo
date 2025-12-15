@@ -15,7 +15,7 @@ class LineItemRateBuildUp < ApplicationRecord
   before_save :normalize_multipliers
   before_save :calculate_totals
   after_save :sync_rate_to_tender_line_item
-  after_save :broadcast_to_tender_line_item
+  after_commit :broadcast_to_tender_line_item
   after_save :update_tender_grand_total
 
   private
