@@ -60,8 +60,8 @@ class LineItemRateBuildUp < ApplicationRecord
     # Calculate total before rounding: subtotal * (1 + margin_percentage / 100)
     self.total_before_rounding = subtotal * (1 + margin_percentage / 100.0)
 
-    # Round to nearest whole number
-    self.rounded_rate = total_before_rounding.round
+    # Round UP to nearest R50
+    self.rounded_rate = (total_before_rounding / 50.0).ceil * 50
   end
 
   def sync_rate_to_tender_line_item
