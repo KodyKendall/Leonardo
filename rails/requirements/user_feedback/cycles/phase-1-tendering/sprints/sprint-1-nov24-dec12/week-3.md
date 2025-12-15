@@ -19,7 +19,7 @@ Work is organized into thin, full-stack vertical slices. Each slice has its own 
 | Slice | Scope Doc | Priority | Est. Days | Status | Assigned |
 |-------|-----------|----------|-----------|--------|----------|
 | UX/Turbo Fixes | [UX_FIXES_SCOPE.md](../../scopes/UX_FIXES_SCOPE.md) | High | 1-2 | ✅ Complete | Kody |
-| BOQ Parsing Fixes | [BOQ_PARSING_SCOPE.md](../../scopes/BOQ_PARSING_SCOPE.md) | High | 1-2 | 🟠 In Progress | Kody |
+| BOQ Parsing Fixes | [BOQ_PARSING_SCOPE.md](../../scopes/BOQ_PARSING_SCOPE.md) | High | 1-2 | ✅ Complete | Kody |
 | Tender Builder | [TENDER_BUILDER_SCOPE.md](../../scopes/TENDER_BUILDER_SCOPE.md) | High | 2-3 | 🔴 Not Started | Kody |
 | Crane Cost Calculations | [CRANE_CALC_SCOPE.md](../../scopes/CRANE_CALC_SCOPE.md) | High | 2-3 | 🔴 Not Started | Kody |
 

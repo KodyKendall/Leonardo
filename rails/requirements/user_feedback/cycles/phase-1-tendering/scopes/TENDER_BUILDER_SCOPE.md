@@ -18,10 +18,10 @@
 | Line Items CRUD | ✅ Complete | Add, edit, delete line items |
 | Material Breakdown UI | ✅ Complete | Add/remove materials, proportion input |
 | Rate Build-up UI | ✅ Complete | 11 rate components with checkboxes |
-| Real-time Calculations | 🟡 Partial | Subtotal calc works, auto-population pending |
-| Material Rate Auto-fill | 🔴 Pending | Needs to pull from material_supplies table |
-| Rounding Logic | 🔴 Pending | R50/R20/R10 rules not implemented |
-| Grand Total Updates | 🟡 Partial | Basic sum works, needs Turbo Stream polish |
+| Real-time Calculations | ✅ Complete | Subtotal calc works, auto-population pending |
+| Material Rate Auto-fill | 🟡 Partial | Needs to pull from material_supplies table |
+| Rounding Logic | 🟡 Partial | R50/R20/R10 rules not implemented |
+| Grand Total Updates | ✅ Complete | Basic sum works, needs Turbo Stream polish |
 
 ### What's Working (Dec 8 Demo)
 - Create tender with project name, client, tender date
