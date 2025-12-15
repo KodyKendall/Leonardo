@@ -1,0 +1,352 @@
+Demi Swanepoel is the Quantity Surveyor of RSB Construction (Steel Construction Company)
+Darren Spencer is a consultant/project manager for this project (and Richard's brother)
+Kody is the Software Solutions Architect and Software Developer building the project.
+
+Kody  0:01  
+Um, and last week you were, or the week before, you were super helpful with kind of your feedback and your thoughts. And so it's, yeah, it's, it's really great to kind of show you what we're working on. And then also, another fun thing is we're going to actually have you drive this time. So I sent you an email.
+
+Demi Swanepoel  0:23  
+I did already log in. I'm going to try and drive it. I forgot to pack in my mouse. It's still an office, so I'm trying to work on this touch pad here in front on the laptop. So I'm going to see if I manage. But yeah, I've already logged into this new what lava press, perfect.
+
+Kody  0:49  
+So, so this, this is basically just kind of a test environment. So the URL that we use will make it a lot simpler and just a little, you know, probably something that's more RSB related, but so it's just kind of a temporary URL. One thing, one thing I'll have you do, though, is on the Zoom screen, there should be a green Share button somewhere. And if you can find that green, it's like a green Share button with a little arrow. Okay, perfect. If you click on that, then you'll just select your desktop, and then you'll click that blue Share button, and then that should perfect. Here we go. So this allows me to see your screen. And now you can go back to the the other tab here, the RSB home. All right, perfect. And then let's see you have that little See, he wants to enter picture in picture, I think you can close that. Okay, perfect. Okay, so we just kind of walkthrough, and I'll show you what we currently have. And one thing that might help kind of set the stage here a little bit, is my understanding of how this currently works, is that the company will receive bill of quantities from potential clients, and then Elmari is kind of the initial entry way, right where she'll take that BOQ line items, and she puts them into that blank tender sheet, kind of starting template. And then she goes through and she kind of categorizes each BOQ item to try and match them to the right category. But this is sometimes, you know, sometimes maybe she doesn't always get the exact right category, or it just takes a little bit of time. But then after that, does she turn that over to you immediately after that step? Or does she, does she go through and put more information in the sheet as well.
+
+Demi Swanepoel  3:02  
+So she recently started doing that. She's fairly new at our company, so she still needs to learn quite a lot to understand the steel industry and how it works. So she will normally just take the bill of quantities and then she will just put in the information. I don't think she goes through it again, and then she sends it to me, and then I go through her work and check if she's made the right selections, and then from there, I update the rates and adjust the tender accordingly for that specific project.
+
+Kody  3:39  
+Okay, that makes that makes perfect sense. And how long does this usually take both you and Elmari, is this? Is this, like, pretty short, or is this like, you know, on a scale of maybe an hour or two, or less than that? How long does it usually take
+
+Demi Swanepoel  3:55  
+depends on how long the bill is. It depends on the size of the project. So a big project, after she has done it can can take me a day just to go through each item and see that it's done correctly. Then I need to obviously measure the total building area to work out the plant that's required, but a short, quick project. Normally, I do it on the same day that we need to submit the tender. So then it will take me two to three hours. But a very it can also take an hour. It depends.
+
+Kody  4:34  
+Okay, that makes sense. Well, cool. Well, hopefully, hopefully, what we're building here can help speed that up even a little bit just
+
+Demi Swanepoel  4:44  
+beginning, right? Because I don't get to all my workload, and it takes some time, and if we don't intend as we don't have work. So it's quite important.
+
+Kody  4:55  
+Yeah, that makes, that makes a lot of sense. You're a key, a key part of everything here. Yes, cool. Okay, very cool. So what we can do then
+
+Demi Swanepoel  5:05  
+is still sharing.
+
+Kody  5:07  
+It's still sharing. I can still see No, no, no, no, let's walk through what we currently have. And it'll be really helpful just to get your thoughts as we kind of do this. But basically the very first step that you'll take is, there's that yellow button that says, Start New tender Okay. And what this would look like is you would get the BOQ email from the client, and you would come to this application, and then you would click on that start new tender button. And I'll actually have you drive, and you can, you can kind of click, click through. Yes, it should let you click it. Okay, very cool. So this is kind of the just very start of the process. And then the next step is, there's that upload BOQ button, and I don't know if you have any. Oh, well. So one, one thing. So when, when the clients send in the BOQ, it's usually in the form of correct me. If I'm wrong, is it usually? Is it usually in the form of a Excel file, or is it a CSV?
+
+Demi Swanepoel  6:19  
+So it's normally majority it's Excel. If they don't send it in Excel, we request for the Excel document. Otherwise, you'll get a project, seldomly that it's in the PDF, okay? So then that's obviously different, but most of the projects is in Excel, okay?
+
+Kody  6:40  
+And once you have an Excel so this, this upload button allows you to upload a file, although, right now, it does need the file to be in a CSV format, but it's super easy to convert an Excel file to a CSV format, if that makes sense. Okay, so, in fact, all what I'll do. And you do you have WhatsApp? Because I could send you a photo really quick. Okay, how do I let's see, what's your whatsapp number?
+
+Demi Swanepoel  7:12  
+Oh, wait, well, it's plus two seven. Okay,
+
+Kody  7:21  
+plus 278383, okay, 241241, okay, 63406340, okay, here we go. I'm gonna send you a quick message. Say hi. Demi Scooby, sorry.
+
+Demi Swanepoel  7:44  
+My husband is in India for work, so my son, my two year old, is around here, so if it looks like I'm distracted, it's him, okay, I totally understand.
+
+Kody  7:56  
+I have nieces and nephews, and yeah, two year olds are, they can get into trouble and mischief,
+
+Demi Swanepoel  8:04  
+yes, especially if they're boys. Okay, I've got your message.
+
+Kody  8:10  
+Okay, sweet. Okay. So what I'm going to do here, I'm going to send you a BOQ that I've already converted into a CSV. So let me just find a good one here. So we had one that was for it was e3, 787, structural, still BOQ, and this is one of the examples that rich had given us. So I'll go ahead and send this to you, and that way, you can just kind of see the file and upload it and kind of get a feel for the software. So let me just grab that really quick here.
+
+Demi Swanepoel  8:50  
+I just want to play the TV. Yeah, okay. Sounds good. Do
+
+Demi Swanepoel  9:16  
+Okay, thank you.
+
+Kody  9:20  
+Okay, sweet, so what you'll do is you'll download that CSV to your computer.
+
+Kody  9:40  
+Oh, do you have, do you have whatsapp on your computer, or just your cell phone?
+
+Demi Swanepoel  9:45  
+I do have it on my computer?
+
+Kody  9:48  
+Yeah, there should be a way to just download it direct. Here we go, perfect. Yeah, perfect. And then there should be, like, a Save As button. I
+
+Demi Swanepoel  10:10  
+Why is it not responding? You know, when you like need stuff to be done, then it doesn't work.
+
+Kody  10:19  
+Yeah, zoom, sometimes can take up a little bit of resources on your computer. So sometimes I've seen this with Richard as well.
+
+Demi Swanepoel  10:27  
+Okay, I'm just gonna email it to me quickly. Okay, do
+
+Demi Swanepoel  11:01  
+I must say, if he's making a lot of noise,
+
+Kody  11:05  
+no, no, not at all. I can't hear anything at all. One thing that's that's nice with Zoom is it will it kind of suppresses any background noise or or chatter or anything like that, which is nice, a nice feature.
+
+Demi Swanepoel  11:21  
+Do you think I can perhaps copy and paste it, or do you need because it looks like this is also not responding? I don't know what's going on.
+
+Kody  11:29  
+We might just have to wait for a second. We do need to upload it as a file, so it's kind of hard to the very worst case scenario, I could, maybe, I could maybe swap to my screen. But we also, we also have time as well this. This is kind of the main portion of of the demo. So we do, we do have a little bit of time here. It's okay if it takes a second for things to load and boot up and all of that. Yeah,
+
+Kody  12:10  
+yeah, it's like your like, your file system almost is kind of freezing up there a little bit. Yes, we can just wait a second and see if it we could also have you, we could have you try to stop sharing your screen. That could maybe make your computer speed up a little bit. Looks like it? Oh, sweet.
+
+Demi Swanepoel  12:35  
+I'm just going to save it on download.
+
+Kody  12:38  
+Perfect. Okay.
+
+Kody  12:44  
+Sorry. It's okay. Totally, totally fine.
+
+Demi Swanepoel  12:48  
+It's already existed. I'm just gonna say, replace it. Okay. Chris and hospital errands. Anish, Mama's clear,
+
+Kody  13:01  
+sir. Sorry, you're totally okay. Don't worry.
+
+Kody  13:12  
+Perfect,
+
+Demi Swanepoel  13:19  
+okay. Must I wait for it too late, obviously it looks like it's still sinking.
+
+Kody  13:24  
+Yeah, we can just wait for it for a second.
+
+Demi Swanepoel  13:39  
+Is it that one? No,
+
+Kody  13:42  
+yes, this one, this one should be perfect. And notice too, it's kind of subtle, but when you're hovering over it, it says, type Microsoft Excel, comma separated values file. So that's that CSV. So comma separated values. So that works perfect. And in the future too, we might even have it where you can just upload the Excel sheet. But for now, converting it into a CSV is a little bit simpler. So,
+
+Unknown Speaker  14:14  
+yeah, that's just easy.
+
+Kody  14:17  
+Awesome, very cool. So now there's a couple of different steps here, and I think we might have talked about this briefly on one of our other calls, but if you scroll down just a little bit more, then there's a little preview of the data that's in the sheet, and notice How at the very top has like that, candy, X, LS, 10, one. So basically what happens is we just need to identify a better header row. So if you scroll down just a little bit more, we want to find the row that basically has, okay, perfect. So now, if you go back to, if you go to the little window, there's another scroll bar, and this is kind of the preview, yeah, if we go down, okay, now, perfect. So you need you see how on row five, it actually has labels for what each column represents. So you can see like, page, item, description, unit, quantity, you see all of those,
+
+Demi Swanepoel  15:29  
+yeah. So
+
+Kody  15:30  
+what that means is that that row five is the that's the correct header row. And so what we need to do is we need to adjust that header, row number, this one. It's up a little bit more. It's this one. Yeah, perfect. Does that? Does that kind of make sense? It's like we're trying to find the row that has. Page, item, description, unit, quantity, rows.
+
+Demi Swanepoel  16:02  
+Sorry, it's okay. Yes, the whole house to play, but he won't.
+
+Kody  16:07  
+You also play with mom, though it's much funner to play with mom. No, okay, so up above a little bit, there's that field that says header row number, and we just need to bump up. It's up above the little CSV, yes, and right now it says zero, but we just want to, you can hit that plus sign, and it will change it up or down. And we want to set that to number five. And this is going to be different on each BOQ, because it comes in all sorts of different formats, right? Sometimes they'll have their header row at the very top. Sometimes it'll be down a couple but usually it'll be in the first you know, five rows you should be able to find it. And then you'll click that green apply Header Row button. You Yeah, okay, perfect. And now notice that in the preview it looks much cleaner, much more how you would expect it to look, where the very top one has record internal link, page item description, and this is really important when we're trying to just get out the correct information, because this is how the AI knows that. You know section two is a description, etc. Does that? Does that make sense? Or is that confusing?
+
+Demi Swanepoel  17:33  
+And that makes sense? I just want to make sure these rows here up until that well, task code, moving backwards,
+
+Kody  17:45  
+okay, and it should be okay,
+
+Demi Swanepoel  17:48  
+okay, so that's not gonna be drawn through.
+
+Kody  17:53  
+So on the tender, yeah, what's, what's nice about how we're doing it is we're actually gonna have an AI kind of parse out this information. And so if you scroll down a bit more, like the AI is really smart, and we have a good pro, like a good instructions that we've given it. So if you scroll down, it now says parsing steps below, and it says step two, parsed BOQ. So go ahead and click on that step two button. Okay, perfect. And then, now it's a little subtle, but to the right, it says step three, hit send. And this is going to send a message to the AI. So you see that send button. So basically, this is sending a message to the AI that has all of the data that's in the CSV, if that makes sense, and it's going to sit here, you can see there's the little llama that says those, those little messages syntax twirling those little, you know, those little messages, that's kind of just a loading indicator. It's just kind of telling you that the AI is thinking. You see that above it had that little check pencil that said, Get BOQ items. And now you can see that the AI responded with the message. And you can scroll down a little bit in the went in the chat window. He's basically saying that he's found 29 line items with quantities, and he filtered them out. And he has a preview, and you can see he's kind of listing some of the items. So you can see item 120 by 55 by 13.4 kilograms per meter, channel column, unit, etc. You see how he's kind of identified some of the items. Yeah. Okay, very cool.
+
+Kody  20:03  
+It's sweet. So you can kind of scroll through see the rest of his message, the AI's message.
+
+Demi Swanepoel  20:11  
+So I say again,
+
+Kody  20:13  
+if you scroll down a little bit in the chat window, then you just kind of see all of his messages. And then he says, basically, he just asks you, Are you ready to create all the 29 nine items? Should I proceed? And if you scroll down, outside of the window, there's that step four, and there's a little button you can press that just formats a message so you can click Confirm and parse into BOQ items. And if you click that, it just fills in a message. So go ahead and click that, and then, now you can see that in the little text box, it put a message in there. And then you're gonna, you're gonna hit that send button again. So it's kind of like chat GPT. If you've worked with chat GPT before, yes to it. Oh, great, great. So you'll be, you'll be great at this. Then it's just basically a conversation with an AI. Now, if you scroll up a little bit more so you can see the messages again, then what will happen is the AI will start to Yeah. Notice how there's those little pencils that say, create BOQ item, and it's creating so what that's doing is it's it's actually pulling out the information, and it's formatting it into like a very structured item for that specific BOQ so as it's doing that, You can scroll down on the entire page, the main page, and if you scroll down, then there's a refresh button on the BOQ line items. There's that little refresh with the arrows. Go ahead and click on that. And as the AI is pulling these numbers out, then it will add it to this table. And notice there's only 21 items right now. That's because the AI hasn't finished pulling the numbers out, so there should be roughly 29 but that's where you just have to kind of wait for a minute, click the Refresh button a couple times. You can go up to the AI chat window, and the AI will actually tell you when he's finished pulling out all of the items, so you can see he still has these create BOQ items. And then there you go. And now it's finished, and it says, hey, you know, I successfully created 29 BOQ line items. Perfect. Yep, you can hit refresh, and there they all are.
+
+Demi Swanepoel  22:53  
+That's really cool.
+
+Kody  22:56  
+The next step you can do. So this is where I think what we have right now, we could actually begin using this specific step. And let me show you how, if you scroll up a little bit more just to the top of that table where it has the items, there's another button that says, copy table. If you click on that button, then this will copy all of these rows, and you could go into a blank tender and you could paste this into that tender data section on the spreadsheet, and it will have it formatted in a way that should match what you should match the structure
+
+Kody  23:40  
+that you Yeah,
+
+Kody  23:44  
+so let's open up. I think it's what's it called, blank tender Excel. Let me find it. Oh, fixed tender template, 2025, I
+
+Demi Swanepoel  24:16  
+practice this one. Otherwise, I'm gonna override the original.
+
+Kody  24:25  
+Ah, yeah, good idea.
+
+Kody  24:37  
+Okay, perfect. So if we open this up, if we open up that Excel sheet, we should be able to,
+
+Demi Swanepoel  24:46  
+I will, okay, sorry, I thought I need to drag it in. Okay, open it.
+
+Kody  24:56  
+Yes, okay, and then go to the tender Data tab. Perfect. You might need to drag the zoom away. There we go, perfect. Okay, so we're going to do a test. This should work. If you click on sell a one, then you should be able to paste data. Let's see if this works. Go ahead and click on that, paste.
+
+Demi Swanepoel  25:27  
+No, it's light. Grades aren't gonna work. Let me go back to that when I say copy table. You know what we might need to do?
+
+Kody  25:37  
+Board, yeah, yeah. And there might be a little bit of a bug, actually. So what I'll have you do is go back to the application, if you go back to your browser, and then I'll actually have you click the Refresh button on the top left of the browser window where you would like do, like a full page refresh. It's kind of by the back arrow. It's on the very top left. Yeah, perfect. Yep. If you click that refresh to refresh the web page, then let's scroll down to the very bottom, and then this. Now, now try to click the Copy table. I think there might be a little bit of a bug that I need to fix. But now let's go back to the Excel sheet and let's see if that one lets you paste it. There we go. Let's go ahead and paste it.
+
+Kody  26:30  
+Okay, so
+
+Kody  26:34  
+is this actually now? Now this is where I need your your help and your expertise. How does this look, is this? Is this essentially what el Maria's trying to do?
+
+Demi Swanepoel  26:46  
+Yes, Elmari only. She only focuses on this, this tender data. And then what she then does is, when everything is copied to the front, then she'll now go through the bill again and say, Okay, there's a heading before item five. Then she copies this blue line item, and then she posted, let's say just before five. And then she gives it a heading, just so that the bill is broken down as per the bill. So I don't know exactly something you guys can do. But the thing is that she's struggling at the moment with is this items, yeah, okay, she doesn't necessarily know that, what is steel sections and what is what should be a gut and meter, right? Because sometimes, if the bill has the standard descriptions, then she knows, okay, then she knows how to allocate it, but sometimes the bill use different wording, and then she's not sure what what item to select, yeah.
+
+Kody  27:56  
+How does the current categorizations look? Do they look accurate, or do they look inaccurate?
+
+Demi Swanepoel  28:03  
+What do you mean, whose category, hers, or this?
+
+Kody  28:07  
+This one, this one that we're currently looking at that we had pasted in from the AI that had Does that make sense?
+
+Demi Swanepoel  28:15  
+Okay, tell you now. This one is quite standard, and I should be able to identify these items. The one thing is, I don't know if you guys are going to adjust these selections.
+
+Kody  28:38  
+Yeah, we could. We totally could. Whatever is helpful.
+
+Demi Swanepoel  28:43  
+We need to add some items in here.
+
+Kody  28:47  
+Do you know the items off the top of your head?
+
+Demi Swanepoel  28:50  
+So normally, when we have, so when we have an item like that, the number item, okay, let's say it's not chemical anchors. Let's say it is drop, it's down by pews or whatever. Then it also needs to be a number item, but then we don't have a dedicated item list here, so we need to have, like a general item. Maybe we can just call it general item, or I'm not sure that almost looks like the gutometer item, because it's basically just like, let's say it's just a very simple rate that you need to to insert in. It doesn't, it doesn't consist necessarily out of a price build up, if it makes sense. Okay, I think so. That's for general items that because you can't obviously create one for every item, because the your bill is going to be extremely long. So just one for items that doesn't necessarily fit into a category, and you just generalize it so it looks similar to the gut and meter I'll show you quickly the gutometer item. See, this is now the problem. See, it was supposed to drag. So this document is not 100% correct. Sometimes it gets a bug or something, then that the information is not copied over. Can you see? Yeah, okay, wait, it's a blank. Let me just, let me just show you. Okay, my Okay, that's that's working, but sometimes it doesn't do that. So this is a guide to meter. So we would also want one that's a general item. We just it doesn't have this item, yeah, it only has, like a area here where you can tap in a rate for a general, I don't know, like an extra over item,
+
+Kody  30:58  
+okay, it makes sense. And in that the material supply on the right hand side kind of the material breakdown. Is that programmed so that anytime you select the item, those are kind of the accurate proportions and breakdowns? Or is that just like, does that make sense what I'm asking so for gutter meter, the fabrication and overheads, the waste percentage, the rate. Is that all programmed in? Or do you have to manually go and look up those items and fix them? Like, does that make sense? What I'm asking?
+
+Demi Swanepoel  31:33  
+Okay, yeah. So these items are automatically linked to the gutometer rate. So you'll see that material supply, the 365, 100 here is automatically linked to this garden meter. You see there, okay, but it has changed, so it doesn't automatically update this rate. So it actually should change.
+
+Kody  31:58  
+Oh, I see. Okay. Okay, yeah, makes sense.
+
+Demi Swanepoel  32:01  
+Normally, this is linked there. You'll see Ray's page. So there, if I change anything there, then it will change there. But I see this one is not linked to the correct item.
+
+Kody  32:16  
+That makes sense. So then you would have to go and manually double check all the items, make sure they have the accurate rates for the Yeah, okay, but it does show the waste percentage for fabrication, for overheads. Is that accurate for the gutter meter? Or do you also have to update the waste percentage? Does that make sense?
+
+Demi Swanepoel  32:40  
+So the waste is, are you talking about this waste?
+
+Kody  32:45  
+Yeah, yeah, yeah. Like fabrication and overheads. Do those change when you click the gutter meter versus something else? Or do you have to manually update those?
+
+Demi Swanepoel  32:56  
+So normally, with the gutter meters, it remains the same. But when I use now for general items, when I select the guide to meter, then I have to go and change these items. So if you have a general option, then these will be one. Okay, so I don't have to go and change them. But because I don't have much other options, I can only use the guide to meter option, then I have to go and manually change these and then update that drag to something else.
+
+Kody  33:28  
+Okay, that makes sense, if it makes sense. Yeah, very cool. So here's a question for you in the tender data that sheet where we had copied the information out and paste it in. Is that is this portion of it where you upload the CSV, you have the AI, pull the information out, and then you paste the information into
+
+Kody  33:52  
+this text,
+
+Demi Swanepoel  33:59  
+sorry, he's locking the door. He's gonna lock us out.
+
+Unknown Speaker  34:12  
+Sorry, Kody, I'm with him. What? Okay,
+
+Speaker 1  35:02  
+hey, Sorry, Kody, I'm so sorry.
+
+Kody  35:23  
+Are you okay? Don't want to get locked out.
+
+Demi Swanepoel  35:26  
+Now, I'm sitting in the in entertainment area, and we have a glass door between entertainment area and the house, and it has a lock in the inside, and he has done it before. So we had to, like, ask someone else in our state, one of their kids to climb in one of our bathroom windows just to come and unlock it, because all our keys is inside the house, so I just got the keys, and everything just doesn't happen again.
+
+Kody  35:52  
+Okay, that's good. That's good. Yeah, no, no worries. I totally understand. Okay, so the question I have for you is that copying the BOQ data into this tender data sheet. Is this helpful? Is this something that, by itself, is helpful? Like, would this save you an El Marie time?
+
+Demi Swanepoel  36:12  
+Yes, because normally, what she she's doing she like, she deletes blank rows and Rose is not applicable. And then she copies and pastes basically like we did now with the clipboard. Okay, then she does exactly the same process, but it just takes a bit longer.
+
+Kody  36:32  
+Okay, well, great. So it sounds like this how it is right now. Could at least save Elmari sometimes so she's not having to go and delete stuff and Okay, that's great. Another, another thing we can do as well is the areas that she struggles with, categorizations, such as selecting the right category. We can actually train the AI and give it examples and instructions about how to categorize these items. So what that means is that we could have it eventually, where the AI is, ideally as accurate as you would be, as opposed to, I know it's a lot of work to try to try to train Elmari, but we could have it where, basically, you know, if we could find a way to write down the rules, like the rules of thumb and kind of how your mental model of how you categorize things and how you think about it, we could put that into the AI, and it would increase the accuracy of the AI when it's categorizing items. Does that make sense?
+
+Demi Swanepoel  37:37  
+Exactly that sweet.
+
+Kody  37:40  
+So, great. So probably the best thing would be, and that's, that's why I was going to ask Elmari to jump on was I wanted to train her on how to use the this tool. And what I can do, though, is I can maybe record a video where I give a tutorial about how to do it, and it'd be great if we could get Elmari to start using this AI tool to put this into the sheets, because hopefully it should save her time already. But then also, we just need to, you know, make sure that it's working. It should be working. You know, it just worked fairly with us, and it's worked a lot as we've tested it, but sometimes with software, there's little, little snags, little issues, but the sooner we could get her to start using this tool, then everything will click into place, and it'll make it much easier as we continue to improve it. Does that make sense? What I'm saying? Meas sweet, any thoughts or questions on any of this so far?
+
+Demi Swanepoel  38:49  
+No, I'm good. I don't know. Do you want me to make like a list of what keywords is normally in a bill of quantity, so that you can tell AI what to what category to categorize it in.
+
+Kody  39:04  
+That would be amazing. That would be extremely helpful if, if you had a list written down somewhere, you could also do a voice recording on your phone or laptop, where you basically just record your thoughts, as you're saying. Well, normally we do this or that or that might be a little bit easier for you. Or you could also just type out a list whatever is easiest for you. But the voice recordings have gotten really good where you can, I mean, yeah, you see, like my AI Notetaker, but you could just record a file on your phone, like a voice recording, where you're talking through that, and then that could be enough to even be an initial start. Does that make sense? What I'm saying? Yes. Okay, very cool. So that was, that was the main thing I wanted to show you. The main thing I wanted to kind of just train you on and show you the only other thing I could show you is, you know, the long term goal would be that we could have more of a software feel rather than having to do just the spreadsheet. So if you go back to the browser, I'll show you some of the next steps that we currently have. These steps probably aren't ready to use right away, but I think it's still good for me to just show them to you, and you can give me no no keep, keep sharing, if you would. But go ahead and scroll down to the very, very bottom, and now we have all of the line items that had come in, and it says next step, build tender. So go ahead and click on that build tender button, and this is going to take you to to a new screen, and then there's that yellow button that says, copy from BOQ. Go ahead and click on that copy from BOQ button, perfect. And it just takes a couple seconds. And what it did is it just copied over all of the line items into this tender builder page. Now you can see that it has page, one item, one description, unit quantity, and then the rate is zero. Now there's a green button that says, view rate build up that you can click on, and this will extend out a section below. So if you scroll down a little bit, then you should be able to see that we have on the left hand side, we have a rate build up, and then on the right hand side we have a material breakdown. So this still needs a little bit of work, but if you click on the Add Material button on the right hand side, then you can click on the material select. There's a little select with an arrow, and then this has a list of all of the material supplies. And this is where we would want to eventually program in waste percentages, and we'll have it pull from the latest rate materials from the supply houses that Maria enters. But go ahead and just select one of these materials for now.
+
+Kody  42:19  
+Okay, perfect. And then there's a waste percentage that you can enter in, so you could do like 7.5 or 12.5 or whatever it would normally
+
+Kody  42:38  
+be perfect. And then there's that rate number to the right, and this would be just, yeah, the normal rate that you would put in maybe 12,000 or
+
+Demi Swanepoel  42:48  
+how are you structuring this? Is this rate that we need to manually type in? Or is it that rates that we talked about of the different suppliers, and then you select one supplier, then it, it gives that list of rights,
+
+Kody  43:05  
+yes, so where it doesn't do this today, but what I, what I want to accomplish over the next week,
+
+Demi Swanepoel  43:13  
+exactly what you're aiming to achieve?
+
+Kody  43:16  
+Yes, totally. We want to make this. We want to make it really easy and save, save everybody time, and so we'll probably have it where like and this is where I do need a little bit of help, and Darren's helping me a lot. You've met Darren, that's Rich's brother, but trying to wrap my head around exactly how this should look. Should the PFC, should the material? Should it be that you select the material and then it auto fills it? Or should it be that, like we know that this is 100 and you know a channel column, we know this is a channel column, so based off the fact that it's a channel column, should it automatically fill out four different materials with the waste percentage, the rate from the latest rates supplier, and the proportion, and just calculate all at once. Is that how it would work in an ideal world? Does that make sense? What I'm asking
+
+Demi Swanepoel  44:14  
+yes, but that proportion is then obviously we're going to need to train AI to check if there's not a separate item which indicates plates. So if plates is separate, as discussed previously, then this PFC section, the portion would be 100% if plates is not measured separately, then we need to make an allowable for plates in the rate. So then your proportion would then be 80 and 20% 80 for the PFC, and then 20% for the plate I see.
+
+Kody  44:51  
+And this is, this is kind of what you're currently doing, very manually, right? Like, yes, okay, that makes sense. Okay, so, and then the rate, that rate section that usually gets pulled in automatically from that material supply table that's on the sheet, okay? And that material supply table, who sets that? I know that Maria, she gets all of the information. But then, is it Maria that then sets that? I know that it's like, there's like, a rule of thumb. It's like, you get the second cheapest option from each material, like, from each supplier. But who, who's responsible for setting that? Is that you, or is that Maria? No.
+
+Demi Swanepoel  45:33  
+So Maria doesn't touch the tenders at all, and when she remembers, she she uploads the latest rates. And then Elmari is supposed to, but I don't think she has access to to Maria's rights. And so then I'll just normally, so then that would obviously depend on me, so then I'll make sure. Okay, what's the latest rates we used on a project that we just submitted? A company use the same rates. But it would be cool if there's somewhere, like a an area where, where Elmari, for instance, can put in the four different rates, or it's updated monthly, and then it automatically pulls so it's not necessary. All the rate is one suppliers rates. It pulls the second lowest rate from whatever supply it is and inserts it into the bill. But then they should also be an option if you're not happy with the rate. And we phone the supply and say, Listen, there's 900 tons of the specific channels, can you give us a better rate? So then we will need to be able to manually change that rate.
+
+Kody  46:49  
+Okay, that makes sense. I think that makes sense. So it sounds like, it sounds like though there's normally a table just material rates that goes on to each tender, and normally you will go out. You'll basically just copy that table from the previous tender, and then you'll
+
+Demi Swanepoel  47:08  
+make if it hasn't changed, then we copy it if it has changed. Then we we keep Maria's list on the one side, and then we manually type in the rates and fill it into that material supply rate column.
+
+Kody  47:24  
+Okay, that makes sense. Okay, very cool. And then one more quick thing. And then I think we should be good, actually, sorry. Give me one second. Let me just read through what I had here on the agenda. Okay, very cool. Okay, one last question, and then we'll go to wrap up this meeting. So you showed me something earlier on the Excel sheet where you selected the gutter option and it seemed to fill in, I think it was in the costing sheet. It seemed to fill in a bunch of values automatically. So for this specific example, though, of the channel column, what does it look like if you were to select the like a channel column from that category, does it fill in the material breakdown automatically?
+
+Demi Swanepoel  48:20  
+Okay, so let me show you. So it's going to be a steel section, because it's still so then you'll go here, and then you'll see, see, that's the thing now, so I don't know. So normally how it should work is when you select your item this side, it should automatically update this side, but now it's, that's item two. See, here is item let me just go up. Okay, let's try item one, okay, steel section. Item one, steel section, okay, it updated it. Now, let's just try item number two. See, item number two shows is zero. See, so normally, when it was selected here, it should automatically. So now I need to, like, select something and then select it again, just for it to be free,
+
+Kody  49:33  
+yeah. See now
+
+Demi Swanepoel  49:34  
+that's updated, but sometimes it doesn't at all update from your data tender to this side, and even if you select here. So let's say I need to change it again. Then it updates. But sometimes this option also doesn't work. Then what I need to do is, then I go to the standard lines sheet, and then I go to the steel section portion, and then I need to, like, copy everything and then paste it in that open space. Okay, so this document still needs some working. Sometimes it works. Sometimes there's some linking issues, okay, but to answer your question, here is how it should look, this is now for that channel. And then this right is obviously they linked to the right page, which is the the PSC. See, there is the 18 Six. It's obviously going to be 19, because it has seven. 7.5% wise.
+
+Kody  57:43  
+Maybe the first step is getting Elmari using it, and then the natural next step. I'm sure is, you'll want to improve the categorization, that will help el Marie and help you so that will naturally kind of come about, but I'm ready for it, whenever we can put it into the AI, whenever, but definitely the sooner the better, but I don't have a hard deadline for you, right the second, maybe, maybe before. going on holiday, maybe that could be.
+
