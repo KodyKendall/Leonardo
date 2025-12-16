@@ -1,0 +1,715 @@
+Richard Spencer is the CEO/President of RSB Construction (Steel Construction Company)
+Darren Spencer is the Business Analyst, consultant, and project manager for this project (and Richard's brother)
+Demi Swanepoel is the Quantity Surveyor of RSB Construction (Steel Construction Company)
+Kody is the Software Solutions Architect and Software Developer building the project.
+
+Kody  0:08  
+Okay, Rich is going to be jumping on here in about 10 minutes, so I'm just kind of in a holding pattern for a second. I'm
+
+Kody  4:14  
+okay, just kind of waiting. I
+
+Kody  4:26  
+don't want my note taker to turn off, so I'm just waiting for rich. It's 11:05am I of course,
+
+Kody  5:55  
+leave The room. Please Do
+
+Kody  7:50  
+justice and us,
+
+Kody  9:05  
+yeah, so we're missing the time edge on the Crain builder page. So if you go into our tender, then there's this on site mobile Crain breakdown button, and in the Crain cost calculation, we can't compute the cost per ton. We can't compute the cost per ton unless we
+
+Kody  9:35  
+have the total tonnage, which I think the total tonnage goes into, currently in this tender builder, it goes into our shop runs
+
+Kody  9:51  
+We have, like our PGS as a line item, so And this goes,
+
+Kody  10:15  
+this is or this is, so r, have our shop drawings to get added in, shop drawings line item, and then we have our preliminary general items,
+
+Kody  10:37  
+basically the rates page. This is just a summary. Summation, so fabrication, all of the fabric,
+
+Kody  11:19  
+up reading this page.
+
+Kody  11:34  
+Bit late, he said, 10. Mean, I have until the hour or So,
+
+Kody  13:02  
+here you
+
+Kody  13:49  
+test still here.
+
+Kody  13:56  
+Best Test.
+
+Kody  14:07  
+And limit Support
+
+Kody  15:59  
+test, Test, Test,
+
+Kody  18:23  
+there we are rich. How you doing?
+
+Richard Spencer  18:26  
+Howdy, liking you, bro,
+
+Kody  18:28  
+doing good. Happy birthday.
+
+Richard Spencer  18:30  
+Hey, thank you. You're a
+
+Kody  18:32  
+dedicated man. Jumping on Late, Late Night calls for work on your birthday.
+
+Richard Spencer  18:39  
+That's all good, man, we sorry, we out in Carlsberg. We traveling to to the sea, to the coast, but so it's our first stop. We're out like in the middle of the Karoo. Okay? So signals not really amazing, and facilities aren't really amazing, but it should all get better from tomorrow. So halfway stop today.
+
+Kody  19:01  
+Well, sounds sounds like a fun trip, and hopefully you and your family get some good time together.
+
+Richard Spencer  19:06  
+And, yeah, it's gonna be cool, man.
+
+Kody  19:09  
+Yeah, that sounds
+
+Richard Spencer  19:10  
+good. How you doing? Good,
+
+Kody  19:12  
+good, good, good. Excited to show you some of the progress we've made, and we'll just kind of work through, I know your connection. You have a little bit of worries about your connection, but we'll just kind of work through it the best we can. Are you on your laptop or your iPad?
+
+Richard Spencer  19:27  
+I'm on my laptop at the moment, and I actually downloaded a thing this weekend for this laptop of mine. Close all these apps that are running, because it's like this gaming Dell thing. So I've tried to put it onto, onto, like battery saver mode with this, this, whatever this app is alien where, because, apparently it's like a gaming laptop. So I think, but I'm gonna, I'm gonna actually just plug it in so
+
+Kody  20:03  
+we can carry on. This is a new laptop that you got, or is this the same one that you've been working on?
+
+Richard Spencer  20:08  
+Same laptop, same that. But I mean, the batteries are so shocking. Thing I mentioned, the battery life is horrible. So I did a bit of researching, and it seems like the Dell, sort of battery saver mode, or whatever optimizer doesn't work for these machines, or it's not compatible, because it's a gaming machine, supposedly, okay.
+
+Kody  20:31  
+Well, that that sounds good. And while you're setting that up too, before you share your screen, I can give you a little update on how the meeting went with Demi. So it was a super helpful meeting with her. And basically I was, I was we mainly focused on the BOQ parsing. And kind of the question that, that I was trying to understand is just even what we currently have with the BOQ parsing, where you upload a BOQ, it pulls out the line items, if that already is at par with Elmari and kind of what she's doing, and if that would speed up Elmari, or maybe even, you know, eliminate a big chunk where Demi's not having to wait for Elmari and Demi's Demi's impression was that, yes, like even what we have already would significantly speed up, kind of the process where, yeah, Elmari is doing a lot of, like, deleting out a bunch of rows and excel and kind of very manually, having to, like, put information directly into the tender spreadsheet. And so that was that was great to hear with Demi, and kind of get that confirmation is she was excited about the direction, and she thought that that was going to speed things up even already what we have. So that's that's great, that kind of shows wrong the on the right path. And then she did mention, like, some things that she's excited for, which I know that we're always trying to figure out the exact timing of when we would implement certain things. But she was very, she's very interested in, interested in this idea of, yeah, having AI, be able to, like, understand some of the rules of thumb and keywords and different ways. And so she's, she's definitely excited about that, because it sounds like she thinks that that will help speed up her workload and kind of, and I know she has quite a heavy workload as it is, and so I'm just taking good notes on everything that me and her talked about, and we'll have a really good record of that so that when the time comes where it makes sense to pull the trigger and prioritize those things, we should have some things kind of lined up and documented. And so yeah, the call was great, and Demi was extremely helpful and excited. So that's, that's great to see.
+
+Richard Spencer  22:43  
+And I must say, she I had a chat to her on because you guys met on Thursday, so I had a chat to on Friday in the morning, and she sounded pretty excited. She was quite surprised at what the system can do and the kind of progress that had been made already. And yeah, so she was very impressed, which was nice to see. You know, it's hard to get your team as enthusiastic about it as what I am, so like to see that she's pretty psyched up about it. Was, was very cool.
+
+Kody  23:14  
+Yeah, that's great. That's great. Well, cool. So yeah, that'll be a big kind of milestone, and we'll talk about that a little bit in this meeting as well, maybe a little bit later in the call. But just kind of figuring out that exact date that we want to just try to go live and push hard on it, we have to decide right this second, maybe first what we can do is, did you see the WhatsApp message I sent you with the URL? So Keith, what we can do is I sent you a URL, and it's the same one as last week, in the same science, but let's just get you signed in really quick, and then I'll have you share your screen, and that's where we can kind of pick up. See,
+
+Richard Spencer  24:13  
+every time I sign in, it will remember, it's not like I need to kind of refresh. It's going to continue. So like, if I sign in, hey, what's it
+
+Richard Spencer  24:32  
+like if I say, Remember me, it's not like I need to clear the cash or so, like, sometimes with a website, it's if you explain it, if there's changes made, but you've logged on to that sort of link before, then it doesn't pick up the changes. Or is it I can just,
+
+Kody  24:58  
+I think I hear you. I think, yeah, the idea is, hey, once I sign in, I should be good and not It shouldn't make me sign in every single time. Is that kind of the thought there
+
+Richard Spencer  25:10  
+No, no, no, no, no. So what I'm asking is, so like, when, when, when we were developing our website, I'd signed in, I think, on my PC, on my phone, or whatever, I'd signed in, and then there were some changes that were implemented to the website. But then the chick said, No, I need to clear the cash, because it's remembering the link or whatever, so it's not showing what was changed. So I'm asking, if I log on, like in a week, do I need to clear anything? Or will it just as the system sort of gets changed, it will pick it up. I don't
+
+Kody  25:43  
+that's a great that's a great question, and that's so the answer is, you should be okay to just sign in and kind of use it. Use it as is. Updates kind of just get pushed automatically. And one thing that we're driving towards is we're going to create a completely separate URL that's kind of like your live instance, and that's going to be like, and then that'll be where Elmari and Demi and you are all kind of like, that'll be like the main thing. But then we'll still have this separate one that's for, like, testing, changing things, and it'll be a little bit gated, and then we'll basically, when things are ready, like updates, we'll just push out an update. But as far as from your perspective, you shouldn't have to worry too much about those types of things. I'm pretty hands on, and I'll, you know, we kind of take care of a lot of that stuff for you. Okay, sweet. Hopefully that is helpful. Um, one thing I'll have you do is on Zoom, there should be that green Share button again. And let's have you Oh yeah. It's funny. I was talking to Darren, and he was like, Oh yeah, you know, rich and his family just left, and then, oh yeah, you said you saw this screenshot I took, but, like, literally, like, as he's saying that the lights, like, go out. I was like, Oh no. Is he about to get, like, raided and attacked,
+
+Richard Spencer  27:09  
+you know? And then I wait
+
+Kody  27:11  
+for the family to leave, and then they'll, they'll storm in, or
+
+Richard Spencer  27:16  
+whatever, and I to flip and get my IT guys out there, because now Darren is staying there. And I'm like, it literally something similar happened to me last year where my brother in law stayed at our place. And also I had some five issues. Now it's a new service provider, but, yeah, luckily this time, the IT company came in this morning and just fixed it all up. And this, I mean, I because I had to, I had to reset my solar system. And when I reset the solar system, my old internet bombed out to where it was that one day where, when I was with you, and I had to do, like a hot spot on my phone, right? That sort of tired. Ja, anyway, luckily, the guys came and sorted it out.
+
+Kody  28:01  
+Okay, yeah, it's always fun trying to keep your internet and lights and all that stuff
+
+Richard Spencer  28:07  
+going. The joys of being in Africa.
+
+Kody  28:11  
+Okay, cool. Okay, so the main thing we'll start with, we can just start from the top, but let's just click on that, start new tender button and trying to, you know, always simplify a little bit, but the next step is, there's that upload BOQ button.
+
+Richard Spencer  28:30  
+And so what would attach existing be? Would that be a BOQ that's already been uploaded before?
+
+Kody  28:37  
+Yeah, yeah, exactly. Let's say, for whatever reason, you'd created a BOQ first, and we're playing with that, but you didn't create the tender. But probably, probably what we'll do is we're always going to want to simplify things, so in the future, we might even just make it that the user always has to start with a tender that they've created, as opposed to the other direction. So, yeah, does that answer your question?
+
+Richard Spencer  29:03  
+I think that that could be handy, because we do get every now, well, probably one in 20. We get a tender way, we get the original bill of quantities, or the BOQ, and then a few days later, they'll send an amendment, one addendum to that BOQ. So then maybe that would be, you go in there and make the changes, because you've already pulled it in before, and then you just go and do the changes there. So that would be okay. It would be definitely used. Okay, upload, yes.
+
+Kody  29:35  
+And then I sent you, I did send you a example BOQ. That's a that's already a CSV file email. I sent it on WhatsApp, which, if you needed me to email, I could, I could also send it over email. If that's easier, is it? Yes, perfect.
+
+Richard Spencer  29:56  
+So desktop
+
+Kody  29:58  
+and so this one, this one has, I think this has roughly 67 items in it, and the last, the last time we had demoed this, I believe you uploaded one that had over 50. And what I'll show you here is we increased the limit, so now it should be able to handle BOQs with items, roughly around 120 items before it would start to have issues. So hopefully that will be a little bit more useful, whereas before it was it would error out. There'd be an error if you uploaded one that was more than 50. So we did bump that up. And then we also made a couple of small adjustments to the interface to try to make it a little bit simpler. So we kind of added these like steps, but we have, like this step one, which has the header row, and then you still have to find the header in the sheet and find the row, which in this case, so this would
+
+Richard Spencer  31:02  
+be five, right?
+
+Kody  31:03  
+Yeah, yeah, exactly. So you would just set five, and then we have that green button. Okay, perfect. And then if you scroll a little bit, there should be another clear. Here we go. Step two. Click on that button.
+
+Richard Spencer  31:19  
+That's pretty cool. Yeah.
+
+Kody  31:21  
+And there's still a couple of extra steps, but then it says step three, hit send, okay, and it's that little Send button, perfect.
+
+Richard Spencer  31:30  
+Now that changed from last week, yeah, last week there was, I think there were two options. One was, yes, I want to pass.
+
+Kody  31:36  
+And, yeah, yeah. And we'll kind of always trying to simplify. And you know, over time, we might make a decision to just a single button, and then it does the message, and you can see everything, and it does the confirmation automatically, good kind of, good kind of starting point. And then, because it's a little bit of a larger BOQ, it does take a little bit longer for the AI to think for a second, but in this step, it's just kind of thinking through the BOQ, and then it will give you its little summary before you would confirm to parse it.
+
+Richard Spencer  32:13  
+So this is everything that it's pulled in.
+
+Kody  32:18  
+Yes, yeah, we just kind of formatted it like this is like the raw data from the BOQ, and we put it in a format that the AI is able to just understand and kind of, Okay, think through. So, yeah,
+
+Richard Spencer  32:33  
+just a question. Sure has Demi sent you any so if she sent you any BOQs, like where we have, say, for example, or just a few files or folders or whatever, which is, this is how we received the BOQ. This is how we adjusted it, and this is what we submitted as she sent some of those to you all.
+
+Kody  33:00  
+Darren, when we first started the project, I think Darren had sent me, like, roughly three or four examples. As far as with Demi, I haven't asked her for any additional BOQs or anything.
+
+Richard Spencer  33:12  
+But would that be handy if I was say to do that where I would take a folder and just make a file and say, as received from client RSB workings submission to client. Then you, I don't know if you could pull that into into call it the AI to sort of scan it and see, okay, this is what they did with this one, and this is what they did with that one. Would that be handy? Or would it be handy? Yeah? Because I think three or four examples is super limited. If we're doing, like, totally, almost one a day kind of thing,
+
+Kody  33:48  
+yeah, totally. I think, I think that if we curate that data set and kind of add examples and have it in a good format, then, yeah, that'll that'll become extremely valuable over time, especially as we're fine tuning things and honing things in that would Pro as you
+
+Richard Spencer  34:03  
+start setting rules for for what it needs to do with certain descriptions and that kind of stuff.
+
+Kody  34:09  
+Yeah, 100% 100% okay, so, yeah, something, something for us to kind of keep an eye on and think about. Okay, so here's kind of the intermediary step. It's just a little bit of a summary. It's basically saying, Hey, I found 67 items. You know, here's a little summary of kind of what it's looking like so far. And then we still do have to basically tell it, you know, like confirm. And if you scroll down a little bit, we do have that step four button, and that,
+
+Richard Spencer  34:39  
+okay, so now, so before we hit step four, so this is now, it says it's done. Brief, show what it's done. Okay, it's split. It nicely, item, description, quantity, and then obviously the category. And then you just click the above, confirm creativity and Q, okay, yes.
+
+Kody  35:03  
+So you would click this one, and then there's still that step where you do have to scroll up and hit that send button. So it did put the hostage in, yeah, so it's still,
+
+Richard Spencer  35:13  
+there's the use, okay, cool,
+
+Kody  35:14  
+yeah, still similar to last week, but just trying to make it the button stand out a little bit more. And each step. Yeah, Demi. Demi was thinking that if we, and I think you had mentioned this last week, as well as if we know this step, then Elmari, like, it's really a significant amount of what Elmari is doing on the BOQ,
+
+Richard Spencer  35:38  
+we wouldn't actually need Elmari If this step is, which is what we actually want?
+
+Kody  35:43  
+Yeah, that'd be, that'd be great. And this also, this is also the perfect entryway into, like, having this tool as part of your core process. So maybe, while this is parsing, we could talk a little bit about that. So let me just pull up. I have some notes here. Okay, so, yeah, basically, we want to come up with kind of like a go live plan. And I know it's a little tricky, because it's the end of the year and you're not really planning to do any new tenders until probably, like, January. So yeah, so
+
+Richard Spencer  36:18  
+we'll return on Jan fifth, the fifth of January, we all back. But I mean, if you, if you, I don't know what your sort of plans are for the next few weeks, but I mean, if I can help, and if you're going to sort of be operating, or your team's going to be operating, I'm happy to be involved so that we can keep the ball rolling while we
+
+Kody  36:41  
+Okay, yeah, totally. And I sent, I sent an email this morning, which was, let me see, I sent it, yeah, roughly an hour and a half ago. And I'll just kind of give you a quick overview of the timeline, but so this kind of six weeks we're calling this. This is like phase one for the tendering system. And so we're on, we just barely finished week three. So we're at about the halfway point for the building, the building,
+
+Richard Spencer  37:16  
+sorry, I'm trying to open up your mail now. See, I've got all these other stupid emails popping out more
+
+Kody  37:24  
+the joys of running a business, right? Everyone needing you?
+
+Unknown Speaker  37:29  
+Oh, that's trying to be. Okay.
+
+Kody  37:34  
+Very cool. Okay, yeah. So this is just talking about kind of our our timeline. And so that first bullet point, so we just barely finished sprint one. That's what we're finishing up today. And so this, we do these, we call these sprints, because we really are trying to sprint, you know, we're trying to just get as much done as possible and try to get as much feedback as possible, but also building and staying focused. So this first sprint. This is, this was from November 24 to the 15th, so it ends today, so we're just barely starting kind of the second half. So that's starting today, and it actually goes up until January 5, so that timing should be pretty good. Oh, cool, definitely during the next three weeks, as we're in sprint too. Then, yeah, continuing to meet with you and do these kind of weekly meetings is going to be great. I do have a meeting with Demi this Thursday, but I think that's the last one until she comes back in January.
+
+Richard Spencer  38:31  
+So I think your next Thursday would be with her. Would probably then be the eighth of January. I'd guess.
+
+Kody  38:39  
+Yes, perfect. Yeah, totally, and so, and I do have that scheduled. So we have one with me and her scheduled on January 8, and then we have the one this Thursday as well. So those will be great, kind of just verification steps. And then after January 5, the way that we kind of do things is we have a two week period where we really, really really focus on just testing and trying to integrate it into your workflows. And the only, the only changes we do in that period are, like, kind of, like any bugfixes or glitchy things where, like, kind of the core workflow is broken, so we don't do any, like, new features or anything like that. And the goal is to be able to have it work, like for end to end for tenders. And so the the kind of, I think, the target date where we would be, like, completely live, and having like, real world tenders flowing through, it would be the 19th of January. That would be a really good target day. And that's like, right at the end of phase one.
+
+Richard Spencer  39:41  
+So the goals, so that's a month just around the corner.
+
+Kody  39:45  
+Yeah, it's very soon, and so a ton of work to still do on my team side, but I think, I really think we can get there, and I want to push really hard for it. Now, the thing that's a little tricky, though, is because you don't have new tenders coming in, that's where I think it makes sense what you were saying where maybe let's get some recent like, some of the most recent BOQs and tenders, and try to test those as, like a verification to make sure you have everything kind of covered that way. As we get into January, like we'll already be in the groove of testing, if that makes sense. So what would you say? What would you say is the most maybe, let's just start with two. What would you say is the most recent ones that's going to be like, top of mind and fresh for you and Demi to really kind of anchor the testing around,
+
+Richard Spencer  40:35  
+I suppose our DeMarco one. Can you give me a sec? I mean, what I'll do when we jump off this, I will, I'll sit and I'll actually go into it right away. And I'll send you, I'll send you a few pretty fresh ones, one or two that was converted.
+
+Kody  40:57  
+Okay, yeah, democra sounds great. I think I know that one too, you had some of the more recent access equipment stuff when you had showed us
+
+Richard Spencer  41:07  
+DeMarco was converted to a project. So that one would obviously work super nicely. I want to just open up and I'll take a snap if it's just not so super slow. But see where's DeMarco? See DeMarco, holy moly, can't be that far back.
+
+Kody  41:58  
+In fast now it'll be easier just to do this Good evening. Even it doesn't.
+
+Richard Spencer  42:03  
+It doesn't really matter, but I'll go in there as to Marco.
+
+Kody  42:14  
+You could even send, oh yeah, just the Oh yeah, yeah.
+
+Richard Spencer  42:18  
+You see. So, I mean, I could see if this is now, that's a lot of info, but I mean, basically, where's the one we received? Must mean, yeah, so this is our working one here. That's obviously the PDF output, just of, you know, the one pager or two or three, whatever we sent. Those are relevant. Yeah.
+
+Kody  42:44  
+I mean, you could even, yes, what you received from the client. Oh, nice. Okay, so you could even just zip up the tender docx, like that folder, because even seeing the PDF would be helpful, because I know that's one of the outputs that you send to people even seeing that. So maybe just if you zip up the tender docx. So Dimako is one, and then what's, what's a second tender that we could use this kind of, like a flagship testing one.
+
+Richard Spencer  43:08  
+There's, there's a lot, I don't know if you've got Suzuki, but I mean, there's, literally, I can zip you, I'll zip you, and I'll send you 1010, decent ones that I know are like the sort of commercial guys that we do a lot of pricing for, okay? And I'll send you a few of them that I know is pretty, pretty decently worked through this X, 109, was, was pretty nicely worked through. We didn't win all of these, unfortunately, but sure, there's a lot here that I'll zip and I'll see, here's the market. And at the bottom, you see how many tenders we do. For the our hit rate, we do way more tenders than what you get appointments. But there's a few here, so I'll send you if I'll send you a few easily, they all have the same kind of info. If I open this one, you'll see again. Okay, now there's revision one, revision two. So I don't know, like with this, that's
+
+Kody  44:07  
+great. Would
+
+Richard Spencer  44:08  
+you want all of the revisions? Should I just zip the whole folder? Or would you prefer that I just zip what we received and the final one that we sent out, the build, the Excel that we worked on, and then the PDF that we sent out.
+
+Kody  44:20  
+I think the tender, the tender docx folder, makes a lot of sense.
+
+Richard Spencer  44:25  
+That's what came in from the client.
+
+Kody  44:27  
+No, oh, I see. Okay, okay, so this is a little bit of a different structure from Dimako, yeah,
+
+Richard Spencer  44:33  
+this one, I don't think we got a an Excel, so I think this was probably just a large PDF document.
+
+Kody  44:41  
+Okay? So I would say, I would say that the main thing we just need is the beat, the initial BOQ, and then the working tender sheet that, again, kind of turned into even the final version is totally fine, and then the PDF, and then what we'll do, as far as testing probably the best, the best way that we can test it would be having somebody from RSB, either you or Demi, basically recreating the tender using our system instead of the sheet. But just having the sheet is like a reference, and that will identify some big gaps. And obviously we could have, you know, Darren, test it. I could try to test as well. The problem is, you and Demi are definitely the domain experts, and so you'll, you'll be able to identify gaps much more effectively than me and Darren.
+
+Richard Spencer  45:34  
+So, yeah, I can do testing. I think the stuff that I send you would would not. I don't know if it would really be for testing. It would maybe be more for trying to set up rules and that kind of stuff. And we'll actually have to do the testing. Okay?
+
+Kody  45:49  
+That makes perfect sense. Probably the two that make the most sense is the other Dimako one and then the Suzuki one, which, yeah, so yeah, if we Yes, being focused on those. So yeah, that sounds great, though. And then we'll plan for so, you know, we can, we can start testing even before January 5, but definitely the period from January 5 to the 19th is going to be like a really kind of big period where we want to push really hard and have you and Demi in the app a lot, and just really kind of making sure that things are that's kind of our two week uh, final sprint, right? But it's, it's not like a building sprint. It's more of like a testing refinement, finding bugs, killing bugs, making sure it's smooth and polished. It makes sense and all that good stuff. Does that sound good? You know, that's cool. Okay, sweet. Okay. So what we can do for this call, if you want to jump back into the application, the BOQ should definitely be done parsing by now. Yeah, so you can see it says, successfully created. 67 no items were failed to create, which is great. No errors. Okay, that sounds good. And then if you scroll down to the bottom now, there should be that refresh button again, so on the right, yes, and perfect, if you click on that. Okay. So, so this is where we
+
+Richard Spencer  47:09  
+didn't actually watch it building live this time.
+
+Kody  47:12  
+Yeah, yeah. Okay, very cool. So I know there's still a couple categories and things I think we're missing like M 10, kind of like M 10 and M 12. So some of the cat Demi did bring up that she wanted, like a general category for things that she mentioned. Yeah, well, we'd have to, we don't have to figure this out exactly on this call, because this would probably be something we would work through a little bit near the end of sprint, too. And basically she was just saying that sometimes things will get kind of miscategorized with Demi. And she had, she was thinking of having just a, you know, for certain things, you might have a little bit of a broader category rather than but those are little rules and things that we can work out. So in the meantime, though, we can just kind of work with what you have in the spreadsheet. You know, still sections.
+
+Richard Spencer  48:00  
+Look, I think there's probably if we, if, if it was a possibility, we could probably add 20 more categories, because they are, there is definitely a room for it. It's just we, we've just haven't, obviously made the time to sit and do it on our own. It's been just,
+
+Kody  48:24  
+yeah, that makes sense. Okay, sweet. So I'll show you just some of the next steps and some of the progress we've made on the builder. So the next step is that build tender button, and then we've tried to make this simple. Once you get into this page. It's basically just saying, Hey, you have a BOQ with 67 items. We just need to copy them into this place. So you would just click that copy button,
+
+Richard Spencer  48:51  
+copy from BOQ. Yep. And
+
+Kody  48:53  
+then it just takes a second to load. And then once it's done, it should automatically refresh the page. Oh, cool. Okay, sweet. And so these are all of the line items that are from the BOQ, and it just kind of has the header information right now, there's a couple of steps that we're going to be implementing in this second sprint so over the next three weeks, which is we understand that there's a little bit of, like a look up on the it's like, almost like a template where you have, like a rate build up and the material breakdown this kind of standard for each section. And I think, I think that's what's in your standard rates page, or, sorry, standard Lines page is you have a handful of kind of these pre configured standard things. Whereas, right now, if you were to click on the View rate, build up that green button, then notice that it's it's actually pretty empty right now. So that's something that we're going to focus on, is pulling in some of those kind of templated defaults to try and match them with the with how the spreadsheet currently works.
+
+Richard Spencer  49:58  
+Okay, okay. So, so, like, this would be a one or a zero or whatever, based on certain criteria that you select up front kind of thing.
+
+Kody  50:10  
+Yeah, yeah, yeah. Kind of like, you know, if it's a still category, then maybe, or even based on the tender and some of this, some of this too, we're still, I'm still nailing down exactly what that logic is, but we're trying to make it as similar to the spreadsheet process that you have now. So Demi was just kind of mentioning there's certain things that will automatically get, kind of set from the tender data. And it like matches on and I think you had a VBA like, you've written some like VBA code and does like some lookups and kind of will set some things automatically. So that's something that we're wanting to, you know, make, make clear, so that you know, switching, switching off of the spreadsheet onto this system isn't going to feel like you are losing functionality. If that makes sense.
+
+Richard Spencer  50:57  
+Okay, cool. How do I how do I do the mode? We produce. It was a sort of a full screen mode. We know, if you hover on
+
+Kody  51:10  
+the it's the little fake browser tab. So your app above, there's like a little tab. It's kind of subtle. Let me see, yeah, there it is. And then there's that little perfect. If you tap on that, there you go. And then to navigate back, you can just click on View tenders at the bottom,
+
+Richard Spencer  51:30  
+view, yeah.
+
+Kody  51:31  
+And then that most top one, there's that little view button that's pretty good side or the
+
+Richard Spencer  51:36  
+view or edit, yeah. View, view, yeah.
+
+Kody  51:41  
+And then there's the says next step. Excuse me. Oh, no worries. Then you can click that there's that blue, that blue one that says next step, tender builder, and that takes you directly to the tender builder.
+
+Richard Spencer  51:55  
+Aha. Here we go, sweet.
+
+Kody  51:57  
+And then if you click that green fee rate buildup. So then in here you have the material breakdown, and you can click that Add Material button. And this is where you would put in your material item. And this is where we can have it. It'll do a lookup on the most recent material rates that Maria fills in,
+
+Richard Spencer  52:22  
+yes, yes.
+
+Kody  52:24  
+And then this is also where we'll have some templates such as, yeah. It'll know the waste percentage, kind of default for that item. It'll know the rate default based on the most recent rates,
+
+Richard Spencer  52:34  
+based on the database from Maria, yeah.
+
+Kody  52:37  
+And then the proportion is where
+
+Richard Spencer  52:40  
+that's 8515 split, or whatever.
+
+Kody  52:43  
+Yeah, totally, yeah, cool. And so you would basically set those values. You'd hit the check mark that's next to the the row. And then when you start doing that, yeah, yeah, yeah. It will, it will calculate out the material supply total. And you also have a place to put in your markup, like your margin markup.
+
+Richard Spencer  53:09  
+So can I just, can I put in some numbers here? Yeah, is the sum working yet?
+
+Kody  53:14  
+Yeah, totally, totally, yeah. Let's try. I
+
+Kody  53:27  
+and then there's a little bit I just want to help you out here. There's a little bit of an issue where if you do that top check mark at the top, it'll clear out the values of other items. So you can only do one at a time, unfortunately. But like hit
+
+Richard Spencer  53:39  
+the master. Do. And
+
+Kody  53:43  
+then this proportion is going to be a decimal value that's like point eight.
+
+Richard Spencer  53:48  
+So it'll be point eight, five, yeah, 85% and
+
+Kody  53:52  
+save Yeah. And then notice
+
+Richard Spencer  53:54  
+how yeah, see what you
+
+Kody  53:56  
+mean, yeah, yeah. So see
+
+Richard Spencer  53:58  
+what you mean. But
+
+Kody  54:00  
+I don't know of that as well. Actually,
+
+Richard Spencer  54:13  
+cool. Oh, nice. Okay, and then it goes to the material supply, and it's pretty cool, calculated automatically, nice. Okay, so now that lock, so that's now done. You can't change it manually here. You only change it there. That's cool.
+
+Kody  54:31  
+Yeah, totally. And then you do have that little markup, that 0.0% that's which I know that sometimes you'll add a little markup for the whole material, yeah, section, yeah, but there, if you want it, you don't have to use it. And then also it does round to the nearest 50 Rand, right now. Nice. Yeah, that's cool. Okay, nice, sweet. And then on the rate build up if you scroll down. So this is where you could add the and some of this. I know that, you know the ultimate goal is to have a lot of this kind of get pulled in. For example, the Crainage, I know might get pulled in depending on the tender, but right now
+
+Richard Spencer  55:18  
+Angi, yeah,
+
+Kody  55:19  
+it just kind of works as a calculator. So you can put in those rates and be included, just kind of multiplies across, and then you
+
+Richard Spencer  55:43  
+so now, if we put the right in there,
+
+Kody  55:47  
+yes, and then this one, there's a little bit of an extra step. If you scroll down just a bit, then there's that save and calculate button, And then that's what we'll calculate, the the total is
+
+Richard Spencer  56:26  
+does have older
+
+Kody  56:33  
+how was that? How's that looking and feeling?
+
+Richard Spencer  56:35  
+Yeah, that's cool. That's sweet.
+
+Kody  56:39  
+Okay, sweet and now,
+
+Richard Spencer  56:41  
+so now, but I'm assuming most of these rates would be that would come from a selection, whatever you want to choose for that, like that pre selection that we were talking about earlier, where, with those blocks, where, if you tick the box on certain questions, some of these would be a one, and then the rate is already sort of pre picked somewhere else, and it just applies it through each one, a new scan and check and
+
+Kody  57:09  
+Absolutely, and that's so that's that's definitely things we're doing in this over the next three weeks. Is right now, it's kind of like a glorified calculator, but we're going to have it where we'll have options, where we can kind of pull out, pull out information directly from other parts of the tender, such as, like the craina calculator, or, I know you have the Yeah, like the inclusions, exclusions, you have the access equipment calculation, some of those things. And so that's kind
+
+Richard Spencer  57:42  
+of basic rates page where you sort of determine what you want your fabrication rate to be, you know, overheads and shop priming and all that kind of
+
+Kody  57:50  
+chess. Yeah, totally, totally nice.
+
+Richard Spencer  57:54  
+Okay, I like the look of it and the feel of it.
+
+Kody  57:59  
+It's pretty Yeah, if you scroll up just a little bit more, there's kind of the line item, let's go, sorry, the other direction. If you scroll up to the top of this one, you'll notice, okay, so you'll notice that has the kind of header for the line item. And this is where, this is where you have the quantity. And then notice that rate field. If you hover over that rate field, you can't edit that. That's a calculation that's coming from
+
+Richard Spencer  58:26  
+the nice, okay, okay, only edit the quantity there.
+
+Kody  58:33  
+Yeah, correct. Yeah. All right. Cool, cool. Sweet. And then, so that's kind of the items, and then, you know, that repeats 20 times, right? And this is where we want to not force Demi, to have to manually enter every little thing, right? She would. We don't want it. We don't want to go backwards where, you know, switching to the system, like you lose functionality from the spreadsheet, ideally, right? Ideally. We don't want to try to force Demi into that wife,
+
+Richard Spencer  59:01  
+yeah, but it'll definitely, I think it will be super awesome. A lot of it, a lot of it is sort of pre chosen. And you just do a quick you open the build up, check it out, close the build up, check the next one, make sure it's pulled through right to gage is, for example, like if we go to now, not, not, not item 19, because the material is different, so the supply price will be different. But like, for example, this one and this one are both square, hollow section columns, so you just check, okay, is this one's right? The same as that one is the coin? Okay? Like a built next one. Check it out. Okay, move on. Move on.
+
+Kody  59:44  
+Very cool. Makes sense. Okay, very cool. Okay, so one more thing, there's a couple of other small things just to show you. So let's go. If you on the top left, there should be the menu icon, like at the very, very top, next to the RSB, yeah, perfect. And then to the left, there's a little menu that you can click on, yes. And then notice that there's that third item. Now this material supply rates, so if you click into this, this is going to be where Maria will set different monthly rates, which I know it's not always exactly monthly. I know sometimes the period can be no
+
+Richard Spencer  1:00:27  
+every month you must do it.
+
+Kody  1:00:31  
+Okay, perfect. So that deep, that month being a default is seems like a good choice. Then, yeah, okay, that sounds great. And then there's a, there's still work that we're actively doing on this and so but what you can do, if you go and just click that Show button for that top most one, we'll kind of, we'll have a little setting that shows the active material supply rate, like monthly material supply rate, and then notice that we have this kind of grid view. Or what Maria will do is she'll go down and she'll enter in the pricing for each supplier. And then what the checkbox does is the checkbox basically is selecting the default price or the default supplier, and we'll add in in this sprint, where our plan is to add in, like, I know the default option rule of thumb is that it's the second cheapest for that, but I also know that that needs to be overridden sometimes. So we'll have a little thing that will set that by default right now. It's just a manual click where you check the kind of the winner or the one that you're defaulting to, and then those checked values will be what gets automatically pulled in when you set these. You see the material items on left hand side. When you set that in the line item build up, this will be done through, yeah, the default value.
+
+Richard Spencer  1:01:53  
+So if you, if you were going to start a new tender, and we've negotiated some kind of special rates with a different supplier, you'd go in here, select, select, select, select, and then you'd start the tender. Or would you start the tender and then change it?
+
+Kody  1:02:08  
+Probably, probably the right flow there would be to start the tender. And then, if you've negotiated a special rate for a specific tender, then you would go in, and then you would overwrite the default value, unless, unless that special rate is like applies across the the rest of the month, then you could come in here and maybe update, okay, so
+
+Richard Spencer  1:02:29  
+you'll just override it in the tender itself, in that material.
+
+Kody  1:02:33  
+Okay, yes, yes, yeah. So we those values will always be overridable, where the quantity surveyor can just kind of select the, you know, there'll be, like, a default value that kind of just gets pulled in, but if they need to adjust it at the tender item level, then they'll always have the ability to adjust it there.
+
+Richard Spencer  1:02:53  
+Okay, so then would you, would you have, so like, on our on our doc, we've got that sort of very simplified. On that rates page, we've got a very simplified here's our material supply rates. Would we have something like that in there where you say, Okay, for this tender, I want to just manually change the material supply rates and then so you don't have to do it line item for line item the whole way through.
+
+Kody  1:03:18  
+Yeah, yeah, we could. And this is basically, you're referencing the material supply rates table that's on the rates page in the sheet right that has, like, the
+
+Richard Spencer  1:03:27  
+yes at the bottom there, it's like a light, I think it's light blue. And I don't know what if it's light blue, dark blue or whatever.
+
+Kody  1:03:35  
+Yeah, I do see that. And yeah, Demi, Demi did mention this as well. So yeah, what we'll do is we'll have it where, maybe, I don't know if we'll have it where we'll put exactly, if it's on the tender builder page, but we'll, we'll have a little section for the tender where you can maybe see the all the default rates for that tender, or like, and then maybe it starts with the default values. And then, yeah, if you negotiate specific rates, you can change it, and it will apply to the entire tender. Does that mean? Does that sound like what you're looking for?
+
+Richard Spencer  1:04:01  
+Yep. Ja, so it'll pull through as a default whatever's selected here, maybe the second cheapest for and and then you would say, okay, instead of paying here, 225 from BSI, we've negotiated 210 so I want to just put it in there, and then it will apply that through the whole tender, wherever that specific section is, is selected,
+
+Kody  1:04:27  
+yeah, yeah, absolutely cool.
+
+Richard Spencer  1:04:32  
+And I'm speaking and I mean, yeah, so what I think so like the default is to select, just to go back two steps we were the default is sort of second cheapest, but with Maria having access to this, she knows who has stock of what. So you know, maybe we've got second cheapest here, but she knows shit that guys who are actually cheapest have a lot of stock. So she can just select these are the guys to use for that month or whatever.
+
+Kody  1:05:01  
+Yeah, absolutely, these check boxes could be overridden and changed, even if, you know, maybe it defaults to the second, yeah, the second cheapest. But if Maria wanted to come in or Demi, or whoever needed to, whoever has permission, I
+
+Richard Spencer  1:05:12  
+would only want myself ruin and Maria to have access to this perfect this, like dare me in a tender can override something if necessary, but only me and Maria and Ron should have access to select who we're going to use. Ja perfect, because we the only ones that are really pretty hands on with the suppliers and little deals that we make in the background.
+
+Kody  1:05:36  
+In Yeah, okay, yeah, totally. Well, we'll set up a permission so only you three, and not not Demi or Elmari or anyone else can can view and edit this.
+
+Richard Spencer  1:05:45  
+Can edit this. Yeah, please. Otherwise, that can cause big, big drama if we don't check it. You know what I mean, if we don't check necessarily, and there's a tender that goes through and the wrong material prices have been selected for guys for Damien Elmari, who are not really hands on with the buying, that could be big, big drama.
+
+Kody  1:06:09  
+Okay, that makes perfect sense, so I'll take a note of that. Okay, perfect. So this is this where it's currently at. Like I said, we have some plans for this sprint that we're going to be improving this and adding, like, the default value, and some of those permissions and things. So and then the last thing I just wanted to show you, yeah, is I just want to show you our progress on the Crain calculations. So, yeah, let's go back to the home page, which you can get there by just clicking on the top left RSB.
+
+Richard Spencer  1:06:41  
+We just hit that, yeah,
+
+Kody  1:06:42  
+yeah, perfect. And that will take you back to kind of the homepage. If you scroll down. Then you can click on the View All tenders, and we can go back to that tender that we were working on. So that very top one, you can click on either the blue e number or that view button. Yep, perfect. And then, instead of going to the builder, let's actually hit that back arrow and yeah. And then let's, let's scroll down to the bottom, and we have this Crain, yeah, on site, mobile Crain breakdown, and we've done some work on it this week. There's definitely still work that we're planning to do on this in the sprint. But if you click that edit pencil on the top right of the breakdown, that's where you can input your roof area and your erection rate. And once you put those in, then you hit the green check mark on the top right that will calculate the program duration, days. And then it
+
+Richard Spencer  1:07:38  
+will also see there you can't actually edit. It brings up a little
+
+Kody  1:07:43  
+Yeah, yeah, icon
+
+Richard Spencer  1:07:44  
+there, which is nice. And
+
+Kody  1:07:46  
+then you can, you can select the splicing Crain or the other Crain option, and then, now notice that it says unsaved changes there, yeah, that's just telling us that we need to scroll up. And there's that little check mark that we just have to select. It saves those settings. So go ahead and click on that, and then notice that it
+
+Richard Spencer  1:08:06  
+does the sum,
+
+Kody  1:08:07  
+yeah, it puts in the program duration. It puts in the erection rate. One thing we have on our list is to show those splicing Crain fields when you're still editing. And you can go in and re edit those. If you click the edit pencil again, then you could go and put in those values.
+
+Richard Spencer  1:08:24  
+If we go, yeah,
+
+Kody  1:08:25  
+yeah, yeah, and
+
+Richard Spencer  1:08:27  
+we say, 10. Must it be a capital? Or will small t work?
+
+Kody  1:08:34  
+I think a small t should work. Okay, right? Yeah. Say, I Okay, And look, there's a little Okay. Well, so now notice on the Crain compliments, oh, in fact, if you click the Refresh, let's refresh your web page here. So on the top left there's that, yeah, let's go and click on that. I'm and if you scroll to the Crain compliments table, notice how it updates that golden kind of recommended area. And then in the compliments we have the Crain recommendation. So for this one, it's the three by 10 ton, if the if the erection rate had been into that 350 to 450 range, or into that 450 to 550 range, then it would recommend those ones instead. And if you click that green recommended Crain's button that just sets the selected Crain's to be what the recommendation was, notice that it says 1010, rental Crain and then the quantity field that's three as the duration that has a rate per day that I believe is a default value.
+
+Richard Spencer  1:09:50  
+And so, rate per day, so, so this, yeah, that that is in that what's that tender data locked, or something like that on that document of ours.
+
+Kody  1:10:03  
+Yeah, let me just make a note. And Darren. Darren has a bunch of tickets he's made for us where he's telling us a handful of changes that we need to make on this page. Okay, so you mentioned that's the locked. Oh, right, right, yeah, in the, I know you're talking about, the data sheet that's
+
+Richard Spencer  1:10:25  
+got that, that sort of craina, either RSB owned or or rental rates, which I suppose I don't know how you guys would do it. Would you have a similar kind of page to access that as a like, what we have for the material supply rate's where, yes, totally, maybe not updated as regularly, but it's got, like, that's the database for the crane rates, absolutely.
+
+Kody  1:10:54  
+In fact, if you scroll down to the very bottom, we do have a little section that says Crain rates, and you can click and this, this is a read only view right here, but we do have an editable table that you can do that you can basically edit these wet rates and these diesel and rental types, and you can add crains in the future if you need some or delete Crain's. So this will be fantastic
+
+Richard Spencer  1:11:19  
+change your diesel allowance. Yeah,
+
+Kody  1:11:21  
+totally, yeah. I do that. In fact, I believe that what that wet rate got pulled in? Yeah, that 10 ton rental. Notice that we have that wet rate per day. It's that second from the bottom, yeah, that 2050 I believe that's what got pulled into that selection
+
+Richard Spencer  1:11:37  
+at ease. At ease, this would actually be, I think the RSB owned as the weight rate or whatever, but yeah, that's definitely what is pulled in.
+
+Kody  1:11:47  
+Yeah, that's good to know the rate's.
+
+Richard Spencer  1:11:49  
+I mean, we'll play with the rates. The rates are not really
+
+Kody  1:11:52  
+makes sense. And then these are also over ridable, like the rate per day, which, if we need to, we can turn them off, but you'd click the edit pencil, and then you could punch it. Would? You add it to the yeah, you click the edit pencil, which unlocks it, and then you could enter guys. So, yeah, it's just whatever, yeah, yeah.
+
+Richard Spencer  1:12:17  
+And they saved it, yes. And
+
+Kody  1:12:19  
+then notice it calculated that. Oh, yeah. Let's try, try clicking the refresh on the page. Let's see
+
+Richard Spencer  1:12:25  
+if that, yeah, let's
+
+Kody  1:12:26  
+see if it actually saved the data, but just didn't update the front. I know it looks like, okay, so that's a good that's a good catch. So, yeah, this is, this is on our list for this sprint. And Darren has, I think he has, like, four tickets, all that are, like, lined up for me and Tekla to fix, probably little things like this, but what rate? And then the other thing, so we have this Crain summary. And this is another thing that Darren's told us, we need some adjustments and things. One thing is we don't have we need to, like, calculate out the tonnage, like the total tonnage for the tender, which I know that goes into, like shop drawings and that kind of stuff that that's on the agenda for this sprint. But so this is still a work in progress, but we have a lot of this lined up for the next week and in the sprint and all that. If that makes sense,
+
+Richard Spencer  1:13:17  
+can I tell you what would be super amazing at this point in, in terms of the summary shit, and I don't know how deep this goes, but as as one of these, because I like this total crane cost to cost per ton, obviously, that will work out based on when you put in the tonnage. But to have, I'm thinking further down the line, where we start pulling into track budgets to know what our diesel rate is, or diesel cost, not not diesel rate, but the total diesel allowance. Because, say, we've got a 307,000 Rand budget for craina Hire, which includes a weight rate, will include diesel and whatever. To know, okay, we've got a 75,000 Rand diesel budget, and then we could sort of as part of pulling out budgets. Now, you know, this is next step, not not just the generation, but it's the next step where we pull our budget from once a 10 has been successfully awarded, and it's now a project we say, okay, book, we want to generate the budgets for material buying, for sort of crains and cherries and the diesel we've got. And then certain people track those, those budgets, so knowing what your diesel allowance is would be for this and for cherry pickers, when you do get to cherry pickers, would be amazing.
+
+Kody  1:14:44  
+Okay, that's great to know. Yeah, let's make, let me just take a note so that we can capture this for future phases, diesel allowance. And then, yeah, cherry picker. Okay, so diesel allowance for the access equipment, you know, cherry pickers. And then the Crainage, yeah. And then that's helpful for, yeah, project budgets.
+
+Richard Spencer  1:15:03  
+It's further down the line. Yeah,
+
+Kody  1:15:05  
+okay, that's, that's good to know, though. We'll take a note of that. So that
+
+Richard Spencer  1:15:08  
+mean we don't, we don't even know that at the moment. We'd so like, we just running blind, really. But sure, sure that is, yeah, how would,
+
+Kody  1:15:17  
+How would things like that help RSB? Would it just help you calculate tenders that are more accurate, which could make you actually be competitors on price, or just make sure, or maybe, I guess there's, it's just a control mechanism helps you,
+
+Richard Spencer  1:15:30  
+kind of, yeah, so that's the one thing is to be more competitive and actually know what things are costing us. The other is, we've employed, we've employed last when we bought out our previous partner, we got a project manager that is sort of overseeing the other PMS, and his duty is to track budgets, site related budgets, which is Crain's cherry pickers, erection labor, the the allowance for drilling of all the chemical anchors and, like other guys paying our subcontractors on site within the budgetary allowances, because we've set up like incentives for the teams and for the project managers to say, you know, whatever savings you can come up With for your specific projects will give you 10% of the Sabi or whatever. So it's that overall sort of financial controls which we trying to get to we just, I mean, yeah,
+
+Kody  1:16:37  
+okay, that makes perfect sense.
+
+Richard Spencer  1:16:39  
+So, you know, one, once a project is complete, then I do. You'll probably see it as you'll see it in one of the folders that I'd seen through to you guys as I think it was actual versus allowed that. I think that's what the document is called, something like that. But I mean, then it's too late, the project's done. So at that stage, then I go on to our accounting software, and I check what we had allowed and what we spent, and all that kind of jazz. But to be able to pull a budget up front and then sort of it be implemented live as we went through the job, and guys actually have something to track that. Ja, that would be, that should be the sort of main aim.
+
+Kody  1:17:24  
+Yeah, no, that's very helpful. And, yeah, this is great to collect this, collect these thoughts and information while it's fresh and while we're like, because this should make it very smooth as we like plan for future phases. You know, we can pull it in, and it's not you having to have to re explain or like, do things, and this helps, yes, identify these things early. So super, super helpful. Yeah, I agree.
+
+Richard Spencer  1:17:46  
+Very cool. Just looking at that is cool. Because, I mean, yeah, we already know. So, like, the guy's name is, well, SJ, he knows okay for his budget. Oh, shit. What did I do now? I mean, he knows. Okay, there's my budget for the grain. I can put that budget aside, and obviously the cherry picker will be the same. There's a number, lump sum, lump sum. How do we track and then you'll track it. But if we've got the split you okay, this is what we can spend on diesel. We're getting close. We're eating a red flag. Or, you know this, the diesel spend is at 70% but the craina is at 60 or 50% there's possibly diesel theft on site, because SJ,
+
+Kody  1:18:34  
+is SJ a project manager? Is he the guy who's managing? The manager, he's going to
+
+Richard Spencer  1:18:39  
+be the guy overseeing the project to managers, yeah. So him, he would like, probably have access to these Crain rates and sort of maybe updating them every now and then, or whatever, and being able to pull a budget so, like, obviously, once we've now, once we get to that stage, and we have this conversion from tender to awarded project, and then you pull a budget from it. He would be the guy that me and Ruan and him, and I don't even think Demi, probably just me, Ron and him would have access to pull that budget.
+
+Kody  1:19:17  
+Okay, nice. Okay, no, that's super helpful. Very cool.
+
+Richard Spencer  1:19:21  
+But at the moment, he's, at the moment he's his involvement with this kind of stuff is pretty limited, because our whole costing for our company, everything is on these tender Excel. So it's only me and ruining and Demi that actually see it at the end of the day. So it's tough, man, because I can't, I can't let Maria have access to it, and then she knows what we sort of charging for fabrication and overheads, and I can't have the project managers checking it. That's all it's it's hard to handle. That's I want to have everyone that can access this, this database or the software, with their own access permissions. They can pull the data. I don't have to spoon feed them with, Okay, here's your budget. Yes, this has that, right?
+
+Kody  1:20:08  
+Because then it causes drama where they're like, you know, you're paying me this, or, Oh, you're making this. And yeah, like, yeah.
+
+Richard Spencer  1:20:16  
+And they obviously see guys competitors often and stuff. So I don't really want out a lot of our inner cost exposed. It will just be whatever is relevant for them they should see, and if it's not relevant, they don't need to see it.
+
+Kody  1:20:32  
+Okay, that makes perfect sense. Well, cool. Yeah, I think we're, we're building a really good foundation.
+
+Richard Spencer  1:20:37  
+And, yeah, it's very cool.
+
+Kody  1:20:39  
+Definitely, this will help, you know, kind of, so just looking at our agenda really quick, so we've gone through kind of, this week's demo, the large, the larger, BOQ upload, the line item calculations, the Crain calculator. So for the sprint two, so for the next three weeks, the high level things I have on my list is the project level buildups. So that's going to be kind of that rates page. And you know, the material supply rates in there, the shop drawings, the buildups related to fabrication overheads, or, like all of those items, the P and G items as well. We do have, you know, the on site breakdown, those, those mobile crains, although there's definitely some stuff that we're doing, you know, kind of polishing and nailing on that stuff. And then we have the 10 tender line item inclusions, exclusions. And then we have the access lift equipment selections, which is somewhat similar to the mobile Crain stuff, we'll probably try to have a somewhat similar experience, perfect. And then we still have the tender line item templates. So that's kind of what we talked about with, like having certain categories and proportions, just kind of like default levels, as well as pulling stuff for the rate buildup on each line item, and then, and then the other the, you know, the big step, like one of the last steps, is making sure that when we have a tender, when it looks good, it looks accurate, that we can kind of output it as a PDF that's deliverable to the client. So definitely a lot in there, but it's a
+
+Richard Spencer  1:22:17  
+lot, it's, yeah, but we're
+
+Kody  1:22:19  
+gonna, we're gonna, we're really hard, and I think that we can have a really, really good version done in the next three weeks. And so we'll keep meeting you.
+
+Richard Spencer  1:22:27  
+Progress is amazing so far. I mean, for the progress is really good, yeah,
+
+Kody  1:22:32  
+yeah, we're working hard on it, and we're leveraging AI and Leonardo and as much as we can. So I feel good about things, though, and we're, you know, we want to, we want to stick to the original project timelines and deadlines as much as possible. That's something that we're a big believer in, is just really making sure that we're on schedule and that we can do everything in the right time frame. So So yeah, that's kind of, that's kind of where we're at. I think some of the next steps are just getting those, those freshest, kind of, the most recent two tenders, I think we'd agreed on DIMAKO and Suzuki. Um, I know you have a list of I'm
+
+Richard Spencer  1:23:06  
+gonna send you. I'm gonna send you a few now I'll send you, okay, at least five. Okay, I'll send you ones that I know we put sort of effort into doing the calculations and whatever, just so that it's because, I mean, some of they might be, the numbers might that are put in, might just be generic, and whatever, I'll I'll send you a few now. Okay, that's you can, you can check them out and whatever. Then you must just tell me what I must do next. Okay, that sounds great. Just WhatsApp me.
+
+Kody  1:23:37  
+No, okay, very cool. Yeah, you've been super responsive, which is great. And then, and then, yeah. So I'm meeting with Demi Thursday, so I'll also follow up with you after that call, just to fill you in. Yeah, all that, yeah.
+
+Richard Spencer  1:23:50  
+Please, do, please. That'll be cool. Sweet.
+
+Kody  1:23:54  
+So that's, that's all I have. Do you have any other questions or thoughts before we end this call?
+
+Richard Spencer  1:24:00  
+No, I don't think so, Kody, I think the stuff that popped up, it's always nice to go through the system with you, because then as we go into an item, whatever pops into mind, I can talk to you straight away, absolutely, at least. Now my workload is done, so I can, hopefully, once we hit to the once we get to the coast, I'd get a few hours a day where I can actually just go into this thing on my own, yeah? And then chat a bit to Leo, and that's actually where I need to be. Yeah?
+
+Kody  1:24:30  
+Totally, yeah. That sounds great. Well, well, very cool. Yeah. Feel free to reach out if you have any questions on WhatsApp or whatever. Darren and me are meeting quite a bit, so he's still, he's super key, super helping with nailing some of these requirements and different things. But yeah, so things are going great. And yeah, I hope you have a great, a great rest of your birthday. You're, you're a legend, yeah, I mean, you're, you're committed, you're a dedicated, dedicated business owner.
+
+Richard Spencer  1:24:59  
+Oh, that's what else have we got business and that feeds the family. And, I mean, that's all it's important. Yeah, it feeds a lot of families. So that's what we have to that's what we focus on.
+
+Kody  1:25:12  
+Absolutely, absolutely, very cool. Well, have a good rest of your birthday, and I'll plan
+
+Richard Spencer  1:25:16  
+to thank you, Kody, you Yeah, good chatting with you. I'll send you a few things. Now, when we get what's the best way for me to send it to you? Must I just rename the documents like to receive from client and submit it to client and then put it in an email? Or should I put it in a folder and send you a we transfer link?
+
+Kody  1:25:35  
+Or I think, I think, do do what's convenient for you? I'm pretty I'm pretty versatile. Just whatever you send I can and kind of zip. Zip files are super easy, because they're easy,
+
+Richard Spencer  1:25:47  
+probably the easiest, yeah,
+
+Kody  1:25:49  
+yeah, if you're able to do zip file, that'd be great. But also, so, okay, that's awesome. Very cool. All right. Well, let's, let's plan to meet next Monday. I guess we can be back on our normal schedule that 6pm South Africa. Times that sound okay.
+
+Richard Spencer  1:26:08  
+I think. Can we do? Can we do Tuesday? So next Monday is the 22nd and I know I'm it's my father in law's birthday, and we're going to be at the coast on No, there's going to be too many beers involved. It's probably going to be impossible to meet. We playing golf in the in the morning, and then it's okay and beers. And so if we can do the 23rd on the Tuesday, that'd be first prize.
+
+Kody  1:26:35  
+Yeah, let's do that. I bumped that to be one day after. So I'll be Tuesday, the 23rd at the that'll
+
+Richard Spencer  1:26:41  
+be cool. Sweet, yeah, that
+
+Kody  1:26:43  
+sounds good. All right, cool. Well, I'll talk to you then. Thanks. Kody. Okay, thanks, Richard. Cheers, man. You.
+
+Transcribed by https://otter.ai
+https://otter.ai/u/EzBtWj5JDZB5d2MvDJ4fOKg4BJg?tab=chat&view=summary
