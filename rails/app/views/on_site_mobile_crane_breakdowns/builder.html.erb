@@ -33,75 +33,12 @@
       </div>
     </div>
 
+    <%= turbo_stream_from "on_site_mobile_crane_breakdown_#{@on_site_mobile_crane_breakdown.id}" %>
     <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
-      <% if @crane_complements.any? %>
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-              <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  Area Range (sqm)
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  Min Area
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  Max Area
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  Crane Recommendation
-                </th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                  Default Wet Rate / Day (R)
-                </th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-              <% @crane_complements.each do |complement| %>
-                <% is_matching = @on_site_mobile_crane_breakdown.erection_rate_sqm_per_day.present? && 
-                                 @on_site_mobile_crane_breakdown.erection_rate_sqm_per_day >= complement.area_min_sqm && 
-                                 @on_site_mobile_crane_breakdown.erection_rate_sqm_per_day <= complement.area_max_sqm %>
-                <tr class="<%= is_matching ? 'bg-yellow-100 border-l-4 border-yellow-500' : 'hover:bg-gray-50' %> transition-colors">
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium <%= is_matching ? 'text-yellow-900' : 'text-gray-900' %>">
-                    <%= "#{number_with_precision(complement.area_min_sqm, precision: 2)} - #{number_with_precision(complement.area_max_sqm, precision: 2)}" %>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm <%= is_matching ? 'text-yellow-800 font-medium' : 'text-gray-600' %>">
-                    <%= number_with_precision(complement.area_min_sqm, precision: 2) %>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm <%= is_matching ? 'text-yellow-800 font-medium' : 'text-gray-600' %>">
-                    <%= number_with_precision(complement.area_max_sqm, precision: 2) %>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                      <%= complement.crane_recommendation %>
-                    </span>
-                  </td>
-                  <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold <%= is_matching ? 'text-yellow-900' : 'text-gray-900' %>">
-                    <% if is_matching %>
-                      <div class="flex items-center gap-2">
-                        <span>R <%= number_with_precision(complement.default_wet_rate_per_day, precision: 2) %></span>
-                        <%= button_to "Add Recommended Cranes",
-                            populate_crane_selections_on_site_mobile_crane_breakdown_path(@on_site_mobile_crane_breakdown),
-                            method: :post,
-                            class: "btn btn-sm btn-success",
-                            data: { turbo_stream: true } %>
-                      </div>
-                    <% else %>
-                      R <%= number_with_precision(complement.default_wet_rate_per_day, precision: 2) %>
-                    <% end %>
-                  </td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
-      <% else %>
-        <div class="p-8 text-center text-gray-500">
-          <i class="fas fa-inbox text-4xl mb-4 opacity-50"></i>
-          <p class="font-medium">No crane complements found.</p>
-          <p class="text-sm mt-2"><%= link_to "Add one", new_crane_complement_path, class: "link text-blue-600" %></p>
-        </div>
-      <% end %>
+      <turbo-frame id="<%= dom_id(@on_site_mobile_crane_breakdown) %>_crane_complements_table" class="block">
+        <%= render "crane_complements/builder_table",
+            on_site_mobile_crane_breakdown_id: @on_site_mobile_crane_breakdown.id %>
+      </turbo-frame>
     </div>
   </div>
 
