@@ -65,6 +65,9 @@ class TenderCraneSelectionsController < ApplicationController
 
   # PATCH/PUT /tender_crane_selections/1 or /tender_crane_selections/1.json
   def update
+    # Cache breakdown reference for turbo stream response
+    @on_site_mobile_crane_breakdown = @tender_crane_selection.on_site_mobile_crane_breakdown
+    
     respond_to do |format|
       if @tender_crane_selection.update(tender_crane_selection_params)
         format.html { redirect_to @tender_crane_selection, notice: "Tender crane selection was successfully updated.", status: :see_other }
@@ -80,6 +83,8 @@ class TenderCraneSelectionsController < ApplicationController
 
   # DELETE /tender_crane_selections/1 or /tender_crane_selections/1.json
   def destroy
+    # Cache breakdown reference before destroying (for turbo stream response)
+    @on_site_mobile_crane_breakdown = @tender_crane_selection.on_site_mobile_crane_breakdown
     @tender_crane_selection.destroy!
 
     respond_to do |format|
