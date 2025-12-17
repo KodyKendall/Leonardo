@@ -34,11 +34,12 @@
         <!-- Edit and Delete Buttons -->
         <div class="flex gap-2">
           <!-- Edit Button (Pencil Icon / Checkmark) -->
-          <button type="button" 
-            data-on-site-mobile-crane-breakdown-target="editButton" 
+          <button type="button"
+            data-on-site-mobile-crane-breakdown-target="editButton"
             data-action="click->on-site-mobile-crane-breakdown#toggleEdit"
             class="btn btn-circle btn-outline btn-sm"
-            title="Edit">
+            title="Edit"
+            data-testid="edit-button">
             <i class="fas fa-pencil text-lg"></i>
           </button>
 
@@ -57,7 +58,7 @@
         <label class="label" for="on_site_mobile_crane_breakdown_total_roof_area_sqm">
           <span class="label-text font-medium">Total roof area (sqm)</span>
         </label>
-        <%= f.number_field :total_roof_area_sqm, step: :any, class: "input input-bordered read-only-field", placeholder: "0.00", readonly: true, data: { "on-site-mobile-crane-breakdown-target": "field" } %>
+        <%= f.number_field :total_roof_area_sqm, step: :any, class: "input input-bordered read-only-field", placeholder: "0.00", readonly: true, data: { "on-site-mobile-crane-breakdown-target": "field", testid: "total-roof-area-field" } %>
       </div>
 
       <!-- Erection Rate -->
@@ -65,7 +66,7 @@
         <label class="label" for="on_site_mobile_crane_breakdown_erection_rate_sqm_per_day">
           <span class="label-text font-medium">Erection rate (sqm per day)</span>
         </label>
-        <%= f.number_field :erection_rate_sqm_per_day, step: :any, class: "input input-bordered read-only-field", placeholder: "0.00", readonly: true, data: { "on-site-mobile-crane-breakdown-target": "field" } %>
+        <%= f.number_field :erection_rate_sqm_per_day, step: :any, class: "input input-bordered read-only-field", placeholder: "0.00", readonly: true, data: { "on-site-mobile-crane-breakdown-target": "field", testid: "erection-rate-field" } %>
       </div>
 
       <!-- Program Duration (calculated, read-only) -->
@@ -73,7 +74,7 @@
         <label class="label" for="on_site_mobile_crane_breakdown_program_duration_days">
           <span class="label-text font-medium">Program duration (days)</span>
         </label>
-        <div class="input input-bordered bg-gray-100 cursor-not-allowed flex items-center" id="program_duration_display">
+        <div class="input input-bordered bg-gray-100 cursor-not-allowed flex items-center" id="program_duration_display" data-testid="program-duration-display">
           <%= on_site_mobile_crane_breakdown.program_duration_days %>
         </div>
         <p class="text-xs text-gray-500 mt-1">Auto-calculated from roof area ÷ erection rate</p>
@@ -134,7 +135,7 @@
       </div>
 
       <!-- Saved Confirmation (hidden by default) -->
-      <div data-dirty-form-target="savedIndicator" class="hidden flex items-center gap-2 p-3 mt-6 bg-green-50 border border-green-200 rounded-md">
+      <div data-dirty-form-target="savedIndicator" data-testid="saved-indicator" class="hidden flex items-center gap-2 p-3 mt-6 bg-green-50 border border-green-200 rounded-md">
         <i class="fas fa-check-circle text-green-600"></i>
         <span class="text-sm font-medium text-green-800">Changes saved</span>
       </div>
