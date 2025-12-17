@@ -16,7 +16,7 @@ export default class extends Controller {
   }
 
   toggleEditMode() {
-    this.isEditing ? this.submitForm() : this.enterEditMode()
+    this.isEditing ? this.formTarget.requestSubmit() : this.enterEditMode()
   }
 
   enterEditMode() {
@@ -155,50 +155,4 @@ export default class extends Controller {
     }
   }
 
-  submitForm(event) {
-    if (event) event.preventDefault()
-    
-    // Submit the form via Turbo
-    const form = this.formTarget
-    const formData = new FormData(form)
-
-    console.log("Form action:", form.action)
-    console.log("Form data:", Object.fromEntries(formData))
-
-    fetch(form.action, {
-      method: "PATCH",
-      headers: {
-        "Accept": "text/vnd.turbo-stream.html",
-        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-      },
-      body: formData
-    })
-    .then(response => {
-      if (response.ok) {
-        return response.text()
-      }
-      throw new Error("Save failed")
-    })
-    .then(html => {
-      // Process Turbo Stream response using global Turbo
-      if (window.Turbo) {
-        window.Turbo.renderStreamMessage(html)
-      }
-      
-      // Update original values with new values
-      this.fieldTargets.forEach((field) => {
-        this.originalValues[field.name] = field.value
-      })
-      
-      // Show saved confirmation message
-      this.showSavedAlert()
-      
-      // Exit edit mode
-      this.cancelEdit()
-    })
-    .catch(error => {
-      console.error("Error saving:", error)
-      alert("Failed to save changes. Please try again.")
-    })
-  }
 }
