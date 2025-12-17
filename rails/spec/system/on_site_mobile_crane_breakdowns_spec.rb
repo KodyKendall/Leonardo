@@ -3,29 +3,11 @@
 require 'rails_helper'
 
 RSpec.describe "OnSiteMobileCraneBreakdowns", type: :feature do
-  let(:user) {
-    User.create!(
-      email: "test@example.com",
-      password: "password123",
-      password_confirmation: "password123",
-      name: "Test User"
-    )
-  }
+  let(:user) { create(:user) }
 
   before do
     Capybara.current_driver = :cuprite
-
-    # Ensure user exists
-    user
-
-    # Log in via the UI
-    visit "/users/sign_in"
-    expect(page).to have_field("user_email", wait: 10)
-    fill_in "user_email", with: user.email
-    fill_in "user_password", with: "password123"
-    click_button "Log in"
-
-    expect(page).to have_content("Signed in successfully", wait: 5)
+    login_as(user, scope: :user)
   end
 
   describe "editing total roof area and erection rate" do

@@ -5,30 +5,11 @@ require 'rails_helper'
 # Use type: :feature instead of :system to use our Cuprite driver config
 # (Rails system tests have driver management issues with Cuprite in Docker)
 RSpec.describe "TenderCraneSelections", type: :feature do
-  let(:user) {
-    User.create!(
-      email: "test@example.com",
-      password: "password123",
-      password_confirmation: "password123",
-      name: "Test User"
-    )
-  }
+  let(:user) { create(:user) }
 
   before do
     Capybara.current_driver = :cuprite
-
-    # Ensure user exists
-    user
-
-    # Log in via the UI
-    visit "/users/sign_in"
-    expect(page).to have_field("user_email", wait: 10)
-    fill_in "user_email", with: user.email
-    fill_in "user_password", with: "password123"
-    click_button "Log in"
-
-    # Wait for successful login redirect
-    expect(page).to have_content("Signed in successfully", wait: 5)
+    login_as(user, scope: :user)
   end
 
   describe "deleting selected cranes on the builder page" do
