@@ -15,15 +15,25 @@ require 'rails_helper'
 RSpec.describe "/on_site_mobile_crane_breakdowns", type: :request do
   let(:user) { create(:user) }
   
-  # This should return the minimal set of attributes required to create a valid
+  # This should return the minimal wset of attributes required to create a valid
   # OnSiteMobileCraneBreakdown. As you add validations to OnSiteMobileCraneBreakdown, be sure to
   # adjust the attributes here as well.
+  let(:tender) { create(:tender) }
+
   let(:valid_attributes) {
-    skip("Add a hash of attributes valid for your model")
+    {
+      tender_id: tender.id,
+      total_roof_area_sqm: 1000.0,
+      erection_rate_sqm_per_day: 50.0,
+      program_duration_days: 20,
+      ownership_type: "rental",
+      splicing_crane_required: false,
+      misc_crane_required: false
+    }
   }
 
   let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
+    { tender_id: nil }
   }
 
   before { sign_in(user) }
@@ -90,14 +100,18 @@ RSpec.describe "/on_site_mobile_crane_breakdowns", type: :request do
   describe "PATCH /update" do
     context "with valid parameters" do
       let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
+        {
+          total_roof_area_sqm: 2000.0,
+          erection_rate_sqm_per_day: 80.0
+        }
       }
 
       it "updates the requested on_site_mobile_crane_breakdown" do
         on_site_mobile_crane_breakdown = OnSiteMobileCraneBreakdown.create! valid_attributes
         patch on_site_mobile_crane_breakdown_url(on_site_mobile_crane_breakdown), params: { on_site_mobile_crane_breakdown: new_attributes }
         on_site_mobile_crane_breakdown.reload
-        skip("Add assertions for updated state")
+        expect(on_site_mobile_crane_breakdown.total_roof_area_sqm).to eq(2000.0)
+        expect(on_site_mobile_crane_breakdown.erection_rate_sqm_per_day).to eq(80.0)
       end
 
       it "redirects to the on_site_mobile_crane_breakdown" do
@@ -105,6 +119,24 @@ RSpec.describe "/on_site_mobile_crane_breakdowns", type: :request do
         patch on_site_mobile_crane_breakdown_url(on_site_mobile_crane_breakdown), params: { on_site_mobile_crane_breakdown: new_attributes }
         on_site_mobile_crane_breakdown.reload
         expect(response).to redirect_to(on_site_mobile_crane_breakdown_url(on_site_mobile_crane_breakdown))
+      end
+
+      it "auto-calculates program_duration_days based on roof area and erection rate" do
+        on_site_mobile_crane_breakdown = OnSiteMobileCraneBreakdown.create! valid_attributes
+        # Update with 2000 sqm / 80 sqm per day = 25 days
+        patch on_site_mobile_crane_breakdown_url(on_site_mobile_crane_breakdown), params: { on_site_mobile_crane_breakdown: new_attributes }
+        on_site_mobile_crane_breakdown.reload
+        expect(on_site_mobile_crane_breakdown.program_duration_days).to eq(25)
+      end
+
+      it "returns turbo_stream response when requested" do
+        on_site_mobile_crane_breakdown = OnSiteMobileCraneBreakdown.create! valid_attributes
+        patch on_site_mobile_crane_breakdown_url(on_site_mobile_crane_breakdown),
+              params: { on_site_mobile_crane_breakdown: new_attributes },
+              headers: { "Accept" => "text/vnd.turbo-stream.html" }
+        expect(response.media_type).to eq("text/vnd.turbo-stream.html")
+        expect(response.body).to include("turbo-stream")
+        expect(response.body).to include("replace")
       end
     end
 
