@@ -41,11 +41,14 @@ class TenderCraneSelection < ApplicationRecord
                          end
   end
 
-  # Calculate wet_rate_per_day from associated crane_rate
-  # This ensures wet_rate_per_day is always synced with the crane_rate
+  # Calculate wet_rate_per_day from associated crane_rate only when crane_rate_id changes
+  # If user manually edits wet_rate_per_day, respect that value
   def calculate_wet_rate_per_day
     return unless crane_rate.present?
-    self.wet_rate_per_day = crane_rate.wet_rate_per_day
+    # Only auto-sync if crane_rate_id just changed OR wet_rate_per_day is nil/zero
+    if crane_rate_id_changed? || wet_rate_per_day.blank? || wet_rate_per_day.zero?
+      self.wet_rate_per_day = crane_rate.wet_rate_per_day
+    end
   end
 
   # Calculate total_cost: quantity × duration_days × wet_rate_per_day

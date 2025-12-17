@@ -6,6 +6,7 @@ export default class extends Controller {
   initialize() {
     this.isEditing = false
     this.originalValues = {}
+    this.isSubmitting = false
   }
 
   connect() {
@@ -13,10 +14,18 @@ export default class extends Controller {
     this.fieldTargets.forEach((field) => {
       this.originalValues[field.name] = field.value
     })
+
+    // Listen for Turbo form submission events
+    this.formTarget.addEventListener("turbo:submit-end", this.onSubmitEnd.bind(this))
   }
 
   toggleEditMode() {
-    this.isEditing ? this.formTarget.requestSubmit() : this.enterEditMode()
+    if (this.isEditing && !this.isSubmitting) {
+      this.isSubmitting = true
+      this.formTarget.requestSubmit()
+    } else if (!this.isEditing) {
+      this.enterEditMode()
+    }
   }
 
   enterEditMode() {
@@ -24,7 +33,10 @@ export default class extends Controller {
     
     // Make all fields editable (remove readonly)
     this.fieldTargets.forEach((field) => {
-      field.removeAttribute("readonly")
+      // Remove readonly attribute to make field editable
+      if (field.getAttribute("readonly") !== null) {
+        field.removeAttribute("readonly")
+      }
       field.addEventListener("change", this.markDirty.bind(this))
     })
 
@@ -36,9 +48,29 @@ export default class extends Controller {
     this.editBtnTarget.classList.add("btn-success")
     
     this.formTarget.classList.add("editing")
+    this.addCancelButton()
   }
 
-  cancelEdit() {
+  onSubmitEnd(event) {
+    // 🪲 DEBUG: Log submission end event
+    console.log("🪲 DEBUG: onSubmitEnd called, success:", event.detail.success)
+    
+    if (event.detail.success) {
+      // Submission was successful, update original values and exit edit mode
+      this.fieldTargets.forEach((field) => {
+        this.originalValues[field.name] = field.value
+      })
+      this.showSavedAlert()
+      this.exitEditMode()
+    } else {
+      // Submission failed, show error and keep in edit mode
+      console.warn("🪲 DEBUG: Form submission failed")
+    }
+    
+    this.isSubmitting = false
+  }
+
+  exitEditMode() {
     this.isEditing = false
 
     // Reset fields to original values and make readonly
@@ -63,6 +95,10 @@ export default class extends Controller {
     this.hideUnsavedAlert()
     
     this.formTarget.classList.remove("editing")
+  }
+
+  cancelEdit() {
+    this.exitEditMode()
   }
 
   addCancelButton() {
