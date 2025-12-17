@@ -5,6 +5,10 @@ export default class extends Controller {
 
   connect() {
     this.isEditMode = false
+    // Initialize disabled state on page load (view mode by default)
+    this.updateEditMode()
+    // Attach field visibility listeners for checkboxes
+    this.attachFieldVisibilityListeners()
   }
 
   toggleEdit() {
@@ -69,9 +73,48 @@ export default class extends Controller {
     }
   }
 
+  // Update visibility of dependent fields based on checkbox state
+  updateFieldVisibility() {
+    const splicingCheckbox = document.getElementById('splicing_crane_required_checkbox')
+    const splicingSizeField = document.getElementById('splicing_crane_size_field')
+    const splicingDaysField = document.getElementById('splicing_crane_days_field')
+    
+    const miscCheckbox = document.getElementById('misc_crane_required_checkbox')
+    const miscSizeField = document.getElementById('misc_crane_size_field')
+    const miscDaysField = document.getElementById('misc_crane_days_field')
+    
+    if (splicingCheckbox) {
+      splicingSizeField.style.display = splicingCheckbox.checked ? 'block' : 'none'
+      splicingDaysField.style.display = splicingCheckbox.checked ? 'block' : 'none'
+    }
+    
+    if (miscCheckbox) {
+      miscSizeField.style.display = miscCheckbox.checked ? 'block' : 'none'
+      miscDaysField.style.display = miscCheckbox.checked ? 'block' : 'none'
+    }
+  }
+
+  // Attach event listeners for checkbox changes
+  attachFieldVisibilityListeners() {
+    const splicingCheckbox = document.getElementById('splicing_crane_required_checkbox')
+    const miscCheckbox = document.getElementById('misc_crane_required_checkbox')
+    
+    if (splicingCheckbox) {
+      splicingCheckbox.removeEventListener('change', () => this.updateFieldVisibility())
+      splicingCheckbox.addEventListener('change', () => this.updateFieldVisibility())
+    }
+    
+    if (miscCheckbox) {
+      miscCheckbox.removeEventListener('change', () => this.updateFieldVisibility())
+      miscCheckbox.addEventListener('change', () => this.updateFieldVisibility())
+    }
+  }
+
   // Called by dirty-form controller after successful save
   reset() {
     this.isEditMode = false
     this.updateEditMode()
+    // Re-attach listeners after Turbo Stream re-renders the partial
+    this.attachFieldVisibilityListeners()
   }
 }
