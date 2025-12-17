@@ -3,16 +3,26 @@
 require 'rails_helper'
 
 RSpec.describe "OnSiteMobileCraneBreakdowns", type: :feature do
-  let(:login_email) { ENV.fetch("CAPYBARA_USER_EMAIL", "kody@llamapress.ai") }
-  let(:login_password) { ENV.fetch("CAPYBARA_USER_PASSWORD", "123456") }
+  let(:user) {
+    User.create!(
+      email: "test@example.com",
+      password: "password123",
+      password_confirmation: "password123",
+      name: "Test User"
+    )
+  }
 
   before do
     Capybara.current_driver = :cuprite
 
+    # Ensure user exists
+    user
+
+    # Log in via the UI
     visit "/users/sign_in"
     expect(page).to have_field("user_email", wait: 10)
-    fill_in "user_email", with: login_email
-    fill_in "user_password", with: login_password
+    fill_in "user_email", with: user.email
+    fill_in "user_password", with: "password123"
     click_button "Log in"
 
     expect(page).to have_content("Signed in successfully", wait: 5)
@@ -20,20 +30,20 @@ RSpec.describe "OnSiteMobileCraneBreakdowns", type: :feature do
 
   describe "editing total roof area and erection rate" do
     it "calculates program duration correctly after editing fields and saving" do
+      # Create test data using FactoryBot
+      tender = create(:tender)
+      breakdown = create(:on_site_mobile_crane_breakdown,
+        tender: tender,
+        total_roof_area_sqm: 1000.0,
+        erection_rate_sqm_per_day: 50.0,
+        program_duration_days: 20
+      )
+
       # Go directly to the breakdowns index page
       visit "/on_site_mobile_crane_breakdowns"
 
-      # If no breakdowns exist, skip the test
-      if page.has_no_css?("[data-testid='edit-button']", wait: 5)
-        skip "No mobile crane breakdowns found in the database"
-      end
-
       # Wait for the page with edit button
       expect(page).to have_css("[data-testid='edit-button']", wait: 10)
-
-      # Store the initial values to restore later (use first to handle multiple breakdowns on page)
-      initial_roof_area = first("[data-testid='total-roof-area-field']").value
-      initial_erection_rate = first("[data-testid='erection-rate-field']").value
 
       # Click the first edit button to enable editing
       first("[data-testid='edit-button']").click
@@ -59,12 +69,10 @@ RSpec.describe "OnSiteMobileCraneBreakdowns", type: :feature do
       # Verify the UI still shows the correct calculated value after save
       expect(page).to have_css("[data-testid='program-duration-display']", text: "25")
 
-      # Restore original values to not pollute the dev database
-      first("[data-testid='edit-button']").click
-      first("[data-testid='total-roof-area-field']").set(initial_roof_area)
-      first("[data-testid='erection-rate-field']").set(initial_erection_rate)
-      first("[data-testid='edit-button']").click
-      expect(page).to have_css("[data-testid='saved-indicator']:not(.hidden)", wait: 5)
+      # Verify the database was updated
+      breakdown.reload
+      expect(breakdown.total_roof_area_sqm).to eq(2000.0)
+      expect(breakdown.erection_rate_sqm_per_day).to eq(80.0)
     end
   end
 end

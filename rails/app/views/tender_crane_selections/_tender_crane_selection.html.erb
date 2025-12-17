@@ -1,5 +1,5 @@
 <%# Standalone show view for tender_crane_selection with inline editing %>
-<turbo-frame id="<%= dom_id tender_crane_selection %>" class="w-full my-5 block" data-controller="inline-edit" data-inline-edit-target="container">
+<turbo-frame id="<%= dom_id tender_crane_selection %>" class="w-full my-5 block" data-controller="inline-edit" data-inline-edit-target="container" data-testid="crane-selection-row">
 
   <div class="flex gap-2 items-end">
     <%# Form for Inline Editing %>
@@ -88,7 +88,7 @@
       form_class: "contents",
       class: "btn btn-circle btn-error btn-sm",
       title: "Delete",
-      data: { turbo_stream: true, turbo_confirm: "Are you sure?" } do %>
+      data: { turbo_stream: true, turbo_confirm: "Are you sure?", testid: "delete-crane-button" } do %>
       <i class="fas fa-trash text-lg"></i>
     <% end %>
   </div>

@@ -1,7 +1,3 @@
-# NOTE: Saving this file because this appears to be working to run a separate capybara server, and it actually attempts to run. This is on RSB's remote server, and it's actually running.
-# d02678cbbab8   kody06/llamapress-simple:0.2.6a   "bash -c 'rm -f tmp/…"   2 hours ago   Up 2 hours            0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp   leonardo-llamapress-1
-# f31acef9dc1f   kody06/llamabot:0.3.0a            "bash -c 'python ini…"   2 hours ago   Up 2 hours            0.0.0.0:8080->8000/tcp, [::]:8080->8000/tcp   leonardo-llamabot-1
-
 require 'spec_helper'
 ENV['RAILS_ENV'] = 'test' # Force into test environment so we don't destroy dev or prod data
 require_relative '../config/environment'
@@ -28,11 +24,12 @@ end
 Capybara.register_driver(:cuprite) do |app|
   Capybara::Cuprite::Driver.new(
     app,
+    browser_path: ENV.fetch('CHROME_PATH', '/usr/bin/chromium'),
     window_size: [1400, 1400],
     browser_options: {
-      'no-sandbox' => nil,
-      'disable-gpu' => nil,
-      'disable-dev-shm-usage' => nil
+      "no-sandbox": nil,
+      "disable-gpu": nil,
+      "disable-dev-shm-usage": nil
     },
     process_timeout: 30,
     timeout: 15,
@@ -43,6 +40,15 @@ end
 
 Capybara.default_driver = :rack_test
 Capybara.javascript_driver = :cuprite
+
+# For system tests in Docker, connect to the already-running Rails server
+# instead of booting a separate Puma instance
+Capybara.app_host = ENV.fetch("CAPYBARA_APP_HOST", "http://llamapress:3000")
+Capybara.server = :puma, { Silent: true }
+Capybara.always_include_port = false
+
+# Configure Rails URL helpers to use the same host as Capybara
+Rails.application.routes.default_url_options[:host] = ENV.fetch("CAPYBARA_APP_HOST", "http://llamapress:3000")
 
 RSpec.configure do |config|
   config.fixture_paths = [Rails.root.join('spec/fixtures')]
@@ -57,7 +63,6 @@ RSpec.configure do |config|
   config.include ActionDispatch::TestProcess::FixtureFile
   config.include Warden::Test::Helpers, type: :feature
 
-
   config.before(:suite) do
     # Allow DatabaseCleaner to work with DATABASE_URL (Docker environments)
     DatabaseCleaner.allow_remote_database_url = true
@@ -70,6 +75,9 @@ RSpec.configure do |config|
 
   config.before(:each, type: :system) do
     DatabaseCleaner.strategy = :truncation
+    # Don't use driven_by - it re-registers the driver and ignores our config
+    # Instead, directly set the Capybara driver
+    Capybara.current_driver = :cuprite
   end
 
   config.before(:each, type: :feature) do
