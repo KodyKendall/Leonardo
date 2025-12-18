@@ -16,9 +16,9 @@ class OnSiteMobileCraneBreakdown < ApplicationRecord
     tender_crane_selections.sum(:total_cost)
   end
 
-  # Calculate total daily crane rate (sum of wet_rate_per_day × quantity for all selections)
+  # Calculate total daily crane rate for MAIN cranes only (sum of wet_rate_per_day × quantity)
   def total_daily_crane_rate
-    tender_crane_selections.sum { |selection| selection.wet_rate_per_day * selection.quantity }
+    tender_crane_selections.where(purpose: 'main').sum { |selection| selection.wet_rate_per_day * selection.quantity }
   end
 
   # Calculate crane cost per tonne using CEILING to nearest R20

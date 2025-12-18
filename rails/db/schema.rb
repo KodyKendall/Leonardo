@@ -10,13 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_14_171059) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_16_171025) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
-  create_enum "purpose_enum", ["splicing", "main"]
+  create_enum "purpose_enum", ["splicing", "main", "misc"]
   create_enum "section_category_enum", ["Blank", "Steel Sections", "Paintwork", "Bolts", "Gutter Meter", "M16 Mechanical Anchor", "M16 Chemical", "M20 Chemical", "M24 Chemical", "M16 HD Bolt", "M20 HD Bolt", "M24 HD Bolt", "M30 HD Bolt", "M36 HD Bolt", "M42 HD Bolt"]
 
   create_table "action_text_rich_texts", force: :cascade do |t|
