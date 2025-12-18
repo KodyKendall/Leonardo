@@ -8,23 +8,8 @@ class TenderCraneSelection < ApplicationRecord
   before_create :populate_duration_from_breakdown
   before_save :calculate_wet_rate_per_day
   before_save :calculate_total_cost
-  after_update_commit :broadcast_summary_update
-  after_destroy_commit :broadcast_summary_update
 
   private
-
-  # Broadcast summary update to the parent breakdown's summary section
-  def broadcast_summary_update
-    return unless on_site_mobile_crane_breakdown.present?
-
-    breakdown = on_site_mobile_crane_breakdown
-    breakdown.broadcast_replace_to(
-      [breakdown, "crane_cost_summary"],
-      target: "crane_cost_summary",
-      partial: "tender_crane_selections/summary",
-      locals: { on_site_mobile_crane_breakdown: breakdown }
-    )
-  end
 
   # Auto-populate duration_days based on the purpose and breakdown parameters
   # This only runs on create, so it sets the initial value from the breakdown
