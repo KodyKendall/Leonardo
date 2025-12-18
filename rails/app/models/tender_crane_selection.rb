@@ -5,7 +5,7 @@ class TenderCraneSelection < ApplicationRecord
 
   enum purpose: { splicing: 'splicing', main: 'main', misc: 'misc' }
 
-  before_create :populate_duration_from_breakdown
+  before_save :populate_duration_from_breakdown
   before_save :calculate_wet_rate_per_day
   before_save :calculate_total_cost
 
