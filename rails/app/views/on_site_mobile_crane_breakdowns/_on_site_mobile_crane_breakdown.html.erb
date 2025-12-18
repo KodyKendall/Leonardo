@@ -89,11 +89,12 @@
       </div>
 
       <!-- Splicing Crane Size -->
-      <div class="form-control" id="splicing_crane_size_field" data-testid="splicing-crane-size-field" style="<%= 'display: none;' unless on_site_mobile_crane_breakdown.splicing_crane_required %>">
+      <div class="form-control" id="splicing_crane_size_field" data-testid="splicing-crane-size-field" style="<%= 'display: none;' unless on_site_mobile_crane_breakdown.splicing_crane_required %>" data-controller="crane-size-validator">
         <label class="label" for="on_site_mobile_crane_breakdown_splicing_crane_size">
           <span class="label-text font-medium">Splicing crane size</span>
         </label>
-        <%= f.text_field :splicing_crane_size, class: "input input-bordered read-only-field", placeholder: "e.g., 50T", readonly: true, data: { "on-site-mobile-crane-breakdown-target": "field", testid: "splicing-crane-size-input" } %>
+        <%= f.text_field :splicing_crane_size, class: "input input-bordered read-only-field", placeholder: "e.g., 50t", readonly: true, data: { "on-site-mobile-crane-breakdown-target": "field", "crane-size-validator-target": "input", action: "input->crane-size-validator#validate", testid: "splicing-crane-size-input" } %>
+        <div class="text-error text-sm mt-2 hidden" data-crane-size-validator-target="error"></div>
       </div>
 
       <!-- Splicing Crane Days -->
@@ -113,11 +114,12 @@
       </div>
 
       <!-- Misc Crane Size -->
-      <div class="form-control" id="misc_crane_size_field" data-testid="misc-crane-size-field" style="<%= 'display: none;' unless on_site_mobile_crane_breakdown.misc_crane_required %>">
+      <div class="form-control" id="misc_crane_size_field" data-testid="misc-crane-size-field" style="<%= 'display: none;' unless on_site_mobile_crane_breakdown.misc_crane_required %>" data-controller="crane-size-validator">
         <label class="label" for="on_site_mobile_crane_breakdown_misc_crane_size">
           <span class="label-text font-medium">Misc crane size</span>
         </label>
-        <%= f.text_field :misc_crane_size, class: "input input-bordered read-only-field", placeholder: "e.g., 30T", readonly: true, data: { "on-site-mobile-crane-breakdown-target": "field", testid: "misc-crane-size-input" } %>
+        <%= f.text_field :misc_crane_size, class: "input input-bordered read-only-field", placeholder: "e.g., 30t", readonly: true, data: { "on-site-mobile-crane-breakdown-target": "field", "crane-size-validator-target": "input", action: "input->crane-size-validator#validate", testid: "misc-crane-size-input" } %>
+        <div class="text-error text-sm mt-2 hidden" data-crane-size-validator-target="error"></div>
       </div>
 
       <!-- Misc Crane Days -->

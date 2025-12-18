@@ -7,6 +7,7 @@ class OnSiteMobileCraneBreakdown < ApplicationRecord
   validates :program_duration_days, numericality: { greater_than_or_equal_to: 0, only_integer: true }
   validates :ownership_type, inclusion: { in: %w[rsb_owned rental], message: "%{value} is not a valid ownership type" }
   validates :splicing_crane_days, :misc_crane_days, numericality: { greater_than_or_equal_to: 0, only_integer: true }
+  validates :splicing_crane_size, :misc_crane_size, format: { with: /\A\d+t\z/, message: "must be in format 50t (number + lowercase t)", allow_blank: true }
 
   before_save :calculate_program_duration
   after_update_commit :broadcast_complements_update
