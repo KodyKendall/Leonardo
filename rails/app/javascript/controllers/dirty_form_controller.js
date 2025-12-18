@@ -6,6 +6,7 @@ export default class extends Controller {
   connect() {
     this.originalData = new FormData(this.element)
     this.isDirty = false
+    this.hasValidationErrors = false
     
     // Check if we just saved - show success message on fresh form after stream render
     if (sessionStorage.getItem("dirty-form:show-saved")) {
@@ -14,6 +15,10 @@ export default class extends Controller {
       setTimeout(() => this.showSavedState(), 50)
     }
     
+    // Intercept form submission BEFORE Turbo processes it
+    this.element.addEventListener("submit", (e) => this.handleFormSubmit(e), true)
+    // Listen for form submission to validate before submit
+    this.element.addEventListener("turbo:submit-start", (e) => this.handleSubmitStart(e))
     // Listen for successful form submission
     this.element.addEventListener("turbo:submit-end", (e) => this.handleSubmitEnd(e))
   }
@@ -28,13 +33,69 @@ export default class extends Controller {
     }
   }
 
+  updateValidationState() {
+    // Check all crane size validators on the form
+    this.hasValidationErrors = false
+    
+    console.log("🪲 dirty-form updateValidationState called")
+    const allValidators = this.element.querySelectorAll('[data-controller*="crane-size-validator"]')
+    console.log("🪲 Found", allValidators.length, "validators on form")
+    
+    allValidators.forEach((validatorEl, idx) => {
+      const validator = this.application.getControllerForElementAndIdentifier(validatorEl, 'crane-size-validator')
+      console.log("🪲 Validator", idx, "found:", !!validator)
+      if (validator) {
+        const isValid = validator.isFormValid()
+        console.log("🪲 Validator", idx, "isFormValid():", isValid)
+        if (!isValid) {
+          this.hasValidationErrors = true
+        }
+      }
+    })
+    
+    console.log("🪲 dirty-form hasValidationErrors after check:", this.hasValidationErrors)
+    this.updateIndicator()
+  }
+
+  handleFormSubmit(event) {
+    // Check for validation errors BEFORE Turbo processes the form
+    this.updateValidationState()
+    
+    if (this.hasValidationErrors) {
+      event.preventDefault()
+      event.stopPropagation()
+      return false
+    }
+  }
+
+  handleSubmitStart(event) {
+    // Double-check for validation errors before Turbo submission
+    this.updateValidationState()
+    
+    if (this.hasValidationErrors) {
+      event.preventDefault()
+      return false
+    }
+  }
+
   updateIndicator() {
     if (this.hasIndicatorTarget) {
       this.indicatorTarget.classList.toggle("hidden", !this.isDirty)
     }
     if (this.hasSubmitTarget) {
-      this.submitTarget.classList.toggle("btn-warning", this.isDirty)
-      this.submitTarget.classList.toggle("btn-primary", !this.isDirty)
+      // Disable submit button if there are validation errors
+      if (this.hasValidationErrors) {
+        this.submitTarget.disabled = true
+        this.submitTarget.classList.add("btn-disabled")
+        this.submitTarget.title = "Please fix validation errors before saving"
+      } else {
+        this.submitTarget.disabled = false
+        this.submitTarget.classList.remove("btn-disabled")
+        this.submitTarget.title = ""
+      }
+      
+      this.submitTarget.classList.toggle("btn-warning", this.isDirty && !this.hasValidationErrors)
+      this.submitTarget.classList.toggle("btn-primary", !this.isDirty && !this.hasValidationErrors)
     }
   }
 
@@ -45,11 +106,18 @@ export default class extends Controller {
   }
 
   handleSubmitEnd(event) {
-    // Turbo Stream responses return success: true for 200-299 status codes
-    // The update action renders turbo_stream with status 200 on success
+    // Only show success for successful responses (200-299)
+    // Validation errors return 422 with success: false
     if (event.detail.success) {
-      // Set a flag to show saved state after the Turbo Stream re-renders the form
-      sessionStorage.setItem("dirty-form:show-saved", "true")
+      // Check if there are error messages in the form after re-render
+      const errorBox = this.element.querySelector("[id='error_explanation']")
+      if (!errorBox || errorBox.classList.contains("hidden")) {
+        // No errors, set a flag to show saved state after the Turbo Stream re-renders the form
+        sessionStorage.setItem("dirty-form:show-saved", "true")
+      } else {
+        // Errors exist - set flag to keep edit mode active
+        sessionStorage.setItem("dirty-form:keep-edit-mode", "true")
+      }
     }
   }
 

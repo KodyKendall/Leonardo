@@ -75,8 +75,8 @@ class OnSiteMobileCraneBreakdownsController < ApplicationController
     # CREATE SPLICING CRANE (if required and size is populated)
     if breakdown.splicing_crane_required? && breakdown.splicing_crane_size.present?
       splicing_size = breakdown.splicing_crane_size
-      # Ensure the size ends with 't' if not already
-      splicing_size = "#{splicing_size}t" unless splicing_size.end_with?('t')
+      # Use validated format directly (validation ensures it's in format: \d+t)
+      # No normalization needed since model validation enforces lowercase 't'
 
       splicing_rate = CraneRate.find_by(size: splicing_size, ownership_type: breakdown.ownership_type, is_active: true)
 
@@ -100,8 +100,8 @@ class OnSiteMobileCraneBreakdownsController < ApplicationController
     # CREATE MISC CRANE (if required and size is populated)
     if breakdown.misc_crane_required? && breakdown.misc_crane_size.present?
       misc_size = breakdown.misc_crane_size
-      # Ensure the size ends with 't' if not already
-      misc_size = "#{misc_size}t" unless misc_size.end_with?('t')
+      # Use validated format directly (validation ensures it's in format: \d+t)
+      # No normalization needed since model validation enforces lowercase 't'
 
       misc_rate = CraneRate.find_by(size: misc_size, ownership_type: breakdown.ownership_type, is_active: true)
 
