@@ -3,7 +3,7 @@ class TenderCraneSelection < ApplicationRecord
   belongs_to :crane_rate
   belongs_to :on_site_mobile_crane_breakdown, optional: true
 
-  enum purpose: { splicing: 'splicing', main: 'main' }
+  enum purpose: { splicing: 'splicing', main: 'main', misc: 'misc' }
 
   before_create :populate_duration_from_breakdown
   before_save :calculate_wet_rate_per_day
@@ -36,6 +36,8 @@ class TenderCraneSelection < ApplicationRecord
                            on_site_mobile_crane_breakdown.program_duration_days
                          when 'splicing'
                            on_site_mobile_crane_breakdown.splicing_crane_days
+                         when 'misc'
+                           on_site_mobile_crane_breakdown.misc_crane_days
                          else
                            0
                          end

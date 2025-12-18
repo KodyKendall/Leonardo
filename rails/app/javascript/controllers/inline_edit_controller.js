@@ -48,7 +48,6 @@ export default class extends Controller {
     this.editBtnTarget.classList.add("btn-success")
     
     this.formTarget.classList.add("editing")
-    this.addCancelButton()
   }
 
   onSubmitEnd(event) {

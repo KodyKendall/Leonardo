@@ -10,16 +10,16 @@
     </h3>
 
     <div class="grid grid-cols-3 gap-6">
-      <!-- Total Daily Crane Rate -->
+      <!-- Total Daily Main Crane Rate -->
       <div class="bg-white p-4 rounded-lg border border-blue-100">
         <p class="text-xs text-gray-600 uppercase tracking-wider font-semibold mb-2">
           <i class="fas fa-calendar-day text-blue-600 mr-1"></i>
-          Total Daily Rate
+          Total Daily Main Crane Rate
         </p>
         <p class="text-2xl font-bold text-blue-900">
           R <%= number_with_precision(on_site_mobile_crane_breakdown.total_daily_crane_rate, precision: 2) %>
         </p>
-        <p class="text-xs text-gray-500 mt-2">Sum of all crane wet rates × quantity</p>
+        <p class="text-xs text-gray-500 mt-2">Sum of all main crane wet rates × quantity</p>
       </div>
 
       <!-- Total Crane Cost -->

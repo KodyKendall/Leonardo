@@ -2,4 +2,9 @@
   <%= render @tender_crane_selection %>
 <% end %>
 
-<%# Summary update is handled by the model's after_update_commit broadcast_summary_update callback %>
+<%# Update the summary when crane selection changes (especially purpose/classification) %>
+<% if @on_site_mobile_crane_breakdown.present? %>
+  <%= turbo_stream.update "crane_cost_summary" do %>
+    <%= render 'tender_crane_selections/summary', on_site_mobile_crane_breakdown: @on_site_mobile_crane_breakdown %>
+  <% end %>
+<% end %>

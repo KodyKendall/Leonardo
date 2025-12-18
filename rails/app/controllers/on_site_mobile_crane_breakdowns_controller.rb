@@ -45,6 +45,7 @@ class OnSiteMobileCraneBreakdownsController < ApplicationController
     missing_rates = []
     created_count = 0
 
+    # CREATE RECOMMENDED CRANES (existing behavior)
     matches.each do |quantity_str, size_str|
       quantity = quantity_str.to_i
       size = "#{size_str}t"
@@ -68,6 +69,56 @@ class OnSiteMobileCraneBreakdownsController < ApplicationController
 
       if selection.save
         created_count += 1
+      end
+    end
+
+    # CREATE SPLICING CRANE (if required and size is populated)
+    if breakdown.splicing_crane_required? && breakdown.splicing_crane_size.present?
+      splicing_size = breakdown.splicing_crane_size
+      # Ensure the size ends with 't' if not already
+      splicing_size = "#{splicing_size}t" unless splicing_size.end_with?('t')
+
+      splicing_rate = CraneRate.find_by(size: splicing_size, ownership_type: breakdown.ownership_type, is_active: true)
+
+      if splicing_rate.nil?
+        missing_rates << "Splicing (#{splicing_size})"
+      else
+        splicing_selection = TenderCraneSelection.new(
+          tender_id: tender.id,
+          crane_rate_id: splicing_rate.id,
+          quantity: 1,
+          purpose: "splicing",
+          on_site_mobile_crane_breakdown_id: breakdown.id
+        )
+
+        if splicing_selection.save
+          created_count += 1
+        end
+      end
+    end
+
+    # CREATE MISC CRANE (if required and size is populated)
+    if breakdown.misc_crane_required? && breakdown.misc_crane_size.present?
+      misc_size = breakdown.misc_crane_size
+      # Ensure the size ends with 't' if not already
+      misc_size = "#{misc_size}t" unless misc_size.end_with?('t')
+
+      misc_rate = CraneRate.find_by(size: misc_size, ownership_type: breakdown.ownership_type, is_active: true)
+
+      if misc_rate.nil?
+        missing_rates << "Misc (#{misc_size})"
+      else
+        misc_selection = TenderCraneSelection.new(
+          tender_id: tender.id,
+          crane_rate_id: misc_rate.id,
+          quantity: 1,
+          purpose: "misc",
+          on_site_mobile_crane_breakdown_id: breakdown.id
+        )
+
+        if misc_selection.save
+          created_count += 1
+        end
       end
     end
 
