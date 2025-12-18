@@ -1,0 +1,512 @@
+Speaker 1  0:36  
+Hi, el Marie, can you hear me? Okay, yes, I can hear you. How are you doing?
+
+Elmari  0:42  
+I'm well, thanks. And you
+
+Kody Kendall  0:44  
+doing well? Doing well. Probably, probably the most helpful thing for me on this call is I have a couple of a couple of questions just to make sure I'm understanding the tendering process. Okay, and so just kind of like a handful of questions related to the tendering process, how it currently is with the spreadsheet, and me trying to kind of map that into this, this software that we're building, and then I have some questions about the spreadsheet that you'd sent over earlier this week. Does that sound okay? Okay, cool.
+
+Kody Kendall  1:22  
+Okay, sweet, okay, so the first, the first, well,
+
+Elmari  1:28  
+sorry, I think Demi is gonna join. Message me saying she's joining.
+
+Kody Kendall  1:33  
+I see, I'm sorry I jumped into things. In fact, I think she is going to join. Okay, okay, that sounds perfect. And, in fact, in this case, since I have you here, let me go ahead and send you your sign in information. Okay, cool. Let me see here. Ellen Marie, what's a good What's your whatsapp number? So I can message you. Do you have whatsapp on your computer?
+
+Elmari  2:05  
+Yes, I do. Okay, yeah. So my number is obviously South Africa, 2727 I think, I don't know if you have to put in zero, but I think it's 27858, 78582, sorry. 2782, like that. Two, double, five, one, okay, 60856085,
+
+Kody Kendall  2:36  
+okay, does that look correct?
+
+Elmari  2:39  
+Yeah, yeah, that's my number there at the bottom. Yeah.
+
+Kody Kendall  2:42  
+Okay, perfect. Say hi, Elmer, perfect. Okay, then let me just send you. So this is kind of some test information. Let me just grab your sign in here. El Marie, I
+
+Kody Kendall  3:04  
+so that's the URL that you'll go to, okay,
+
+Kody Kendall  3:13  
+okay, and then that's your sign in information.
+
+Elmari  3:16  
+Okay, cool.
+
+Kody Kendall  3:21  
+And while we're waiting for Demi, what we could actually do instead is I could walk you through kind of the the main process that you'll be doing, which is basically just uploading the BOQ, yes, and there might be a little bit of double checking. Okay, let me, let me just look and see. I think this is a good one that we can do. So let me just send this to you.
+
+Kody Kendall  4:00  
+Okay, so I just sent you a file. Okay, let me just do one more step here, because the other step that we have to do is
+
+Kody Kendall  4:18  
+so the client will send the BOQ, usually as an Excel sheet. And then before we upload it into the software, we actually do have to convert it into a CSV, which is super easy. The way to do that is you just open it in Excel, and I'll actually take a screenshot here, just to try to give you a document that you can refer back to. Essentially, they give us a BOQ that's kind of like this. And then what you'll do is you'll click on File, and you'll do Save As, and then when you click Save As, then you want to just click this file format, and you want this file format to be, it's this docx V Okay, cool. Just Yes. Let me just take this. In fact, it's going to be this comma Seperator value. So let me take a screenshot of this as well. Okay, so
+
+Kody Kendall  5:25  
+I'll make a little note in here. We'll go, we'll do File Save As and
+
+Kody Kendall  5:41  
+then you're going to change file format. It's going to be almost seperated value, CSV,
+
+Unknown Speaker  5:55  
+step one, two,
+
+Kody Kendall  5:59  
+I know that we're probably on, I'm on a Mac, and you're on a Windows, so it's gonna be a
+
+Kody Kendall  6:04  
+little it'll look a little bit different, yeah,
+
+Unknown Speaker  6:07  
+it should be pretty close, though, yeah.
+
+Kody Kendall  6:12  
+And you're gonna click on this comment separated values. Okay, very cool. Let me just upload this here.
+
+Kody Kendall  6:26  
+Okay, and then I'll go ahead and share this with you as well. Okay, cool, to convert xlsb,
+
+Unknown Speaker  6:34  
+BOQ, BOQ, Q import Excel to CSP,
+
+Unknown Speaker  6:52  
+and let me just download this. I'll send this to you on WhatsApp and also share this with your email. Okay, cool, thanks.
+
+Kody Kendall  7:02  
+And then, while I'm doing that, were you able to get into The software? By chance,
+
+Elmari  7:11  
+just gonna look again. I
+
+Unknown Speaker  7:25  
+sack,
+
+Unknown Speaker  7:52  
+yeah, I'm in,
+
+Kody Kendall  7:53  
+okay, you're in perfect, yes, and then I'm gonna stop sharing here for a second. I'll have you share your screen. So on Zoom, there should be a green Share button. Do you see that green Share button? Share? It should have you select a desktop. If you're just using a single monitor, you would just,
+
+Unknown Speaker  8:24  
+yeah, it's just sharing on your side.
+
+Speaker 1  8:27  
+Yes, perfect. Okay, that's great. Okay, so I sent you
+
+Kody Kendall  8:34  
+a the structural still BOQ, and this one is already converted into a CSV file, yeah, so what you can do is you'll click that yellow start in your tender button, and then you'll click on that purple upload BOQ button.
+
+Kody Kendall  8:59  
+Okay, awesome. And then this is probably the main thing. Is just below that, it says, CSV file,
+
+Speaker 2  9:08  
+yeah, I think let me just quickly. Just want to save that one that you sent me now.
+
+Kody Kendall  9:15  
+Okay, no worries
+
+Speaker 3  9:19  
+at all, somewhere I gonna,
+
+Speaker 2  9:39  
+I can leave the name now as
+
+Kody Kendall  9:42  
+is, yes, you can leave it how it is that works.
+
+Unknown Speaker  9:45  
+Fine, okay, so upload.
+
+Kody Kendall  9:51  
+Okay, sweet. So the most complicated step, so there's, there are a couple of steps that we have to just train you on. And to kind of remember, probably the most complicated one is, is actually this first step. And so basically, if you look at the very So, if you scroll just a little bit down, it's showing a preview of our BOQ. And you'll notice that that very top row is kind of like gibberish, right? Like it just says candy, xls, 10, one, and then, like, all these numbers, yeah, so if you scroll down just a little bit, because what happens is we actually have an AI chat assistant, and we're just trying to help the AI understand what the real header row kind of is. And so we're looking for the row that is going to kind of tell the AI what each value corresponds. And so if you look on row five, it has the page, the item, the description, the unit, the quantity, and that's actually what those are. That's kind of the key. Those are like the key pieces of information that we need the AI to understand. And so what we actually do in this step is we just have to find that header row and set it to the correct number and apply it. And this will be different on every BOQ. Like, yeah, the header row could be three, it could be five, it could be one, but this is just us trying to help the AI out a little bit. Does that make sense? Yeah. Okay, awesome. So you just set that, and then you click that, apply Header Row button. Okay, perfect. Now, if you scroll back up in the little preview, notice how it it looks a lot cleaner now, yeah, okay, awesome. Hi, Demi. Demi just barely jumped in here.
+
+Demi Swanepoel  11:54  
+Looks like, Hi, sorry. I was just in a meeting with Richard on on another account.
+
+Kody Kendall  12:01  
+Oh, no worries at all. No worries at all. I'm just walking Elmari Really quick through the uploading the initial BOQs Kody's bar. Cool. So okay, so now that you've set this header row, that's step one. Now if you scroll down, there should be a clear step two section, and if so, basically you're going to click that step two. And all this does is it's setting a message that we're going to send to the AI. So if you scroll just a little bit more, we have it's like this, AI, BOQ, sorry, other direction, if we scroll back up the page, okay, there we go. You see it says AI BOQ parser. Yeah. So this is a little chat like an AI chat bot. Okay. Have you worked with chat GPT at all? Or have you heard
+
+Elmari  12:55  
+of it? The basics, perfect.
+
+Kody Kendall  12:57  
+Well, this is, this is very similar. It's essentially the same thing, except this one helps you parse out the information from the CSV. So Okay, since you clicked that step two, it actually formatted a little message in that box. If you scroll down just a little bit, yeah, it's hard to see and it's kind of cut off, but you can scroll up in that little input box, and basically this is all of the data that was in the BOQs sending a message that's telling it to parse it. You don't have to worry too much about what the message says. That's all just formatted, okay, but the next step is actually just to hit that send button where it says step three, hit send, and this is going to send the actual message to the AI, okay, the AI's going to sit there and think about it for a second. It has that little loading message with next to Yeah, and it's going to do some different tasks. It's going to kind of look at the BOQ items, and it's going to give you a little summary of just what it sees, and it's going to ask for a confirmation here in a second. And then you will, you would just tell the AI Yes. So if you scroll down while it's thinking, I'll show you there's a little button that says confirm and parse. This is similar to that step two, where all it does is it formats a message to the AI basically, okay, yes, please go ahead and save, you know, you know, save the BOQ line items. If you scroll up a little bit, I'll just show you that the AI responded. It says I found 29 valid BOQ line items. And then you can kind of scroll down to see the full message. It's just kind of giving you a little bit of a preview sample of some of the first items. Okay, scroll down a bit more. Yeah. And then it basically says, you know, I filtered some of these out because they didn't look like real items. And then are you ready to create 29 items? Should I proceed? So that's where you would hit that step four button, and it will just put a little message in the box that then you can hit Send again, so yeah, and then notice it puts that little message, yes, please parse these. And then you can hit send. Now it'll do its thing. You should see it'll give you a little message as it gets each item out. And it does take, it does take a couple minutes, just because it's individually pulling out each item, and it's gonna save it into our software. Yes, you can see it's starting to run those little commands called Create BOQ item. Okay. So there should be 29 that's just kind of what it told us. And if you scroll down a little bit, another thing you can do is there's that refresh button, and if you click that refresh button, it'll basically just refresh and show all the items that it's pulled in so far. So so far it's only pulled in nine items. Keep pulling them in. So you wouldn't want to go to the next step yet. You do have to kind of wait. Yeah, it's finished all of its items. But if you just want to check the status, you can always click that refresh button.
+
+Elmari  16:12  
+Just refresh and see how far it is. Okay, yeah,
+
+Kody Kendall  16:15  
+so now it's done 18 out of 29 and so, yeah, we'll just kind of wait for a second, and when it's done, we'll go to the next step. Yeah. Do you have any questions so far? Does this all make sense? Or are there?
+
+Unknown Speaker  16:28  
+Oh, very cool. Okay,
+
+Kody Kendall  16:31  
+very good. So notice too that it's it's assigning those categories. So if you look at the actual items. It says steel section, yes. And this is kind of, my understanding, is that you're doing a lot of these kind of categorizations currently. Is that right? Or you're doing the initials pass? Okay, yeah. So hopefully, hopefully this will be helpful. We're still going to have to have to put in, you know, some rules of thumb and different things into the AI. So right now, it's kind of being its best guess, but they'll still probably be a step for a while where you and Demi are kind of just double checking and just wanting to do a little bit, but eventually, you know, we'd love to have aI just be 100% accurate. All the time. That'd be the idea. But, yeah, take a minute to get there.
+
+Demi Swanepoel  17:28  
+Okay, Kody, did you get my email with the list of all the items for this categorization?
+
+Kody Kendall  17:37  
+I did, and I have some questions, which probably what we'll do is we'll finish up this step, and then I actually have a handful of questions related to that spreadsheet and also related to some other parts of the Tendering. But yes, I did see that that's super helpful.
+
+Demi Swanepoel  17:55  
+Okay, now that's just a draft. It will obviously increase with additional descriptions, just to make it
+
+Kody Kendall  18:05  
+more clear. Sweet, yeah, no, it looked awesome.
+
+Speaker 4  18:09  
+And also will be made more formal. This was just a quick put together document,
+
+Kody Kendall  18:18  
+okay, yeah, no, that sounds great. It looked pretty it looks pretty good. Honestly, this
+
+Speaker 4  18:22  
+is definitely oh well, thank you. I think this is
+
+Kody Kendall  18:26  
+a format that we should definitely be able to work with. Okay. So, okay. So really quick, just to finish up this BOQ, so if you scroll up a bit Elmari, you should also have a message from the AI that basically says, Hey, I finished. Yeah, there it is. Says, All 29 items have been created successfully. You can scroll down a bit if you wanted to see the full kind of the full message, but essentially, it's just telling you, hey, I finished. You know, there was no errors. Let me know if you have questions or anything like that. So you should be good now to scroll down and at the very, very bottom of the page, the last step is there's we want to copy these into our tender document. So go ahead and click that build tender button, and that's going to take us to another page, and we're going to want to click that copy from BOQ button, and that's going to just take all the items that the AI just took. And it does take a second, so just give it a minute. There it is. And it basically just goes and it puts them all into the this kind of new page, and we're trying to make this page look similar to the current excellence, okay, and Demi, this is, well, actually Okay, before I jump into my questions, elmarie, I think this is where you would start to transition, maybe more to what Demi works on. Is that, is that correct? Or is there, is there additional steps that you usually are, are doing beyond just getting it the initial setup.
+
+Elmari  20:06  
+Sometimes there's, you know, if the rate is fixed, and it's something that I, you know, I'm comfortable with putting in, then I would put the rates in, but yeah, I do prefer DN going through the rates, because they do often change how they build the cost for something specific.
+
+Kody Kendall  20:27  
+Okay, that's that's helpful to know.
+
+Demi Swanepoel  20:29  
+She also does the percentage adjustments whether she needs to see if the plate is separate. Then if it's separate, it's 100% if it's not separate, then it's the 8515 or 8020, ratio.
+
+Kody Kendall  20:43  
+Yeah. Okay. Well, this is great. Okay, so this, this is the perfect transition. And I can ask Demi, and you Elmari as well if you have input. But so Demi, here's my here's my biggest question. So elmarie, if you click on that view rate, build up that little green button. This is basically going to show the breakdown for this line item. Now here's my question for you, Demi, this information, and this might be a little bit repetitive. I asked something similar last week, but this material breakdown, when you get to this point in the BOQ, sorry, in the Tendering process, all of these materials get automatically added, depending on that steel category section, is that right? Yeah.
+
+Demi Swanepoel  21:33  
+Are you talking about Elmar? Just scroll down. Are you talking about this fabrication OBS, those items that they automatically get added, or you talking about the right hand side?
+
+Kody Kendall  21:45  
+I'm talking about both, but let's focus on the right hand side for a second so the material breakdown. So these where it says no materials added yet. This is where normally tell me if I'm thinking about this the right way. This is where normally the you would have the four different items that are related to the still categories right where it's like, you know, material, in fact, let me pull up the actual tender template, like these. These kind of get automatically filled in once you select the BOQ or once you put the BOQ data into that tender data sheet, and it kind of automatically fills in these materials. Is that right?
+
+Demi Swanepoel  22:29  
+If it is what you're referring to, where, if you look at your right hand side in our tender document, where you press the down arrow and you have to choose the member, what Member It
+
+Unknown Speaker  22:41  
+is, yeah,
+
+Demi Swanepoel  22:44  
+because that is what's happening here on the right hand side, which is a material type, there's a waste percentage, and then there's a rate, and then there's a proportion, which is that 80, 20% that Elmar puts in so that we still need to hand select. So yeah, that's what she also does. Yeah?
+
+Kody Kendall  23:02  
+That's super helpful. So, so just to make, just to clarify what you're saying is that currently in the spreadsheet process you are manually, sounds like elmarie is manually going in and adding each of those four or five items, yeah?
+
+Demi Swanepoel  23:20  
+So that was, yeah, sorry. So that was the purpose. Why I sent you that list so that we can train AI to learn these words. So if it says angle, then it automatically selects angle on your right hand side. Okay, so that's the purpose of that list is, so that we can train AI to pick up these,
+
+Unknown Speaker  23:44  
+the column would be like a UV,
+
+Kody Kendall  23:49  
+very good. I think that makes sense. Okay. In fact, let me just share my screen really quick. Let me share this one. Okay, and I think I think the reason why I was a little confused is So, for example, you have this tender data, and then Elmari, you're coming in, and you're clicking steel sections. See, notice how, when I just click that, it auto, yeah, I see, okay, so, so, so, so, elmarie, that's what you're doing, basically, is you're coming in, you're making sure this is correct. And it does, it does fill this out, but this is kind of a starting point. Is that right? And then you have to adjust, like these, yeah.
+
+Elmari  24:36  
+So then they, I will have to pick, is it a UB and UC, or is it an angle, or is it a PFC member or something like that?
+
+Kody Kendall  24:47  
+Right, right. Okay, so then you're coming in here, you're adjusting these. Okay, that makes
+
+Demi Swanepoel  24:52  
+sense, yeah. So it would be great if, when we put in the items in a data sheet, that it automatically reads what is in line item C, and it automatically updates it on the right, the members and then also the percentage for to also, then look, okay, it's played separately. Okay, yes, okay, the percentage needs to be 100 or
+
+Kody Kendall  25:13  
+Okay, perfect. Yeah, absolutely okay. That is super helpful. Okay, so
+
+Demi Swanepoel  25:21  
+in Elmari can do like 50 tenders in one day.
+
+Kody Kendall  25:24  
+Absolutely, that's the goal, right? That's
+
+Unknown Speaker  25:28  
+so okay. So,
+
+Kody Kendall  25:32  
+so currently and I, so I was talking with Richard on Monday. So our current, our current goal, is by January 5 to go live with the software version of this. And so that's that's coming up pretty, pretty fast. And so probably the very, very first step will be just trying to get it to at least be equal with the spreadsheet functionality, where, you know, we'll probably have it select these items, and then there will be a little bit of manual work, still, just for a minute. But once we go live with the software, that's going to be really, really great, because if we can have everything working perfectly, there's going to be a two week, a two week period after January, 5, so up to the 19th, where there's going to be little tiny adjustments that we have to make, like, little tiny bugs or little tiny things that are just really annoying. And so we're going to spend that two weeks, and we're going to, like, really get it solid, and then when we go after January 19, then we're going to do another phase and Demi, that's when we'll be adding in a lot more automations, a lot more AI, a lot more. But we're just trying to make sure that we have a very stable foundation, so that we're not trying to to build stuff on top of something that's kind of buggy or not working, if that makes sense.
+
+Unknown Speaker  27:02  
+So yeah, yeah, go for it.
+
+Demi Swanepoel  27:06  
+If you go back to that sheet where we were now, in that AI, in that program where we discussed the list on the right hand side, the left hand side, yeah, yeah, scroll down. Have you added? So remember, in our first meeting, see after Galvanizing, we I think Darren was also in the meeting, and I asked that we need to add items below Galvanizing, because a lot of the times we change that Galvanizing manually, we type another word in just to make it applicable. So in that list, we can increase that list to more to more options. That would be great.
+
+Kody Kendall  27:51  
+Okay, that's good to know. Let me just make a little note here. And yes, I know you mentioned there's, there'll be a little bit of, I
+
+Demi Swanepoel  27:57  
+think he did make notes, but the only the two that I can think of nothing. There was another one. The one is for curving and the one is for castellating,
+
+Kody Kendall  28:07  
+right, right, right. I remember that so, curving, calculating, okay, very helpful. And that's that's really helpful. And I have a couple more questions related to this section as well. Yeah. So let me just so, for example, PURLINS. Let me just save this, and I'm actually going to put this into our ticketing system as well, just so we have this,
+
+Demi Swanepoel  28:33  
+you can also add crane beam, if it's a crane beam, because in that we'd have an additional fabrication cost. It's really
+
+Kody Kendall  28:56  
+quick. Just make sure I capture this and then cases the question I have status. So the question I have for you, Demi is, so one thing I noticed. So okay, so this, this whole section. Okay, so I actually have two questions. One 's related to what you were just mentioning, where we have to be able to add additional items in. But the question before that is in this process where we're pulling in the BOQ data. And you might, again, you might be repeating yourself a little bit, but I'm just trying to really make sure I nail it and understand it totally perfect. But this this information, this information essentially tell me if Impl right way. This is pulling from this from this section here, right this rates page is that this project rate build up? Okay, so I am thinking about that the right way,
+
+Demi Swanepoel  29:51  
+and normally. So you'll see in your sheet now, just behind this one, the first one you were on, neither, yeah, so you'll see the ones here, and they're included. So that ones is normally then pulling from, if you go back to our sheet, it goes, it comes from these green and red items. So then this list also needs to increase at the bottom, where it says, Galvanizing.
+
+Unknown Speaker  30:22  
+Okay, that's, that's good to know. Okay, so, okay.
+
+Kody Kendall  30:25  
+In fact, let me make a note of that. Okay, so, so these, so these items should basically pull through. These ones and zeros should pull through to this, this column right here, and these rates here should pull through to this column right here. Yeah, okay, that's really good to know. Okay, let me just make a quick screenshot and mark that up a little bit, just so I can make sure I'm capturing that.
+
+Demi Swanepoel  30:52  
+Ja, because now that exercise everything is now once, because it obviously takes everything we selected, which is green, then it includes it as a one. But as I mentioned before, we need to also train AI to whenever it picks up that the different terms that I gave you in terms of a PURLIN, a CFLC, cold formed Lipped channel, whenever it picks up one of those words, it should automatically make that one zero, but just for that item, because then that's what we also do, is we manually going deselect that one for the PURLINS and we make it zero.
+
+Kody Kendall  31:31  
+Okay, that's helpful. So let me just, let me just make a quick note
+
+Unknown Speaker  31:36  
+now, Elmari, you must correct me if I'm wrong.
+
+Elmari  31:42  
+Called Four. Form channels and stuff. We make the fabrication a zero,
+
+Demi Swanepoel  31:49  
+and then the percentage is always 100, so I can just remember those two steps, and then it should be fine.
+
+Kody Kendall  31:57  
+Okay, that's good to know. So, so what it sounds like to me, tell me if I'm thinking about this accurately, is that even though these green ones and red zeros are the default setting for each line item, there are specific line items where you you need to be able to adjust those and override them.
+
+Unknown Speaker  32:20  
+Is that Yes, because it includes it for every
+
+Kody Kendall  32:25  
+portion, okay? That makes sense. And then is that okay? And that does go into a follow up question in general, but I think you might have answered it, but let me just articulate it to make sure this information that gets pulled in from this rate sheet. This, you know, these rates specifically, but also these inclusions, exclusions. This gets applied to every single line item. So these, these drawings. So, I mean, I guess drawings is a as an edge case. It doesn't necessarily do it for every item, but fabrication, all of this, these essentially get added into every single item. Is that? Is that accurate? So we're kind of like double counting in a way, like double adding up the rates included for fabrication overheads, like, that's all getting calculated into the line item, into every individual line item. Is that? Am I thinking about that the right way?
+
+Demi Swanepoel  33:21  
+Yeah, but even though the PRN cheese like your rate for your Crainaige or Chery Pickers, we don't usually include that. So if you, if you scroll a bit to the right when you make the selections, the ones and the zeros, you'll see your Crainaige and your cherries. Those ones are red, so they normally, we don't include it in the actual rate build up that comes under the the preliminaries in general section,
+
+Kody Kendall  33:50  
+I see, okay, yeah, but I guess, I guess you have it in here, because if it, if it's a mining Project, or vice versa, commercial or mining, sometimes you do cost it into each individual line item, or maybe just a couple different line items.
+
+Demi Swanepoel  34:07  
+Is that? Right? Yeah, I think the main purpose is just to keep all the rates together. So when you go and price a project, you don't have to go to different areas on one sheet or different sheets to make sure that you've updated all your rights, it's just in one place, but they are linked to different areas. It's not necessary that they are together. They all will automatically through and it form part of the build up of each item.
+
+Kody Kendall  34:33  
+Okay, okay, I think that makes sense. Okay. So, okay. So really the thing that's more relevant maybe Crainage, Chery picker, some of those aren't as relevant for each line item. Those will usually be zero, it sounds like for all the line items, but things like painting of this specific part is going to be really relevant. Delivery of this specific part bolts, and that's where it kind of, you have the line items where it kind of stacks all of the line items. Like, like, does that make sense? It's like, I guess, I guess we can even look at Dimako as an example. Like, you have overheads. Like, notice how overhead. So it looks like this value is getting added, this fabrication and this overheads, delivery, bolts, erecting, all this gets added into every single line item, but it's kind of a standard rate still for each item, yeah. Okay, okay. But Crainage, Chery, picker, Galvanizing, these are all zeros, and it sounds like they'll usually be zeros, but, yeah,
+
+Demi Swanepoel  35:40  
+it depends from project to project. Okay, okay, but the problem comes in, if we now select all the all of the steel are Galvanizing, especially your projects as at the coast, close to the seaside, then you'll select that as a one, but then it will automatically update every item as a one, but your PURLINS, you don't hard tip Galvanizing, so then we have to also manually go and make that zero.
+
+Kody Kendall  36:06  
+I see, okay, so these so that, and that's where these are relevant. This is kind of like a global it'll just set this everywhere.
+
+Demi Swanepoel  36:13  
+Okay, this way, yeah. But even if you set it at the bottom as Galvanizing, and you make it a one, it's going to apply to every item, but some of the items aren't applicable to that one.
+
+Kody Kendall  36:25  
+Oh, I see. So you're manually going and having to put zeros in for some of them. Yes, okay, that makes sense. Okay, that's, that's really helpful. Okay, sorry, I do have, sorry, one more question. I'm not quite done with my questions. Um, so this Okay, so there's a little bit of a like gutter per meter, for example, for this category, it looks like there's an additional calculation that's going on here. So, and I think maybe this relates to what you were saying, where you have to be able to add additional items here.
+
+Demi Swanepoel  37:00  
+Maybe what do you mean? There's additional calculation going on there.
+
+Kody Kendall  37:04  
+So, for example, the steel gutters per meter, this is the standard lines. This gets copied in, I think, to the testing sheet. But like, it has like this per meter, including butt strap, and then it has like a rate and a waste percentage.
+
+Demi Swanepoel  37:18  
+That rate is linked to, if you move to the right. It's it's linked to that three two line to column o3, 1072 because we price our gutters per ton right, and then that item is price per meter. So we do a rate build up based on a per ton. And then there where you see in line, in column M, the 0.05 that is a calculation we type in. So let's say the GIRT of the gutter. It's it's one meter by one meter. Then that would be your work times it by the factor. You'll work out the the total tonnage per meter. So you need to convert everything back to meter. So then your total rate per time would be that 60. I can't see that 60 something 1000, but because it's in meter, as with a bill, we convert it back to meter. And that's why it does that, and that's why we use this. Got the meter for a lot of random items in the bill, which we need more items for, if it makes
+
+Kody Kendall  38:42  
+I yeah, I think so. I think that's
+
+Demi Swanepoel  38:44  
+also the list that I sent you for the fast trap and extra over for a gut tissue, etc.
+
+Kody Kendall  38:51  
+Okay, okay, that makes sense. And okay, so gutters, so gutters have additional and it's interesting because so so this, this right here, is still, what would it would still essentially look like this section right here. It's like, this does still kind of map to this section right here,
+
+Demi Swanepoel  39:13  
+yeah, but it doesn't. It doesn't remain as one. It becomes a higher factor because there's more work involved. Yeah, okay, informing that light into a gutter
+
+Elmari  39:26  
+fabrication is 1.25
+
+Kody Kendall  39:29  
+I see, okay, so that, but, and it does look like though, there's just, there's a couple of extra fields or calculations that we have to figure out how we'll incorporate for things like gutters that you kind of have right here in the spreadsheet already. Yeah, okay, so that's, that's just something I'm trying to think about, but and then, so all this still applies bit, you man, do we have that in this one? We don't. Okay, so, yeah, little, little things like that. I'm still trying to wrap my head around, but that is, that is helpful. So let me just, let me just, let me just make a
+
+Demi Swanepoel  40:03  
+note really quick. Why? What do you mean? Why the delivery is a two and not a one?
+
+Kody Kendall  40:08  
+Um, well, not necessarily that, but this field right here, B, i, t, t, u, M, E, N,
+
+Demi Swanepoel  40:16  
+it's bitumen, so it's a different standard bank that's always applied to gutters. So that's why, and it's a higher rate. Then, let's say, for instance, what the bill is specifying what PAG needs to be applied to all the other steel so, and that's normally to the inside of the gutters, and then deliveries too, because when it's Galvanizing or normally, we don't do all the guts as ourselves, so we outsource it. So there's a delivery to to get this stuff from there to here and then from here to the actual site.
+
+Kody Kendall  40:59  
+Okay, okay, that makes sense. Okay, so pitch you in, and then, okay, no, that is, that is helpful. And then so in, right now is the workflow that you would come and just kind of come to the standard lines, and you would just copy and paste this as a starting point and then make adjustments for that specific tender. Is that kind of how that normally is, or currently is working?
+
+Demi Swanepoel  41:25  
+Yeah, but normally this, this breakdown for the gutter per meter. We don't really change the descriptions there, because that's a standard rate. That's a standard build up per ton. So normally, regardless what the project is, the rate per time for a guy to would be around about 60, 61,000 per ton. Okay, so we always allow bitumen as an extra over to make sure that we just allow enough for whatever needs to happen. Okay, perfect. And that's on top of the pain spec that is obviously a separate pain item. So just give me one minute. My son sounds like he's breaking something there in the front. No worries. Okay, just bring this
+
+Kody Kendall  42:58  
+Hi, sweet, no worries at all. Okay, so that's, that's kind of the main question I have for this section. I'm sure I'll have other questions in the future, especially around these, some of these anchors and different things. I'm sending a message to Darren here with some of the stuff that you were mentioning. Questioning.
+
+Unknown Speaker  43:24  
+Okay, very cool. Okay. So now
+
+Kody Kendall  43:29  
+the main, the main thing that would be helpful for me, we have roughly 15 minutes left, but just just kind of going into this, make sure I'm understanding this correctly. So I'm just going to tell you kind of how I'm currently thinking about this, and you can tell me where I'm right and where I'm wrong. So these Bill descriptions are just kind of common, you know, potentially common descriptions that we would see that kind of matches a certain pattern or keywords they would come in from from a regular Boq. Is that? Is that a good way to think about it?
+
+Demi Swanepoel  44:07  
+Yeah. So the sizes your your measurements in the front would obviously change from project to project, but it's mainly focusing on the word I, Section Eight, Section I, Section beams, UTF, UCS, yeah.
+
+Kody Kendall  44:21  
+Okay, okay. So these are so this Comments column then is basically saying, these are the these are some of the keywords that you're going to see. I, Section H, Section UC, UB, etc. Okay, and Okay. So then it's basically saying, if you see these keywords, you know, these are examples of what it would look like. Here are the keywords so you try to match on and that should translate to this still sections category, essentially, yes, okay. And then these steel sections are what elmarie is currently kind of selecting. When she pulls this information in virtual com' She'll click still sections. It fills this information in. But obviously, still, sections is pretty broad.
+
+Demi Swanepoel  45:06  
+And so then if you go back to your if you go back to my sheet, you'll see casting sheet link, the last one to be linked to local beams and columns. So that's now that draw down option, yeah. If you Yeah. So then that should then be linked to the local beams, and you'll see in line seven, yeah. So then there's your and then line seven is the the one that's like in a pink, orange, so that 250, anything, 254, by 254, which is an I section or an H section, there's obviously a large one, so that you'll see, if you do the draw down, there is local UBN, UCS, and then there's imported up and UCs, that's now a large section that we need to import. So then that gets that right. So yeah, but that's fine for now, if you don't master that, that is a selection we can do, because normally there's just one of them, and that's not in every project.
+
+Kody Kendall  46:09  
+Okay, yeah, local beams, okay, so that's these. So, so this, so this column, DN costing sheet link. Essentially, these are, we're trying to link these to these items here. Yeah, okay, okay, let me just take a screenshot so I can document this. Got UOM.
+
+Elmari  46:38  
+Hey, Charly. Hey,
+
+Unknown Speaker  46:55  
+Dansley Christian,
+
+Demi Swanepoel  46:58  
+now be slamming tomorrow at nine o'clock tomorrow night. Hi, lovely. Um, lovely. So one more day, okay, then I can chill a bit.
+
+Kody Kendall  47:17  
+Okay? And even, even, let's just look okay.
+
+Kody Kendall  47:22  
+There's only it looks like right now. In our current list, there's only one local section, like local UB and UC sections, yeah. Okay, okay, so when it
+
+Demi Swanepoel  47:31  
+says local, is this between those two options, okay, okay, but most of them would be local, okay.
+
+Kody Kendall  47:40  
+And then I know that too. There's also different proportions that can sometimes be selected depending on, is that going to be captured in this spreadsheet? Or would that be another column or another, another spreadsheet? Yeah.
+
+Demi Swanepoel  47:54  
+So if you scroll down, if you go to plates right, there's a plate section, yeah, so I don't know if I put in the percentage there. No, I took it out, but that's the percentage where AI needs to read, okay, there's a different line item for plates. So then all the other steel sections, the percentage should be 100% or if it doesn't pick up a plates line item with a tonnage connected to it, then it should then automatically update the percentage to 80 20% except for your PURLINS in your CFLC, that's always 100% okay, okay, you must say we now need to go down.
+
+Kody Kendall  48:46  
+Okay, let me just see. Okay, so there are these. So would it, would it add these additional items, or change some of these items to be like plates in here? Or would it just be the proportions to get changed? The proportion
+
+Demi Swanepoel  49:07  
+Elmari, so we don't, so you'll just select Local, right, and then see and then, let's say, if plates, we need to include plates in this way, then you'll make that 80% or 85% and then you'll see at the bottom there's a 15% Oh, I see, okay. That is always a plate. Is always selected there.
+
+Kody Kendall  49:34  
+I see, okay, okay. And so this is okay, yeah, if it has that plate keyword, that's where it would adjust these proportions so this would always be in here, the sheet of plate I see.
+
+Demi Swanepoel  49:44  
+Okay, yeah, so that's if you need to include plates in your rights. But if there's a different line item for plates, then your top line item will change to sheets of plate. And that would be 100% for the actual plate line item, and then the rest would be 100% because you can have measured the plates separately. If it's not separately, we need to make provision for it in our rate build up. That's why we include it in our percentage proportion. Okay, okay,
+
+Kody Kendall  50:21  
+okay, that makes sense. There's a little bit of, let me see.
+
+Unknown Speaker  50:25  
+Okay, I hear you very cool.
+
+Kody Kendall  50:32  
+And is that is plates. Is plates probably the main kind of, the main one that is to like, or that it's just a very common one. I guess this type of breakdown is a very common one. Yeah, okay. And I'm guessing there's similar, similar kind of proportions that we have to adjust, or different things for other items as well, not just the steel sections. But, I mean, yeah, things like, yeah, gutter meter kind of a similar there's like, little similar rules and things. So for example, to be linked to gutter rate, that gutter rate would just be represented, maybe not in here, but maybe more similar to what's in here. Am I thinking about that the right way? Yeah.
+
+Demi Swanepoel  51:17  
+So if this gut is measured in tons, then your drop down box, you'll just go and select that, because it's already in touch. You don't have to do that conversion two meters. Not Elmar me,
+
+Elmari  51:31  
+yeah, okay, okay, okay, okay.
+
+Kody Kendall  51:36  
+Very cool. No, this is, this is helpful. This is helpful. So I'm gonna and we have this, we have this sheet now, so there'll be an ongoing conversation. I'm sure I'm gonna have a lot more questions and trying to always wrap my head around this. But yeah, this is very helpful, and this is helping me get a better grasp of what you've put together here. So I appreciate it
+
+Elmari  52:01  
+actually didn't stop such a sheet in the beginning.
+
+Demi Swanepoel  52:10  
+Yeah, but yeah, the list, I basically did it two days ago.
+
+Demi Swanepoel  52:17  
+Yeah, even if London and you should have done it a long time ago, then I would have known better. But I don't think if it's
+
+Unknown Speaker  52:23  
+applicable for you, will it help?
+
+Elmari  52:30  
+Like, in the beginning, I was like, What the hell is a angle section, and where should it be connected to what's steel sections? And then to this, and then to that. I so much help with pretty much first time at work.
+
+Demi Swanepoel  52:47  
+I only had time now to do it well. And this is, this is one of the benefits
+
+Kody Kendall  52:54  
+too, of it's one of the benefits too of doing a system that's trying to put everything together is, yeah, it kind of, it kind of brings out some of this stuff that's more Yeah, rule of thumb, or just kind of, in, you know, kind of forces us to write everything down which, which isn't just helpful for the software, it's helpful for, you know, everyone in the company
+
+Elmari  53:15  
+and everything, yeah, yeah, for sure. I didn't know anything, so I was like bothering Jamie every second minute, asking her, What's this? What's this?
+
+Unknown Speaker  53:27  
+Yeah, that's great. Okay, well, so
+
+Elmari  53:32  
+thank you. Names,
+
+Kody Kendall  53:35  
+those are all my questions. Um, we have a couple minutes if you guys have any questions or thoughts for me, and then we'll try to wrap up right on the hour. But yeah, that's that's all my questions. Is there any questions that you, that you, that you two might have?
+
+Demi Swanepoel  53:52  
+I'm just wanting to know. Are you coping?
+
+Kody Kendall  53:56  
+Am I coping?
+
+Demi Swanepoel  53:58  
+Are you getting the broader picture that we are wanting at the end of the day.
+
+Kody Kendall  54:04  
+Yes, I think, I think I am, and I also have help from Darren. I think you, yeah, you've talked to Darren and met him a couple times. And I also have a lot of access to Richard and Darren. And so, yeah, we're definitely on the right track. We're definitely on the right track. So definitely the really big step that we have to now is the core kind of the core workflow with the current spreadsheet, just really making sure that that's consistent, that the software works really good there. That's going to be the foundational piece for really everything we do from there. So definitely my main focus is nailing that. And then these, these rules of thumb, these little automations and bringing AI into it to try and, like, set these exactly right. Definitely something that's on the roadmap and that we're going to nail. But yeah, no, we were on the right track for sure.
+
+Demi Swanepoel  55:01  
+Elmar, is there anything that they can do that would make it easier for you that I've OBS that's passed my oversight door.
+
+Elmari  55:13  
+Think it's all good. I'm just so the only question I have is, so with the rates that we have in our spreadsheet, that rates page. So yeah, those rates at the bottom left, yes, those ones, not always, but obviously, that's the rates that Maria gets once a month, and that needs updating. So is there going to be, like, a separate page where that's going to be updated, and then obviously, when you do attend, the updated rate will pull through,
+
+Kody Kendall  55:49  
+yes, 100% so we have a section where Maria will actually just sign in and she's going to put out all the supplier pricing. And then we're going to have kind of a an active rates section where, okay, Demi and Richard and everyone will kind of have the the most recent active rates, and that'll be like kind of a company setting. But then when you go to create the tender, those default rates will pull in here. And then Demi, I know that, like for a specific tender. I know Demi that you have to adjust these specific to tender sometimes, like, if you can negotiate a better deal for certain parts. So, but yeah, so this, these will all pull in, and then these will be referenced in the these will be referenced here, so like when you select that specific category, it'll pull in that default right. And then even on this level, we can also override it if we need to, okay, cool, but yeah, does that answer your question?
+
+Elmari  56:51  
+Yeah, yep. Sweet.
+
+Kody Kendall  56:55  
+Any other questions or thoughts before we end this call? Yep, I'm good. I'm good. Okay, sweet, okay, so the next meeting, I believe, is January, at least for me and you, Demi, I think we had said
+
+Demi Swanepoel  57:12  
+that that is correct, though. Okay, awesome, Elmar, and yes, you want to sit next week, or you can sit next week, but I go,
+
+Elmari  57:21  
+Yeah, I don't think we're gonna have great signal in the bush. Hey,
+
+Demi Swanepoel  57:29  
+in South Africa, December is like the full monty gun holiday. It's not like in America, where your year actually starts and ends. I think when is it like, September or so. How does it work? We, like the school starts,
+
+Kody Kendall  57:44  
+yeah, so we have summer break, which is, like a three month that's, that's mainly for the students. America's work culture is kind of funny, where it just, it just really depends on, like the company. For me, I'm a very, very small company, like a, you know, like a startup, like a very small company, so I don't, I don't take as many breaks and things, but that's kind of, yeah, just out of necessity, because I'm trying to, you know, build a company. So, but yeah, totally understand, yeah. So, so January is going to be a big period where this is actually a good you know, the timing is actually pretty good, because this gives me and my team time to push really hard for the next three weeks and try to have something that's really solid for January 5. That's kind of the day that we're hoping to be a big pushing, kind of launching time where we try to, like, really start running real tenders through the system, but there's going to be kind of an intense two week period where we're trying to just make sure that it's all working properly and and then after January, that's when we're going to move into some more like another building phase, where we try to add automations and other improvements and things like that. If that makes sense, I Okay, um, well, I'm gonna end the call and yeah, thank you for jumping on. I know it's a little bit later for for you too in South Africa, but I'm excited. And you have my email, and you also should both. You have my contact information on WhatsApp as well, so if you have any questions, you can always reach out there. Thanks. Elmarie, thanks, Demi, good couple weeks of vacation.
+
+Demi Swanepoel  59:30  
+Yeah, thank you. Yeah, you too. Okay. See you.
+
+Elmari  59:33  
+Thanks. Bye.
+
+Transcribed by https://otter.ai
+https://otter.ai/u/mGf2NA_pLXZ7S4XyAb9yA1qLaaU?tab=chat&view=transcript
