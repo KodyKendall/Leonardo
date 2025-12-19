@@ -1,0 +1,160 @@
+<%= render layout: 'prototypes/layouts/default' do %>
+  <div class="p-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold mb-2">Material Rates for Tender #1234</h1>
+      <p class="text-gray-600">Manage material rates specific to this tender</p>
+    </div>
+
+    <!-- Add Rate Button -->
+    <div class="mb-6">
+      <button class="btn btn-primary">
+        <i class="fas fa-plus mr-2"></i> Add Rate
+      </button>
+    </div>
+
+    <!-- Rates Table -->
+    <div class="overflow-x-auto">
+      <table class="table table-zebra w-full border border-gray-200 rounded-lg">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="text-left p-4">Material Name</th>
+            <th class="text-left p-4">Rate ($/Unit)</th>
+            <th class="text-left p-4">Unit</th>
+            <th class="text-center p-4">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Row 1: Clean display state -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_1">
+            <td class="p-4">
+              <input type="text" value="Concrete (Grade A)" class="input input-bordered w-full" />
+            </td>
+            <td class="p-4">
+              <input type="number" value="45.50" step="0.01" class="input input-bordered w-32" />
+            </td>
+            <td class="p-4">
+              <select class="select select-bordered w-32">
+                <option selected>per m³</option>
+                <option>per kg</option>
+                <option>per unit</option>
+              </select>
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Row 2: With dirty indicator -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_2">
+            <td class="p-4">
+              <input type="text" value="Steel Rebar #4" class="input input-bordered w-full border-yellow-400" />
+            </td>
+            <td class="p-4">
+              <input type="number" value="2.35" step="0.01" class="input input-bordered w-32 border-yellow-400" />
+            </td>
+            <td class="p-4">
+              <select class="select select-bordered w-32">
+                <option>per m³</option>
+                <option selected>per kg</option>
+                <option>per unit</option>
+              </select>
+            </td>
+            <td class="p-4 text-center">
+              <div class="flex items-center justify-center gap-2">
+                <span class="badge badge-warning text-xs">
+                  <i class="fas fa-circle-dot mr-1"></i> Unsaved
+                </span>
+                <button class="btn btn-sm btn-ghost" title="Edit">
+                  <i class="fas fa-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-success mr-2" title="Save">
+                  <i class="fas fa-save"></i>
+                </button>
+                <button class="btn btn-sm btn-error" title="Delete">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Row 3: Clean state -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_3">
+            <td class="p-4">
+              <input type="text" value="Brick (Standard)" class="input input-bordered w-full" />
+            </td>
+            <td class="p-4">
+              <input type="number" value="0.85" step="0.01" class="input input-bordered w-32" />
+            </td>
+            <td class="p-4">
+              <select class="select select-bordered w-32">
+                <option>per m³</option>
+                <option>per kg</option>
+                <option selected>per unit</option>
+              </select>
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Row 4: New unsaved row -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200 bg-blue-50" id="tender_specific_material_rate_4">
+            <td class="p-4">
+              <input type="text" placeholder="Material name" class="input input-bordered w-full border-blue-400" />
+            </td>
+            <td class="p-4">
+              <input type="number" placeholder="0.00" step="0.01" class="input input-bordered w-32 border-blue-400" />
+            </td>
+            <td class="p-4">
+              <select class="select select-bordered w-32 border-blue-400">
+                <option selected>per m³</option>
+                <option>per kg</option>
+                <option>per unit</option>
+              </select>
+            </td>
+            <td class="p-4 text-center">
+              <div class="flex items-center justify-center gap-2">
+                <span class="badge badge-info text-xs">
+                  <i class="fas fa-star mr-1"></i> New
+                </span>
+                <button class="btn btn-sm btn-success mr-2" title="Save">
+                  <i class="fas fa-save"></i>
+                </button>
+                <button class="btn btn-sm btn-error" title="Delete">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty state example (commented out) -->
+    <!--
+    <div class="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+      <i class="fas fa-inbox text-4xl text-gray-400 mb-4"></i>
+      <p class="text-gray-600 text-lg mb-4">No material rates yet</p>
+      <button class="btn btn-primary">
+        <i class="fas fa-plus mr-2"></i> Create First Rate
+      </button>
+    </div>
+    -->
+
+    <!-- Back link -->
+    <div class="mt-8">
+      <%= link_to "← Back to Tender", root_path, class: "text-blue-600 hover:underline" %>
+    </div>
+  </div>
+<% end %>
