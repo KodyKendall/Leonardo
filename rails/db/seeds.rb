@@ -898,10 +898,58 @@ puts "  • Monthly Material Supply Rates: #{MonthlyMaterialSupplyRate.count}"
 puts "  • Material Supply Rates: #{MaterialSupplyRate.count}"
 puts "  • Crane Rates: #{CraneRate.count}"
 puts "  • Crane Complements: #{CraneComplement.count}"
+# ===== TENDER-SPECIFIC MATERIAL RATES (SAMPLE DATA) =====
+# Create sample tender-specific rates for demonstration
+if MaterialSupply.any? && Tender.any?
+  tender1 = Tender.order(:id).first
+  tender2 = Tender.order(:id).second
+  
+  materials = MaterialSupply.limit(3)
+  
+  if materials.any? && tender1
+    # For tender1, set custom rates for first 2 materials
+    materials.each_with_index do |material, idx|
+      next if idx >= 2  # Only set rates for first 2 materials per tender
+      
+      rate_value = 15000.00 + (idx * 5000.00)
+      TenderSpecificMaterialRate.find_or_create_by!(
+        tender_id: tender1.id,
+        material_supply_id: material.id
+      ) do |rate|
+        rate.rate = rate_value
+        rate.unit = "per_tonne"
+        rate.effective_from = Date.current - 30.days
+        rate.effective_to = Date.current + 90.days
+        rate.notes = "Negotiated rate with supplier for ABC High-Rise project"
+      end
+    end
+  end
+  
+  # For tender2, set custom rates
+  if materials.any? && tender2
+    materials.each_with_index do |material, idx|
+      next if idx >= 3  # Set rates for all 3 materials for tender2
+      
+      rate_value = 18000.00 + (idx * 4000.00)
+      TenderSpecificMaterialRate.find_or_create_by!(
+        tender_id: tender2.id,
+        material_supply_id: material.id
+      ) do |rate|
+        rate.rate = rate_value
+        rate.unit = "per_tonne"
+        rate.effective_from = Date.current - 60.days
+        rate.effective_to = nil  # Indefinite until changed
+        rate.notes = "Special mining project pricing"
+      end
+    end
+  end
+end
+
 puts "  • On-Site Mobile Crane Breakdowns: #{OnSiteMobileCraneBreakdown.count}"
 puts "  • Tender Crane Selections: #{TenderCraneSelection.count}"
 puts "  • BOQs: #{Boq.count}"
 puts "  • BOQ Items: #{BoqItem.count}"
+puts "  • Tender-Specific Material Rates: #{TenderSpecificMaterialRate.count}"
 puts ""
 puts "🔑 LOGIN CREDENTIALS:"
 puts "  • Email: kody@llamapress.ai (Admin)"

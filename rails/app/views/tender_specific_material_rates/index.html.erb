@@ -1,0 +1,52 @@
+<div class="container mx-auto px-4 py-6">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-3xl font-bold">Material Rates for <%= @tender.tender_name %></h1>
+      <p class="text-gray-600 text-sm">E-Number: <%= @tender.e_number %></p>
+    </div>
+    <%= link_to "Add Rate", new_tender_tender_specific_material_rate_path(@tender), class: "btn btn-primary" %>
+  </div>
+
+  <% if @tender_specific_material_rates.any? %>
+    <div class="overflow-x-auto">
+      <table class="table table-zebra w-full">
+        <thead>
+          <tr class="bg-base-200">
+            <th>Material</th>
+            <th>Rate</th>
+            <th>Unit</th>
+            <th>Effective From</th>
+            <th>Effective To</th>
+            <th>Notes</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @tender_specific_material_rates.each do |rate| %>
+            <tr>
+              <td class="font-medium"><%= rate.material_supply.name %></td>
+              <td class="text-right"><%= number_to_currency(rate.rate) %></td>
+              <td><%= rate.unit %></td>
+              <td><%= rate.effective_from&.strftime("%d %b %Y") %></td>
+              <td><%= rate.effective_to&.strftime("%d %b %Y") %></td>
+              <td class="text-sm text-gray-600"><%= truncate(rate.notes, length: 50) %></td>
+              <td class="flex gap-2">
+                <%= link_to "Edit", edit_tender_tender_specific_material_rate_path(@tender, rate), class: "btn btn-sm btn-ghost" %>
+                <%= link_to "Delete", tender_tender_specific_material_rate_path(@tender, rate), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-sm btn-error" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      <p>No material rates set for this tender yet.</p>
+      <%= link_to "Create the first rate", new_tender_tender_specific_material_rate_path(@tender), class: "btn btn-sm btn-primary mt-2" %>
+    </div>
+  <% end %>
+
+  <div class="mt-6">
+    <%= link_to "Back to Tender", @tender, class: "btn btn-outline" %>
+  </div>
+</div>

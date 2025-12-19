@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_16_171025) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_19_170551) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -409,6 +409,21 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_16_171025) do
     t.index ["tender_id"], name: "index_tender_line_items_on_tender_id"
   end
 
+  create_table "tender_specific_material_rates", force: :cascade do |t|
+    t.bigint "tender_id", null: false
+    t.bigint "material_supply_id", null: false
+    t.decimal "rate", precision: 12, scale: 2, null: false
+    t.string "unit"
+    t.date "effective_from"
+    t.date "effective_to"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["material_supply_id"], name: "index_tender_specific_material_rates_on_material_supply_id"
+    t.index ["tender_id", "material_supply_id"], name: "idx_tender_material_unique", unique: true
+    t.index ["tender_id"], name: "index_tender_specific_material_rates_on_tender_id"
+  end
+
   create_table "tenders", force: :cascade do |t|
     t.string "e_number", null: false
     t.string "status", default: "draft", null: false
@@ -496,6 +511,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_16_171025) do
   add_foreign_key "tender_crane_selections", "tenders"
   add_foreign_key "tender_inclusions_exclusions", "tenders"
   add_foreign_key "tender_line_items", "tenders"
+  add_foreign_key "tender_specific_material_rates", "material_supplies", on_delete: :cascade
+  add_foreign_key "tender_specific_material_rates", "tenders", on_delete: :cascade
   add_foreign_key "tenders", "clients"
   add_foreign_key "tenders", "projects", column: "awarded_project_id"
   add_foreign_key "variation_orders", "projects"

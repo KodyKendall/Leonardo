@@ -1,0 +1,69 @@
+<div class="max-w-2xl">
+  <%= form_with(model: [@tender, @tender_specific_material_rate], local: true) do |form| %>
+    <% if @tender_specific_material_rate.errors.any? %>
+      <div class="alert alert-error mb-4">
+        <h2 class="font-bold"><%= pluralize(@tender_specific_material_rate.errors.count, "error") %> prohibited this rate from being saved:</h2>
+        <ul class="list-disc list-inside mt-2">
+          <% @tender_specific_material_rate.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="form-control w-full mb-4">
+      <%= form.label :material_supply_id, "Material Supply", class: "label" %>
+      <%= form.select :material_supply_id, options_from_collection_for_select(@available_materials, :id, :name, @tender_specific_material_rate.material_supply_id), { prompt: "Select a material" }, class: "select select-bordered w-full" %>
+      <label class="label">
+        <span class="label-text-alt"><%= @tender_specific_material_rate.errors[:material_supply_id]&.first %></span>
+      </label>
+    </div>
+
+    <div class="form-control w-full mb-4">
+      <%= form.label :rate, "Rate", class: "label" %>
+      <%= form.number_field :rate, step: 0.01, placeholder: "0.00", class: "input input-bordered w-full" %>
+      <label class="label">
+        <span class="label-text-alt"><%= @tender_specific_material_rate.errors[:rate]&.first %></span>
+      </label>
+    </div>
+
+    <div class="form-control w-full mb-4">
+      <%= form.label :unit, "Unit", class: "label" %>
+      <%= form.text_field :unit, placeholder: "e.g., per_tonne, per_sqm", class: "input input-bordered w-full" %>
+      <label class="label">
+        <span class="label-text-alt text-gray-500">Optional - e.g., 'per_tonne', 'per_sqm', 'per_item'</span>
+      </label>
+    </div>
+
+    <div class="grid grid-cols-2 gap-4 mb-4">
+      <div class="form-control w-full">
+        <%= form.label :effective_from, "Effective From", class: "label" %>
+        <%= form.date_field :effective_from, class: "input input-bordered w-full" %>
+        <label class="label">
+          <span class="label-text-alt text-gray-500">Optional</span>
+        </label>
+      </div>
+
+      <div class="form-control w-full">
+        <%= form.label :effective_to, "Effective To", class: "label" %>
+        <%= form.date_field :effective_to, class: "input input-bordered w-full" %>
+        <label class="label">
+          <span class="label-text-alt text-gray-500">Optional</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-control w-full mb-6">
+      <%= form.label :notes, "Notes", class: "label" %>
+      <%= form.text_area :notes, placeholder: "e.g., Negotiated rate, special contract terms, etc.", class: "textarea textarea-bordered w-full h-24" %>
+      <label class="label">
+        <span class="label-text-alt text-gray-500">Optional - Document why this rate was set</span>
+      </label>
+    </div>
+
+    <div class="flex gap-2">
+      <%= form.submit class: "btn btn-primary" %>
+      <%= link_to "Cancel", tender_tender_specific_material_rates_path(@tender), class: "btn btn-outline" %>
+    </div>
+  <% end %>
+</div>
