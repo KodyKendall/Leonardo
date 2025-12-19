@@ -1,0 +1,7 @@
+<!-- 🪲 DEBUG: create.turbo_stream.erb rendering for tender_id=<%= @tender.id %>, rate_id=<%= @tender_specific_material_rate.id %> -->
+<%= turbo_stream.append(
+  "tender_#{@tender.id}_tender_specific_material_rates",
+  partial: "tender_specific_material_rates/tender_specific_material_rate",
+  locals: { tender_specific_material_rate: @tender_specific_material_rate }
+) %>
+<!-- 🪲 DEBUG: append call completed -->

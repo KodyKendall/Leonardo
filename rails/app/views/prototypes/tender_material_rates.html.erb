@@ -19,28 +19,25 @@
         <thead class="bg-gray-100">
           <tr>
             <th class="text-left p-4">Material Name</th>
-            <th class="text-left p-4">Rate ($/Unit)</th>
-            <th class="text-left p-4">Unit</th>
+            <th class="text-left p-4">Waste Percentage</th>
+            <th class="text-left p-4">Rate</th>
             <th class="text-center p-4">Actions</th>
           </tr>
         </thead>
         <tbody>
-          <!-- Row 1: Clean display state -->
+          <!-- CFLC - Black -->
           <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_1">
+            <td class="p-4 font-semibold">CFLC - Black</td>
             <td class="p-4">
-              <input type="text" value="Concrete (Grade A)" class="input input-bordered w-full" />
+              <input type="number" value="0.0" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
             </td>
             <td class="p-4">
-              <input type="number" value="45.50" step="0.01" class="input input-bordered w-32" />
-            </td>
-            <td class="p-4">
-              <select class="select select-bordered w-32">
-                <option selected>per m³</option>
-                <option>per kg</option>
-                <option>per unit</option>
-              </select>
+              <input type="text" value="1000.0" class="input input-bordered w-32" placeholder="Price" />
             </td>
             <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
               <button class="btn btn-sm btn-success mr-2" title="Save">
                 <i class="fas fa-save"></i>
               </button>
@@ -50,55 +47,19 @@
             </td>
           </tr>
 
-          <!-- Row 2: With dirty indicator -->
+          <!-- CFLC - Black 100mm Leg -->
           <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_2">
+            <td class="p-4 font-semibold">CFLC - Black 100mm Leg</td>
             <td class="p-4">
-              <input type="text" value="Steel Rebar #4" class="input input-bordered w-full border-yellow-400" />
+              <input type="number" value="0.0" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
             </td>
             <td class="p-4">
-              <input type="number" value="2.35" step="0.01" class="input input-bordered w-32 border-yellow-400" />
-            </td>
-            <td class="p-4">
-              <select class="select select-bordered w-32">
-                <option>per m³</option>
-                <option selected>per kg</option>
-                <option>per unit</option>
-              </select>
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
             </td>
             <td class="p-4 text-center">
-              <div class="flex items-center justify-center gap-2">
-                <span class="badge badge-warning text-xs">
-                  <i class="fas fa-circle-dot mr-1"></i> Unsaved
-                </span>
-                <button class="btn btn-sm btn-ghost" title="Edit">
-                  <i class="fas fa-pencil"></i>
-                </button>
-                <button class="btn btn-sm btn-success mr-2" title="Save">
-                  <i class="fas fa-save"></i>
-                </button>
-                <button class="btn btn-sm btn-error" title="Delete">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-
-          <!-- Row 3: Clean state -->
-          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_3">
-            <td class="p-4">
-              <input type="text" value="Brick (Standard)" class="input input-bordered w-full" />
-            </td>
-            <td class="p-4">
-              <input type="number" value="0.85" step="0.01" class="input input-bordered w-32" />
-            </td>
-            <td class="p-4">
-              <select class="select select-bordered w-32">
-                <option>per m³</option>
-                <option>per kg</option>
-                <option selected>per unit</option>
-              </select>
-            </td>
-            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
               <button class="btn btn-sm btn-success mr-2" title="Save">
                 <i class="fas fa-save"></i>
               </button>
@@ -108,33 +69,443 @@
             </td>
           </tr>
 
-          <!-- Row 4: New unsaved row -->
-          <tr class="hover:bg-gray-50 border-t border-gray-200 bg-blue-50" id="tender_specific_material_rate_4">
+          <!-- CFLC Metsec Alternative 1.6mm -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_3">
+            <td class="p-4 font-semibold">CFLC Metsec Alternative 1.6mm</td>
             <td class="p-4">
-              <input type="text" placeholder="Material name" class="input input-bordered w-full border-blue-400" />
+              <input type="number" value="0.0" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
             </td>
             <td class="p-4">
-              <input type="number" placeholder="0.00" step="0.01" class="input input-bordered w-32 border-blue-400" />
-            </td>
-            <td class="p-4">
-              <select class="select select-bordered w-32 border-blue-400">
-                <option selected>per m³</option>
-                <option>per kg</option>
-                <option>per unit</option>
-              </select>
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
             </td>
             <td class="p-4 text-center">
-              <div class="flex items-center justify-center gap-2">
-                <span class="badge badge-info text-xs">
-                  <i class="fas fa-star mr-1"></i> New
-                </span>
-                <button class="btn btn-sm btn-success mr-2" title="Save">
-                  <i class="fas fa-save"></i>
-                </button>
-                <button class="btn btn-sm btn-error" title="Delete">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </div>
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- CFLC Metsec Alternative 2mm -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_4">
+            <td class="p-4 font-semibold">CFLC Metsec Alternative 2mm</td>
+            <td class="p-4">
+              <input type="number" value="0.0" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
+            </td>
+            <td class="p-4">
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- CFLC - Pregalv -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_5">
+            <td class="p-4 font-semibold">CFLC - Pregalv</td>
+            <td class="p-4">
+              <input type="number" value="0.0" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
+            </td>
+            <td class="p-4">
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- CFLC - Pregalv 100mm Leg -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_6">
+            <td class="p-4 font-semibold">CFLC - Pregalv 100mm Leg</td>
+            <td class="p-4">
+              <input type="number" value="0.0" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
+            </td>
+            <td class="p-4">
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- CFLC - Primed -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_7">
+            <td class="p-4 font-semibold">CFLC - Primed</td>
+            <td class="p-4">
+              <input type="number" value="0.0" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
+            </td>
+            <td class="p-4">
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- CFLC - Primed 100mm Leg -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_8">
+            <td class="p-4 font-semibold">CFLC - Primed 100mm Leg</td>
+            <td class="p-4">
+              <input type="number" value="0.0" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
+            </td>
+            <td class="p-4">
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Cut to Size Plate -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_9">
+            <td class="p-4 font-semibold">Cut to Size Plate</td>
+            <td class="p-4">
+              <input type="number" value="0.0" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
+            </td>
+            <td class="p-4">
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Equal Angles -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_10">
+            <td class="p-4 font-semibold">Equal Angles</td>
+            <td class="p-4">
+              <input type="number" value="7.5" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
+            </td>
+            <td class="p-4">
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Gutters -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_11">
+            <td class="p-4 font-semibold">Gutters</td>
+            <td class="p-4">
+              <input type="number" value="0.0" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
+            </td>
+            <td class="p-4">
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Heavy PFC Sections -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_12">
+            <td class="p-4 font-semibold">Heavy PFC Sections</td>
+            <td class="p-4">
+              <input type="number" value="7.5" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
+            </td>
+            <td class="p-4">
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Import UB & UC Sections -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_13">
+            <td class="p-4 font-semibold">Import UB & UC Sections</td>
+            <td class="p-4">
+              <input type="number" value="7.5" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
+            </td>
+            <td class="p-4">
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- IPE Sections -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_14">
+            <td class="p-4 font-semibold">IPE Sections</td>
+            <td class="p-4">
+              <input type="number" value="7.5" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
+            </td>
+            <td class="p-4">
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Large Equal Angles -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_15">
+            <td class="p-4 font-semibold">Large Equal Angles</td>
+            <td class="p-4">
+              <input type="number" value="7.5" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
+            </td>
+            <td class="p-4">
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Local UB & UC Sections -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_16">
+            <td class="p-4 font-semibold">Local UB & UC Sections</td>
+            <td class="p-4">
+              <input type="number" value="7.5" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
+            </td>
+            <td class="p-4">
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Non-Standard Hollow Sections -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_17">
+            <td class="p-4 font-semibold">Non-Standard Hollow Sections</td>
+            <td class="p-4">
+              <input type="number" value="10.0" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
+            </td>
+            <td class="p-4">
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- PFC Sections -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_18">
+            <td class="p-4 font-semibold">PFC Sections</td>
+            <td class="p-4">
+              <input type="number" value="7.5" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
+            </td>
+            <td class="p-4">
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Round Bar -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_19">
+            <td class="p-4 font-semibold">Round Bar</td>
+            <td class="p-4">
+              <input type="number" value="10.0" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
+            </td>
+            <td class="p-4">
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Sheets of Plate -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_20">
+            <td class="p-4 font-semibold">Sheets of Plate</td>
+            <td class="p-4">
+              <input type="number" value="12.5" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
+            </td>
+            <td class="p-4">
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Standard Hollow Sections -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_21">
+            <td class="p-4 font-semibold">Standard Hollow Sections</td>
+            <td class="p-4">
+              <input type="number" value="12.5" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
+            </td>
+            <td class="p-4">
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Testio -->
+          <tr class="hover:bg-gray-50 border-t border-gray-200" id="tender_specific_material_rate_22">
+            <td class="p-4 font-semibold">Testio</td>
+            <td class="p-4">
+              <input type="number" value="7.5" step="0.1" class="input input-bordered w-32" placeholder="Markup %" />
+            </td>
+            <td class="p-4">
+              <input type="text" value="-" class="input input-bordered w-32" placeholder="Price" />
+            </td>
+            <td class="p-4 text-center">
+              <button class="btn btn-sm btn-ghost" title="Edit">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-success mr-2" title="Save">
+                <i class="fas fa-save"></i>
+              </button>
+              <button class="btn btn-sm btn-error" title="Delete">
+                <i class="fas fa-trash"></i>
+              </button>
             </td>
           </tr>
         </tbody>

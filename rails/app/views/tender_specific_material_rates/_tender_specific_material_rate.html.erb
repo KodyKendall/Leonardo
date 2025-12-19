@@ -1,0 +1,80 @@
+<%= turbo_frame_tag dom_id(tender_specific_material_rate) do %>
+  <div class="material-rate-row">
+    <%= form_with model: [tender_specific_material_rate.tender, tender_specific_material_rate],
+                  local: true,
+                  data: {
+                    controller: "dirty-form",
+                    action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset"
+                  },
+                  class: "material-rate-form" do |f| %>
+      
+      <div class="row-field material-name">
+        <%= f.label :material_supply_id, "Material" %>
+        <%= f.collection_select :material_supply_id, 
+                                MaterialSupply.all, 
+                                :id, 
+                                :name,
+                                { prompt: "Select material..." },
+                                class: "material-select" %>
+      </div>
+      
+      <div class="row-field rate-value">
+        <%= f.label :rate, "Rate" %>
+        <%= f.number_field :rate, 
+                           step: 0.01, 
+                           min: 0,
+                           placeholder: "0.00",
+                           class: "rate-input" %>
+      </div>
+      
+      <div class="row-field unit">
+        <%= f.label :unit, "Unit" %>
+        <%= f.text_field :unit, 
+                         placeholder: "per_tonne",
+                         readonly: true,
+                         class: "unit-input" %>
+      </div>
+      
+      <div class="row-field effective-from">
+        <%= f.label :effective_from, "From" %>
+        <%= f.date_field :effective_from,
+                         class: "date-input" %>
+      </div>
+      
+      <div class="row-field effective-to">
+        <%= f.label :effective_to, "To" %>
+        <%= f.date_field :effective_to,
+                         class: "date-input" %>
+      </div>
+      
+      <div class="row-field notes">
+        <%= f.label :notes, "Notes" %>
+        <%= f.text_field :notes, 
+                         placeholder: "e.g., Negotiated Q4 2025",
+                         class: "notes-input" %>
+      </div>
+      
+      <div class="row-actions">
+        <span class="dirty-indicator" 
+              data-dirty-form-target="indicator" 
+              style="display: none;">
+          <i class="fa-solid fa-triangle-exclamation"></i> Unsaved
+        </span>
+        
+        <%= f.submit "Save", 
+                     class: "btn btn-sm btn-secondary",
+                     data: { 
+                       dirty_form_target: "submit",
+                       disable_with: "Saving..."
+                     } %>
+        
+        <%= button_to "Delete", 
+                      [tender_specific_material_rate.tender, tender_specific_material_rate],
+                      method: :delete,
+                      form: { data: { turbo_confirm: "Remove this rate override?" } },
+                      form_class: "contents",
+                      class: "btn btn-sm btn-danger" %>
+      </div>
+    <% end %>
+  </div>
+<% end %>
