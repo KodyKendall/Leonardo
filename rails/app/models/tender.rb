@@ -14,6 +14,7 @@ class Tender < ApplicationRecord
   
   # Callbacks
   before_create :generate_e_number
+  after_create :populate_material_rates
   
   # Validations
   validates :tender_name, presence: true
@@ -34,6 +35,10 @@ class Tender < ApplicationRecord
   end
 
   private
+
+  def populate_material_rates
+    PopulateTenderMaterialRates.new(self).execute
+  end
 
   def broadcast_update_grand_total
     broadcast_update_to(

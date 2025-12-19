@@ -1,0 +1,188 @@
+/* Material Rate Row Component Styling */
+
+.material-rate-row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: #fafafa;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.material-rate-form {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.row-field {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+}
+
+.row-field label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #1f2937;
+}
+
+.row-field input,
+.row-field select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-family: inherit;
+  background-color: white;
+}
+
+.row-field input:focus,
+.row-field select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.row-field input[readonly] {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+  color: #6b7280;
+}
+
+/* Field width classes for responsive layout */
+.material-name {
+  flex: 2;
+  min-width: 160px;
+}
+
+.rate-value {
+  flex: 1.2;
+}
+
+.unit {
+  flex: 1;
+  min-width: 100px;
+}
+
+.effective-from {
+  flex: 1.2;
+}
+
+.effective-to {
+  flex: 1.2;
+}
+
+.notes {
+  flex: 2;
+  min-width: 160px;
+}
+
+.row-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
+  margin-top: auto;
+}
+
+.dirty-indicator {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #f97316;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.dirty-indicator.hidden {
+  display: none;
+}
+
+/* Button overrides for row context */
+.material-rate-row .btn-secondary {
+  background-color: #6b7280;
+  border-color: #6b7280;
+  color: white;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.material-rate-row .btn-secondary:hover {
+  background-color: #4b5563;
+  border-color: #4b5563;
+}
+
+.material-rate-row .btn-secondary.btn-warning {
+  background-color: #fbbf24;
+  border-color: #fbbf24;
+  color: #000;
+}
+
+.material-rate-row .btn-secondary.btn-warning:hover {
+  background-color: #f59e0b;
+  border-color: #f59e0b;
+  color: #000;
+}
+
+.material-rate-row .btn-danger {
+  background-color: #ef4444;
+  border-color: #ef4444;
+  color: white;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.material-rate-row .btn-danger:hover {
+  background-color: #dc2626;
+  border-color: #dc2626;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 1024px) {
+  .material-rate-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .material-rate-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .row-field {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .row-actions {
+    width: 100%;
+    justify-content: flex-start;
+    margin-top: 0.5rem;
+  }
+}
+
+/* Empty state container styling */
+.material-rates-empty {
+  padding: 2rem;
+  text-align: center;
+  border: 1px dashed #d1d5db;
+  border-radius: 0.5rem;
+  background-color: #f9fafb;
+}
+
+.material-rates-empty p {
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
