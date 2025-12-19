@@ -48,6 +48,7 @@ Rails.application.routes.draw do
     end
     resources :boqs, only: [:create]
     resources :tender_line_items
+    resources :tender_specific_material_rates
   end
 
     resources :tender_line_items
