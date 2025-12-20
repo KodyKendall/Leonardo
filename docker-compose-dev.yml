@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   llamapress:
-    image: kody06/llamapress-simple:0.2.6a          # <— pre-built tag
+    image: kody06/llamapress-simple:0.2.6a        # <— pre-built tag
     # build: ../Simple/LlamaPress-Simple
     env_file: .env                           # read secrets from this file
     environment:
@@ -16,6 +16,7 @@ services:
       - ./rails/spec:/rails/spec:delegated
       - ./rails/config/environments/development.rb:/rails/config/environments/development.rb
       - ./rails/config/database.yml:/rails/config/database.yml
+      - ./rails/storage:/rails/storage       # ActiveStorage local files (persisted on host)
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:prepare && bundle exec rails s -b 0.0.0.0"
     # command: tail -f /dev/null
     # docker compose exec -it llamapress bundle exec rails s -b 0.0.0.0
@@ -31,7 +32,7 @@ services:
       - llama-network
 
   llamabot:
-    image: kody06/llamabot:0.2.30a
+    image: kody06/llamabot:0.3.1d
     # build: ../LlamaBot
     env_file:
       - .env
@@ -46,6 +47,7 @@ services:
       - ./langgraph/langgraph.json:/app/app/langgraph.json  # Override: merged config
       - ./langgraph/agents:/app/app/user_agents  # Add: custom agents
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./:/app/leonardo  # Full Leonardo repo for git access
     ports:
       - "8000:8000"
     depends_on:
@@ -78,19 +80,19 @@ services:
     networks:
       - llama-network
 
-  # code:
-  #   image: kody06/llamabot-vscode:latest
-  #   container_name: code
-  #   user: root
-  #   environment:
-  #     - TZ=America/Denver
-  #     - PASSWORD=password
-  #   volumes:
-  #     - code_config:/config
-  #     - ./:/config/workspace
-  #   ports:
-  #     - "8443:8443"
-  #   restart: unless-stopped  
+  code:
+    image: kody06/llamabot-vscode:latest
+    container_name: code
+    user: root
+    environment:
+      - TZ=America/Denver
+      - PASSWORD=password
+    volumes:
+      - code_config:/config
+      - ./:/config/workspace
+    ports:
+      - "8443:8443"
+    restart: unless-stopped  
 
   # pgweb:
   #   image: sosedoff/pgweb
