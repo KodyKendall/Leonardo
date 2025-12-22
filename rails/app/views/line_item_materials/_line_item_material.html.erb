@@ -11,37 +11,43 @@
 </style>
 
 <%= turbo_frame_tag "line_item_material_#{line_item_material.id}" do %>
-  <%= form_with(model: line_item_material, method: :patch, class: "contents", data: {
-    controller: "dirty-form",
-    action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset"
-  }, local: { tender_line_item_id: line_item_material.tender_line_item_id }) do |form| %>
-    <%= hidden_field_tag :tender_line_item_id, line_item_material.tender_line_item_id %>
-    <!-- Material Row - Ultra Compact -->
-    <div class="bg-white border-b p-1 hover:bg-gray-50">
-      <div class="grid grid-cols-12 gap-1 items-center">
-        
-        <!-- Material Supply Dropdown -->
-        <div class="col-span-3">
-          <%= form.collection_select :material_supply_id, MaterialSupply.all, :id, :name,
-              { prompt: "Select" },
-              class: "select select-bordered select-xs w-full text-xs" %>
-        </div>
+  <!-- Wrapper div with Stimulus controller -->
+  <div data-controller="line-item-material-form"
+       data-tender-id="<%= line_item_material.tender_line_item.tender_id %>">
+    <%= form_with(model: line_item_material, method: :patch, class: "contents", data: {
+      controller: "dirty-form",
+      action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset"
+    }, local: { tender_line_item_id: line_item_material.tender_line_item_id }) do |form| %>
+      <%= hidden_field_tag :tender_line_item_id, line_item_material.tender_line_item_id %>
+      <!-- Material Row - Ultra Compact -->
+      <div class="bg-white border-b p-1 hover:bg-gray-50">
+        <div class="grid grid-cols-12 gap-1 items-center">
+          
+          <!-- Material Supply Dropdown -->
+          <div class="col-span-3">
+            <%= form.collection_select :material_supply_id, MaterialSupply.all, :id, :name,
+                { prompt: "Select" },
+                class: "select select-bordered select-xs w-full text-xs",
+                data: { action: "change->line-item-material-form#autoFill" } %>
+          </div>
 
-        <!-- Waste % Field -->
-        <div class="col-span-2">
-          <%= form.number_field :waste_percentage,
-              placeholder: "Waste %",
-              step: 0.01,
-              class: "input input-bordered input-xs w-full text-right text-xs" %>
-        </div>
+          <!-- Waste % Field -->
+          <div class="col-span-2">
+            <%= form.number_field :waste_percentage,
+                placeholder: "Waste %",
+                step: 0.01,
+                class: "input input-bordered input-xs w-full text-right text-xs",
+                data: { "line-item-material-form-target": "wastePercentageInput" } %>
+          </div>
 
-        <!-- Rate Field -->
-        <div class="col-span-2">
-          <%= form.number_field :rate,
-              placeholder: "Rate",
-              step: 0.01,
-              class: "input input-bordered input-xs w-full text-right text-xs" %>
-        </div>
+          <!-- Rate Field -->
+          <div class="col-span-2">
+            <%= form.number_field :rate,
+                placeholder: "Rate",
+                step: 0.01,
+                class: "input input-bordered input-xs w-full text-right text-xs",
+                data: { "line-item-material-form-target": "rateInput" } %>
+          </div>
 
         <!-- Proportion Field -->
         <div class="col-span-2">
@@ -70,5 +76,6 @@
         </div>
       </div>
     </div>
-  <% end %>
+    <% end %>
+  </div>
 <% end %>

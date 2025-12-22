@@ -20,6 +20,34 @@ class TendersController < ApplicationController
                          .order(:created_at)
   end
 
+  # GET /tenders/1/material_autofill
+  # Returns autofill data: tender-specific rate + material waste percentage
+  def material_autofill
+    @tender = Tender.find(params[:id])
+    material_supply_id = params[:material_supply_id]
+
+    unless material_supply_id.present?
+      render json: { error: "material_supply_id is required" }, status: :bad_request
+      return
+    end
+
+    # Fetch tender-specific rate for this material
+    tender_rate = TenderSpecificMaterialRate.find_by(
+      tender_id: @tender.id,
+      material_supply_id: material_supply_id
+    )
+
+    # Fetch material's default waste percentage
+    material = MaterialSupply.find_by(id: material_supply_id)
+
+    render json: {
+      rate: tender_rate&.rate,
+      waste_percentage: material&.waste_percentage
+    }, status: :ok
+  rescue => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
   # GET /tenders/new
   def new
     @tender = Tender.new
