@@ -34,6 +34,13 @@ class Tender < ApplicationRecord
     broadcast_update_grand_total
   end
 
+  # Recalculate total tonnage as sum of all line item quantities where unit_of_measure == "tonne"
+  def recalculate_total_tonnage!
+    new_tonnage = tender_line_items.where(unit_of_measure: "tonne").sum(:quantity)
+    update_column(:total_tonnage, new_tonnage)
+    broadcast_update_total_tonnage
+  end
+
   private
 
   def populate_material_rates
@@ -45,6 +52,15 @@ class Tender < ApplicationRecord
       "tender_#{id}_builder",
       target: "tender_#{id}_grand_total",
       partial: "tenders/grand_total",
+      locals: { tender: self }
+    )
+  end
+
+  def broadcast_update_total_tonnage
+    broadcast_update_to(
+      "tender_#{id}_builder",
+      target: "tender_#{id}_total_tonnes",
+      partial: "tenders/total_tonnes",
       locals: { tender: self }
     )
   end

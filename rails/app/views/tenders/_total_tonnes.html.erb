@@ -1,0 +1,6 @@
+<div class="text-right">
+  <div class="text-sm text-gray-600 mb-1">TOTAL TONNES</div>
+  <div class="text-3xl font-bold text-gray-900">
+    <%= number_with_precision(tender.total_tonnage || 0, precision: 2, delimiter: ',') %>
+  </div>
+</div>
