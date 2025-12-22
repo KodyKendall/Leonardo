@@ -80,6 +80,20 @@
         <p class="text-xs text-gray-500 mt-1">Auto-calculated from roof area ÷ erection rate</p>
       </div>
 
+      <!-- Ownership Type (Crane Ownership) -->
+      <div class="form-control">
+        <label class="label" for="on_site_mobile_crane_breakdown_ownership_type">
+          <span class="label-text font-medium">Crane ownership type</span>
+        </label>
+        <%= f.select :ownership_type,
+          [['RSB Owned', 'rsb_owned'], ['Rental', 'rental']],
+          { prompt: 'Select ownership type...' },
+          class: "select select-bordered read-only-field",
+          disabled: true,
+          data: { "on-site-mobile-crane-breakdown-target": "field", testid: "ownership-type-select" } %>
+        <p class="text-xs text-gray-500 mt-1">Applies to ALL cranes (main, splicing, misc). Choose the ownership type that matches your crane sizes.</p>
+      </div>
+
       <!-- Splicing Crane Required -->
       <div class="form-control my-8">
         <label class="label cursor-pointer">

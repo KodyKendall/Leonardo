@@ -93,16 +93,16 @@ export default class extends Controller {
         // Remove readonly to enable editing
         field.removeAttribute('readonly')
         field.classList.remove('read-only-field')
-        // For checkboxes, remove disabled attribute
-        if (field.type === 'checkbox') {
+        // For checkboxes and selects, remove disabled attribute
+        if (field.type === 'checkbox' || field.tagName === 'SELECT') {
           field.removeAttribute('disabled')
         }
       } else {
         // Add readonly to disable editing
         field.setAttribute('readonly', 'readonly')
         field.classList.add('read-only-field')
-        // For checkboxes, add disabled attribute
-        if (field.type === 'checkbox') {
+        // For checkboxes and selects, add disabled attribute
+        if (field.type === 'checkbox' || field.tagName === 'SELECT') {
           field.setAttribute('disabled', 'disabled')
         }
       }
