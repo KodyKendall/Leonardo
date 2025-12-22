@@ -14,9 +14,14 @@
           </p>
         </div>
 
-        <!-- Grand Total in targetable Turbo Frame -->
-        <div id="tender_<%= @tender.id %>_grand_total">
-          <%= render "tenders/grand_total", tender: @tender %>
+        <!-- Grand Total and Total Tonnes in targetable Turbo Frames -->
+        <div class="flex gap-8 justify-end">
+          <div id="tender_<%= @tender.id %>_total_tonnes">
+            <%= render "tenders/total_tonnes", tender: @tender %>
+          </div>
+          <div id="tender_<%= @tender.id %>_grand_total">
+            <%= render "tenders/grand_total", tender: @tender %>
+          </div>
         </div>
       </div>
 
