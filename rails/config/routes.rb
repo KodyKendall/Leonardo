@@ -42,6 +42,7 @@ Rails.application.routes.draw do
       patch :update_inclusions_exclusions
       post :mirror_boq_items
       post :attach_boq, to: "boqs#attach_boq"
+      get :material_autofill
     end
     collection do
       post :quick_create
