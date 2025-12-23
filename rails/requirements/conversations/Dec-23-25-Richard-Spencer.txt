@@ -1,0 +1,836 @@
+Richard Spencer is the CEO/President of RSB Construction (Steel Construction Company)
+Darren Spencer is the Business Analyst, consultant, and project manager for this project (and Richard's brother)
+Kody is the Software Solutions Architect and Software Developer building the project.
+
+Kody  0:21  
+Darren, how you doing? Man, 
+
+Darren Spencer  0:24  
+pretty good, my friend. How are you good? Good, good, good guys. I just had to step out of my house. I put a shirt on 10 minutes ago.
+
+Kody  0:32  
+Finally, a civilized man. 
+
+Darren Spencer  0:35  
+I'm glad that's going to be recorded in the meeting notes.
+
+Kody  0:38  
+Yeah. Map, ChatGPT will know,
+
+Darren Spencer  0:45  
+how was the day? Good. Good morning. Still. I keep, I forget. Still. Yeah, one morning, it looks like You're up early, so I had to delete it from you early this morning.
+
+Kody  0:56  
+Yes, yes, yes.
+
+Darren Spencer  0:57  
+I went through the tickets, made a couple of new ones. Mark summers. Done. Add some add some comments.
+
+Kody  1:05  
+Yes, very, very helpful. I was looking, let me look the Richard, maybe his laptop battery died. I
+
+Kody  1:26  
+I did, I did see those. Oh yeah, yeah. The order makes a lot of sense. One thing I want to talk about with Rich is, like, at like, one of their monthly rates that, like, Maria puts together, and maybe, like, put into the actual monthly rates.
+
+Darren Spencer  1:46  
+They real rates,
+
+Kody  1:48  
+yeah, yeah. Like, their real rates. And then also, like, mark the winners, or like, the second cheapest, yeah, brilliant, yeah. Like to see that flow a little bit. And then, oh yeah. And I did see your line item thing, which I had some questions. I'm not sure if you saw the email I put, like, wrote some question
+
+Darren Spencer  2:09  
+down, some email, the intro email to the meeting I didn't read.
+
+Kody  2:12  
+Okay, yeah, it's kind of, it's kind of, I think we're kind of touching around the same questions and things that we're trying to figure out, which is, like, the Yeah, like the, there's like the line item rate buildups. That's like, I think what you'd say, and then there's like the project rate build ups. And I think that those kind of mirror each other pretty closely.
+
+Darren Spencer  2:32  
+Usually, yes, yes, I agree, they mostly do.
+
+Kody  2:37  
+And, but then, and then also, yeah, like, I think there? Yeah, there's definitely some level of like flexibility. We have to figure out how to like, like, for example, like safety file and audits. There was, like this line ran 3850 plus. Like, they're almost like, putting like rate details in the description, which is like, if that's happening, that stuff that I'm guessing that's going to be pretty tender, specific, potentially, maybe not. So those are some of the questions I'm trying to understand.
+
+Darren Spencer  3:09  
+Yeah, for sure. Okay, yeah, Guess we'll ask reach those things.
+
+Kody  3:17  
+So it might be a little bit of rework on some of the stuff we already did, but I think we can still crank through it. It might just be a little bit they can get Michaela to put a little more out.
+
+Darren Spencer  3:33  
+Yeah, predict, yeah. We can look at some tickets right now if you want sure stuff.
+
+Kody  3:40  
+Yeah, absolutely. Oh, another one is like, we need to, like, get the waste percentages for all of these material items, because I don't think maybe this is already accurate, but there's like, and then also, as far as sorting, we should almost, like, there's, there's probably, like, a standard order that they're used to seeing them in.
+
+Darren Spencer  4:00  
+Yeah, that's the order I put in. That's correct. Unequal angles, equal angles, large equal angles. Those first three are great. This view looks like the view I was seeing. Though, Isn't it supposed to be like a table?
+
+Kody  4:13  
+So this is so it's kind of like a little bit interesting how this all works. But there's like, multiple database tables. The one that you did, let me show you.
+
+Darren Spencer  4:23  
+Yeah, I've actually put two notes for that, because there were two times
+
+Kody  4:27  
+there, but yeah. So there's this one. This is like the tender, specific material rates, which, this is a separate database table, in fact, let me Yeah, and this is where things are, just a little there we go, material supply, right? Okay, yeah, so in here, so, so these are all different tables. So there's like, there's like this monthly material supply rate. This is like the checkbox grid that you used to sing.
+
+Darren Spencer  4:58  
+So that's okay, yeah, yeah. With another one I edited today, actually, yeah. Advent
+
+Kody  5:08  
+as adventus assurances. Which I'll train you a little bit on this, but like, like, there's like database table, and I'm trying to, like, attach screenshots of, like, what the view is for almost that specific table, because each table, in a way, kind of has its own view. And then there's and then there's this one, which this one is the type of material that can be supplied. So this is almost like programming in the each of these items, and then that's the one that we were looking at. Was this one material supplies. So this is where you could add in, like, like, I think there's one in here, like, test. Does that make sense at all, or is that confusing? Okay, yeah. So then, like, in that case, yeah. So like this, this is where we put in things like waste percentage. But we wouldn't, like, necessarily put like rates in there. The rates then come into like those individual cells on the so these are like the individual cells that are like in the monthly so, like, it's like, it's like, this is this? This is a, yeah, this is the one I'm this is the Yes. And this
+
+Darren Spencer  6:27  
+was the one with the orders backwards, by the way. That's, well, not backwards. When you save things, they go to the bottom and all kinds of stuff. So that's the main one.
+
+Kody  6:35  
+That one might be, this one, this one, yeah, yeah. And this one, this one is pretty much a exact mirror of this material supply,
+
+Darren Spencer  6:45  
+right? Yeah, both of those two,
+
+Kody  6:47  
+yeah, yeah, yeah. These two are pretty much like a mirror of each other. And then, oh, and then also this one's one that has the Is Winner, then that is winner is what becomes the default of, yeah. It's kind of confusing. And that's like, I mean, like, I even I get, like, just, I was definitely getting over, a little overwhelmed, but like, this view has helped me just try to, I don't know, so modeling as he's trying
+
+Darren Spencer  7:14  
+to log in. So I think you'll be on Sue,
+
+Kody  7:16  
+okay, okay, sweet, I don't see him yet. Um, if he's
+
+Darren Spencer  7:23  
+got a window, it's probably taking 20 minutes
+
+Kody  7:25  
+to log in. Yeah? Seriously, you're saying he has, like, a gaming laptop too, which surprised me.
+
+Darren Spencer  7:30  
+Yeah, yeah. I think he wanted something that's, like, doesn't, isn't slow, like that, super run, super fast. That was his main thing.
+
+Kody  7:39  
+Yeah, yeah. Your computer seems pretty decent. I guess it's a Mac though.
+
+Darren Spencer  7:43  
+Yeah, Mac Pro, it's a beaut.
+
+Kody  7:45  
+Yeah, Macs are Macs are great, yeah, the problem
+
+Darren Spencer  7:49  
+is that South Africa, most people use Windows on especially for computers,
+
+Kody  7:53  
+yeah, probably androids as well, right? For phones,
+
+Darren Spencer  7:56  
+yeah, rich people get iPhones and poor people, which is most get androids.
+
+Kody  8:01  
+Makes sense? Okay, yeah. So, I mean to see here. So I kind of, kind of, my plan within was just showing monthly material supply rates. Show them the little check box to, like, for winners, yeah, show them the tender specific material rates. That's the one you have the ticket on. It's like, a lot of order, yeah? This, that's fine. Oh, wait, that's Yeah, but we'll, yeah, we'll show it to him, just so we can see it. What else do we have? Oh, the crane calculations I did. See your one ticket with like, seems like the UI is not always.
+
+Darren Spencer  8:34  
+Basically just that summary view at the bottom doesn't upload, update always, especially when updating the main cranes and specifically the quantity or the number of days doesn't doesn't work. If you add 15, then it like goes back to 10, whatever it was, yeah, thinking about it now, just go there, yeah, let me check in. Just add a crane, yeah.
+
+Kody  9:01  
+Let's grab a different ashes. Let's grab a different tender.
+
+Darren Spencer  9:13  
+Yeah, check in. So if you just got up a little bit, okay, and
+
+Kody  9:19  
+I did it. I did adjust these headings so They're a little more aligned. No.
+
+Richard Spencer  9:43  
+Up, yeah, like a new boy, sorry. I got that. I need to pay my fence
+
+Kody  9:57  
+again. Let on Earth,
+
+Darren Spencer  10:02  
+anything over and over again,
+
+Kody  10:10  
+that is ridiculous. I
+
+Darren Spencer  10:12  
+think it just takes the default from the calculator now for the for the main, oh, but yeah, I shouldn't do it for the miscellaneous and splicing, okay, but, yeah, I did that as a comment. But if you want to add it as a full ticket, it could make sense too.
+
+Kody  10:29  
+Can you hear us? Okay? Rich, you
+
+Darren Spencer  10:34  
+said he's just pairing his earphones or something. I think i
+
+Kody  10:53  
+i Yes your little think
+
+Kody  11:02  
+I heard him say, can you hear
+
+Darren Spencer  11:04  
+Me? He also thought, so maybe
+
+Darren Spencer  11:22  
+I'm young. Hey, Rick. Can hear us.
+
+Richard Spencer  11:27  
+I can hear you, sweet.
+
+Darren Spencer  11:30  
+Okay, Kody, let's jump in. Okay, sounds good.
+
+Kody  11:35  
+So quick. Reach, just quick,
+
+Darren Spencer  11:36  
+sorry, sorry, Kody, just quick. Reach, what did you look at? Anything? Other stuff that you wanted to talk about, if we can show you some new things, yeah.
+
+Richard Spencer  11:43  
+So what I did is I went on to you'll see there's now seven active tenders. There were six. I tried to start one. So I started then that you guys got the one we're seeing through on Monday last week. Yeah, the one of those was called nine at SNJ. So I pulled it in, and I started it, and then I got an error code which was a UTF, eight, something, something
+
+Kody  12:14  
+because of this,
+
+Richard Spencer  12:17  
+yeah, the CFC file. So then I deleted it. And I started again, but this time, I saved the CSV, as I saw on one of the Save as the options. It was a UTF, whatever UTF, eight that worth. And then I got to this point, but it seemed like it couldn't go far enough for me to actually select the header, because it's just stops being able to scroll. Now, it doesn't seem like it, but there's a little keep going
+
+Kody  12:52  
+down here that allows you to see more rows. And so I think probably what happened was it had the kind of the Preview section of it, but then it got cut off, if that makes sense.
+
+Richard Spencer  13:05  
+Yeah, that's
+
+Kody  13:06  
+my guess. But it looks like to the header row in this one. Yeah, this one's a perfect
+
+Darren Spencer  13:11  
+it's, yeah, exactly. So you wouldn't have to do the hetero thing in this reach, because the header row is already there in that first one. Yeah, which
+
+Kody  13:21  
+is, which is, which is kind of lucky, but, yeah, we could even test it right now. Let me just so I'll click this step two. I know you're driving so or sorry, you're in the in the car right now. So I'll kind of drive the computer today.
+
+Richard Spencer  13:36  
+That'll be great.
+
+Kody  13:38  
+So I clicked on quantity, rate, and I'm and amount. Okay, I'm just kind of looking through some of this. Okay, so let's, let's just see how it does. Go ahead and send this in. These look a little bit
+
+Kody  13:56  
+something about this looks a little bit off. Let me just look at the BOQ a little bit closer. Oh, notice they're missing a description header, yeah, yeah. So then, so then it's actually it might be ignoring that specific thing, yeah, see, I think these since, since there's no header in this one. They're missing these. What we might be able to do? I might be able to download this really quick and just add the header. Let me see if I can do that. Oh, here we go. Download this. And risu said,
+
+Darren Spencer  14:36  
+when we save it, should we save it as a UTF, 820,
+
+Richard Spencer  14:42  
+no. So it didn't want to actually upload into the system without me saving it as a UTF eight, sure.
+
+Darren Spencer  14:49  
+Yeah, so we must save it as a UTF eight.
+
+Richard Spencer  14:53  
+It should be, if it isn't available now,
+
+Kody  14:57  
+yeah. Description, you
+
+Darren Spencer  15:01  
+might be able to remove column D and E as well there Kody, or is that fine?
+
+Kody  15:05  
+There's nothing. It's probably okay. Let's cool. So yeah, this might be part of, like, a training, or, like a do. There might be a certain Okay, let's save this as NNN, CSV, UTF, dash, a say, like this. Go and replace that on my computer. And then what I'm going to do, let's see, we might need to, I don't know if there's a way to delete the tent or the BOQ. To what I think we should do, I'm going to go and create a new tender.
+
+Richard Spencer  15:38  
+That was another thing that I picked up, is you can't just delete the already uploaded the document and select it to get a chain or whatever you may need to change, I don't know, but you have to sort of delete the whole thing and then start a new one.
+
+Kody  15:54  
+Yeah, yeah, that's a good that's we'll, we'll add a, we'll add a little thing to delete them that should make a little bit easier this 9s j, yeah, I agree, because it's annoying to have to go and re upload everything, and then you have an additional tender that you have to Okay, so now it has the Description field here in the header, same thing. So the header row is still the very beginning. Okay, so let's come in here. Let's click step two, and then now this seems a little bit better. Yeah, so I go ahead and send this. See Send button. Cool. I'm much better. So that's amazing, though. So this is, this is exactly what we want to be seeing, is putting real stuff in. There's going to be a handful of these little things that we want to identify. Then be like, Oh, great. Now we make a little improvement. And then that's kind of the the process. And then we do enough of these, and we'll, we'll be cruising at full speed here.
+
+Richard Spencer  17:09  
+Yeah, sorry if I, I wasn't planning on my Internet being so bad. There was a, Oh, totally been able to do a bit more. But, oh yes, it's Daniel. Totally good,
+
+Darren Spencer  17:22  
+totally good. You got a whole, your whole week of holiday. You should be have tons of time to do stuff.
+
+Kody  17:29  
+It was crazy. He I was, I mean, it was literally his birthday, and he was, like, on the on the meeting with me, what six, 6pm to 7pm like, your family's all running around and stuff.
+
+Richard Spencer  17:43  
+Did you see in the meeting? Probably even saying it to me.
+
+Kody  17:51  
+Okay, so this one, okay. So this one is so the AI's telling us it has 140 BOQ items. I think our current limit is like 125 let's go ahead and parse it, though, and then we'll probably bump that limit, but we should at least get 125 in. And then let's see, let's see exactly what that limit is. And then it's a really easy setting that I can bump up. It's basically just a little, a little tiny setting that we can bump up to make it what's the
+
+Darren Spencer  18:19  
+biggest you've ever seen, number of line items.
+
+Richard Spencer  18:22  
+So we set our you'll see on our template that we've sent you guys. We've set ours to 300 and we have had a few that have gone beyond 300 not many. Doesn't happen often, but we have had a few that. So you could probably do like, I don't know if the person sort of limit.
+
+Kody  18:44  
+I don't think there is a limit. I think, I think that, or, like, I mean, essentially, we can set it to be whatever we need to. I think the the main benefit of having some sort of limit is, if the AI goes rogue, then it wouldn't run for like, you know, 20 hours and consume a lot of AI credits or anything. But yeah, so I think bumping it up to 300 bumping it up to 300 or even 400
+
+Darren Spencer  19:04  
+should be we would want to, I mean, currently it covers, let's say, 95% of theirs, and then they have to increase manually. But we would have to cover basically 99.99% at least, maybe like 500 or reached you 500 ever,
+
+Richard Spencer  19:19  
+I would say you're lucky. 400
+
+Darren Spencer  19:26  
+Okay, sweet Kody, then it's to 450
+
+Richard Spencer  19:30  
+Yeah, that sounds great, because,
+
+Darren Spencer  19:34  
+I mean, what's the problem is, if it, if there is ever a tender that's about 450 we have to go in and change the back end, right?
+
+Kody  19:42  
+Um, yeah, it's a super easy change. It's a super easy change, though. It's basically just a number in a file. But, yeah, the larger they are, the longer it could take. But, but, yeah, no, totally, totally fine. I mean, man, that would save, I'm sure that would save el Marie and Demi a bunch of times.
+
+Richard Spencer  19:59  
+Well, it could save me in runtime, because they don't know really how to make it larger. So then we have to do it.
+
+Kody  20:06  
+Oh, I see. So then you're having to cop because you have 300 in there.
+
+Richard Spencer  20:09  
+Yeah, yes. So then,
+
+Kody  20:13  
+yeah, we'll pick up the easy ones right where?
+
+Darren Spencer  20:17  
+Because saving Richard and runtime, it means even a better fixed, I mean saving even more money and time, yeah,
+
+Kody  20:23  
+yeah, yeah. Very cool. Okay, well, this one's a little larger, so it might run for a second. So let's what we can do is we can kind of go back and forth and kind of double check it as it's pulling items in. But then, good, yeah, congrats.
+
+Richard Spencer  20:39  
+Your agenda. You I read through your agenda briefly earlier on, if you want to go in there.
+
+Kody  20:45  
+Cool. So I have one thing, yeah, go for it.
+
+Richard Spencer  20:48  
+Just one thing. Another thing I noticed, which I had a chat to Leo about, was if you click on the home, where did, where do you choose the material supply rates again? Do you push the three lines? Oh, yes. So I went in there and then create material supplies for this month. When I asked first, I asked Leo, what the if you just go on back, I asked Leo, what this blue one was for new rate set, and then it seemed to say it's like a duplicate of the Create material.
+
+Kody  21:29  
+Yeah, it's, in fact, that's exactly what it is, yeah, yeah. So there's two buttons that do the same thing. Okay?
+
+Richard Spencer  21:35  
+I was okay. So if you So, if you're going to update December to Jan, to Feb two, whatever would you go create material supplies for this month, and you would only do it once.
+
+Kody  21:49  
+Yes. How would
+
+Richard Spencer  21:51  
+you, well, not necessarily, only do it once, it's not worried about that part, but is that where you Yes.
+
+Kody  21:58  
+So what you would do is you would you would you would come in, you'd click that new button, and then you would just select whatever month you're creating them for. So we could even do it for for January. So I clicked that new button, and then I clicked select this month to be January, and then I'm going to click this create and enter rates button. And then from here, it creates a grid of all of your suppliers, which we can modify this list if we need to. And then also, and then on the left hand side, it has all of the material items. And then one, no, I was just
+
+Darren Spencer  22:39  
+gonna say reach on this one. So we want to put this in the same order that you guys are used to. So we'll switch the order around. Currently, it's kind of upside down.
+
+Richard Spencer  22:47  
+Oh, you'll put the channels at the bottom. Yeah, okay, yeah, that's cool.
+
+Kody  22:54  
+And then kind of the flow here for Maria is she would basically just tab through the different values, which I have no idea what these values normally are. So these might look absurd to you, but basically she taps through these, and then notice on the top right is kind of saving these automatically. Just as
+
+Richard Spencer  23:14  
+you tap, I see that's pretty cool. As you do it, it says saved,
+
+Kody  23:17  
+yeah, yeah. And then we have this little it's pretty so, but once the value is entered, we have these check boxes. And these checkbox are basically setting the winner, whatever kind of so there's only one winner per item.
+
+Richard Spencer  23:33  
+So something about a winner? Yeah, that's how you select to the winners. Correct?
+
+Kody  23:40  
+Yeah, you just, you just select these, and we're gonna, we have on the roadmap. We'll, we'll have this done by January 5. We're gonna add a button as well that basically can auto select the check boxes for the second cheapest option. Because I know that's kind of the rule of thumb that you all go with.
+
+Richard Spencer  23:58  
+Well, yeah. Or whoever Maria knows, even if it is the cheapest, but they definitely have the stock or whatever.
+
+Kody  24:07  
+Yeah, okay, that makes sense. So maybe
+
+Darren Spencer  24:09  
+they can override,
+
+Kody  24:11  
+yeah, maybe she clicks the button, it selects the second cheapest, and then the ones that she knows. Maybe she can go and
+
+Richard Spencer  24:17  
+she can change afterwards,
+
+Kody  24:19  
+yeah, yeah. She can just check, like, so, yeah, that's kind of that flow so, and it does. I do think it's ready for us to start putting in real rates, just so we kind of have that for January. You know, we could, like, we could maybe have Maria try it, or maybe to start like, we got someone RSB try it, or you could even give us a list. We'll figure out a good, a good approach for that. But having these, I think, to thinking through things, this makes a lot of sense as being, in a way, this is really the like very, very beginning of the tendering process, because everything kind of pulls from these.
+
+Darren Spencer  25:01  
+Who do we have rates for January here? Trish,
+
+Richard Spencer  25:04  
+we don't. We'll probably get them in Jan, but I can definitely send you our just a little Excel of whatever our most recent one was, which is probably December.
+
+Kody  25:17  
+Yeah, yeah, that's a great idea
+
+Darren Spencer  25:19  
+in the December one sort of
+
+Richard Spencer  25:20  
+and we can put them in, and then she can, well, we would then save it as the December 2025, and then so she can see how it looks and and then she must go ahead and do January on her own.
+
+Kody  25:34  
+Yeah, yeah, that's a great idea. Sweet. Okay, so I'll just add some values in for the unequal angles, and that will kind of be our, yeah, kind of our test environment, because the next thing I'm going to show you is the tender specific rates. So I'm just going to go ahead and select the unequal angles, the rate for 2300 that's for Steelrode. And then these are all saved. So now the other thing we have with our tenders, so I'll grab this tender I was playing with earlier, and we have this new button material rates, and then this material rates. These are the tender specific material rates. And so
+
+Richard Spencer  26:21  
+we had a good deal with some
+
+Kody  26:26  
+Yeah, yeah. So these are basically yeah, override able. So when the tender is created, whatever the active material rates were at that point in time. It takes the winners for each of these items, and it puts those in as the rate, as the default rate. And then we do have a little notes thing, because talking to Demi, she was mentioning, yeah, that what you just said. And you've mentioned this as well. You might negotiate a special price for specific tenders, or you might want to change the rate. So changing it here doesn't change the winners at all. It just changes the tender specific rate, if that makes sense, awesome. So let's set that so here's like 2100 and then in the actual tender, if we go into our builder here, then we have our material breakdown. And if you were to select unequal angles, it pulls into the rate. So I bumped it from 2000 to 2100 and I saved that in the tender specific rates. And then, so now this pulls from that material that's specific to that tender. So, so that's kind of that there's still some work we have to do on this. Like, one of the things, one of the use cases I know you mentioned, I think Dan, you mentioned this as well, is that you might have a rate set already in a line item, but then you might, you know, it might be set across multiple line items, like, let's say, unequal angle, but then maybe you negotiate a specific rate and you need to go back and change that tender specific one. So we're going to add a little flow that if you change the tender specific rate, it'll notify you and basically ask if you want to go and update all of the rates in the line items that point into that material. Because that's kind of how the Excel sheet currently works, is it pulls from that rate table, I believe. Yeah, yeah. So, so that's on the agenda that's not implemented quite yet, but we'll, we'll have that done here pretty soon.
+
+Richard Spencer  28:35  
+I see like, where you picking on the drop downs, and it's becoming pretty serious.
+
+Kody  28:43  
+Yeah, yeah, yeah, we are. The ultimate goal is January 5. That's like the big the big deadline where we're pushing to have everything ready, and then doing like a really kind of intense two week period where we have this live, and we have RSB putting the real tenders in, the real BOQs in, and then basically our team will just be, like, we'll want to get into a really, really tight feedback loop so that anything that's blocking, like a real tender from from happening, like, there might, there's probably going to be little tiny edge cases, or little tiny hiccups or little things. And so we want to
+
+Darren Spencer  29:22  
+get into like the description, exactly, like the description not being
+
+Richard Spencer  29:26  
+there, yeah, description not knowing you've got to save it as UTF eight, or those kinds of little things,
+
+Kody  29:32  
+absolutely, absolutely, yeah. So it'd be like a really kind of intense trial period where we're just wanting to iterate very, very quickly over over those two weeks.
+
+Richard Spencer  29:43  
+Yeah, and that'll be great, because we won't be overly busy. So hopefully there's a few new tenders, and that can be Elmer and Demi, sort of trying and sending, making notes and sending notes and buying,
+
+Darren Spencer  30:00  
+if I'm around, I could even sit with El Marie a couple of days whilst she's busy with him, or Demi, sit over her shoulder and watch her, yeah, check that she's not watching tiktoks.
+
+Richard Spencer  30:18  
+But I've got, I've got software that I check what they're doing,
+
+Darren Spencer  30:23  
+even on their personal phones, the software is
+
+Richard Spencer  30:28  
+there's all unofficial, I don't know what you're talking
+
+Darren Spencer  30:31  
+about. It's anything what the note takers on
+
+Kody  30:36  
+that's funny. You have to buy them lunch too, right? Rich, if Darren without
+
+Darren Spencer  30:46  
+just 36 reps, we sorted,
+
+Kody  30:50  
+okay, so just jumping back into the parser. So this is that same limit. So basically we have a limit. This is divided by two, so it's 125 so let's, let's click this refresh. It should be about 125 let's see what actually got pulled in. Yeah, it was exactly 125
+
+Richard Spencer  31:10  
+so Okay, cool,
+
+Kody  31:12  
+yeah, totally fine, totally expected. We'll bump that limit up. But yeah, I did pull these all in. It does have 20 millimeter diameter chemical anchor, including ball. It did put that as m 20 chemical.
+
+Darren Spencer  31:24  
+Sorry, rich, just a quick one. Here we're on these kilogram items. This is a, this is completely unrelated to any of this, but those kilogram items, do they get added in the in the total tons,
+
+Richard Spencer  31:35  
+they do. And you know what we normally do? So that's a good thing. You ask that is we normally, even if it says kilograms, we convert it to tons, so that we keep it all the same, so that kg becomes a T. And if it's 4500 it becomes 4.5 brilliant.
+
+Darren Spencer  31:53  
+Then Kody, we must maybe ask Leo to can Leo do that automatically?
+
+Kody  32:00  
+Um, yeah, we could. We could do a conversions. We had talked about this, me and El Marie did or, sorry, Demi, yeah, the gutter meter. There was, like, a section, here we go, and the standard lines, here it is, yeah, gutter per meter, yeah, this little calculation right here. So, yeah, we can. We'll add a little we can add a little thing that's like, like, well, and here's a question, well, so Okay, so I guess anytime it's kilograms, is that's going to is that going to only be gutter? I'm sure there's other items that will be a conversion.
+
+Richard Spencer  32:33  
+Sometimes the guys put bolts in his kilograms. Sometimes we get all BOQ, where everything is kilograms, and you change the two times, Okay, makes sense. Otherwise, we gotta go and change all the formulas and, okay, that
+
+Kody  32:50  
+makes, that makes total sense. Okay, yeah, we'll, we'll find a we'll find a way to solve that.
+
+Darren Spencer  32:57  
+I guess we can just put it in the prompt test. Don't just extract it tons of what you're thinking,
+
+Kody  33:04  
+yeah, potentially, we could maybe add a, they call it a tool that is like a kilogram to tons conversion, like Python code, that could potentially convert that. Or we could also just have a in the BOQ items. We could have like, like, based on this, you know, of measurement, if it's, like, kilogram, we could also have something that in the BOQ, like, it automatically does it when it, maybe, when it pulls it in, or something like, maybe, yeah, I guess I'll have to think through
+
+Darren Spencer  33:31  
+at the moment. Worst case, someone has to manually change it. They just look for all the kgs and change. But it would be a time save to make it returns. And I think it'll be kind of easy. But, yeah, great.
+
+Kody  33:40  
+Yeah, right. Like, in this case, they could come and, like, maybe hit the edit pencil, and then they'd have to, like, change it to tons and do the calculation and enter it in here. That's, like, the worst case that'd be, like, if, if it was blocking us from going live or something like that. But, yeah, okay, so it pulled in 125 so we'll just kind of proceed with that for now, just for today, and then. So the next step is this build tender, which takes us to this kind of tender builder page, and then we'll just click this copy button. I mean, we could even, I mean, there's a million different places we could put it in the steps.
+
+Darren Spencer  34:15  
+You also see a few new things we've added on here, each like, for example, the total tons at the top. That's a new little item. Hey.
+
+Richard Spencer  34:21  
+Item Value, yeah,
+
+Kody  34:27  
+yeah. And I'll
+
+Richard Spencer  34:28  
+just ask if you could add one more. Because obviously, now, as you I'm assuming now, once you've completed this FIL and it's saved, you're going to have your total tons, and you're going to have your grand total. One thing we check, which I'll show you guys, is we then have a rate per, like, our job rate per ton. So it's literally just the total divided by the tons. Then it'll come up to 40 odd 1000. Yeah, okay,
+
+Darren Spencer  35:04  
+just just one divide by the other,
+
+Richard Spencer  35:07  
+one divide beyond the other. But there's a few special like, if there's budgetary allowances, the grand total will exclude that, or the rate per ton will exclude the budgetary alliances, because obviously, that's clues. It. Where is it? Some Excel ratio? You guys normally be right at the end, so, but I don't know. Oh no, go to page one now we check it. So is this tender? A completed tender? Yeah, go all the way down to the bottom.
+
+Kody  35:44  
+There's a lot. Oh, see, those are, where's
+
+Richard Spencer  35:47  
+the last? Yeah, there. So that 41,200, and if you double click on that, you'll see the formula that divided by that, because there's no provisional sums or anything at the end.
+
+Darren Spencer  36:05  
+Okay, okay, so if sometimes there'll be more complicated calculations
+
+Richard Spencer  36:10  
+there, yeah, it will be like this, this grand total, minus this, minus this, this, this, this and this, and then divide by other 10.
+
+Darren Spencer  36:18  
+And those things that are minus, are they like, tender specific?
+
+Richard Spencer  36:23  
+It'll either be something called provisional sum, or budgetary allowance, or lump sum, something like that. Or contingency.
+
+Darren Spencer  36:33  
+And those four names, are they tender dependent? Or, how would you see those four names?
+
+Richard Spencer  36:38  
+Ja, sometimes the QS will call it contingency. Sometimes, they'll say provisional Sams sometimes, and then it's just around, like 500,000 and are
+
+Darren Spencer  36:51  
+those shown in the costing sheet? Or where those numbers shown?
+
+Richard Spencer  36:55  
+Yeah, they would get pulled into our costing sheet. But we there's obviously, you can't obviously put a markup or anything onto it. That's just, you take their whatever they tell you to allow you take the 10 you put it in.
+
+Darren Spencer  37:08  
+Got it so, so in existing, in existing tenders, it'll be in the casting sheet, and we should just
+
+Richard Spencer  37:13  
+find them. Yeah,
+
+Darren Spencer  37:16  
+so would it? Is it generally, you know, it's p's and G's, shock drawings, steel sections. Where is it in the list? Is it right at the end?
+
+Kody  37:23  
+Normally? That's normally in general. Okay, sweet. Good to know. Yeah, we should be able to add some calculations and things with it being variable. Darren, we can kind of think through some of like, maybe getting a list.
+
+Richard Spencer  37:42  
+It's not a, it's not a huge thing at this point in time, you know. So don't, don't really rotate on it right now. There's more important things to it's just something that we do.
+
+Kody  37:53  
+Okay, yeah, wouldn't? Would it prevent us from going, like, needing to go, or, like, yeah, would it prevent us from being able to run real tenders through the system? No, okay, okay, that's good to know,
+
+Richard Spencer  38:03  
+because, I mean, we could just take the total number minus the provisional sums and do the division ourselves.
+
+Kody  38:09  
+Makes sense. Okay, very, very cool.
+
+Darren Spencer  38:12  
+But, yeah, that means Kody, basically, like, I think if we publish, you know, if we print the tender that page, it goes for submission, they'd have to still make changes to that, Excel afterwards.
+
+Richard Spencer  38:22  
+No, no, no. So we never, we never show anyone what that that is just an internal thing for us to look at. It's not for anyone
+
+Darren Spencer  38:30  
+else. Brilliant. Okay, cool,
+
+Richard Spencer  38:32  
+that's not it would really not stop anything.
+
+Darren Spencer  38:35  
+Yeah, what we could do right now is have one. I mean, that would be easy. Would be excluding provisions? Would that be helpful at all?
+
+Richard Spencer  38:44  
+Yeah, yeah, okay, but you Yeah, again, I'll we can work through all the other stuff, and I'll show you guys some examples of what it looks like in the provisional times and stuff as we go. And we can implement it when, when there's time.
+
+Kody  39:00  
+Brilliant, very cool, very cool. Okay, awesome. Um, okay, so pulled all of these in. A lot of these units got set as item, which is kind of interesting. I think a lot
+
+Darren Spencer  39:14  
+of those items are just like the preliminary information stuff, right? Pro, 10 things.
+
+Richard Spencer  39:25  
+It's more just like, those things are not really required.
+
+Kody  39:28  
+Oh, that is interesting. Yeah, we'll have to, like, see, oh, here we go. So here, and you'll
+
+Richard Spencer  39:34  
+probably get a lot of those, and we that's got all these, allow for time based this, and allow for that, and allow for that, like all of these, but it's we never put any,
+
+Kody  39:51  
+okay, we could. We could add something that basically says in the prompt when it's like, pulling out the when it's parsing originally. We could say, you know, if there's not a quantity, if there's not a rate you know that, be aware that we shouldn't pull this in as an item, like, you know, something to that effect, bumping this, see our total claim up to find a way to trigger this. Oh, I think part of it too is we haven't, oh, some of the rates and things. So, yeah. So the ideal workflow is, it pulls in. Let's see. Let's grab a real one. Here we go. Here we go, right. And this is what Demi sent me a big list of these different kind of categories and the different like materials that should be, oh, did she? Yeah. And Elmer received excited. She was like, Oh, I wish I had this when I was first starting. First starting. So that's good. She was on that call. He still
+
+Richard Spencer  40:48  
+doesn't add to do this. But
+
+Kody  40:50  
+yeah, yeah, yeah, I think this. I think the sheet that they shared was helpful, which we won't have the AI be able to do all of this right out of the gate. But even just having these formulas can help get us, hopefully, get us closer. Let's see where we are. Tender. Here we go, yeah. So this is, like, what she had sent over, which these are kind of Yeah, like, description, comments, and then the BOQ kind of category, or the item category, and then this is kind of like the, I mean, this, I think this might be a little bit closer to what you know for when we're having the AI categorize some of this.
+
+Richard Spencer  41:37  
+I mean, I'm just reading that on row 17. We link to the size of the chemical. Anchor.
+
+Kody  41:48  
+Well, this and this, this is for future stuff too. I think, I think she's, I think she's hoping for AI to be able to apply some of these rules and thumbs and things. But you know this, I don't think this would prevent us from our January 5 stuff, but it's no,
+
+Richard Spencer  42:06  
+no, it's yeah, it's stuff we can just continue to play with. What she doesn't realize is the all the help that she's gonna work on. Yet there's only
+
+Darren Spencer  42:19  
+like, yeah,
+
+Richard Spencer  42:23  
+like, if you're doing ja, if you're doing one, one tender a day, as an average, it probably normally lands up being like, you do whatever else four days of the week, and then you gotta do five tenders all in one day.
+
+Kody  42:41  
+Yeah, yeah, it makes sense. Okay,
+
+Richard Spencer  42:45  
+okay, yeah, that's cool. Some things there,
+
+Kody  42:51  
+yeah, yeah. She seems, seems excited, which is great, yeah, okay, very cool. Okay, so your
+
+Richard Spencer  42:58  
+gender, yes, let's look at where
+
+Kody  43:00  
+we're at with this case, we went through monthly material. Supplies, the tender, specific material supplies. So we're working on the project rates page. In fact, let's jump into that really quick, because that's that's kind of a critical I have a couple of questions. So okay, so basically, just trying to get a little bit of clarification so these project rate build ups, in fact, let me just pull up the actual tender here. Okay, so these project rate build ups, for example, we have like, safety file and three audits with these kind of specific numbers in here. So correct me if I'm wrong, but it seems like these are needing to be a little bit flexible in the sense that this 38 3850 plus, 3550 times three, this, to me, seems tender specific, or is this kind of a standard like thing that you guys always have this exact kind of safety file and three audits.
+
+Richard Spencer  44:07  
+Does that make sense? I mean, Rick, are
+
+Darren Spencer  44:15  
+you breaking up? A bitch, you say again. Hear me now. Yeah.
+
+Richard Spencer  44:27  
+And so what I'm saying is the correct way of doing it is our health and safety consultants charge us the same amount for a site visit or an audit, and they charge us every year the same amount for the creation of a safety file. So I wonder, I wonder if we need to actually
+
+Richard Spencer  45:01  
+make that sort of, I don't know, at the moment, we leave the same number in there all the time, but I think we should actually be working out. You know, it's the project duration. The guys do a site visit every two weeks. So if you got 60 days of start time for your frame calculation that you should almost adjust, that you allow for more audits.
+
+Kody  45:30  
+Okay, okay, okay,
+
+Richard Spencer  45:32  
+something that needs to be changed enough or editable. Okay, project to project
+
+Kody  45:39  
+and and you're saying, okay, but you're saying right now, usually this is pretty or you've kind of just kept this in all the tenders. Is kind of like
+
+Richard Spencer  45:48  
+a deal. We've just left it too.
+
+Kody  45:50  
+Okay, so you don't edit this one currently, like with your current spreadsheets. Usually just keep, okay, okay, that's good to know. And then Galvanizing, so this what about this one? Is this one that gets edited per tender? Or is this stay pretty standard across
+
+Richard Spencer  46:08  
+at all status? It all depends on the cost of zinc, but normally we haven't had major fluctuations in the zinc pricing with our Galvanizing supplier over the last 12 months. So it's maybe something that, like, you'll put in once, maybe twice a year, but it shouldn't really change,
+
+Kody  46:32  
+okay, okay. And we could, we could maybe even have a little data field that is like a description that's like overridable or something. So it could be like Galvanizing, and then like, like a description, and then, and then this is the default, but then maybe you can override it, or something like that. And then, okay, so another question, and that I'm guessing for all of these it's, you know, maybe like something to that effect. So it could be like shop priming, and then maybe, like the descriptions, including transport 75 micron, and that's like
+
+Richard Spencer  47:04  
+something like that. Or we actually put the watch primer we're using, and then for the onsite painting, instead of it saying undergrad only, we say whatever, whatever the specification might be. So we would Okay, change that. Okay, that
+
+Kody  47:21  
+makes sense. And then okay, so that is helpful. Now, the other thing too is it does seem like these items, so 16 to 26 Yeah, correct me. Correct me if I'm wrong, but it seems like there are times where you need to add additional items, and they all such as like bitumen or curve curving or castelating things. Is that okay, correct? Sure, and I'm guessing. So here's a question, that list of things that you might need to add, such as bitumen, curving, castelating. Is that a short list that's pretty well understood, or can it be pretty like variable, like, is that like a list that's like 100 items long? Is it like 10 items? Yeah, does that kind of make sense?
+
+Richard Spencer  48:10  
+Yeah? So if we, you mean, if we wanted to just build a few extras, it would probably be like, not even 10 items. It would be, yeah, gasoline curving and
+
+Darren Spencer  48:23  
+quick question that Galvanizing one with all the specific details, could that just be Galvanizing, or is it that, does it have to be like, you know, all that detail every time
+
+Richard Spencer  48:34  
+Galvanizing, the detail doesn't need to be there, but that may need to show the build up, because we need to know. So we're paying 8410 for the raw or that includes the 7.5% so it would be our raw cost. So if you took that 8400 and you divide by 1.075 that is our what we pay the galvanizers per ton. But after dipping it, the steel members gain about 7% mass, and then they charge you based on the already galvanized mass. So that's what that means. And then we have to have an extra load of transport. So because we're sending it to a nearby Galvanizing recharge, 850 and the 500 grams for fettling is cleaning up the steel before we transport it and send it for Galvanizing. So you don't necessarily need to show it all there, but if you want to click on Galvanizing and you should be able to see what all your allowances are for that specific build up,
+
+Darren Spencer  49:43  
+it changes. Sometimes it's basically every tender could be different, like if at the one
+
+Richard Spencer  49:48  
+time in theory, in theory, it doesn't really change often, but in theory, it could change.
+
+Kody  49:56  
+Yeah, okay, that's that's super helpful. So probably, so probably, what we'll do is we'll have like, kind of, like a, like, two fields. One can be like a description, like defaults to this and then. And it also sounds like there does need. So in terms of, like, for example, yeah, bit you man with the with the gutters. Like, because, because, one, one idea is we just add all of them into this. Like, basically we hard code in all of the potential options that we would need, such as castilating curve being bitumen. And then, let's say it's like 10 additional items, right? They like, cover almost everything. Then we could just kind of put them in and then maybe just have a way to kind of hide them if they're not relevant to that tenderer. That's one option. But if it's going to be like, let's say there's 50 or 100 that we have to add, that could be a little bit tricky, and we would maybe need to figure out just a little bit of, like, just kind of thinking ahead how to kind of design it
+
+Richard Spencer  51:03  
+so that you wouldn't, you wouldn't have more than 10 extras that aren't listed here.
+
+Kody  51:08  
+Okay, okay, and these also, these are, these are pretty like this maps one to one to our costing sheet. Build up as well, right? Like these. These should match. Like, each one of these items essentially should match. One of these items is that is that, I mean, maybe not shop drawing, but the other ones,
+
+Richard Spencer  51:28  
+yes, all the rest should match. And what will happen? So like, if you go back to your costing sheet tab in your little build up there, where it shows Galvanizing at the bottom, what we sort of typically do if we now have castelating or proving or whatever is we would change that name to we would change Galvanizing to cancellating. Or now, if it's galvanized as well, we would change one of the others, like on site painting or whatever, just so that we we don't use more than that. We've got right,
+
+Kody  52:07  
+right, right. Okay,
+
+Richard Spencer  52:11  
+okay, very seldom that you use all of those in every line item. I mean the zeros, the ones where there's zeros, they don't really need to be shown in that breakdown, if they zeros, you know what I mean once you Yeah,
+
+Kody  52:27  
+okay, that's helpful. And then as far as some of the other items. So for example, in the gutter meter, there was some things in there, such as per meter, including bus strap. Or in the anchors, there was like, overheads, drilling cost, chem, anchor, supply, cost. Where do those get represented in like, a sheet, like Dimako, like, does it? Does that go into this material? Let me just let me see if I can find some examples. Oh, here we go.
+
+Richard Spencer  52:56  
+Got a meter. Here were not per meter. I think they were per ton.
+
+Kody  53:00  
+Okay. Okay. Okay. So, so these, okay. So in our Oh,
+
+Richard Spencer  53:07  
+but, yeah, but that per meter, including butt strap. So what we do there, if you zoom in there, so what we do is, in the calculation on the right, the gutter meter, it's just, if you go more to the right. So in this breakdown, we really check what the weight is, either per each or per meter. So we call it catometer. But like for example, this one is a number of but then we would check what is one number weight, and then that mass we put in there, in column M. So whatever the math you see the little calculation that's been done in this. And then that's just because we base everything on a per ton build up so and then it pulls through to the left. It just pulls through the right per each or per kilogram, or whatever. You say, it's 10 kilograms, and this is like per kilogram book, and now it pulls through, yeah, okay, okay, and I don't know if that makes
+
+Kody  54:17  
+sense, uh, no, yeah. That is helpful. Gives me some clear so, and that's just for gutters, but like, each one of these sections could potentially, yes, unique calculations is that, is that correct, such as,
+
+Richard Spencer  54:28  
+like the bolts, things now the chemical anchors are not now that is, we just add the overheads. It's like markup, call it. What are we allowing for? Well, OPOs staff, sort of, sort of
+
+Kody  54:46  
+what, I guess maybe paint work. So maybe paint works a better example. So there's like, gutter meters, there's paint paint work like, where there's almost like some sort of, like custom calculation, just just slightly slightly custom, such as adding, like site paint per code or shop primer, like these little things. I guess the thing I'm trying to understand is, you know, is this just a gutter specific calculation that makes it a little bit different than, like, the steel sections? Is it also paint work like, kind of what, like, you know, is this on the magnitude of, maybe there's three or four of these types of categories that are needing additional calculations, into the rate build up, into the material, kind of like, into that entire line item, build like, build up. Or is it like many, many, you know, like over 10. Does that make sense what I'm asking?
+
+Darren Spencer  55:36  
+And just before you reach, before you answer that, Kody, maybe also just give Richard a little bit of insights as to why it's important. I know some of the stuffs a bit technical, whatever, but just so you can understand, yeah,
+
+Kody  55:47  
+like, basically, in, in the code, well, we have to, like, figure out exactly, and maybe this list, too is is helpful to kind of articulate what I'm saying. But like, basically, we're gonna have to put in, like, a very specific kind of formula, or very specific very specific way of calculating things for each of these categories, if they're, like, relying on different inputs. So for example, like, paint work has these four things the bolts have, like, these four different things. So we just kind of have to understand what the list is of all the inputs for each specific category. Does that? Does that clarify things at all?
+
+Richard Spencer  56:23  
+Yes, it does. And so you're on those, the HD bolts have got a little bit of a specific kind of breakdown and costing sort of setup or formulas, those the chemical anchors are pretty basic the painting. I mean, because the chemical anchors cost over that size M, twin drilling cost and overhead cost or overhead allowance, slash market, whatever it might be. Client work would be primer. It should just be primer and top coach and overhead. I see there's a few extras there should be. Should be shot primer on site, overhead, and that's it, okay.
+
+Kody  57:33  
+And then okay. And then on in steel sections, okay. So this has, like, castilating, right, Galvanizing those, okay, so I think, okay, okay. So I think this list maybe this isn't as bad as like, Okay. So then gutter meter does have, let me see, yeah, some of these. Okay, this actually isn't as bad as I thought it would be. I think this is a pretty bolts. Let me see. Okay, no, I actually.
+
+Richard Spencer  57:54  
+So the gutter, the gutter meter thing, we call it gutter meter because we work out the mass of that gutter per meter, and then it pulls it through so we and then, because everything is based on the per ton system pulling from our rate storage, we work out the mass of it so that it applies all the rates, and then it sort of pulls it into a per meter, because we work out the mass per meter. We use that same thing called gutta meter for anything which has a specific mass, and it's measured in quantity which is not tonnage or kilograms. So if it's number of or units or meters or whatever, we then, okay, put it we just give it an S for that individual, whether it be per unit, per number or per meter, per whatever.
+
+Kody  58:50  
+Okay, so it's kind of like a universal, a universal calculation to convert whatever unit, okay,
+
+Richard Spencer  59:00  
+just so that we have an allowance. Because if we're only allowing 8000 Rand, a ton for fabrication, that 8000 and that mass, if there's 1000 of those items that weigh five kilograms each, it just needs to be accounted for in an overall allowance. And obviously long term, the budget traction thereof. How many tons do you budget for? So that's why we convert everything to those masses.
+
+Kody  59:27  
+Okay, not say tons. You say ton or kilogram, but I'm guessing the ton is the preferred kind
+
+Richard Spencer  59:32  
+of that's all ton, yeah, oh, it's all time. Okay? We always, we always default to ton. I'm just saying if it's, you know, if it's measured in kilograms, we won't necessarily use the gutta meter thing. Then we'll just convert it to tons. But if it's measured in number of all meters or units or whatever, and it hasn't messed to it, then you use the gut and meter breakdown.
+
+Kody  59:56  
+That makes sense. So kilogram to ton is a really easy conversion, so you don't have to run it through this process. But anything that's got kilogram, nah, which is major or whatever, then that's where it's like, Okay, now we have to do like this, like more kind of a more detailed conversion, I guess.
+
+Richard Spencer  1:00:14  
+Yeah, okay, that makes sense.
+
+Kody  1:00:17  
+Okay, so, so gutter meter actually seems like maybe that is just one of the more edge cases, or it's kind of like a catch all for, like, certain conversions. But these other guys, it's like our
+
+Richard Spencer  1:00:30  
+others are pretty are pretty much standards where they would stay. This, this, this, the HD Bolts is a tricky one. That one I'll have to actually go into that little formula and show you, because you have to give the length of it, which you can manually type in. You'll see there's a few formulas involved. If you play around with that block, oh,
+
+Kody  1:00:56  
+here we go. Oh yeah, here we go. Like the rod length, kind of correct.
+
+Richard Spencer  1:01:00  
+So if you go zoom in there and you change the rod length, sometimes there's not the here by nuts in row, 135 it says four knots plus one leveling note. Sometimes that might be two notes. And sometimes we might change the fab cost, which now is 65 grand an hour. Sometimes we up it, or we drop it or and that's after changing the rod length, so that one has a little bit more involved than any of the others, okay, but the paint and that kind of stuff is pretty much three or four things, and that just is what it is. Okay.
+
+Kody  1:01:43  
+Okay. So it sounds like okay. So the the HD bolts and then the gutter meter are kind of the main ones that stand apart, and then all these other ones are a lot more kind of standardized components that go into the pricing.
+
+Richard Spencer  1:01:55  
+Yeah, they're very and I mean, so the overheads for for paint work, and overheads for chemical anchors is, it's literally a basic sum the cost of, so say, for chemical anchors, the cost of the anchor supply, plus the or include and then your waste percentage that you applied it The anchor supply multiplied by waste plus drilling cost. It adds the two together, 10% of that. That's your Obed with your paint tour. That's also your primer inside, like, That's it, okay? That's all we do.
+
+Kody  1:02:44  
+Okay, sweet. No, that is super, super helpful. So okay, so this, this gives us a lot to kind of think through and work through, and we're going to kind of figure out how we're going to model all this, a little bit of tweaking, but I think we should be able to figure it out. Okay, so the we have two more weeks, so January 5 is kind of the like, like I mentioned the big, the big target date. So let's, let's kind of keep the conversations going on WhatsApp, even the little, like, little tiny things like what you'd sent with the clarification on the number, being able to, like, like, little things like this, super, super good to send a WhatsApp. And then we can get you, like, very quick answers. So just kind of throwing, throwing ideas and thoughts in here is helpful. And then it kind of helps us on our meetings as well, so that we like, there's some things we can take care of completely offline.
+
+Richard Spencer  1:03:37  
+I'm going to be sitting on my laptop when we get back to the house again, and as soon as we get back, I'll, well, I'll plug it in, and if we keep settled and whatever, and then I'll be online going into the builder again. So sweet. I'm hoping to send a whole bunch of stuff as I go through it today.
+
+Kody  1:03:54  
+Great. That sounds
+
+Darren Spencer  1:03:56  
+amazing. That'll be great. Any you should do that every day, because then
+
+Richard Spencer  1:03:59  
+you guys are online. Kody
+
+Darren Spencer  1:04:02  
+and I have our meeting. Now it's six pretty much every day so or 630 so if you're busy in the evenings, then we like, yeah, available and checking stuff as well. So any if you,
+
+Richard Spencer  1:04:12  
+oh, the evening is a good time for me, because, I mean, the sun only goes down at like eight till kids are busy till at least, very cool.
+
+Kody  1:04:26  
+Okay, so to wrap things up, though, so the next meeting that we're going to have is going to be on Monday the 29th at the same time, at least the kind of the plan demo. So that's kind of our next big milestone that we're going to be ready to show you some more stuff. And obviously I will keep talking in the meantime and kind of shooting things past each other. But does this, does this time still work for you next week?
+
+Richard Spencer  1:04:54  
+Rich, can I? Can I ask if we can do it on the filth? I'm playing golf on 29th in those
+
+Kody  1:05:05  
+okay, yes, that works. So I'll bump that one off to the day after. So I'll be Tuesday the 30th. That'll be 6pm
+
+Richard Spencer  1:05:12  
+that'll be great. That work for you. Okay, can we make it slightly later, maybe 8pm
+
+Kody  1:05:23  
+Sure. So that would be, I'm just
+
+Richard Spencer  1:05:25  
+thinking, with the sun going down, yeah, I don't want to on the day say, Oh, should we still on the beach? Can we move it? Sure?
+
+Kody  1:05:38  
+Sure, sure. Okay, yes, we'll move it. So we moved it two hours back, so rather than 6pm it'll be 8pm on Tuesday the 30th. Very cool. Well, sweet, yeah, like, definitely, I'm excited to see kind of other messages and feedback come in. And it's, it's good to see you talking to Leo, and that's, that's great that it was able to answer your question about the double button issue and then some other thoughts and things. So yeah,
+
+Richard Spencer  1:06:06  
+definitely answered the double button thing. He mentioned the winner. That's our big stash. So I'm gonna, I'm gonna just be playing it a little bit more, trying to build a few tenders,
+
+Darren Spencer  1:06:25  
+sweet, sorry. One more thing, Richard, you tried to set up the how to do the tickets to like, talk, did you put it in ticket mode and selecting that stuff?
+
+Kody  1:06:34  
+I don't think ticket mode is available on his on his account. Yeah. I think it's just the feedback mode.
+
+Darren Spencer  1:06:40  
+Okay, sweet, once
+
+Richard Spencer  1:06:43  
+I would literally just put an inverted commas, whatever it says on that button or on the error code or whatever, and then you would scan it and tell me this.
+
+Darren Spencer  1:06:55  
+Okay, perfect, yeah, okay, sweet, that gets recorded.
+
+Kody  1:07:00  
+At least we can check yes that gets put into, I
+
+Richard Spencer  1:07:04  
+actually said, I said, make notes and tell Kody.
+
+Kody  1:07:08  
+Great, great, great, cool. All right, well, let's we got to wrap up this meeting. We're going into our next one with our, one of our team members that helps us kind of move this forward. Oh, cool, yeah. Let's plan definitely for next Tuesday, and then I'm sure we'll be talking and sending messages in between. Then, for sure.
+
+Richard Spencer  1:07:27  
+100% thanks, James,
+
+Kody  1:07:29  
+okay, that sounds great. Thanks Rich. Check you later, See you. Bye. Bye.
+
+Transcribed by https://otter.ai
