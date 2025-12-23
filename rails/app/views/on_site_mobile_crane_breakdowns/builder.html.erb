@@ -40,6 +40,11 @@
             on_site_mobile_crane_breakdown_id: @on_site_mobile_crane_breakdown.id %>
       </turbo-frame>
     </div>
+
+    <!-- Alert for missing crane rates -->
+    <turbo-frame id="<%= dom_id(@on_site_mobile_crane_breakdown) %>_missing_rates_alert" class="block mt-4">
+      <!-- Content rendered via turbo stream when button is clicked -->
+    </turbo-frame>
   </div>
 
   <!-- Section 3: Tender Crane Selections -->
