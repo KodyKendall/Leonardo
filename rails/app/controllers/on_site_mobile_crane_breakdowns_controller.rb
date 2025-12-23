@@ -133,7 +133,7 @@ class OnSiteMobileCraneBreakdownsController < ApplicationController
 
     respond_to do |format|
       format.turbo_stream do
-        render turbo_stream: [
+        updates = [
           turbo_stream.replace("flash", partial: "shared/flash"),
           turbo_stream.replace("tender_crane_selections", 
             partial: "tender_crane_selections/index",
@@ -143,6 +143,31 @@ class OnSiteMobileCraneBreakdownsController < ApplicationController
             }
           )
         ]
+
+        # Add missing rates alert if there are missing rates
+        alert_frame_id = "on_site_mobile_crane_breakdown_#{breakdown.id}_missing_rates_alert"
+        if missing_rates.any?
+          updates << turbo_stream.replace(
+            alert_frame_id,
+            partial: "on_site_mobile_crane_breakdowns/missing_rates_alert",
+            locals: { 
+              created_count: created_count,
+              missing_rates: missing_rates
+            }
+          )
+        else
+          # Clear alert if all rates were found
+          updates << turbo_stream.replace(
+            alert_frame_id,
+            partial: "on_site_mobile_crane_breakdowns/missing_rates_alert",
+            locals: { 
+              created_count: created_count,
+              missing_rates: []
+            }
+          )
+        end
+
+        render turbo_stream: updates
       end
     end
   end
