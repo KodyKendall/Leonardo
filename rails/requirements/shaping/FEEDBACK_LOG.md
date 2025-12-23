@@ -132,3 +132,36 @@ User feedback, pain points, bugs, and UX issues.
 **Category:** Feature Request - Future Phase
 
 ---
+
+## 2025-12-10 - Bug: Invalid UTF-8 Encoding in CSV File Upload
+
+**Feedback:** BOQ CSV files with non-UTF-8 encoding (Windows-1252, Latin-1, etc.) cause parsing to fail with "invalid byte sequence in UTF-8" error
+
+**Context:** When uploading a BOQ CSV file that contains special characters or smart quotes from Windows or other sources, the CSV preview and parsing fails at the encoding stage.
+
+**Error Details:**
+- Location: `app/views/boqs/show.html.erb` line 179
+- Method: `csv_content = @boq.csv_file.download.force_encoding('UTF-8')`
+- Issue: `force_encoding` is too strict and throws error on invalid UTF-8 bytes instead of converting them
+- Specific error: "invalid byte sequence in UTF-8 in line 253" (varies by file)
+
+**Why it matters:**
+- Users will frequently receive BOQ documents from clients in various formats
+- Currently, if the CSV isn't already UTF-8, the entire BOQ upload/preview fails
+- No graceful fallback or encoding detection happens
+
+**Desired outcome:** 
+- Automatically detect and convert CSV encodings to UTF-8
+- Use safer encoding conversion: `encode('UTF-8', 'binary', invalid: :replace, undef: :replace)`
+- Allow users to upload BOQs regardless of their source encoding (Windows, Mac, etc.)
+- Preserve as much data as possible when conversion is needed
+
+**Proposed Solution:**
+Replace `force_encoding('UTF-8')` with safe encoding conversion that:
+1. Attempts to detect source encoding
+2. Converts to UTF-8 with replacement for invalid bytes
+3. Logs encoding issues for debugging (but doesn't crash)
+
+**Category:** Bug - Critical Path Blocker (BOQ Upload/Preview)
+
+---
