@@ -5,14 +5,16 @@
 <div id="tender_crane_selections">
   <% if tender_crane_selections.any? %>
     <!-- Column Headers -->
-    <div class="grid grid-cols-8 gap-2 mb-4 px-2">
-      <div class="text-xs font-bold text-gray-700 uppercase tracking-wider">Tender</div>
-      <div class="text-xs font-bold text-gray-700 uppercase tracking-wider">Crane</div>
-      <div class="text-xs font-bold text-gray-700 uppercase tracking-wider">Purpose</div>
-      <div class="text-xs font-bold text-gray-700 uppercase tracking-wider">Qty</div>
-      <div class="text-xs font-bold text-gray-700 uppercase tracking-wider">Duration (Days)</div>
-      <div class="text-xs font-bold text-gray-700 uppercase tracking-wider">Rate / Day (R)</div>
-      <div class="text-xs font-bold text-gray-700 uppercase tracking-wider">Total Cost (R)</div>
+    <div class="flex gap-2 mb-4 px-2">
+      <div class="form-group flex-1 text-xs font-bold text-gray-700 uppercase tracking-wider">Tender</div>
+      <div class="form-group flex-1 text-xs font-bold text-gray-700 uppercase tracking-wider">Crane</div>
+      <div class="form-group flex-1 text-xs font-bold text-gray-700 uppercase tracking-wider">Purpose</div>
+      <div class="form-group flex-1 text-xs font-bold text-gray-700 uppercase tracking-wider">Qty</div>
+      <div class="form-group flex-1 text-xs font-bold text-gray-700 uppercase tracking-wider">Days</div>
+      <div class="form-group flex-1 text-xs font-bold text-gray-700 uppercase tracking-wider">Wet Rate (R) <span class="tooltip tooltip-top" data-tip="Wet Rate per Day"><i class="fas fa-info-circle text-gray-400 cursor-help"></i></span></div>
+      <div class="form-group flex-1 text-xs font-bold text-gray-700 uppercase tracking-wider">Total (R)</div>
+      <button class="btn btn-circle btn-outline btn-sm" disabled></button>
+      <button class="btn btn-circle btn-error btn-sm" disabled></button>
     </div>
 
     <!-- Rows -->
