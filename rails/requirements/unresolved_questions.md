@@ -115,3 +115,20 @@ Open questions that need answers before work can proceed.
 **Status:** Open - Architecture decision needed
 
 ---
+
+## 2025-12-10 - What is the "New Rate Set" button for?
+
+**Question:** On the Monthly Material Supply Rates page, there are two buttons that both link to `new_monthly_material_supply_rate_path`:
+1. "Create Material Supplies for this Month" (green button)
+2. "New Rate Set" (blue button)
+
+What is the intended purpose/difference between these two buttons?
+
+**Context:**
+- Both buttons appear to do the same thing (route to the new form)
+- This is confusing UX
+- There might be a longer-term plan (Kody to clarify)
+
+**Status:** Open - Awaiting clarification from Kody
+
+---
