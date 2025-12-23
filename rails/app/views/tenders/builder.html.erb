@@ -7,7 +7,7 @@
     <div class="mb-8">
       <div class="flex justify-between items-start mb-4">
         <div>
-          <h1 class="text-3xl font-bold text-gray-900"><%= @tender.tender_name %></h1>
+          <h1 class="text-3xl font-bold"><%= link_to @tender.tender_name, tender_path(@tender), class: "text-blue-600 hover:text-blue-800 underline" %></h1>
           <p class="text-gray-600 mt-1">
             <span class="badge badge-lg"><%= @tender.e_number %></span>
             <span class="text-sm ml-3">Client: <%= @tender.client_name || "—" %></span>
