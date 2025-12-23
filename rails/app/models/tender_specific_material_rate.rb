@@ -7,7 +7,7 @@ class TenderSpecificMaterialRate < ApplicationRecord
   validates :tender_id, presence: true
   validates :material_supply_id, presence: true, if: :rate_present_or_notes_present?
   validates :rate, numericality: { greater_than_or_equal_to: 0 }, if: :rate_present?
-  validates :tender_id, uniqueness: { scope: :material_supply_id, message: "and material supply combination must be unique" }, unless: :material_supply_id_blank?
+  validates :tender_id, uniqueness: { scope: :material_supply_id, message: "and material supply combination must be unique" }, unless: :material_supply_id_blank?, if: :material_supply_id_changed?
   validate :effective_dates_valid
 
   # Scopes

@@ -11,7 +11,7 @@
       <div class="row-field material-name">
         <%= f.label :material_supply_id, "Material" %>
         <%= f.collection_select :material_supply_id, 
-                                MaterialSupply.all, 
+                                MaterialSupply.order(:position), 
                                 :id, 
                                 :name,
                                 { prompt: "Select material..." },

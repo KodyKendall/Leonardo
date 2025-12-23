@@ -343,10 +343,14 @@ material_supplies_data = [
   { name: 'CFLC - Pregalv 100mm Leg', waste_percentage: 0.00 }
 ]
 
-material_supplies = material_supplies_data.map do |attrs|
-  MaterialSupply.find_or_create_by!(name: attrs[:name]) do |ms|
-    ms.waste_percentage = attrs[:waste_percentage]
+material_supplies = material_supplies_data.map.with_index do |attrs, index|
+  ms = MaterialSupply.find_or_create_by!(name: attrs[:name]) do |m|
+    m.waste_percentage = attrs[:waste_percentage]
+    m.position = index + 1
   end
+  # Always update position to ensure correct ordering
+  ms.update(position: index + 1) unless ms.position == index + 1
+  ms
 end
 
 # ===== TENDER LINE ITEMS (for testing the builder) =====
