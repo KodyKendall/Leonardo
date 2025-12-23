@@ -4,7 +4,9 @@ class TenderSpecificMaterialRatesController < ApplicationController
 
   # GET /tenders/:tender_id/tender_specific_material_rates
   def index
-    @tender_specific_material_rates = @tender.tender_specific_material_rates.includes(:material_supply)
+    @tender_specific_material_rates = @tender.tender_specific_material_rates
+                                             .includes(:material_supply)
+                                             .sort_by { |rate| rate.material_supply&.position || Float::INFINITY }
   end
 
   # POST /tenders/:tender_id/tender_specific_material_rates
