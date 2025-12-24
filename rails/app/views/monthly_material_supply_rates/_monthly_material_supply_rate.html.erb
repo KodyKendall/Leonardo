@@ -1,10 +1,6 @@
 <div id="<%= dom_id monthly_material_supply_rate %>" class="w-full sm:w-auto my-5 space-y-5">
   <div>
-    <strong class="block font-medium mb-1">Effective from:</strong>
-    <%= monthly_material_supply_rate.effective_from %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Effective to:</strong>
-    <%= monthly_material_supply_rate.effective_to %>
+    <strong class="block font-medium mb-1">Month:</strong>
+    <%= monthly_material_supply_rate.effective_from.strftime("%b %Y") %>
   </div>
 </div>
