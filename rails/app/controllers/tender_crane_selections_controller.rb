@@ -102,6 +102,6 @@ class TenderCraneSelectionsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def tender_crane_selection_params
-      params.require(:tender_crane_selection).permit(:tender_id, :crane_rate_id, :purpose, :quantity, :duration_days, :wet_rate_per_day, :total_cost, :sort_order, :on_site_mobile_crane_breakdown_id)
+      params.require(:tender_crane_selection).permit(:tender_id, :crane_rate_id, :purpose, :quantity, :duration_days, :wet_rate_per_day, :sort_order, :on_site_mobile_crane_breakdown_id)
     end
 end
