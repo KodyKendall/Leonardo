@@ -28,7 +28,10 @@
 
   <div class="my-5">
     <%= form.label :default_wet_rate_per_day %>
-    <%= form.text_field :default_wet_rate_per_day, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": crane_complement.errors[:default_wet_rate_per_day].none?, "border-red-400 focus:outline-red-600": crane_complement.errors[:default_wet_rate_per_day].any?}] %>
+    <div class="block shadow-sm rounded-md border px-3 py-2 mt-2 w-full bg-gray-50 text-gray-900 font-medium">
+      R <%= number_with_precision(crane_complement.default_wet_rate_per_day || 0, precision: 2) %>
+    </div>
+    <%= form.hidden_field :default_wet_rate_per_day %>
   </div>
 
   <div class="inline">

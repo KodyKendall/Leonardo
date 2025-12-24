@@ -1,6 +1,6 @@
 <% 
   # Fetch data dynamically to avoid serialization issues with broadcast_replace_later_to
-  crane_complements = CraneComplement.all
+  crane_complements = CraneComplement.all.order(:area_min_sqm)
   breakdown = OnSiteMobileCraneBreakdown.find(on_site_mobile_crane_breakdown_id)
 %>
 
@@ -48,10 +48,9 @@
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold <%= is_matching ? 'text-yellow-900' : 'text-gray-900' %>">
-              <% calculated_rate = complement.calculated_wet_rate_for(breakdown) %>
               <% if is_matching %>
                 <div class="flex items-center gap-2">
-                  <span>R <%= number_with_precision(calculated_rate, precision: 2) %></span>
+                  <span>R <%= number_with_precision(complement.default_wet_rate_per_day, precision: 2) %></span>
                   <%= button_to "Add Recommended Cranes",
                       populate_crane_selections_on_site_mobile_crane_breakdown_path(breakdown),
                       method: :post,
@@ -59,7 +58,7 @@
                       data: { turbo_stream: true } %>
                 </div>
               <% else %>
-                R <%= number_with_precision(calculated_rate, precision: 2) %>
+                R <%= number_with_precision(complement.default_wet_rate_per_day, precision: 2) %>
               <% end %>
             </td>
           </tr>
