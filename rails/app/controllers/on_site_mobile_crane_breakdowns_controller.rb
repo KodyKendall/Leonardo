@@ -141,6 +141,12 @@ class OnSiteMobileCraneBreakdownsController < ApplicationController
               tender_crane_selections: breakdown.tender_crane_selections,
               on_site_mobile_crane_breakdown: breakdown
             }
+          ),
+          turbo_stream.replace("crane_cost_summary",
+            partial: "tender_crane_selections/summary",
+            locals: { 
+              on_site_mobile_crane_breakdown: breakdown
+            }
           )
         ]
 

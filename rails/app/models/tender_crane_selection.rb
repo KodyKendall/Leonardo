@@ -8,6 +8,7 @@ class TenderCraneSelection < ApplicationRecord
   before_create :populate_duration_from_breakdown
   before_save :calculate_wet_rate_per_day
   before_save :calculate_total_cost
+  after_save :verify_total_cost_calculated
 
   private
 
@@ -46,5 +47,19 @@ class TenderCraneSelection < ApplicationRecord
     days = (duration_days || 0).to_f
     rate = (wet_rate_per_day || 0).to_f
     self.total_cost = qty * days * rate
+  end
+
+  # Verify total_cost was calculated after save; if still 0, recalculate and update
+  # This ensures the calculation is correct even if callbacks didn't run in expected order
+  def verify_total_cost_calculated
+    qty = (quantity || 0).to_f
+    days = (duration_days || 0).to_f
+    rate = (wet_rate_per_day || 0).to_f
+    expected_total = qty * days * rate
+
+    # Only update if total_cost doesn't match the expected calculation
+    if total_cost != expected_total
+      update_column(:total_cost, expected_total)
+    end
   end
 end

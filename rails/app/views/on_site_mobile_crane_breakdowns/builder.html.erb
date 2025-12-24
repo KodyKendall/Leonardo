@@ -65,6 +65,11 @@
           tender_crane_selections: @on_site_mobile_crane_breakdown.tender_crane_selections,
           on_site_mobile_crane_breakdown: @on_site_mobile_crane_breakdown %>
     </turbo-frame>
+
+    <!-- Crane Cost Summary Section (moved outside of _index partial for proper Turbo targeting) -->
+    <turbo-frame id="crane_cost_summary">
+      <%= render 'tender_crane_selections/summary', on_site_mobile_crane_breakdown: @on_site_mobile_crane_breakdown %>
+    </turbo-frame>
   </div>
 
   <!-- Section 4: Crane Rates -->
