@@ -509,7 +509,8 @@ crane_rates_data = [
 ]
 
 crane_rates_data.each do |attrs|
-  CraneRate.find_or_create_by!(size: attrs[:size], ownership_type: attrs[:ownership_type], effective_from: Date.today) do |cr|
+  CraneRate.find_or_create_by!(size: attrs[:size], ownership_type: attrs[:ownership_type]) do |cr|
+    cr.effective_from = Date.new(2025, 1, 1)
     cr.dry_rate_per_day = attrs[:dry_rate_per_day]
     cr.diesel_per_day = attrs[:diesel_per_day]
     cr.is_active = true

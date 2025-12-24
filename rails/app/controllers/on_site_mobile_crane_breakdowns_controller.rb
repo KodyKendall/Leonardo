@@ -50,8 +50,8 @@ class OnSiteMobileCraneBreakdownsController < ApplicationController
       quantity = quantity_str.to_i
       size = "#{size_str}t"
 
-      # Find matching crane rate
-      crane_rate = CraneRate.find_by(size: size, ownership_type: breakdown.ownership_type, is_active: true)
+      # Find matching crane rate (most recent if duplicates exist)
+      crane_rate = CraneRate.where(size: size, ownership_type: breakdown.ownership_type, is_active: true).order(effective_from: :desc).first
 
       if crane_rate.nil?
         missing_rates << size
@@ -78,7 +78,7 @@ class OnSiteMobileCraneBreakdownsController < ApplicationController
       # Use validated format directly (validation ensures it's in format: \d+t)
       # No normalization needed since model validation enforces lowercase 't'
 
-      splicing_rate = CraneRate.find_by(size: splicing_size, ownership_type: breakdown.ownership_type, is_active: true)
+      splicing_rate = CraneRate.where(size: splicing_size, ownership_type: breakdown.ownership_type, is_active: true).order(effective_from: :desc).first
 
       if splicing_rate.nil?
         missing_rates << "Splicing (#{splicing_size})"
@@ -103,7 +103,7 @@ class OnSiteMobileCraneBreakdownsController < ApplicationController
       # Use validated format directly (validation ensures it's in format: \d+t)
       # No normalization needed since model validation enforces lowercase 't'
 
-      misc_rate = CraneRate.find_by(size: misc_size, ownership_type: breakdown.ownership_type, is_active: true)
+      misc_rate = CraneRate.where(size: misc_size, ownership_type: breakdown.ownership_type, is_active: true).order(effective_from: :desc).first
 
       if misc_rate.nil?
         missing_rates << "Misc (#{misc_size})"
