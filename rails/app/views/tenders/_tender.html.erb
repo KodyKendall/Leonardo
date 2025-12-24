@@ -24,6 +24,14 @@
     <%= tender.tender_value %>
   </div>
   <div>
+    <strong class="block font-medium mb-1">Submission deadline:</strong>
+    <% if tender.submission_deadline %>
+      <%= tender.submission_deadline.strftime("%d %B %Y") %>
+    <% else %>
+      <span class="text-gray-500">Not set</span>
+    <% end %>
+  </div>
+  <div>
     <strong class="block font-medium mb-1">Project type:</strong>
     <%= tender.project_type %>
   </div>
