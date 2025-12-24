@@ -1,5 +1,5 @@
 class TendersController < ApplicationController
-  before_action :set_tender, only: %i[ show edit update destroy update_inclusions_exclusions ]
+  before_action :set_tender, only: %i[ show edit update destroy update_inclusions_exclusions tender_inclusions_exclusions ]
 
   # GET /tenders or /tenders.json
   def index
@@ -18,6 +18,12 @@ class TendersController < ApplicationController
                          .includes(:line_item_rate_build_up, 
                                    line_item_material_breakdown: :line_item_materials)
                          .order(:created_at)
+  end
+
+  # GET /tenders/1/tender_inclusions_exclusions
+  def tender_inclusions_exclusions
+    @tender = Tender.find(params[:id])
+    @tender_inclusions_exclusion = @tender.tender_inclusions_exclusion || @tender.build_tender_inclusions_exclusion
   end
 
   # GET /tenders/1/material_autofill

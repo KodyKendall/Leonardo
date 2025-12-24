@@ -112,6 +112,9 @@
     <%= link_to tender_tender_specific_material_rates_path(@tender), class: "rounded-md px-3.5 py-2.5 bg-green-600 hover:bg-green-500 text-white inline-block font-medium inline-flex items-center gap-2" do %>
       <i class="fa-solid fa-dollar-sign"></i> Material Rates
     <% end %>
+    <%= link_to tender_inclusions_exclusions_tender_path(@tender), class: "rounded-md px-3.5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white inline-block font-medium inline-flex items-center gap-2" do %>
+      <i class="fa-solid fa-check-circle"></i> Inclusions
+    <% end %>
     <%= link_to edit_tender_path(@tender), class: "rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium inline-flex items-center gap-2" do %>
       <i class="fa-solid fa-pencil"></i> Edit
     <% end %>
