@@ -20,10 +20,11 @@
     </div>
   </div>
 
-  <div class="overflow-x-auto border border-gray-200 rounded-lg">
-    <table class="w-full border-collapse text-sm">
-      <thead>
-        <tr class="bg-gray-100 border-b border-gray-200">
+  <div class="border border-gray-200 rounded-lg overflow-hidden">
+    <div class="overflow-x-auto max-h-screen" style="overflow-y: auto;">
+      <table class="w-full border-collapse text-sm">
+        <thead class="sticky top-0 z-10 bg-gray-100">
+          <tr class="bg-gray-100 border-b border-gray-200">
           <th class="border-r border-gray-200 px-4 py-3 text-left font-bold bg-gray-50">Material Item</th>
           <th class="border-r border-gray-200 px-4 py-3 text-center font-bold text-xs">Waste %</th>
           <% @suppliers.each do |supplier| %>
@@ -81,6 +82,7 @@
         <% end %>
       </tbody>
     </table>
+    </div>
   </div>
 
   <div class="mt-6 flex gap-3">
