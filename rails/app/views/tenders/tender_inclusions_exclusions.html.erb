@@ -1,0 +1,218 @@
+<% content_for :title, "Tender Inclusions & Exclusions" %>
+
+<div class="w-full" data-controller="tender-inclusions-exclusions" data-tender-inclusions-exclusions-tender-id-value="<%= @tender.id %>">
+  <!-- Header -->
+  <div class="mb-8">
+    <div class="flex items-center justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-1 flex items-center gap-2">
+          <i class="fas fa-check-circle text-amber-600"></i>
+          Tender Inclusions & Exclusions
+        </h1>
+        <p class="text-gray-600">Toggle items to include or exclude from this tender</p>
+      </div>
+      <div id="save_status" class="text-sm font-medium">
+        <span id="save_indicator" data-tender-inclusions-exclusions-target="saveIndicator"></span>
+      </div>
+    </div>
+
+    <!-- Back link -->
+    <div class="mt-4">
+      <%= link_to tender_path(@tender), class: "inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm" do %>
+        <i class="fas fa-arrow-left"></i>
+        Back to <%= @tender.tender_name %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Card Container -->
+  <div class="bg-white shadow rounded-lg overflow-hidden">
+    <!-- Header with gradient -->
+    <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-amber-50 to-white">
+      <h3 class="text-lg font-semibold text-gray-900">
+        Tender Settings
+      </h3>
+    </div>
+
+    <!-- Checkboxes Grid -->
+    <div class="p-6">
+      <div class="grid grid-cols-1 gap-4">
+        <!-- Fabrication Included -->
+        <div class="flex items-center justify-between py-3 px-4 rounded-md hover:bg-gray-50 transition border border-gray-100">
+          <label class="flex items-center gap-3 cursor-pointer flex-1">
+            <span class="text-sm font-medium text-gray-900 flex-1">
+              <span class="block">Fabrication Included?</span>
+              <span class="text-xs text-gray-500 font-normal mt-0.5">Include fabrication services in the tender</span>
+            </span>
+          </label>
+          <input
+            type="checkbox"
+            class="checkbox checkbox-sm checkbox-primary"
+            <%= 'checked' if @tender_inclusions_exclusion.fabrication_included %>
+            data-field-name="fabrication_included"
+            data-action="change->tender-inclusions-exclusions#saveField"
+          />
+        </div>
+
+        <!-- Overheads Included -->
+        <div class="flex items-center justify-between py-3 px-4 rounded-md hover:bg-gray-50 transition border border-gray-100">
+          <label class="flex items-center gap-3 cursor-pointer flex-1">
+            <span class="text-sm font-medium text-gray-900 flex-1">
+              <span class="block">Overheads Included?</span>
+              <span class="text-xs text-gray-500 font-normal mt-0.5">Include overhead costs in the rates</span>
+            </span>
+          </label>
+          <input
+            type="checkbox"
+            class="checkbox checkbox-sm checkbox-primary"
+            <%= 'checked' if @tender_inclusions_exclusion.overheads_included %>
+            data-field-name="overheads_included"
+            data-action="change->tender-inclusions-exclusions#saveField"
+          />
+        </div>
+
+        <!-- Primer Included -->
+        <div class="flex items-center justify-between py-3 px-4 rounded-md hover:bg-gray-50 transition border border-gray-100">
+          <label class="flex items-center gap-3 cursor-pointer flex-1">
+            <span class="text-sm font-medium text-gray-900 flex-1">
+              <span class="block">Is Primer Included in the Line Item Rate?</span>
+              <span class="text-xs text-gray-500 font-normal mt-0.5">Primer cost included in material pricing</span>
+            </span>
+          </label>
+          <input
+            type="checkbox"
+            class="checkbox checkbox-sm checkbox-primary"
+            <%= 'checked' if @tender_inclusions_exclusion.primer_included %>
+            data-field-name="primer_included"
+            data-action="change->tender-inclusions-exclusions#saveField"
+          />
+        </div>
+
+        <!-- Final Paint Included -->
+        <div class="flex items-center justify-between py-3 px-4 rounded-md hover:bg-gray-50 transition border border-gray-100">
+          <label class="flex items-center gap-3 cursor-pointer flex-1">
+            <span class="text-sm font-medium text-gray-900 flex-1">
+              <span class="block">Is Final Paint Included in the Line Item Rate?</span>
+              <span class="text-xs text-gray-500 font-normal mt-0.5">Final paint finish cost included in pricing</span>
+            </span>
+          </label>
+          <input
+            type="checkbox"
+            class="checkbox checkbox-sm checkbox-primary"
+            <%= 'checked' if @tender_inclusions_exclusion.final_paint_included %>
+            data-field-name="final_paint_included"
+            data-action="change->tender-inclusions-exclusions#saveField"
+          />
+        </div>
+
+        <!-- Delivery Included -->
+        <div class="flex items-center justify-between py-3 px-4 rounded-md hover:bg-gray-50 transition border border-gray-100">
+          <label class="flex items-center gap-3 cursor-pointer flex-1">
+            <span class="text-sm font-medium text-gray-900 flex-1">
+              <span class="block">Is Delivery Included?</span>
+              <span class="text-xs text-gray-500 font-normal mt-0.5">Delivery and logistics cost included</span>
+            </span>
+          </label>
+          <input
+            type="checkbox"
+            class="checkbox checkbox-sm checkbox-primary"
+            <%= 'checked' if @tender_inclusions_exclusion.delivery_included %>
+            data-field-name="delivery_included"
+            data-action="change->tender-inclusions-exclusions#saveField"
+          />
+        </div>
+
+        <!-- Bolts Included -->
+        <div class="flex items-center justify-between py-3 px-4 rounded-md hover:bg-gray-50 transition border border-gray-100">
+          <label class="flex items-center gap-3 cursor-pointer flex-1">
+            <span class="text-sm font-medium text-gray-900 flex-1">
+              <span class="block">Is Bolts Included in the Line Item Rate?</span>
+              <span class="text-xs text-gray-500 font-normal mt-0.5">Fastening materials included in pricing</span>
+            </span>
+          </label>
+          <input
+            type="checkbox"
+            class="checkbox checkbox-sm checkbox-primary"
+            <%= 'checked' if @tender_inclusions_exclusion.bolts_included %>
+            data-field-name="bolts_included"
+            data-action="change->tender-inclusions-exclusions#saveField"
+          />
+        </div>
+
+        <!-- Erection Included -->
+        <div class="flex items-center justify-between py-3 px-4 rounded-md hover:bg-gray-50 transition border border-gray-100">
+          <label class="flex items-center gap-3 cursor-pointer flex-1">
+            <span class="text-sm font-medium text-gray-900 flex-1">
+              <span class="block">Is Erection Included in the Line Item Rate?</span>
+              <span class="text-xs text-gray-500 font-normal mt-0.5">Installation and assembly services included</span>
+            </span>
+          </label>
+          <input
+            type="checkbox"
+            class="checkbox checkbox-sm checkbox-primary"
+            <%= 'checked' if @tender_inclusions_exclusion.erection_included %>
+            data-field-name="erection_included"
+            data-action="change->tender-inclusions-exclusions#saveField"
+          />
+        </div>
+
+        <!-- Crainage Included -->
+        <div class="flex items-center justify-between py-3 px-4 rounded-md hover:bg-gray-50 transition border border-gray-100">
+          <label class="flex items-center gap-3 cursor-pointer flex-1">
+            <span class="text-sm font-medium text-gray-900 flex-1">
+              <span class="block">Is Crainage Included in the Line Item Rate?</span>
+              <span class="text-xs text-gray-500 font-normal mt-0.5">Crane and heavy lifting services included</span>
+            </span>
+          </label>
+          <input
+            type="checkbox"
+            class="checkbox checkbox-sm checkbox-primary"
+            <%= 'checked' if @tender_inclusions_exclusion.crainage_included %>
+            data-field-name="crainage_included"
+            data-action="change->tender-inclusions-exclusions#saveField"
+          />
+        </div>
+
+        <!-- Cherry Pickers Included -->
+        <div class="flex items-center justify-between py-3 px-4 rounded-md hover:bg-gray-50 transition border border-gray-100">
+          <label class="flex items-center gap-3 cursor-pointer flex-1">
+            <span class="text-sm font-medium text-gray-900 flex-1">
+              <span class="block">Is Cherry Pickers Included in the Line Item Rate?</span>
+              <span class="text-xs text-gray-500 font-normal mt-0.5">Cherry picker rental and operation included</span>
+            </span>
+          </label>
+          <input
+            type="checkbox"
+            class="checkbox checkbox-sm checkbox-primary"
+            <%= 'checked' if @tender_inclusions_exclusion.cherry_pickers_included %>
+            data-field-name="cherry_pickers_included"
+            data-action="change->tender-inclusions-exclusions#saveField"
+          />
+        </div>
+
+        <!-- Steel Galvanized -->
+        <div class="flex items-center justify-between py-3 px-4 rounded-md hover:bg-gray-50 transition border border-gray-100">
+          <label class="flex items-center gap-3 cursor-pointer flex-1">
+            <span class="text-sm font-medium text-gray-900 flex-1">
+              <span class="block">Is the Steel Galvanized?</span>
+              <span class="text-xs text-gray-500 font-normal mt-0.5">Steel components are galvanized for protection</span>
+            </span>
+          </label>
+          <input
+            type="checkbox"
+            class="checkbox checkbox-sm checkbox-primary"
+            <%= 'checked' if @tender_inclusions_exclusion.steel_galvanized %>
+            data-field-name="steel_galvanized"
+            data-action="change->tender-inclusions-exclusions#saveField"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="mt-8 flex gap-3">
+    <%= link_to "Back to Tender", tender_path(@tender), class: "btn btn-outline btn-sm" %>
+    <%= link_to "Tender Builder", builder_tender_path(@tender), class: "btn btn-outline btn-sm" %>
+  </div>
+</div>
