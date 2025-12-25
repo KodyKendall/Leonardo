@@ -1,0 +1,888 @@
+<%= render layout: 'prototypes/layouts/default' do %>
+<div class="space-y-8 p-6" data-controller="prototypes--global">
+
+  <!-- Developer Annotations Toggle -->
+  <div class="bg-red-50 border-2 border-red-300 rounded-lg p-4 mb-6">
+    <div class="flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+        </svg>
+        <div>
+          <h3 class="text-sm font-bold text-red-800">Developer Mode: Database Schema Annotations</h3>
+          <p class="text-xs text-red-600">Red badges show which database tables map to each UI component</p>
+        </div>
+      </div>
+      <label class="relative inline-flex items-center cursor-pointer">
+        <input type="checkbox" id="toggleAnnotations" checked class="sr-only peer">
+        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600"></div>
+        <span class="ml-2 text-sm font-medium text-red-700">Show Annotations</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <div class="border-b border-gray-200 pb-5">
+    <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl">Access Equipment & Rates</h2>
+    <p class="mt-2 text-sm text-gray-500">Configure access equipment selections (cherry pickers, boom lifts, scissor lifts, telehandlers) for tender costing.</p>
+  </div>
+
+  <!-- Tender Context Banner -->
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+    <div class="flex items-center justify-between">
+      <div>
+        <p class="text-sm text-blue-800"><span class="font-semibold">Tender:</span> DIMAKO Warehouse Extension</p>
+        <p class="text-sm text-blue-600"><span class="font-medium">Project Tonnage:</span> 931.62 t</p>
+      </div>
+      <div class="text-right">
+        <p class="text-sm text-blue-800"><span class="font-semibold">Duration:</span> 4 months</p>
+        <p class="text-sm text-blue-600"><span class="font-medium">Building Height:</span> 12m to ridge</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Equipment Types Master Data Table -->
+  <div class="bg-white shadow rounded-lg relative">
+    <!-- DB Annotation Badge -->
+    <div class="db-annotation absolute -top-3 -right-3 z-10">
+      <div class="bg-red-600 text-white text-xs font-mono px-3 py-1.5 rounded-lg shadow-lg border-2 border-red-800">
+        <div class="flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/>
+            <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"/>
+            <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"/>
+          </svg>
+          equipment_types (Master Data)
+        </div>
+      </div>
+    </div>
+    <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-orange-50 to-white">
+      <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+        </svg>
+        Access Equipment Catalogue
+      </h3>
+      <p class="text-sm text-gray-500 mt-1">Master rental rates for boom lifts, scissor lifts, and telehandlers</p>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead>
+          <tr class="bg-gray-50">
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Category
+              <div class="db-annotation absolute -bottom-1 left-4">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">category</span>
+              </div>
+            </th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Model
+              <div class="db-annotation absolute -bottom-1 left-4">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">model</span>
+              </div>
+            </th>
+            <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Working Height
+              <div class="db-annotation absolute -bottom-1 right-4">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">working_height_m</span>
+              </div>
+            </th>
+            <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Base Rate/Month
+              <div class="db-annotation absolute -bottom-1 right-4">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">base_rate_monthly</span>
+              </div>
+            </th>
+            <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Damage Waiver
+              <div class="db-annotation absolute -bottom-1 right-4">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">damage_waiver_pct</span>
+              </div>
+            </th>
+            <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Diesel Allowance
+              <div class="db-annotation absolute -bottom-1 right-4">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">diesel_allowance_monthly</span>
+              </div>
+            </th>
+            <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Total Monthly
+              <div class="db-annotation absolute -bottom-1 right-4">
+                <span class="bg-amber-100 text-amber-800 text-xs font-mono px-1 py-0.5 rounded border border-amber-300">calculated</span>
+              </div>
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-100">
+          <!-- Diesel Boom Lifts -->
+          <tr class="hover:bg-orange-50 transition-colors">
+            <td class="px-4 py-3 whitespace-nowrap">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-800">Diesel Boom</span>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">600AJ</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-600">20.0m</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-900">R42,500</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-600">6%</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-600">R22,000</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right font-semibold text-orange-600">R67,050</td>
+          </tr>
+          <tr class="hover:bg-orange-50 transition-colors bg-orange-25">
+            <td class="px-4 py-3 whitespace-nowrap">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-800">Diesel Boom</span>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">450AJ</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-600">15.7m</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-900">R38,195</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-600">6%</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-600">R19,500</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right font-semibold text-orange-600">R59,987</td>
+          </tr>
+          <tr class="hover:bg-orange-50 transition-colors">
+            <td class="px-4 py-3 whitespace-nowrap">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-800">Diesel Boom</span>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">E450AJ</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-600">15.7m</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-900">R38,195</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-600">6%</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-600">R19,500</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right font-semibold text-orange-600">R59,987</td>
+          </tr>
+          <tr class="hover:bg-orange-50 transition-colors">
+            <td class="px-4 py-3 whitespace-nowrap">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-orange-100 text-orange-800">Diesel Boom</span>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">3394RT</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-600">12.0m</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-900">R28,500</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-600">6%</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-600">R15,000</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right font-semibold text-orange-600">R45,210</td>
+          </tr>
+          <!-- Electric Scissor Lifts -->
+          <tr class="hover:bg-blue-50 transition-colors">
+            <td class="px-4 py-3 whitespace-nowrap">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Electric Scissors</span>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">E12/5</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-600">5.8m</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-900">R8,500</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-600">6%</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-400">R0</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right font-semibold text-blue-600">R9,010</td>
+          </tr>
+          <tr class="hover:bg-blue-50 transition-colors">
+            <td class="px-4 py-3 whitespace-nowrap">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Electric Scissors</span>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">1200EZ</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-600">8.0m</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-900">R12,000</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-600">6%</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-400">R0</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right font-semibold text-blue-600">R12,720</td>
+          </tr>
+          <!-- Telehandlers -->
+          <tr class="hover:bg-green-50 transition-colors">
+            <td class="px-4 py-3 whitespace-nowrap">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-800">Telehandler</span>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">TH3510</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-600">10.0m</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-900">R35,000</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-600">6%</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right text-gray-600">R18,000</td>
+            <td class="px-4 py-3 whitespace-nowrap text-right font-semibold text-green-600">R55,100</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="px-6 py-3 bg-gray-50 border-t border-gray-200">
+      <p class="text-xs text-gray-500">
+        <span class="font-medium">Formula:</span> Total Monthly = Base Rate × (1 + Damage Waiver %) + Diesel Allowance
+      </p>
+      <!-- Business Rule Annotation -->
+      <div class="db-annotation mt-2">
+        <span class="bg-amber-100 text-amber-800 text-xs font-mono px-2 py-0.5 rounded border border-amber-300">BR-020: total_monthly = base_rate × 1.06 + diesel_allowance</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tender Equipment Selections -->
+  <div class="bg-white shadow rounded-lg relative" id="equipment-selections">
+    <!-- DB Annotation Badge -->
+    <div class="db-annotation absolute -top-3 -right-3 z-10">
+      <div class="bg-red-600 text-white text-xs font-mono px-3 py-1.5 rounded-lg shadow-lg border-2 border-red-800">
+        <div class="flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/>
+            <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"/>
+            <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"/>
+          </svg>
+          tender_equipment_selections
+        </div>
+      </div>
+    </div>
+    <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-purple-50 to-white">
+      <div class="flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+            </svg>
+            Equipment Selections for This Tender
+          </h3>
+          <p class="text-sm text-gray-500 mt-1">Add multiple equipment items - same model can be added with different quantities/periods</p>
+        </div>
+        <button id="addEquipmentBtn" class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Add Equipment
+        </button>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead>
+          <tr class="bg-gray-50">
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Equipment
+              <div class="db-annotation absolute -bottom-1 left-4">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">equipment_type_id</span>
+              </div>
+            </th>
+            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Units
+              <div class="db-annotation absolute -bottom-1 left-1/2 transform -translate-x-1/2">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">units_required</span>
+              </div>
+            </th>
+            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Months
+              <div class="db-annotation absolute -bottom-1 left-1/2 transform -translate-x-1/2">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">period_months</span>
+              </div>
+            </th>
+            <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Purpose
+              <div class="db-annotation absolute -bottom-1 left-4">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">purpose</span>
+              </div>
+            </th>
+            <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Monthly Cost
+              <div class="db-annotation absolute -bottom-1 right-4">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">monthly_cost_override</span>
+              </div>
+            </th>
+            <th class="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider relative">
+              Total Cost
+              <div class="db-annotation absolute -bottom-1 right-4">
+                <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">total_cost</span>
+              </div>
+            </th>
+            <th class="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody id="equipmentTableBody" class="bg-white divide-y divide-gray-100">
+          <!-- Row 1: 450AJ for main erection -->
+          <tr class="hover:bg-purple-50 transition-colors equipment-row">
+            <td class="px-4 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">Diesel Boom</span>
+                <span class="font-medium text-gray-900">450AJ</span>
+              </div>
+              <p class="text-xs text-gray-500 mt-0.5">15.7m working height</p>
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-center">
+              <input type="number" value="3" min="1" class="w-16 text-center border border-gray-300 rounded-md px-2 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-center">
+              <input type="number" value="1" min="1" class="w-16 text-center border border-gray-300 rounded-md px-2 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap">
+              <input type="text" value="Main erection" class="w-full border border-gray-300 rounded-md px-3 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-right">
+              <div class="flex items-center justify-end gap-1">
+                <span class="text-gray-500">R</span>
+                <input type="number" value="59987" class="w-24 text-right border border-gray-300 rounded-md px-2 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+              </div>
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-right">
+              <span class="font-semibold text-purple-600">R179,961</span>
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-center">
+              <button class="text-red-600 hover:text-red-800 transition p-1" title="Remove">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Row 2: 450AJ for crane beams (same model, different period) -->
+          <tr class="hover:bg-purple-50 transition-colors equipment-row">
+            <td class="px-4 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">Diesel Boom</span>
+                <span class="font-medium text-gray-900">450AJ</span>
+              </div>
+              <p class="text-xs text-gray-500 mt-0.5">15.7m working height</p>
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-center">
+              <input type="number" value="1" min="1" class="w-16 text-center border border-gray-300 rounded-md px-2 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-center">
+              <input type="number" value="2" min="1" class="w-16 text-center border border-gray-300 rounded-md px-2 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap">
+              <input type="text" value="Crane beams" class="w-full border border-gray-300 rounded-md px-3 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-right">
+              <div class="flex items-center justify-end gap-1">
+                <span class="text-gray-500">R</span>
+                <input type="number" value="59987" class="w-24 text-right border border-gray-300 rounded-md px-2 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+              </div>
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-right">
+              <span class="font-semibold text-purple-600">R119,974</span>
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-center">
+              <button class="text-red-600 hover:text-red-800 transition p-1" title="Remove">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Row 3: 600AJ boom -->
+          <tr class="hover:bg-purple-50 transition-colors equipment-row">
+            <td class="px-4 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">Diesel Boom</span>
+                <span class="font-medium text-gray-900">600AJ</span>
+              </div>
+              <p class="text-xs text-gray-500 mt-0.5">20.0m working height</p>
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-center">
+              <input type="number" value="2" min="1" class="w-16 text-center border border-gray-300 rounded-md px-2 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-center">
+              <input type="number" value="3" min="1" class="w-16 text-center border border-gray-300 rounded-md px-2 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap">
+              <input type="text" value="High-level connections" class="w-full border border-gray-300 rounded-md px-3 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-right">
+              <div class="flex items-center justify-end gap-1">
+                <span class="text-gray-500">R</span>
+                <input type="number" value="67050" class="w-24 text-right border border-gray-300 rounded-md px-2 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+              </div>
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-right">
+              <span class="font-semibold text-purple-600">R402,300</span>
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-center">
+              <button class="text-red-600 hover:text-red-800 transition p-1" title="Remove">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Row 4: Electric Scissor -->
+          <tr class="hover:bg-purple-50 transition-colors equipment-row">
+            <td class="px-4 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">Electric Scissors</span>
+                <span class="font-medium text-gray-900">E12/5</span>
+              </div>
+              <p class="text-xs text-gray-500 mt-0.5">5.8m working height</p>
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-center">
+              <input type="number" value="4" min="1" class="w-16 text-center border border-gray-300 rounded-md px-2 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-center">
+              <input type="number" value="2" min="1" class="w-16 text-center border border-gray-300 rounded-md px-2 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap">
+              <input type="text" value="Finishing work" class="w-full border border-gray-300 rounded-md px-3 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-right">
+              <div class="flex items-center justify-end gap-1">
+                <span class="text-gray-500">R</span>
+                <input type="number" value="9010" class="w-24 text-right border border-gray-300 rounded-md px-2 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+              </div>
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-right">
+              <span class="font-semibold text-purple-600">R72,080</span>
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-center">
+              <button class="text-red-600 hover:text-red-800 transition p-1" title="Remove">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </td>
+          </tr>
+
+          <!-- Row 5: Telehandler -->
+          <tr class="hover:bg-purple-50 transition-colors equipment-row">
+            <td class="px-4 py-4 whitespace-nowrap">
+              <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">Telehandler</span>
+                <span class="font-medium text-gray-900">TH3510</span>
+              </div>
+              <p class="text-xs text-gray-500 mt-0.5">10.0m working height</p>
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-center">
+              <input type="number" value="1" min="1" class="w-16 text-center border border-gray-300 rounded-md px-2 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-center">
+              <input type="number" value="4" min="1" class="w-16 text-center border border-gray-300 rounded-md px-2 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap">
+              <input type="text" value="Material handling" class="w-full border border-gray-300 rounded-md px-3 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-right">
+              <div class="flex items-center justify-end gap-1">
+                <span class="text-gray-500">R</span>
+                <input type="number" value="55100" class="w-24 text-right border border-gray-300 rounded-md px-2 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+              </div>
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-right">
+              <span class="font-semibold text-purple-600">R220,400</span>
+            </td>
+            <td class="px-4 py-4 whitespace-nowrap text-center">
+              <button class="text-red-600 hover:text-red-800 transition p-1" title="Remove">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Mobilization Fee -->
+    <div class="px-6 py-4 bg-gray-50 border-t border-gray-200">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3 relative">
+          <span class="text-sm font-medium text-gray-700">Mobilization Fee:</span>
+          <!-- Field Annotation -->
+          <div class="db-annotation absolute -top-3 left-0">
+            <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">mobilization_fee (constant)</span>
+          </div>
+        </div>
+        <span class="font-semibold text-gray-900">R15,000</span>
+      </div>
+      <p class="text-xs text-gray-500 mt-1">Standard mobilization fee applied once per tender</p>
+    </div>
+  </div>
+
+  <!-- Cost Summary -->
+  <div class="bg-white shadow rounded-lg overflow-hidden relative">
+    <!-- DB Annotation Badge -->
+    <div class="db-annotation absolute -top-3 -right-3 z-10">
+      <div class="bg-red-600 text-white text-xs font-mono px-3 py-1.5 rounded-lg shadow-lg border-2 border-red-800">
+        <div class="flex items-center gap-1.5">
+          <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/>
+            <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"/>
+            <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"/>
+          </svg>
+          Calculated from tender_equipment_selections
+        </div>
+      </div>
+    </div>
+    <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-emerald-50 to-white">
+      <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+        </svg>
+        Access Equipment Cost Summary
+      </h3>
+    </div>
+    <div class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Cost Breakdown -->
+        <div>
+          <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">Cost Breakdown</h4>
+          <div class="space-y-3">
+            <div class="flex justify-between items-center py-2 border-b border-gray-100">
+              <span class="text-gray-600">450AJ × 3 units × 1 month (Main erection)</span>
+              <span class="font-medium text-gray-900">R179,961</span>
+            </div>
+            <div class="flex justify-between items-center py-2 border-b border-gray-100">
+              <span class="text-gray-600">450AJ × 1 unit × 2 months (Crane beams)</span>
+              <span class="font-medium text-gray-900">R119,974</span>
+            </div>
+            <div class="flex justify-between items-center py-2 border-b border-gray-100">
+              <span class="text-gray-600">600AJ × 2 units × 3 months (High-level)</span>
+              <span class="font-medium text-gray-900">R402,300</span>
+            </div>
+            <div class="flex justify-between items-center py-2 border-b border-gray-100">
+              <span class="text-gray-600">E12/5 × 4 units × 2 months (Finishing)</span>
+              <span class="font-medium text-gray-900">R72,080</span>
+            </div>
+            <div class="flex justify-between items-center py-2 border-b border-gray-100">
+              <span class="text-gray-600">TH3510 × 1 unit × 4 months (Material handling)</span>
+              <span class="font-medium text-gray-900">R220,400</span>
+            </div>
+            <div class="flex justify-between items-center py-2 border-b border-gray-200">
+              <span class="text-gray-600">Mobilization Fee</span>
+              <span class="font-medium text-gray-900">R15,000</span>
+            </div>
+            <div class="flex justify-between items-center py-3 bg-emerald-50 -mx-2 px-2 rounded-lg">
+              <span class="font-semibold text-gray-900">Total Access Equipment Cost</span>
+              <span class="font-bold text-emerald-600 text-xl">R1,009,715</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rate per Tonne -->
+        <div>
+          <h4 class="text-sm font-semibold text-gray-700 uppercase tracking-wider mb-4">Rate per Tonne Calculation</h4>
+          <div class="bg-gray-50 rounded-lg p-4 space-y-3 relative">
+            <!-- DB Annotation Badge -->
+            <div class="db-annotation absolute -top-3 -right-3 z-10">
+              <div class="bg-red-600 text-white text-xs font-mono px-2 py-1 rounded shadow border border-red-800">
+                line_item_rate_build_ups.cherry_picker_rate
+              </div>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Total Tonnage</span>
+              <span class="font-medium text-gray-900">931.62 t</span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-gray-600">Raw Rate</span>
+              <span class="font-medium text-gray-900">R1,083.82/t</span>
+            </div>
+            <div class="flex justify-between items-center pt-3 border-t border-gray-200">
+              <span class="font-semibold text-gray-900">Rounded Rate (BR-021)</span>
+              <span class="font-bold text-emerald-600 text-lg">R1,090/t</span>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">Rounded to nearest R10 (upward): ceil(1083.82 / 10) × 10 = R1,090</p>
+            <!-- Business Rule Annotation -->
+            <div class="db-annotation mt-2">
+              <span class="bg-amber-100 text-amber-800 text-xs font-mono px-2 py-0.5 rounded border border-amber-300">BR-021: CEILING(rate / 10) × 10</span>
+            </div>
+          </div>
+
+          <!-- Cherry Picker Inclusion Toggle -->
+          <div class="mt-6 p-4 border border-amber-200 bg-amber-50 rounded-lg relative">
+            <!-- DB Annotation Badge -->
+            <div class="db-annotation absolute -top-3 -right-3 z-10">
+              <div class="bg-red-600 text-white text-xs font-mono px-2 py-1 rounded shadow border border-red-800">
+                tender_inclusions_exclusions
+              </div>
+            </div>
+            <h5 class="text-sm font-semibold text-amber-800 mb-3">Cherry Picker Inclusion (BR-022)</h5>
+            <div class="space-y-2">
+              <label class="flex items-center gap-3 cursor-pointer relative">
+                <!-- Field Annotation -->
+                <div class="db-annotation absolute -left-2 -top-3">
+                  <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">include_cherry_picker = true</span>
+                </div>
+                <input type="radio" name="cherry_picker_inclusion" checked class="w-4 h-4 text-amber-600 border-gray-300 focus:ring-amber-500">
+                <span class="text-sm text-gray-700">Include in line item rates</span>
+              </label>
+              <label class="flex items-center gap-3 cursor-pointer relative">
+                <!-- Field Annotation -->
+                <div class="db-annotation absolute -left-2 -top-3">
+                  <span class="bg-red-100 text-red-700 text-xs font-mono px-1 py-0.5 rounded border border-red-300">include_cherry_picker = false</span>
+                </div>
+                <input type="radio" name="cherry_picker_inclusion" class="w-4 h-4 text-amber-600 border-gray-300 focus:ring-amber-500">
+                <span class="text-sm text-gray-700">Include in P&G (Preliminaries & General)</span>
+              </label>
+            </div>
+            <p class="text-xs text-amber-700 mt-3">
+              <svg class="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+              </svg>
+              Mutual exclusion: equipment cost cannot be in both line items AND P&G
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Site Constraints Notice -->
+  <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+    <div class="flex items-start gap-3">
+      <svg class="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+      </svg>
+      <div>
+        <h4 class="text-sm font-semibold text-yellow-800">Site Constraints Reminder</h4>
+        <p class="text-sm text-yellow-700 mt-1">
+          <strong>Scissor lifts</strong> require flat concrete surfaces. In early project stages before floor slabs are cast,
+          only <strong>boom lifts</strong> can be used on uneven ground. Plan equipment accordingly.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="flex justify-end gap-3">
+    <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+      Reset to Defaults
+    </button>
+    <button class="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition">
+      Save Configuration
+    </button>
+  </div>
+
+  <!-- Schema Reference Card -->
+  <div class="bg-red-50 border-2 border-red-300 rounded-lg p-6 db-annotation">
+    <h3 class="text-lg font-bold text-red-800 mb-4 flex items-center gap-2">
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/>
+        <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"/>
+        <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"/>
+      </svg>
+      Database Schema Reference
+    </h3>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- Master Data Tables -->
+      <div class="bg-white rounded-lg p-4 border border-red-200">
+        <h4 class="font-semibold text-red-700 text-sm mb-2">Master Data Tables</h4>
+        <ul class="text-xs font-mono text-gray-700 space-y-1">
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-red-500 rounded-full"></span>
+            equipment_types
+          </li>
+        </ul>
+        <div class="mt-2 text-xs text-gray-500">
+          <p>Fields: category, model, working_height_m, base_rate_monthly, damage_waiver_pct, diesel_allowance_monthly, is_active</p>
+        </div>
+      </div>
+      <!-- Transactional Tables -->
+      <div class="bg-white rounded-lg p-4 border border-red-200">
+        <h4 class="font-semibold text-red-700 text-sm mb-2">Transactional Tables</h4>
+        <ul class="text-xs font-mono text-gray-700 space-y-1">
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+            tender_equipment_selections
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+            tender_inclusions_exclusions
+          </li>
+        </ul>
+        <div class="mt-2 text-xs text-gray-500">
+          <p>tender_equipment_selections: tender_id, equipment_type_id, units_required, period_months, purpose, monthly_cost_override, total_cost</p>
+        </div>
+      </div>
+      <!-- Business Rules -->
+      <div class="bg-white rounded-lg p-4 border border-amber-200">
+        <h4 class="font-semibold text-amber-700 text-sm mb-2">Business Rules</h4>
+        <ul class="text-xs font-mono text-gray-700 space-y-1">
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-amber-500 rounded-full"></span>
+            BR-020: Monthly cost formula
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-amber-500 rounded-full"></span>
+            BR-021: Round to R10
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="w-2 h-2 bg-amber-500 rounded-full"></span>
+            BR-022: Mutual exclusion
+          </li>
+        </ul>
+        <div class="mt-2 text-xs text-gray-500">
+          <p>Damage waiver always 6%. Mobilization fee R15,000 constant.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Equipment Modal -->
+  <div id="addEquipmentModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg max-w-lg w-full mx-4">
+      <div class="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-gray-900">Add Equipment Selection</h3>
+        <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600 transition">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <form id="addEquipmentForm" class="p-6 space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Equipment Type</label>
+          <select id="equipmentSelect" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" required>
+            <option value="">Select equipment...</option>
+            <optgroup label="Diesel Boom Lifts">
+              <option value="600AJ" data-category="Diesel Boom" data-height="20.0" data-cost="67050">600AJ - 20.0m (R67,050/mo)</option>
+              <option value="450AJ" data-category="Diesel Boom" data-height="15.7" data-cost="59987">450AJ - 15.7m (R59,987/mo)</option>
+              <option value="E450AJ" data-category="Diesel Boom" data-height="15.7" data-cost="59987">E450AJ - 15.7m (R59,987/mo)</option>
+              <option value="3394RT" data-category="Diesel Boom" data-height="12.0" data-cost="45210">3394RT - 12.0m (R45,210/mo)</option>
+            </optgroup>
+            <optgroup label="Electric Scissor Lifts">
+              <option value="E12/5" data-category="Electric Scissors" data-height="5.8" data-cost="9010">E12/5 - 5.8m (R9,010/mo)</option>
+              <option value="1200EZ" data-category="Electric Scissors" data-height="8.0" data-cost="12720">1200EZ - 8.0m (R12,720/mo)</option>
+            </optgroup>
+            <optgroup label="Telehandlers">
+              <option value="TH3510" data-category="Telehandler" data-height="10.0" data-cost="55100">TH3510 - 10.0m (R55,100/mo)</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Units Required</label>
+            <input type="number" id="unitsInput" min="1" value="1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Period (Months)</label>
+            <input type="number" id="monthsInput" min="1" value="1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500" required>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Purpose</label>
+          <input type="text" id="purposeInput" placeholder="e.g., Main erection, Crane beams" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Monthly Cost Override (optional)</label>
+          <div class="flex items-center gap-2">
+            <span class="text-gray-500">R</span>
+            <input type="number" id="costOverrideInput" placeholder="Leave blank for default" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+          </div>
+          <p class="text-xs text-gray-500 mt-1">Use this to override the master rate for negotiated pricing</p>
+        </div>
+        <div class="flex gap-3 pt-4">
+          <button type="button" id="cancelModalBtn" class="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition">
+            Cancel
+          </button>
+          <button type="submit" class="flex-1 px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition">
+            Add Equipment
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Toggle annotations visibility
+    document.getElementById('toggleAnnotations').addEventListener('change', function() {
+      const annotations = document.querySelectorAll('.db-annotation');
+      annotations.forEach(el => {
+        el.style.display = this.checked ? '' : 'none';
+      });
+    });
+
+    // Modal functionality
+    const modal = document.getElementById('addEquipmentModal');
+    const addBtn = document.getElementById('addEquipmentBtn');
+    const closeBtn = document.getElementById('closeModalBtn');
+    const cancelBtn = document.getElementById('cancelModalBtn');
+    const form = document.getElementById('addEquipmentForm');
+    const tableBody = document.getElementById('equipmentTableBody');
+
+    function openModal() {
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      modal.classList.add('hidden');
+      form.reset();
+    }
+
+    addBtn.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // Form submission
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const select = document.getElementById('equipmentSelect');
+      const selectedOption = select.options[select.selectedIndex];
+      const units = parseInt(document.getElementById('unitsInput').value);
+      const months = parseInt(document.getElementById('monthsInput').value);
+      const purpose = document.getElementById('purposeInput').value || 'General use';
+      const costOverride = document.getElementById('costOverrideInput').value;
+
+      const model = selectedOption.value;
+      const category = selectedOption.dataset.category;
+      const height = selectedOption.dataset.height;
+      const monthlyCost = costOverride || selectedOption.dataset.cost;
+      const totalCost = parseInt(monthlyCost) * units * months;
+
+      const categoryColors = {
+        'Diesel Boom': 'bg-orange-100 text-orange-800',
+        'Electric Scissors': 'bg-blue-100 text-blue-800',
+        'Telehandler': 'bg-green-100 text-green-800'
+      };
+
+      const newRow = document.createElement('tr');
+      newRow.className = 'hover:bg-purple-50 transition-colors equipment-row';
+      newRow.innerHTML = `
+        <td class="px-4 py-4 whitespace-nowrap">
+          <div class="flex items-center gap-2">
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${categoryColors[category]}">${category}</span>
+            <span class="font-medium text-gray-900">${model}</span>
+          </div>
+          <p class="text-xs text-gray-500 mt-0.5">${height}m working height</p>
+        </td>
+        <td class="px-4 py-4 whitespace-nowrap text-center">
+          <input type="number" value="${units}" min="1" class="w-16 text-center border border-gray-300 rounded-md px-2 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+        </td>
+        <td class="px-4 py-4 whitespace-nowrap text-center">
+          <input type="number" value="${months}" min="1" class="w-16 text-center border border-gray-300 rounded-md px-2 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+        </td>
+        <td class="px-4 py-4 whitespace-nowrap">
+          <input type="text" value="${purpose}" class="w-full border border-gray-300 rounded-md px-3 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm">
+        </td>
+        <td class="px-4 py-4 whitespace-nowrap text-right">
+          <div class="flex items-center justify-end gap-1">
+            <span class="text-gray-500">R</span>
+            <input type="number" value="${monthlyCost}" class="w-24 text-right border border-gray-300 rounded-md px-2 py-1.5 focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
+          </div>
+        </td>
+        <td class="px-4 py-4 whitespace-nowrap text-right">
+          <span class="font-semibold text-purple-600">R${totalCost.toLocaleString()}</span>
+        </td>
+        <td class="px-4 py-4 whitespace-nowrap text-center">
+          <button class="text-red-600 hover:text-red-800 transition p-1 delete-row-btn" title="Remove">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+          </button>
+        </td>
+      `;
+
+      tableBody.appendChild(newRow);
+      attachDeleteHandler(newRow.querySelector('.delete-row-btn'));
+      closeModal();
+    });
+
+    // Delete row functionality
+    function attachDeleteHandler(btn) {
+      btn.addEventListener('click', function() {
+        if (confirm('Are you sure you want to remove this equipment?')) {
+          this.closest('tr').remove();
+        }
+      });
+    }
+
+    // Attach to existing delete buttons
+    document.querySelectorAll('.equipment-row button').forEach(attachDeleteHandler);
+  </script>
+
+</div>
+<% end %>
