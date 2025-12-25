@@ -62,7 +62,7 @@
       <div class="form-group flex-1">
         <input
           type="text"
-          value="R <%= number_with_precision(tender_crane_selection.total_cost, precision: 2) %>"
+          value="<%= number_to_currency(tender_crane_selection.total_cost, unit: "R ", precision: 2) %>"
           readonly
           data-total-cost-display="true"
           class="input input-bordered input-sm w-full readonly:bg-gray-100" />

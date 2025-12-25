@@ -125,13 +125,13 @@
                         </span>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        R <%= number_with_precision(rate.dry_rate_per_day, precision: 2) %>
+                        <%= number_to_currency(rate.dry_rate_per_day, unit: "R ", precision: 2) %>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        R <%= number_with_precision(rate.diesel_per_day, precision: 2) %>
+                        <%= number_to_currency(rate.diesel_per_day, unit: "R ", precision: 2) %>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                        R <%= number_with_precision(rate.wet_rate_per_day, precision: 2) %>
+                        <%= number_to_currency(rate.wet_rate_per_day, unit: "R ", precision: 2) %>
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                         <%= rate.effective_from.strftime("%d %b %Y") %>
