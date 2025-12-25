@@ -17,7 +17,7 @@
           Total Daily Main Crane Rate
         </p>
         <p class="text-2xl font-bold text-blue-900">
-          R <%= number_with_precision(on_site_mobile_crane_breakdown.total_daily_crane_rate, precision: 2) %>
+          <%= number_to_currency(on_site_mobile_crane_breakdown.total_daily_crane_rate, unit: "R ", precision: 2) %>
         </p>
         <p class="text-xs text-gray-500 mt-2">Sum of all main crane wet rates × quantity</p>
       </div>
@@ -29,7 +29,7 @@
           Total Crane Cost
         </p>
         <p class="text-2xl font-bold text-green-900">
-          R <%= number_with_precision(on_site_mobile_crane_breakdown.total_crane_cost, precision: 2) %>
+          <%= number_to_currency(on_site_mobile_crane_breakdown.total_crane_cost, unit: "R ", precision: 2) %>
         </p>
         <p class="text-xs text-gray-500 mt-2">For entire project duration</p>
       </div>
@@ -41,7 +41,7 @@
           Cost Per Tonne
         </p>
         <p class="text-2xl font-bold text-purple-900">
-          R <%= number_with_precision(on_site_mobile_crane_breakdown.crainage_rate_per_tonne, precision: 2) %>
+          <%= number_to_currency(on_site_mobile_crane_breakdown.crainage_rate_per_tonne, unit: "R ", precision: 2) %>
         </p>
         <p class="text-xs text-gray-500 mt-2">Rounded to nearest R20</p>
       </div>
@@ -56,7 +56,7 @@
           <% cost = selections.sum(:total_cost) %>
           <div class="text-sm">
             <span class="font-medium text-gray-700 capitalize"><%= purpose %> Cranes:</span>
-            <span class="font-bold text-gray-900">R <%= number_with_precision(cost, precision: 2) %></span>
+            <span class="font-bold text-gray-900"><%= number_to_currency(cost, unit: "R ", precision: 2) %></span>
             <span class="text-gray-500 text-xs ml-2">(<%= selections.count %> crane<%= selections.count != 1 ? 's' : '' %>)</span>
           </div>
         <% end %>
