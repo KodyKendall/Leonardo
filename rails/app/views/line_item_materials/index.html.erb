@@ -64,7 +64,7 @@
                       <span class="text-gray-400">—</span>
                     <% end %>
                   </td>
-                  <td class="text-right font-mono"><%= number_with_precision((material.proportion || 0) * 100, precision: 2) %>%</td>
+                  <td class="text-right font-mono"><%= number_with_precision(material.proportion_percentage || 0, precision: 2) %>%</td>
                   <td class="text-center">
                     <%= link_to line_item_material_path(material), class: "btn btn-xs btn-ghost", title: "View" do %>
                       <i class="fas fa-eye"></i>

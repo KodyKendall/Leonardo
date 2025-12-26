@@ -14,9 +14,11 @@
 
   <!-- Proportion Input -->
   <div class="form-control w-32">
-    <%= form.number_field :proportion,
-                          step: 0.0001,
-                          placeholder: "0.0000",
+    <%= form.number_field :proportion_percentage,
+                          step: 0.01,
+                          placeholder: "0.00",
+                          min: 0,
+                          max: 100,
                           class: "input input-bordered input-sm" %>
   </div>
 

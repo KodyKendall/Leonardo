@@ -131,7 +131,7 @@ class TenderLineItemsController < ApplicationController
         line_item_material_breakdown_attributes: [
           :id, :_destroy,
           line_item_materials_attributes: [
-            :id, :material_supply_id, :proportion, :_destroy
+            :id, :material_supply_id, :proportion_percentage, :_destroy
           ]
         ]
       )

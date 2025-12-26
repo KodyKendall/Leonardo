@@ -14,16 +14,17 @@ class LineItemMaterial < ApplicationRecord
     end
   end
   validates :waste_percentage, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :proportion_percentage, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :rate, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :quantity, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
-  # Calculate line total: ((Rate * Waste%) + Rate) * Proportion
+  # Calculate line total: Rate * (1 + Waste%) * Proportion%
   def line_total
-    return 0 unless rate.present? && proportion.present?
+    return 0 unless rate.present? && proportion_percentage.present?
     waste_percent = waste_percentage.to_f / 100
-    waste_amount = rate.to_f * waste_percent
-    rate_with_waste = rate.to_f + waste_amount
-    (rate_with_waste * proportion.to_f).round(2)
+    proportion_percent = proportion_percentage.to_f / 100
+    rate_with_waste = rate.to_f * (1 + waste_percent)
+    (rate_with_waste * proportion_percent).round(2)
   end
 
   private
