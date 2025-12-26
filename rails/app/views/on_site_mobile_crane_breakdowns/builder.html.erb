@@ -74,10 +74,18 @@
 
   <!-- Section 4: Crane Rates -->
   <div class="mb-12">
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-2">
+        <i class="fas fa-dollar-sign text-lg text-purple-900"></i>
+        <h2 class="text-lg font-bold text-purple-900">Crane Rates</h2>
+      </div>
+      <%= link_to "Manage Rates →", crane_rates_path, class: "btn btn-sm btn-primary", data: { turbo: false } %>
+    </div>
+    
     <div class="collapse bg-purple-50 border border-purple-200 rounded-lg">
       <input type="checkbox" class="peer" />
       <div class="collapse-title bg-purple-50 text-lg font-bold text-purple-900 flex items-center gap-2 cursor-pointer">
-        <i class="fas fa-dollar-sign"></i>
+        <i class="fas fa-eye"></i>
         View Crane Rates
         <span class="text-sm font-normal text-purple-700 ml-auto">Click to expand</span>
       </div>
