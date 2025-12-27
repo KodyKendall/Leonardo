@@ -51,6 +51,7 @@ Rails.application.routes.draw do
     resources :boqs, only: [:create]
     resources :tender_line_items
     resources :tender_specific_material_rates
+    resources :project_rate_build_ups, only: [:edit, :update, :show]
   end
 
     resources :tender_line_items

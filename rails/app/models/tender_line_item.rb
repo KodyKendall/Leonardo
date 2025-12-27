@@ -13,6 +13,7 @@ class TenderLineItem < ApplicationRecord
 
   after_initialize :build_defaults, if: :new_record?
   after_create :create_line_item_rate_build_up, if: -> { line_item_rate_build_up.nil? }
+  after_create :populate_rates_from_project_buildup
   after_create :create_line_item_material_breakdown, if: -> { line_item_material_breakdown.nil? }
   after_save :update_tender_grand_total
   after_save :update_tender_total_tonnage
@@ -59,6 +60,25 @@ class TenderLineItem < ApplicationRecord
 
   def create_line_item_rate_build_up
     LineItemRateBuildUp.create!(tender_line_item_id: id) unless line_item_rate_build_up
+  end
+
+  def populate_rates_from_project_buildup
+    return unless line_item_rate_build_up && tender.project_rate_buildup
+
+    project_buildup = tender.project_rate_buildup
+    line_item_rate_build_up.update(
+      material_supply_rate: project_buildup.material_supply_rate,
+      fabrication_rate: project_buildup.fabrication_rate,
+      overheads_rate: project_buildup.overheads_rate,
+      shop_priming_rate: project_buildup.shop_priming_rate,
+      onsite_painting_rate: project_buildup.onsite_painting_rate,
+      delivery_rate: project_buildup.delivery_rate,
+      bolts_rate: project_buildup.bolts_rate,
+      erection_rate: project_buildup.erection_rate,
+      crainage_rate: project_buildup.crainage_rate,
+      cherry_picker_rate: project_buildup.cherry_picker_rate,
+      galvanizing_rate: project_buildup.galvanizing_rate
+    )
   end
 
   def create_line_item_material_breakdown

@@ -1,0 +1,164 @@
+<%= form_with(
+  model: [@tender, project_rate_build_up],
+  method: :patch,
+  data: { turbo_stream: true, controller: "project-rate-buildup-form" },
+  class: "space-y-6"
+) do |form| %>
+  <% if project_rate_build_up.errors.any? %>
+    <div class="alert alert-error">
+      <div class="flex items-start">
+        <i class="fas fa-exclamation-circle mr-3 mt-1"></i>
+        <div>
+          <h3 class="font-semibold"><%= pluralize(project_rate_build_up.errors.count, "error") %> prevented saving:</h3>
+          <ul class="list-disc ml-6 mt-2">
+            <% project_rate_build_up.errors.each do |error| %>
+              <li><%= error.full_message %></li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Material Supply Rate -->
+    <div class="form-control">
+      <%= form.label :material_supply_rate, "Material Supply Rate (R/tonne)", { class: "label" } %>
+      <%= form.number_field :material_supply_rate, 
+        step: :any,
+        placeholder: "0.00",
+        class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:material_supply_rate].any? }],
+        data: { "project-rate-buildup-form-target": "field" }
+      %>
+    </div>
+
+    <!-- Fabrication Rate -->
+    <div class="form-control">
+      <%= form.label :fabrication_rate, "Fabrication Rate (R/tonne)", { class: "label" } %>
+      <%= form.number_field :fabrication_rate, 
+        step: :any,
+        placeholder: "0.00",
+        class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:fabrication_rate].any? }],
+        data: { "project-rate-buildup-form-target": "field" }
+      %>
+    </div>
+
+    <!-- Overheads Rate -->
+    <div class="form-control">
+      <%= form.label :overheads_rate, "Overheads Rate (R/tonne)", { class: "label" } %>
+      <%= form.number_field :overheads_rate, 
+        step: :any,
+        placeholder: "0.00",
+        class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:overheads_rate].any? }],
+        data: { "project-rate-buildup-form-target": "field" }
+      %>
+    </div>
+
+    <!-- Shop Priming Rate -->
+    <div class="form-control">
+      <%= form.label :shop_priming_rate, "Shop Priming Rate (R/tonne)", { class: "label" } %>
+      <%= form.number_field :shop_priming_rate, 
+        step: :any,
+        placeholder: "0.00",
+        class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:shop_priming_rate].any? }],
+        data: { "project-rate-buildup-form-target": "field" }
+      %>
+    </div>
+
+    <!-- On-Site Painting Rate -->
+    <div class="form-control">
+      <%= form.label :onsite_painting_rate, "On-Site Painting Rate (R/tonne)", { class: "label" } %>
+      <%= form.number_field :onsite_painting_rate, 
+        step: :any,
+        placeholder: "0.00",
+        class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:onsite_painting_rate].any? }],
+        data: { "project-rate-buildup-form-target": "field" }
+      %>
+    </div>
+
+    <!-- Delivery Rate -->
+    <div class="form-control">
+      <%= form.label :delivery_rate, "Delivery Rate (R/tonne)", { class: "label" } %>
+      <%= form.number_field :delivery_rate, 
+        step: :any,
+        placeholder: "0.00",
+        class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:delivery_rate].any? }],
+        data: { "project-rate-buildup-form-target": "field" }
+      %>
+    </div>
+
+    <!-- Bolts Rate -->
+    <div class="form-control">
+      <%= form.label :bolts_rate, "Bolts Rate (R/tonne)", { class: "label" } %>
+      <%= form.number_field :bolts_rate, 
+        step: :any,
+        placeholder: "0.00",
+        class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:bolts_rate].any? }],
+        data: { "project-rate-buildup-form-target": "field" }
+      %>
+    </div>
+
+    <!-- Erection Rate -->
+    <div class="form-control">
+      <%= form.label :erection_rate, "Erection Rate (R/tonne)", { class: "label" } %>
+      <%= form.number_field :erection_rate, 
+        step: :any,
+        placeholder: "0.00",
+        class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:erection_rate].any? }],
+        data: { "project-rate-buildup-form-target": "field" }
+      %>
+    </div>
+
+    <!-- Crainage Rate -->
+    <div class="form-control">
+      <%= form.label :crainage_rate, "Crainage Rate (R/tonne)", { class: "label" } %>
+      <%= form.number_field :crainage_rate, 
+        step: :any,
+        placeholder: "0.00",
+        class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:crainage_rate].any? }],
+        data: { "project-rate-buildup-form-target": "field" }
+      %>
+    </div>
+
+    <!-- Cherry Picker Rate -->
+    <div class="form-control">
+      <%= form.label :cherry_picker_rate, "Cherry Picker Rate (R/tonne)", { class: "label" } %>
+      <%= form.number_field :cherry_picker_rate, 
+        step: :any,
+        placeholder: "0.00",
+        class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:cherry_picker_rate].any? }],
+        data: { "project-rate-buildup-form-target": "field" }
+      %>
+    </div>
+
+    <!-- Galvanizing Rate -->
+    <div class="form-control">
+      <%= form.label :galvanizing_rate, "Galvanizing Rate (R/tonne)", { class: "label" } %>
+      <%= form.number_field :galvanizing_rate, 
+        step: :any,
+        placeholder: "0.00",
+        class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:galvanizing_rate].any? }],
+        data: { "project-rate-buildup-form-target": "field" }
+      %>
+    </div>
+  </div>
+
+  <!-- Form Actions -->
+  <div class="divider"></div>
+  
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <span 
+        data-project-rate-buildup-form-target="indicator"
+        class="text-sm text-warning font-medium hidden"
+      >
+        <i class="fas fa-circle-exclamation mr-1"></i>Unsaved changes
+      </span>
+    </div>
+    
+    <div class="flex gap-3">
+      <%= form.submit "Save Changes", class: "btn btn-primary" %>
+      <%= link_to "Cancel", tender_path(@tender), class: "btn btn-outline" %>
+    </div>
+  </div>
+<% end %>
