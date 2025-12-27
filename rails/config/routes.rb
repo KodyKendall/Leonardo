@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  resources :tender_equipment_summaries
+  resources :tender_equipment_selections
+  resources :equipment_types
   resources :on_site_mobile_crane_breakdowns do
     member do
       get :builder

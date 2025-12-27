@@ -1,0 +1,47 @@
+<%= form_with(model: tender_equipment_summary, class: "contents") do |form| %>
+  <% if tender_equipment_summary.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(tender_equipment_summary.errors.count, "error") %> prohibited this tender_equipment_summary from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% tender_equipment_summary.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :tender_id %>
+    <%= form.text_field :tender_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_equipment_summary.errors[:tender_id].none?, "border-red-400 focus:outline-red-600": tender_equipment_summary.errors[:tender_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :equipment_subtotal %>
+    <%= form.text_field :equipment_subtotal, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_equipment_summary.errors[:equipment_subtotal].none?, "border-red-400 focus:outline-red-600": tender_equipment_summary.errors[:equipment_subtotal].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :mobilization_fee %>
+    <%= form.text_field :mobilization_fee, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_equipment_summary.errors[:mobilization_fee].none?, "border-red-400 focus:outline-red-600": tender_equipment_summary.errors[:mobilization_fee].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :total_equipment_cost %>
+    <%= form.text_field :total_equipment_cost, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_equipment_summary.errors[:total_equipment_cost].none?, "border-red-400 focus:outline-red-600": tender_equipment_summary.errors[:total_equipment_cost].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :rate_per_tonne_raw %>
+    <%= form.text_field :rate_per_tonne_raw, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_equipment_summary.errors[:rate_per_tonne_raw].none?, "border-red-400 focus:outline-red-600": tender_equipment_summary.errors[:rate_per_tonne_raw].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :rate_per_tonne_rounded %>
+    <%= form.text_field :rate_per_tonne_rounded, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_equipment_summary.errors[:rate_per_tonne_rounded].none?, "border-red-400 focus:outline-red-600": tender_equipment_summary.errors[:rate_per_tonne_rounded].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>
