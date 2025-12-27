@@ -43,16 +43,17 @@ class LineItemRateBuildUp < ApplicationRecord
     
     # All components now use decimal multipliers (default to 0 if nil/not set)
     # Add all other cost components with their multipliers
-    self.subtotal += (fabrication_rate * (fabrication_included || 0).to_f)
-    self.subtotal += (overheads_rate * (overheads_included || 0).to_f)
-    self.subtotal += (shop_priming_rate * (shop_priming_included || 0).to_f)
-    self.subtotal += (onsite_painting_rate * (onsite_painting_included || 0).to_f)
-    self.subtotal += (delivery_rate * (delivery_included || 0).to_f)
-    self.subtotal += (bolts_rate * (bolts_included || 0).to_f)
-    self.subtotal += (erection_rate * (erection_included || 0).to_f)
-    self.subtotal += (crainage_rate * (crainage_included || 0).to_f)
-    self.subtotal += (cherry_picker_rate * (cherry_picker_included || 0).to_f)
-    self.subtotal += (galvanizing_rate * (galvanizing_included || 0).to_f)
+    # Nil rates are coerced to 0 before multiplication to prevent NoMethodError
+    self.subtotal += ((fabrication_rate || 0).to_f * (fabrication_included || 0).to_f)
+    self.subtotal += ((overheads_rate || 0).to_f * (overheads_included || 0).to_f)
+    self.subtotal += ((shop_priming_rate || 0).to_f * (shop_priming_included || 0).to_f)
+    self.subtotal += ((onsite_painting_rate || 0).to_f * (onsite_painting_included || 0).to_f)
+    self.subtotal += ((delivery_rate || 0).to_f * (delivery_included || 0).to_f)
+    self.subtotal += ((bolts_rate || 0).to_f * (bolts_included || 0).to_f)
+    self.subtotal += ((erection_rate || 0).to_f * (erection_included || 0).to_f)
+    self.subtotal += ((crainage_rate || 0).to_f * (crainage_included || 0).to_f)
+    self.subtotal += ((cherry_picker_rate || 0).to_f * (cherry_picker_included || 0).to_f)
+    self.subtotal += ((galvanizing_rate || 0).to_f * (galvanizing_included || 0).to_f)
 
     # Set margin percentage (default to 0 if not set)
     self.margin_percentage ||= 0
