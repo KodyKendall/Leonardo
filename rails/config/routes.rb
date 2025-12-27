@@ -1,6 +1,5 @@
 Rails.application.routes.draw do
   resources :tender_equipment_summaries
-  resources :tender_equipment_selections
   resources :equipment_types
   resources :on_site_mobile_crane_breakdowns do
     member do
@@ -55,6 +54,7 @@ Rails.application.routes.draw do
     resources :tender_line_items
     resources :tender_specific_material_rates
     resources :project_rate_build_ups, only: [:edit, :update, :show]
+    resources :equipment_selections
   end
 
     resources :tender_line_items
