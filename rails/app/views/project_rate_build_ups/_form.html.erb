@@ -161,4 +161,9 @@
       <%= link_to "Cancel", tender_path(@tender), class: "btn btn-outline" %>
     </div>
   </div>
+  
+  <!-- Back Link -->
+  <div class="mt-8 pt-6 border-t">
+    <%= link_to "← Back to #{@tender.tender_name}", tender_path(@tender), class: "link link-primary" %>
+  </div>
 <% end %>
