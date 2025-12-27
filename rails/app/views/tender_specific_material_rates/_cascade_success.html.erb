@@ -1,0 +1,15 @@
+<div class="alert alert-success animate-pulse">
+  <div class="flex items-center gap-3">
+    <i class="fa-solid fa-check-circle text-lg"></i>
+    <div>
+      <h3 class="font-bold">Rate Cascade Complete</h3>
+      <p class="text-sm mt-1">
+        Updated rate for <strong><%= material_count %> material(s)</strong> across <strong><%= line_item_count %> line item(s)</strong>.
+      </p>
+      <p class="text-xs mt-2 text-gray-600">
+        Rate changed from <%= number_to_currency(old_rate) %> to <%= number_to_currency(new_rate) %>. 
+        All affected line item totals have been recalculated.
+      </p>
+    </div>
+  </div>
+</div>

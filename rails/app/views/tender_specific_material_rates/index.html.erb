@@ -1,4 +1,6 @@
 <div class="container mx-auto px-4 py-6">
+  <%= turbo_stream_from "tender_#{@tender.id}_material_rates" %>
+  
   <div class="flex justify-between items-center mb-6">
     <div>
       <h1 class="text-3xl font-bold">Material Rates for <%= @tender.e_number %></h1>
@@ -9,6 +11,9 @@
   <p class="text-gray-600 text-sm mb-4">
     Set material rates specific to this tender. These override global rates in line item calculations.
   </p>
+
+  <!-- Cascade success message container -->
+  <div id="cascade_messages" class="mb-4"></div>
 
   <div id="<%= dom_id(@tender, :tender_specific_material_rates) %>">
     <% if @tender_specific_material_rates.any? %>

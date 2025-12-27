@@ -41,6 +41,31 @@ class TenderSpecificMaterialRatesController < ApplicationController
   # PATCH/PUT /tenders/:tender_id/tender_specific_material_rates/:id
   # Updates an existing rate and responds with Turbo Stream replace
   def update
+    # Check if rate is being changed and if we need confirmation
+    if rate_being_changed? && params[:confirm_cascade].nil?
+      # Preview affected count and show confirmation dialog
+      affected_count = count_affected_line_item_materials
+      
+      if affected_count > 0
+        respond_to do |format|
+          format.turbo_stream do
+            render turbo_stream: turbo_stream.replace(
+              @tender_specific_material_rate,
+              partial: "tender_specific_material_rates/cascade_confirmation",
+              locals: { 
+                tender_specific_material_rate: @tender_specific_material_rate,
+                affected_material_count: affected_count,
+                new_rate: tender_specific_material_rate_params[:rate]
+              }
+            )
+          end
+          format.html { render :index }
+        end
+        return
+      end
+    end
+
+    # Either no rate change, or cascade confirmed, or no affected materials - proceed with update
     if @tender_specific_material_rate.update(tender_specific_material_rate_params)
       respond_to do |format|
         format.turbo_stream do
@@ -91,5 +116,20 @@ class TenderSpecificMaterialRatesController < ApplicationController
 
   def tender_specific_material_rate_params
     params.require(:tender_specific_material_rate).permit(:material_supply_id, :rate, :unit, :effective_from, :effective_to, :notes)
+  end
+
+  def rate_being_changed?
+    tender_specific_material_rate_params[:rate].present? &&
+      @tender_specific_material_rate.rate_changed?(to: tender_specific_material_rate_params[:rate].to_f)
+  end
+
+  def count_affected_line_item_materials
+    return 0 unless @tender_specific_material_rate.material_supply_id.present?
+
+    LineItemMaterial
+      .where(material_supply_id: @tender_specific_material_rate.material_supply_id)
+      .joins(:tender_line_item)
+      .where(tender_line_items: { tender_id: @tender.id })
+      .count
   end
 end
