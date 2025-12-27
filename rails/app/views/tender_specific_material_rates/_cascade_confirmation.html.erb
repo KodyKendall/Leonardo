@@ -1,0 +1,56 @@
+<%= turbo_frame_tag dom_id(tender_specific_material_rate) do %>
+  <div class="material-rate-row">
+    <div class="alert alert-warning">
+      <div class="flex items-center gap-3 mb-4">
+        <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+        <div>
+          <h3 class="font-bold">Confirm Rate Update</h3>
+          <p class="text-sm mt-2">
+            Updating this material rate will affect <strong><%= affected_material_count %> line item(s)</strong> using this material.
+          </p>
+          <p class="text-sm mt-2 text-warning">
+            <i class="fa-solid fa-info-circle"></i>
+            This will recalculate all affected tender line item totals.
+          </p>
+        </div>
+      </div>
+
+      <div class="bg-white rounded p-3 mb-4 border-l-4 border-warning">
+        <p class="text-sm">
+          <strong>Material:</strong> <%= tender_specific_material_rate.material_supply&.name || "Not selected" %>
+        </p>
+        <p class="text-sm mt-2">
+          <strong>Current Rate:</strong> <%= number_to_currency(tender_specific_material_rate.rate || 0) %>
+        </p>
+        <p class="text-sm mt-2">
+          <strong>New Rate:</strong> <%= number_to_currency(new_rate.to_f) %>
+        </p>
+        <p class="text-sm mt-2 text-gray-600">
+          <strong>Affected Line Items:</strong> All line items using this material will be updated
+        </p>
+      </div>
+
+      <div class="flex gap-2 justify-end">
+        <%= form_with model: [tender_specific_material_rate.tender, tender_specific_material_rate],
+                      method: :patch,
+                      local: true,
+                      class: "contents" do |f| %>
+          <%= f.hidden_field :material_supply_id, value: tender_specific_material_rate.material_supply_id %>
+          <%= f.hidden_field :rate, value: new_rate %>
+          <%= f.hidden_field :unit, value: tender_specific_material_rate.unit %>
+          <%= f.hidden_field :effective_from, value: tender_specific_material_rate.effective_from %>
+          <%= f.hidden_field :effective_to, value: tender_specific_material_rate.effective_to %>
+          <%= f.hidden_field :notes, value: tender_specific_material_rate.notes %>
+          <%= f.hidden_field :confirm_cascade, value: "true" %>
+          
+          <%= button_to "Cancel", 
+                        [tender_specific_material_rate.tender, tender_specific_material_rate],
+                        method: :get,
+                        class: "btn btn-outline btn-sm" %>
+          
+          <%= f.submit "Confirm Update", class: "btn btn-warning btn-sm" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
