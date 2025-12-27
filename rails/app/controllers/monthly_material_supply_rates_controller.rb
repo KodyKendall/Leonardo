@@ -1,5 +1,5 @@
 class MonthlyMaterialSupplyRatesController < ApplicationController
-  before_action :set_monthly_material_supply_rate, only: %i[ show edit update destroy save_rate ]
+  before_action :set_monthly_material_supply_rate, only: %i[ show edit update destroy save_rate set_2nd_cheapest_as_winners ]
 
   # GET /monthly_material_supply_rates or /monthly_material_supply_rates.json
   def index
@@ -91,6 +91,45 @@ class MonthlyMaterialSupplyRatesController < ApplicationController
     else
       render json: { success: false, error: material_supply_rate.errors.full_messages.join(", ") }, status: :unprocessable_entity
     end
+  end
+
+  # POST /monthly_material_supply_rates/1/set_2nd_cheapest_as_winners
+  def set_2nd_cheapest_as_winners
+    material_supplies = MaterialSupply.all
+    materials_updated = 0
+
+    material_supplies.each do |material|
+      # Get all rates for this material in this monthly period, ordered by rate ASC, then supplier_id ASC
+      rates = MaterialSupplyRate
+        .where(
+          monthly_material_supply_rate_id: @monthly_material_supply_rate.id,
+          material_supply_id: material.id
+        )
+        .where("rate > ?", 0)
+        .order(:rate, :supplier_id)
+        .to_a
+
+      # Skip if fewer than 2 suppliers
+      next if rates.length < 2
+
+      # Get the 2nd cheapest (index 1)
+      second_cheapest = rates[1]
+      second_cheapest_id = second_cheapest.id
+
+      # Clear all winners for this material
+      MaterialSupplyRate.where(
+        monthly_material_supply_rate_id: @monthly_material_supply_rate.id,
+        material_supply_id: material.id
+      ).update_all(is_winner: false)
+
+      # Set the 2nd cheapest as winner (use fresh query to avoid stale object)
+      MaterialSupplyRate.find(second_cheapest_id).update(is_winner: true)
+      materials_updated += 1
+    end
+
+    redirect_to @monthly_material_supply_rate,
+                notice: "Auto-selected 2nd cheapest rates for #{materials_updated} material(s).",
+                status: :see_other
   end
 
   # DELETE /monthly_material_supply_rates/1 or /monthly_material_supply_rates/1.json
