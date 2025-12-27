@@ -3,7 +3,7 @@ class MonthlyMaterialSupplyRatesController < ApplicationController
 
   # GET /monthly_material_supply_rates or /monthly_material_supply_rates.json
   def index
-    @monthly_material_supply_rates = MonthlyMaterialSupplyRate.all
+    @monthly_material_supply_rates = MonthlyMaterialSupplyRate.order(effective_from: :desc)
   end
 
   # GET /monthly_material_supply_rates/1 or /monthly_material_supply_rates/1.json
