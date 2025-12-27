@@ -1,0 +1,83 @@
+<%= turbo_frame_tag dom_id(equipment_selection) do %>
+  <tr class="hover:bg-gray-50">
+    <%= form_with model: [equipment_selection.tender, equipment_selection],
+                  url: tender_equipment_selection_path(equipment_selection.tender, equipment_selection),
+                  method: :patch,
+                  local: true,
+                  data: {
+                    controller: "dirty-form",
+                    action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset"
+                  } do |f| %>
+      <!-- Equipment Type (Read-only) -->
+      <td class="px-6 py-4 text-sm font-medium text-gray-900">
+        <div class="flex flex-col">
+          <span class="font-semibold"><%= equipment_selection.equipment_type.category.humanize %></span>
+          <span class="text-xs text-gray-500"><%= equipment_selection.equipment_type.model %></span>
+          <% if equipment_selection.equipment_type.working_height_m.present? %>
+            <span class="text-xs text-gray-500">Height: <%= equipment_selection.equipment_type.working_height_m %>m</span>
+          <% end %>
+        </div>
+      </td>
+
+      <!-- Units (Editable) -->
+      <td class="px-6 py-4 text-sm">
+        <%= f.number_field :units_required, min: 1, step: 1, class: "input input-sm input-bordered w-20" %>
+      </td>
+
+      <!-- Months (Editable) -->
+      <td class="px-6 py-4 text-sm">
+        <%= f.number_field :period_months, min: 1, step: 1, class: "input input-sm input-bordered w-20" %>
+      </td>
+
+      <!-- Purpose (Editable) -->
+      <td class="px-6 py-4 text-sm">
+        <%= f.text_field :purpose, placeholder: "e.g., Hoisting", class: "input input-sm input-bordered w-full" %>
+      </td>
+
+      <!-- Monthly Cost (Editable - Override) -->
+      <td class="px-6 py-4 text-sm">
+        <div class="flex items-center gap-2">
+          <div class="text-xs text-gray-500 font-semibold">
+            Base: R<%= number_with_precision(equipment_selection.calculated_monthly_cost, precision: 2, delimiter: ",") %>
+          </div>
+          <div class="hidden">
+            <%= f.number_field :monthly_cost_override, step: 0.01, class: "input input-sm input-bordered w-24", placeholder: "Override" %>
+          </div>
+        </div>
+      </td>
+
+      <!-- Total Cost (Calculated, Read-only) -->
+      <td class="px-6 py-4 text-sm font-bold text-green-700">
+        R<%= number_with_precision(equipment_selection.total_cost, precision: 2, delimiter: ",") %>
+      </td>
+
+      <!-- Actions -->
+      <td class="px-6 py-4 text-sm">
+        <div class="flex items-center gap-2">
+          <!-- Dirty Indicator -->
+          <span class="hidden text-warning text-xs font-medium" data-dirty-form-target="indicator">
+            <i class="fas fa-circle-exclamation"></i>
+          </span>
+
+          <!-- Save Button -->
+          <button type="submit" 
+                  class="btn btn-primary btn-sm hidden" 
+                  data-dirty-form-target="submit"
+                  title="Save changes">
+            <i class="fas fa-check"></i>
+          </button>
+
+          <!-- Delete Button -->
+          <%= button_to tender_equipment_selection_path(equipment_selection.tender, equipment_selection),
+              method: :delete,
+              form_class: "contents",
+              class: "btn btn-error btn-sm",
+              data: { turbo_confirm: "Delete this equipment selection?" },
+              title: "Delete" do %>
+            <i class="fas fa-trash"></i>
+          <% end %>
+        </div>
+      </td>
+    <% end %>
+  </tr>
+<% end %>

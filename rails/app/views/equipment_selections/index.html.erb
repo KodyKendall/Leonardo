@@ -1,0 +1,58 @@
+<% content_for :title, "Equipment Selections for #{@tender.tender_name}" %>
+
+<div class="w-full">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
+  <% end %>
+
+  <!-- Tender Context Header -->
+  <div class="mb-6">
+    <div class="flex items-center gap-2 mb-2">
+      <%= link_to "Tender", tender_path(@tender), class: "text-blue-600 hover:text-blue-800" %>
+      <span class="text-gray-400">/</span>
+      <span class="text-gray-700 font-semibold"><%= @tender.e_number %> - <%= @tender.tender_name %></span>
+    </div>
+    <h1 class="font-bold text-4xl">Equipment Selections</h1>
+  </div>
+
+  <!-- Equipment Selections Table -->
+  <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+    <table class="w-full">
+      <thead class="bg-gray-50 border-b border-gray-200">
+        <tr>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Equipment</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Units</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Months</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Purpose</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Monthly Cost</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Total Cost</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="equipment_selections_table" class="divide-y divide-gray-200">
+        <% @equipment_selections.each do |equipment_selection| %>
+          <%= render "equipment_selection", equipment_selection: equipment_selection %>
+        <% end %>
+
+        <!-- Add Equipment Form Row -->
+        <tr id="new_equipment_form">
+          <td colspan="7">
+            <%= render "add_form", tender: @tender, new_equipment_selection: @new_equipment_selection, equipment_types: @equipment_types %>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- No Equipment Message -->
+  <% if @equipment_selections.empty? %>
+    <div class="mt-6 p-6 bg-gray-50 border border-gray-200 rounded-lg text-center">
+      <p class="text-gray-500 text-sm mb-4">No equipment selections yet. Add one using the form below.</p>
+    </div>
+  <% end %>
+
+  <!-- Back Link -->
+  <div class="mt-6">
+    <%= link_to "Back to Tender", tender_path(@tender), class: "text-blue-600 hover:text-blue-800 font-medium" %>
+  </div>
+</div>
