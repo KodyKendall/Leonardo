@@ -85,8 +85,16 @@
     </div>
   </div>
 
-  <div class="mt-6 flex gap-3">
+  <div class="mt-6 flex gap-3 flex-wrap">
     <%= link_to "Back to Monthly Rates", monthly_material_supply_rates_path, class: "rounded-md px-6 py-2.5 bg-gray-100 hover:bg-gray-50 text-gray-900 font-medium" %>
+    
+    <%= button_to "🤖 Set 2nd Cheapest as Winners", 
+      set_2nd_cheapest_as_winners_monthly_material_supply_rate_path(@monthly_material_supply_rate),
+      method: :post,
+      class: "rounded-md px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium transition",
+      data: { turbo_confirm: "Auto-select 2nd cheapest supplier for all materials?" }
+    %>
+    
     <button
       data-material-supply-rates-target="saveAllButton"
       class="hidden rounded-md px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium transition"

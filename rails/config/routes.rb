@@ -64,6 +64,7 @@ Rails.application.routes.draw do
   resources :monthly_material_supply_rates do
     member do
       post :save_rate
+      post :set_2nd_cheapest_as_winners
     end
   end
   resources :material_supply_rates
