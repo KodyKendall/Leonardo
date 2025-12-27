@@ -451,7 +451,7 @@ LineItemMaterial.find_or_create_by!(
   m.waste_percentage = 7.50
   m.rate = 8200.00
   m.quantity = 30.0
-  m.proportion = 0.65
+  m.proportion_percentage = 65.0
 end
 
 LineItemMaterial.find_or_create_by!(
@@ -462,7 +462,7 @@ LineItemMaterial.find_or_create_by!(
   m.waste_percentage = 7.50
   m.rate = 8800.00
   m.quantity = 15.5
-  m.proportion = 0.35
+  m.proportion_percentage = 35.0
 end
 
 # For line_item_2
@@ -477,7 +477,7 @@ LineItemMaterial.find_or_create_by!(
   m.waste_percentage = 7.50
   m.rate = 9200.00
   m.quantity = 28.3
-  m.proportion = 1.0
+  m.proportion_percentage = 100.0
 end
 
 # For line_item_3
@@ -492,7 +492,7 @@ LineItemMaterial.find_or_create_by!(
   m.waste_percentage = 0.0
   m.rate = 42.00
   m.quantity = 500
-  m.proportion = 1.0
+  m.proportion_percentage = 100.0
 end
 
 # ===== CRANE RATES =====
@@ -885,6 +885,67 @@ if crane_10t_rsb && crane_25t_rental && crane_35t_rental && crane_50t_rental
   end
 end
 
+# ===== PROJECT RATE BUILD-UPS (DEFAULT RATES PER TENDER) =====
+# Tender 1: ABC High-Rise (Commercial - Standard rates)
+ProjectRateBuildUp.find_or_create_by!(tender: tender1) do |prbu|
+  prbu.material_supply_rate = 8500.00
+  prbu.fabrication_rate = 4200.00
+  prbu.overheads_rate = 1800.00
+  prbu.shop_priming_rate = 350.00
+  prbu.onsite_painting_rate = 400.00
+  prbu.delivery_rate = 500.00
+  prbu.bolts_rate = 200.00
+  prbu.erection_rate = 300.00
+  prbu.crainage_rate = 1200.00
+  prbu.cherry_picker_rate = 150.00
+  prbu.galvanizing_rate = 600.00
+end
+
+# Tender 2: XYZ Mining Operation (Mining - Higher rates due to complexity)
+ProjectRateBuildUp.find_or_create_by!(tender: tender2) do |prbu|
+  prbu.material_supply_rate = 9500.00
+  prbu.fabrication_rate = 4800.00
+  prbu.overheads_rate = 2200.00
+  prbu.shop_priming_rate = 400.00
+  prbu.onsite_painting_rate = 500.00
+  prbu.delivery_rate = 750.00
+  prbu.bolts_rate = 250.00
+  prbu.erection_rate = 450.00
+  prbu.crainage_rate = 1500.00
+  prbu.cherry_picker_rate = 200.00
+  prbu.galvanizing_rate = 800.00
+end
+
+# Tender 3: Smart City Office Complex (Commercial - Mid-range rates)
+ProjectRateBuildUp.find_or_create_by!(tender: tender3) do |prbu|
+  prbu.material_supply_rate = 8200.00
+  prbu.fabrication_rate = 4000.00
+  prbu.overheads_rate = 1700.00
+  prbu.shop_priming_rate = 320.00
+  prbu.onsite_painting_rate = 380.00
+  prbu.delivery_rate = 450.00
+  prbu.bolts_rate = 180.00
+  prbu.erection_rate = 280.00
+  prbu.crainage_rate = 1100.00
+  prbu.cherry_picker_rate = 130.00
+  prbu.galvanizing_rate = 550.00
+end
+
+# Tender 4: Heritage Renovations (Commercial - Heritage/Specialized rates)
+ProjectRateBuildUp.find_or_create_by!(tender: tender4) do |prbu|
+  prbu.material_supply_rate = 8800.00
+  prbu.fabrication_rate = 4400.00
+  prbu.overheads_rate = 1900.00
+  prbu.shop_priming_rate = 380.00
+  prbu.onsite_painting_rate = 450.00
+  prbu.delivery_rate = 500.00
+  prbu.bolts_rate = 210.00
+  prbu.erection_rate = 320.00
+  prbu.crainage_rate = 1000.00
+  prbu.cherry_picker_rate = 140.00
+  prbu.galvanizing_rate = 650.00
+end
+
 puts "✅ Database seeded successfully!"
 puts ""
 puts "📊 SEEDED DATA SUMMARY:"
@@ -903,6 +964,7 @@ puts "  • Monthly Material Supply Rates: #{MonthlyMaterialSupplyRate.count}"
 puts "  • Material Supply Rates: #{MaterialSupplyRate.count}"
 puts "  • Crane Rates: #{CraneRate.count}"
 puts "  • Crane Complements: #{CraneComplement.count}"
+puts "  • Project Rate Build-Ups: #{ProjectRateBuildUp.count}"
 # ===== TENDER-SPECIFIC MATERIAL RATES (SAMPLE DATA) =====
 # Create sample tender-specific rates for demonstration
 if MaterialSupply.any? && Tender.any?
