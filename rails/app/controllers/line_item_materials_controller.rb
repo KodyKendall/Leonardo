@@ -70,6 +70,10 @@ class LineItemMaterialsController < ApplicationController
       if @line_item_material.update(line_item_material_params)
         format.turbo_stream do
           flash.now[:notice] = "Material saved successfully."
+          # Update the individual material row, breakdown totals, and rate buildup.
+          # We explicitly refresh the RateBuildUp frame here because its after_commit
+          # broadcasts may be delayed by nested transaction timing. The breakdown totals
+          # also update via callback, but we include it here for safety.
           streams = [
             turbo_stream.replace(
               "line_item_material_#{@line_item_material.id}",
@@ -83,8 +87,8 @@ class LineItemMaterialsController < ApplicationController
               locals: { line_item_material_breakdown: @breakdown }
             )
           ]
-          # Re-render rate buildup and tender line item if they exist
-          # This ensures all calculations from material save cascade to UI
+          
+          # Explicitly update the RateBuildUp frame to ensure it reflects material changes
           if @tender_line_item.present?
             rate_buildup = @tender_line_item.line_item_rate_build_up
             if rate_buildup.present?
@@ -94,12 +98,8 @@ class LineItemMaterialsController < ApplicationController
                 locals: { line_item_rate_build_up: rate_buildup }
               )
             end
-            streams << turbo_stream.replace(
-              dom_id(@tender_line_item),
-              partial: 'tender_line_items/tender_line_item',
-              locals: { tender_line_item: @tender_line_item, open_breakdown: true }
-            )
           end
+          
           render turbo_stream: streams
         end
         format.html { redirect_to @line_item_material, notice: "Line item material was successfully updated.", status: :see_other }
