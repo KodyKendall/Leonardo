@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_25_174834) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_26_231431) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -339,6 +339,24 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_25_174834) do
     t.index ["tender_id"], name: "index_on_site_mobile_crane_breakdowns_on_tender_id", unique: true
   end
 
+  create_table "project_rate_build_ups", force: :cascade do |t|
+    t.bigint "tender_id", null: false
+    t.decimal "material_supply_rate"
+    t.decimal "fabrication_rate"
+    t.decimal "overheads_rate"
+    t.decimal "shop_priming_rate"
+    t.decimal "onsite_painting_rate"
+    t.decimal "delivery_rate"
+    t.decimal "bolts_rate"
+    t.decimal "erection_rate"
+    t.decimal "crainage_rate"
+    t.decimal "cherry_picker_rate"
+    t.decimal "galvanizing_rate"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tender_id"], name: "index_project_rate_build_ups_on_tender_id"
+  end
+
   create_table "projects", force: :cascade do |t|
     t.string "rsb_number", null: false
     t.bigint "tender_id", null: false
@@ -506,6 +524,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_25_174834) do
   add_foreign_key "material_supply_rates", "monthly_material_supply_rates"
   add_foreign_key "material_supply_rates", "suppliers"
   add_foreign_key "on_site_mobile_crane_breakdowns", "tenders", on_delete: :cascade
+  add_foreign_key "project_rate_build_ups", "tenders"
   add_foreign_key "projects", "tenders"
   add_foreign_key "projects", "users", column: "created_by_id"
   add_foreign_key "tender_crane_selections", "crane_rates"

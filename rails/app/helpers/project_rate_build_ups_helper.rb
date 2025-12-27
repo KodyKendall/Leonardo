@@ -1,0 +1,2 @@
+module ProjectRateBuildUpsHelper
+end

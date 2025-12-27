@@ -1,0 +1,133 @@
+<div class="space-y-6">
+  <!-- Header with Edit Button -->
+  <div class="flex items-center justify-between">
+    <div>
+      <h3 class="text-2xl font-bold">Project Rate Build-Up</h3>
+      <p class="text-sm text-base-content/70 mt-1">
+        Standard processing rates for all line items in this tender
+      </p>
+    </div>
+    <%= link_to '<i class="fas fa-edit mr-2"></i>Edit Rates'.html_safe, 
+      edit_tender_project_rate_build_up_path(project_rate_build_up.tender, project_rate_build_up),
+      class: "btn btn-primary btn-sm" %>
+  </div>
+
+  <!-- Display Table -->
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <div class="overflow-x-auto">
+        <table class="table table-compact w-full">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left">Processing Component</th>
+              <th class="text-right">Rate (R/tonne)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b hover:bg-base-200">
+              <td class="font-medium">Material Supply</td>
+              <td class="text-right">
+                <code class="text-lg font-semibold">
+                  <%= number_with_precision(project_rate_build_up.material_supply_rate || 0, precision: 2) %>
+                </code>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-base-200">
+              <td class="font-medium">Fabrication</td>
+              <td class="text-right">
+                <code class="text-lg font-semibold">
+                  <%= number_with_precision(project_rate_build_up.fabrication_rate || 0, precision: 2) %>
+                </code>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-base-200">
+              <td class="font-medium">Overheads</td>
+              <td class="text-right">
+                <code class="text-lg font-semibold">
+                  <%= number_with_precision(project_rate_build_up.overheads_rate || 0, precision: 2) %>
+                </code>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-base-200">
+              <td class="font-medium">Shop Priming</td>
+              <td class="text-right">
+                <code class="text-lg font-semibold">
+                  <%= number_with_precision(project_rate_build_up.shop_priming_rate || 0, precision: 2) %>
+                </code>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-base-200">
+              <td class="font-medium">On-Site Painting</td>
+              <td class="text-right">
+                <code class="text-lg font-semibold">
+                  <%= number_with_precision(project_rate_build_up.onsite_painting_rate || 0, precision: 2) %>
+                </code>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-base-200">
+              <td class="font-medium">Delivery</td>
+              <td class="text-right">
+                <code class="text-lg font-semibold">
+                  <%= number_with_precision(project_rate_build_up.delivery_rate || 0, precision: 2) %>
+                </code>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-base-200">
+              <td class="font-medium">Bolts</td>
+              <td class="text-right">
+                <code class="text-lg font-semibold">
+                  <%= number_with_precision(project_rate_build_up.bolts_rate || 0, precision: 2) %>
+                </code>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-base-200">
+              <td class="font-medium">Erection</td>
+              <td class="text-right">
+                <code class="text-lg font-semibold">
+                  <%= number_with_precision(project_rate_build_up.erection_rate || 0, precision: 2) %>
+                </code>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-base-200">
+              <td class="font-medium">Crainage</td>
+              <td class="text-right">
+                <code class="text-lg font-semibold">
+                  <%= number_with_precision(project_rate_build_up.crainage_rate || 0, precision: 2) %>
+                </code>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-base-200">
+              <td class="font-medium">Cherry Picker</td>
+              <td class="text-right">
+                <code class="text-lg font-semibold">
+                  <%= number_with_precision(project_rate_build_up.cherry_picker_rate || 0, precision: 2) %>
+                </code>
+              </td>
+            </tr>
+            <tr class="hover:bg-base-200">
+              <td class="font-medium">Galvanizing</td>
+              <td class="text-right">
+                <code class="text-lg font-semibold">
+                  <%= number_with_precision(project_rate_build_up.galvanizing_rate || 0, precision: 2) %>
+                </code>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Box -->
+  <div class="alert alert-info">
+    <div class="flex items-start gap-3">
+      <i class="fas fa-info-circle mt-1 text-lg"></i>
+      <div>
+        <p class="font-semibold">How it works</p>
+        <p class="text-sm mt-1">
+          These rates are automatically applied as defaults when you create new line items. You can override individual line item rates if needed.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
