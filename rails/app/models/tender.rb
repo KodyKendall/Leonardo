@@ -8,6 +8,7 @@ class Tender < ApplicationRecord
   has_many :material_supplies, through: :tender_specific_material_rates
   has_one :tender_inclusions_exclusion, dependent: :destroy
   has_one :on_site_mobile_crane_breakdown, dependent: :destroy
+  has_one :project_rate_buildup, class_name: 'ProjectRateBuildUp', dependent: :destroy
   
   # File attachment for QOB (Quote of Business)
   has_one_attached :qob_file
@@ -15,6 +16,7 @@ class Tender < ApplicationRecord
   # Callbacks
   before_create :generate_e_number
   after_create :populate_material_rates
+  after_create :create_project_rate_buildup
   
   # Validations
   validates :tender_name, presence: true
@@ -45,6 +47,10 @@ class Tender < ApplicationRecord
 
   def populate_material_rates
     PopulateTenderMaterialRates.new(self).execute
+  end
+
+  def create_project_rate_buildup
+    ProjectRateBuildUp.create!(tender: self)
   end
 
   def broadcast_update_grand_total

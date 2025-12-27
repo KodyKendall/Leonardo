@@ -109,6 +109,15 @@
     <%= button_to ensure_breakdown_path(@tender), method: :post, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium inline-flex items-center gap-2" do %>
       <i class="fa-solid fa-wrench"></i> Cranes
     <% end %>
+    <% if @tender.project_rate_buildup.present? %>
+      <%= link_to edit_tender_project_rate_build_up_path(@tender, @tender.project_rate_buildup), class: "rounded-md px-3.5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white inline-block font-medium inline-flex items-center gap-2" do %>
+        <i class="fa-solid fa-chart-line"></i> Project Rates
+      <% end %>
+    <% else %>
+      <button disabled class="rounded-md px-3.5 py-2.5 bg-gray-300 text-gray-500 inline-block font-medium inline-flex items-center gap-2 cursor-not-allowed" title="Creating project rates...">
+        <i class="fa-solid fa-chart-line"></i> Project Rates
+      </button>
+    <% end %>
     <%= link_to tender_tender_specific_material_rates_path(@tender), class: "rounded-md px-3.5 py-2.5 bg-green-600 hover:bg-green-500 text-white inline-block font-medium inline-flex items-center gap-2" do %>
       <i class="fa-solid fa-dollar-sign"></i> Material Rates
     <% end %>
