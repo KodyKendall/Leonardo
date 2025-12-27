@@ -1,0 +1,29 @@
+<tr id="<%= dom_id equipment_type %>" class="border-b hover:bg-gray-50">
+  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+    <%= equipment_type.category.titleize %>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
+    <%= equipment_type.model %>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+    <%= equipment_type.working_height_m %><span class="text-xs text-gray-500 ml-1">m</span>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+    R<%= number_with_precision(equipment_type.base_rate_monthly, precision: 0, delimiter: ',') %>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-center">
+    <%= (equipment_type.damage_waiver_pct * 100).round(0) %>%
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+    <% if equipment_type.diesel_allowance_monthly.to_f > 0 %>
+      R<%= number_with_precision(equipment_type.diesel_allowance_monthly, precision: 0, delimiter: ',') %>
+    <% else %>
+      <span class="text-gray-400">—</span>
+    <% end %>
+  </td>
+  <td class="px-6 py-4 whitespace-nowrap text-sm">
+    <span class="<%= equipment_type.is_active? ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %> px-2.5 py-0.5 rounded-full text-xs font-medium">
+      <%= equipment_type.is_active? ? "Active" : "Inactive" %>
+    </span>
+  </td>
+</tr>

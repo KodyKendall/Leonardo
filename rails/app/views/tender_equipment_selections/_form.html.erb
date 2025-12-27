@@ -1,0 +1,62 @@
+<%= form_with(model: tender_equipment_selection, class: "contents") do |form| %>
+  <% if tender_equipment_selection.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(tender_equipment_selection.errors.count, "error") %> prohibited this tender_equipment_selection from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% tender_equipment_selection.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :tender_id %>
+    <%= form.text_field :tender_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_equipment_selection.errors[:tender_id].none?, "border-red-400 focus:outline-red-600": tender_equipment_selection.errors[:tender_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :equipment_type_id %>
+    <%= form.text_field :equipment_type_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_equipment_selection.errors[:equipment_type_id].none?, "border-red-400 focus:outline-red-600": tender_equipment_selection.errors[:equipment_type_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :units_required %>
+    <%= form.number_field :units_required, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_equipment_selection.errors[:units_required].none?, "border-red-400 focus:outline-red-600": tender_equipment_selection.errors[:units_required].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :period_months %>
+    <%= form.number_field :period_months, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_equipment_selection.errors[:period_months].none?, "border-red-400 focus:outline-red-600": tender_equipment_selection.errors[:period_months].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :purpose %>
+    <%= form.text_field :purpose, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_equipment_selection.errors[:purpose].none?, "border-red-400 focus:outline-red-600": tender_equipment_selection.errors[:purpose].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :monthly_cost_override %>
+    <%= form.text_field :monthly_cost_override, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_equipment_selection.errors[:monthly_cost_override].none?, "border-red-400 focus:outline-red-600": tender_equipment_selection.errors[:monthly_cost_override].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :calculated_monthly_cost %>
+    <%= form.text_field :calculated_monthly_cost, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_equipment_selection.errors[:calculated_monthly_cost].none?, "border-red-400 focus:outline-red-600": tender_equipment_selection.errors[:calculated_monthly_cost].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :total_cost %>
+    <%= form.text_field :total_cost, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_equipment_selection.errors[:total_cost].none?, "border-red-400 focus:outline-red-600": tender_equipment_selection.errors[:total_cost].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :sort_order %>
+    <%= form.number_field :sort_order, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": tender_equipment_selection.errors[:sort_order].none?, "border-red-400 focus:outline-red-600": tender_equipment_selection.errors[:sort_order].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

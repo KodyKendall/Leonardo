@@ -1,0 +1,2 @@
+module TenderEquipmentSelectionsHelper
+end

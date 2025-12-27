@@ -1,0 +1,52 @@
+<%= form_with(model: equipment_type, class: "contents") do |form| %>
+  <% if equipment_type.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(equipment_type.errors.count, "error") %> prohibited this equipment_type from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% equipment_type.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :category %>
+    <%= form.text_field :category, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": equipment_type.errors[:category].none?, "border-red-400 focus:outline-red-600": equipment_type.errors[:category].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :model %>
+    <%= form.text_field :model, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": equipment_type.errors[:model].none?, "border-red-400 focus:outline-red-600": equipment_type.errors[:model].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :working_height_m %>
+    <%= form.text_field :working_height_m, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": equipment_type.errors[:working_height_m].none?, "border-red-400 focus:outline-red-600": equipment_type.errors[:working_height_m].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :base_rate_monthly %>
+    <%= form.text_field :base_rate_monthly, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": equipment_type.errors[:base_rate_monthly].none?, "border-red-400 focus:outline-red-600": equipment_type.errors[:base_rate_monthly].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :damage_waiver_pct %>
+    <%= form.text_field :damage_waiver_pct, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": equipment_type.errors[:damage_waiver_pct].none?, "border-red-400 focus:outline-red-600": equipment_type.errors[:damage_waiver_pct].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :diesel_allowance_monthly %>
+    <%= form.text_field :diesel_allowance_monthly, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": equipment_type.errors[:diesel_allowance_monthly].none?, "border-red-400 focus:outline-red-600": equipment_type.errors[:diesel_allowance_monthly].any?}] %>
+  </div>
+
+  <div class="my-5 flex items-center gap-2">
+    <%= form.label :is_active %>
+    <%= form.check_box :is_active, class: ["block shadow-sm rounded-md border order-first h-5 w-5", {"border-gray-400 focus:outline-blue-600": equipment_type.errors[:is_active].none?, "border-red-400 focus:outline-red-600": equipment_type.errors[:is_active].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

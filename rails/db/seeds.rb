@@ -1024,3 +1024,41 @@ puts "  • Email: john.smith@company.com (Project Manager)"
 puts "  • Email: sarah.jones@company.com (Project Manager)"
 puts "  • Email: mark.wilson@company.com (Approver)"
 puts "  • Password: 123456 (for all accounts)"
+
+# ===== EQUIPMENT TYPES =====
+EQUIPMENT_TYPES = [
+  # Diesel Boom Lifts
+  { category: 'diesel_boom', model: '600AJ', working_height_m: 20.0, 
+    base_rate_monthly: 42500.00, diesel_allowance_monthly: 22000.00 },
+  { category: 'diesel_boom', model: '450AJ', working_height_m: 15.7, 
+    base_rate_monthly: 38195.00, diesel_allowance_monthly: 19500.00 },
+  { category: 'diesel_boom', model: 'E450AJ', working_height_m: 15.7, 
+    base_rate_monthly: 38195.00, diesel_allowance_monthly: 19500.00 },
+  { category: 'diesel_boom', model: '3394RT', working_height_m: 12.0, 
+    base_rate_monthly: 28500.00, diesel_allowance_monthly: 15000.00 },
+  
+  # Electric Scissor Lifts
+  { category: 'electric_scissors', model: 'E12/5', working_height_m: 5.8, 
+    base_rate_monthly: 8500.00, diesel_allowance_monthly: 0.00 },
+  { category: 'electric_scissors', model: '1200EZ', working_height_m: 8.0, 
+    base_rate_monthly: 12000.00, diesel_allowance_monthly: 0.00 },
+  
+  # Telehandlers
+  { category: 'telehandler', model: 'TH3510', working_height_m: 10.0, 
+    base_rate_monthly: 35000.00, diesel_allowance_monthly: 18000.00 },
+]
+
+EQUIPMENT_TYPES.each do |attrs|
+  EquipmentType.find_or_create_by!(
+    category: attrs[:category],
+    model: attrs[:model]
+  ) do |eq|
+    eq.working_height_m = attrs[:working_height_m]
+    eq.base_rate_monthly = attrs[:base_rate_monthly]
+    eq.damage_waiver_pct = 0.06  # Always 6% per BR-023
+    eq.diesel_allowance_monthly = attrs[:diesel_allowance_monthly]
+    eq.is_active = true
+  end
+end
+
+puts "  • Equipment Types: #{EquipmentType.count}"

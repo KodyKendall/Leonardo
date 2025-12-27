@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_26_231431) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_27_171653) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -221,6 +221,21 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_26_231431) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "equipment_types", force: :cascade do |t|
+    t.string "category", limit: 50, null: false
+    t.string "model", limit: 50, null: false
+    t.decimal "working_height_m", precision: 5, scale: 1
+    t.decimal "base_rate_monthly", precision: 12, scale: 2, null: false
+    t.decimal "damage_waiver_pct", precision: 5, scale: 4, default: "0.06", null: false
+    t.decimal "diesel_allowance_monthly", precision: 10, scale: 2, default: "0.0", null: false
+    t.boolean "is_active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category", "model"], name: "index_equipment_types_on_category_and_model", unique: true
+    t.index ["category"], name: "index_equipment_types_on_category"
+    t.index ["is_active"], name: "index_equipment_types_on_is_active"
+  end
+
   create_table "fabrication_records", force: :cascade do |t|
     t.bigint "project_id", null: false
     t.date "record_month", null: false
@@ -397,6 +412,35 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_26_231431) do
     t.index ["tender_id"], name: "index_tender_crane_selections_on_tender_id"
   end
 
+  create_table "tender_equipment_selections", force: :cascade do |t|
+    t.bigint "tender_id", null: false
+    t.bigint "equipment_type_id", null: false
+    t.integer "units_required", default: 1, null: false
+    t.integer "period_months", default: 1, null: false
+    t.string "purpose", limit: 100
+    t.decimal "monthly_cost_override", precision: 12, scale: 2
+    t.decimal "calculated_monthly_cost", precision: 12, scale: 2, null: false
+    t.decimal "total_cost", precision: 14, scale: 2, default: "0.0", null: false
+    t.integer "sort_order", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["equipment_type_id"], name: "index_tender_equipment_selections_on_equipment_type_id"
+    t.index ["tender_id", "sort_order"], name: "index_tender_equipment_selections_on_tender_sort"
+    t.index ["tender_id"], name: "index_tender_equipment_selections_on_tender_id"
+  end
+
+  create_table "tender_equipment_summaries", force: :cascade do |t|
+    t.bigint "tender_id", null: false
+    t.decimal "equipment_subtotal", precision: 14, scale: 2, default: "0.0", null: false
+    t.decimal "mobilization_fee", precision: 10, scale: 2, default: "15000.0", null: false
+    t.decimal "total_equipment_cost", precision: 14, scale: 2, default: "0.0", null: false
+    t.decimal "rate_per_tonne_raw", precision: 12, scale: 4
+    t.decimal "rate_per_tonne_rounded", precision: 12, scale: 2
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tender_id"], name: "index_tender_equipment_summaries_on_tender_id", unique: true
+  end
+
   create_table "tender_inclusions_exclusions", force: :cascade do |t|
     t.bigint "tender_id", null: false
     t.boolean "fabrication_included"
@@ -530,6 +574,9 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_26_231431) do
   add_foreign_key "tender_crane_selections", "crane_rates"
   add_foreign_key "tender_crane_selections", "on_site_mobile_crane_breakdowns"
   add_foreign_key "tender_crane_selections", "tenders"
+  add_foreign_key "tender_equipment_selections", "equipment_types"
+  add_foreign_key "tender_equipment_selections", "tenders", on_delete: :cascade
+  add_foreign_key "tender_equipment_summaries", "tenders", on_delete: :cascade
   add_foreign_key "tender_inclusions_exclusions", "tenders"
   add_foreign_key "tender_line_items", "tenders"
   add_foreign_key "tender_specific_material_rates", "material_supplies", on_delete: :cascade
