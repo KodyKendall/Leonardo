@@ -19,14 +19,10 @@
       <div class="flex items-center justify-between mb-6">
         <div>
           <h2 class="text-2xl font-bold">Mobile Crane Breakdown</h2>
-          <!-- Back to Tender Button -->
+          <!-- Back to Tender Link -->
           <% if on_site_mobile_crane_breakdown.tender %>
             <div class="mt-4">
-              <p class="text-xs font-medium text-gray-600 mb-2 uppercase tracking-wide">Navigate Back</p>
-              <div class="flex items-center gap-2">
-                <i class="fas fa-arrow-left text-gray-500 text-sm"></i>
-                <%= link_to "Back to #{on_site_mobile_crane_breakdown.tender.tender_name || 'Tender'}", tender_path(on_site_mobile_crane_breakdown.tender), class: "btn btn-sm btn-primary shadow-sm hover:shadow-md", data: { turbo: false } %>
-              </div>
+              <span class="text-gray-600">Back to: </span><%= link_to "#{on_site_mobile_crane_breakdown.tender.tender_name}", tender_path(on_site_mobile_crane_breakdown.tender), class: "link link-primary font-bold text-lg", data: { turbo: false } %>
             </div>
           <% end %>
         </div>

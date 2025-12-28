@@ -174,12 +174,12 @@
     </div>
   </div>
 
-  <!-- Back Button -->
-  <div class="flex gap-4 mt-12 pb-8">
+  <!-- Back Link -->
+  <div class="mt-12 pb-8">
     <% if @on_site_mobile_crane_breakdown.tender %>
-      <%= link_to "← Back to Tender", tender_path(@on_site_mobile_crane_breakdown.tender), class: "btn btn-outline", data: { turbo: false } %>
+      <span class="text-gray-600">Back to: </span><%= link_to "#{@on_site_mobile_crane_breakdown.tender.tender_name}", tender_path(@on_site_mobile_crane_breakdown.tender), class: "link link-primary font-bold text-lg", data: { turbo: false } %>
     <% else %>
-      <%= link_to "← Back to Breakdowns", on_site_mobile_crane_breakdowns_path, class: "btn btn-outline", data: { turbo: false } %>
+      <span class="text-gray-600">Back to: </span><%= link_to "Breakdowns", on_site_mobile_crane_breakdowns_path, class: "link link-primary font-bold text-lg", data: { turbo: false } %>
     <% end %>
   </div>
 </div>
