@@ -3,7 +3,7 @@
   "graphs": {
     "boq_parser": {
       "workflow": "./user_agents/boq_parser/nodes.py:build_workflow",
-      "recursion_limit": 250
+      "recursion_limit": 900
     },
     "leo": "./user_agents/leo/nodes.py:build_workflow",
     "rails_agent": "./agents/leonardo/rails_agent/nodes.py:build_workflow",
