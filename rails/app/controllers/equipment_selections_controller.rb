@@ -7,6 +7,7 @@ class EquipmentSelectionsController < ApplicationController
     @equipment_selections = @tender.tender_equipment_selections.ordered
     @new_equipment_selection = TenderEquipmentSelection.new(tender: @tender)
     @equipment_types = EquipmentType.active
+    @tender_equipment_summary = @tender.tender_equipment_summary || @tender.create_tender_equipment_summary!
   end
 
   # POST /tenders/:tender_id/equipment_selections
@@ -72,6 +73,6 @@ class EquipmentSelectionsController < ApplicationController
   end
 
   def equipment_selection_params
-    params.require(:tender_equipment_selection).permit(:equipment_type_id, :units_required, :period_months, :purpose, :monthly_cost_override)
+    params.require(:tender_equipment_selection).permit(:equipment_type_id, :units_required, :period_months, :purpose, :monthly_cost_override, :establishment_cost, :de_establishment_cost)
   end
 end

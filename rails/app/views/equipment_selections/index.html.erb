@@ -1,9 +1,15 @@
 <% content_for :title, "Equipment Selections for #{@tender.tender_name}" %>
 
 <div class="w-full">
+  <!-- Turbo Stream Subscription -->
+  <%= turbo_stream_from @tender %>
+
   <% if notice.present? %>
     <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
   <% end %>
+
+  <!-- Equipment Cost Summary (BEFORE heading) -->
+  <%= render partial: 'tender_equipment_summaries/summary', locals: { tender_equipment_summary: @tender_equipment_summary } %>
 
   <!-- Tender Context Header -->
   <div class="mb-6">
@@ -26,6 +32,8 @@
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Purpose</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Monthly Cost</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Total Cost</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Establishment</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">De-establishment</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
         </tr>
       </thead>
@@ -36,7 +44,7 @@
 
         <!-- Add Equipment Form Row -->
         <tr id="new_equipment_form">
-          <td colspan="7">
+          <td colspan="9">
             <%= render "add_form", tender: @tender, new_equipment_selection: @new_equipment_selection, equipment_types: @equipment_types %>
           </td>
         </tr>
