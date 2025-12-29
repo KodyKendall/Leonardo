@@ -10,13 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_27_171653) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_29_170559) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
-  create_enum "purpose_enum", ["splicing", "main"]
+  create_enum "purpose_enum", ["splicing", "main", "misc"]
   create_enum "section_category_enum", ["Blank", "Steel Sections", "Paintwork", "Bolts", "Gutter Meter", "M16 Mechanical Anchor", "M16 Chemical", "M20 Chemical", "M24 Chemical", "M16 HD Bolt", "M20 HD Bolt", "M24 HD Bolt", "M30 HD Bolt", "M36 HD Bolt", "M42 HD Bolt"]
 
   create_table "action_text_rich_texts", force: :cascade do |t|
@@ -389,6 +389,17 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_27_171653) do
     t.index ["tender_id"], name: "index_projects_on_tender_id"
   end
 
+  create_table "rate_buildup_custom_items", force: :cascade do |t|
+    t.bigint "line_item_rate_build_up_id", null: false
+    t.text "description", null: false
+    t.decimal "rate", precision: 12, scale: 2, default: "0.0", null: false
+    t.decimal "included", precision: 5, scale: 2, default: "1.0", null: false
+    t.integer "sort_order", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["line_item_rate_build_up_id"], name: "index_rate_buildup_custom_items_on_line_item_rate_build_up_id"
+  end
+
   create_table "suppliers", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -571,6 +582,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_27_171653) do
   add_foreign_key "project_rate_build_ups", "tenders"
   add_foreign_key "projects", "tenders"
   add_foreign_key "projects", "users", column: "created_by_id"
+  add_foreign_key "rate_buildup_custom_items", "line_item_rate_build_ups", on_delete: :cascade
   add_foreign_key "tender_crane_selections", "crane_rates"
   add_foreign_key "tender_crane_selections", "on_site_mobile_crane_breakdowns"
   add_foreign_key "tender_crane_selections", "tenders"

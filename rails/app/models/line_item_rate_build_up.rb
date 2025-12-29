@@ -1,5 +1,8 @@
 class LineItemRateBuildUp < ApplicationRecord
   belongs_to :tender_line_item
+  has_many :rate_buildup_custom_items, dependent: :destroy
+
+  accepts_nested_attributes_for :rate_buildup_custom_items, allow_destroy: true
 
   validates :margin_percentage, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }
   
@@ -55,6 +58,11 @@ class LineItemRateBuildUp < ApplicationRecord
     self.subtotal += ((crainage_rate || 0).to_f * (crainage_included || 0).to_f)
     self.subtotal += ((cherry_picker_rate || 0).to_f * (cherry_picker_included || 0).to_f)
     self.subtotal += ((galvanizing_rate || 0).to_f * (galvanizing_included || 0).to_f)
+
+    # Add custom items to subtotal
+    rate_buildup_custom_items.each do |item|
+      self.subtotal += (item.rate || 0).to_f * (item.included || 1.0).to_f
+    end
 
     # Set margin percentage (default to 0 if not set)
     self.margin_percentage ||= 0

@@ -105,6 +105,83 @@
                   </td>
                 </tr>
               <% end %>
+
+              <!-- Custom Items Section -->
+              <% if line_item_rate_build_up.rate_buildup_custom_items.any? %>
+                <% line_item_rate_build_up.rate_buildup_custom_items.ordered.each_with_index do |custom_item, idx| %>
+                  <tr class="hover:bg-base-200 border-t-2 border-orange-200 bg-orange-50" 
+                      data-line-item-rate-build-up-target="customRow"
+                      data-custom-item-id="<%= custom_item.id %>">
+                    <td class="font-medium">
+                      <%= form.fields_for :rate_buildup_custom_items, custom_item do |cf| %>
+                        <%= cf.text_field :description, 
+                            placeholder: "e.g., Special Coating", 
+                            class: "input input-sm input-bordered w-full",
+                            data: { 
+                              line_item_rate_build_up_target: "customDescription",
+                              action: "blur->line-item-rate-build-up#saveOnBlur"
+                            } %>
+                      <% end %>
+                    </td>
+                    <td class="text-center">
+                      <%= form.fields_for :rate_buildup_custom_items, custom_item do |cf| %>
+                        <%= cf.number_field :included, 
+                            step: 0.01, 
+                            min: 0.01, 
+                            max: 5.0, 
+                            placeholder: "1.0",
+                            class: "input input-sm input-bordered w-20 text-center",
+                            data: { 
+                              line_item_rate_build_up_target: "customIncluded",
+                              action: "blur->line-item-rate-build-up#saveOnBlur"
+                            } %>
+                      <% end %>
+                    </td>
+                    <td class="text-right">
+                      <%= form.fields_for :rate_buildup_custom_items, custom_item do |cf| %>
+                        <%= cf.number_field :rate, 
+                            step: 0.01, 
+                            min: 0,
+                            placeholder: "0.00",
+                            class: "input input-sm input-bordered w-28 text-right",
+                            data: { 
+                              line_item_rate_build_up_target: "customRate",
+                              action: "blur->line-item-rate-build-up#saveOnBlur"
+                            } %>
+                      <% end %>
+                    </td>
+                    <td class="text-right font-semibold" data-line-item-rate-build-up-target="customAmount">
+                      <% amount = ((custom_item.rate || 0).to_f * (custom_item.included || 1.0).to_f) %>
+                      <% if amount > 0 %>
+                        <%= number_to_currency(amount, unit: "R ", precision: 2) %>
+                      <% else %>
+                        —
+                      <% end %>
+                    </td>
+                    <td class="text-center">
+                      <%= form.fields_for :rate_buildup_custom_items, custom_item do |cf| %>
+                        <button type="button" 
+                                class="btn btn-sm btn-ghost text-red-500 hover:text-red-700"
+                                data-action="click->line-item-rate-build-up#removeCustomItem">
+                          <i class="fas fa-trash"></i>
+                        </button>
+                        <%= cf.hidden_field :_destroy, data: { line_item_rate_build_up_target: "destroyField" } %>
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+              <% end %>
+
+              <!-- Add Custom Item Button Row -->
+              <tr data-line-item-rate-build-up-target="addButtonRow">
+                <td colspan="5" class="text-center py-2">
+                  <button type="button" 
+                          class="btn btn-sm btn-outline text-orange-600 border-orange-300 hover:bg-orange-50"
+                          data-action="click->line-item-rate-build-up#addCustomItem">
+                    <i class="fas fa-plus mr-1"></i> Add Custom Item
+                  </button>
+                </td>
+              </tr>
             </tbody>
             <tfoot>
               <tr class="border-t-2 border-base-300">
