@@ -1027,25 +1027,79 @@ puts "  • Password: 123456 (for all accounts)"
 
 # ===== EQUIPMENT TYPES =====
 EQUIPMENT_TYPES = [
-  # Diesel Boom Lifts
-  { category: 'diesel_boom', model: '600AJ', working_height_m: 20.0, 
-    base_rate_monthly: 42500.00, diesel_allowance_monthly: 22000.00 },
-  { category: 'diesel_boom', model: '450AJ', working_height_m: 15.7, 
-    base_rate_monthly: 38195.00, diesel_allowance_monthly: 19500.00 },
-  { category: 'diesel_boom', model: 'E450AJ', working_height_m: 15.7, 
-    base_rate_monthly: 38195.00, diesel_allowance_monthly: 19500.00 },
-  { category: 'diesel_boom', model: '3394RT', working_height_m: 12.0, 
-    base_rate_monthly: 28500.00, diesel_allowance_monthly: 15000.00 },
+  # Electric Scissors (7 items)
+  { category: 'electric_scissors', model: '1932RS', working_height_m: 7.6, 
+    base_rate_monthly: 8962.30, diesel_allowance_monthly: 0.00 },
+  { category: 'electric_scissors', model: '2032', working_height_m: 8.1, 
+    base_rate_monthly: 10509.90, diesel_allowance_monthly: 0.00 },
+  { category: 'electric_scissors', model: '2646', working_height_m: 9.7, 
+    base_rate_monthly: 10019.12, diesel_allowance_monthly: 0.00 },
+  { category: 'electric_scissors', model: '3246', working_height_m: 11.6, 
+    base_rate_monthly: 14316.36, diesel_allowance_monthly: 0.00 },
+  { category: 'electric_scissors', model: '1412', working_height_m: 14.0, 
+    base_rate_monthly: 19306.84, diesel_allowance_monthly: 0.00 },
+  { category: 'electric_scissors', model: '1614', working_height_m: 16.0, 
+    base_rate_monthly: 22067.08, diesel_allowance_monthly: 0.00 },
+  { category: 'electric_scissors', model: '2212', working_height_m: 22.0, 
+    base_rate_monthly: 53796.06, diesel_allowance_monthly: 0.00 },
   
-  # Electric Scissor Lifts
-  { category: 'electric_scissors', model: 'E12/5', working_height_m: 5.8, 
-    base_rate_monthly: 8500.00, diesel_allowance_monthly: 0.00 },
-  { category: 'electric_scissors', model: '1200EZ', working_height_m: 8.0, 
-    base_rate_monthly: 12000.00, diesel_allowance_monthly: 0.00 },
+  # Diesel Scissors (4 items)
+  { category: 'diesel_scissors', model: '260MRT', working_height_m: 9.7, 
+    base_rate_monthly: 18611.48, diesel_allowance_monthly: 13000.00 },
+  { category: 'diesel_scissors', model: '3394RT', working_height_m: 11.6, 
+    base_rate_monthly: 22129.62, diesel_allowance_monthly: 13000.00 },
+  { category: 'diesel_scissors', model: '4394RT', working_height_m: 14.5, 
+    base_rate_monthly: 26951.56, diesel_allowance_monthly: 13000.00 },
+  { category: 'diesel_scissors', model: '5394RT', working_height_m: 18.0, 
+    base_rate_monthly: 30335.08, diesel_allowance_monthly: 18200.00 },
   
-  # Telehandlers
-  { category: 'telehandler', model: 'TH3510', working_height_m: 10.0, 
-    base_rate_monthly: 35000.00, diesel_allowance_monthly: 18000.00 },
+  # Electric Articulating Booms (6 items)
+  { category: 'electric_articulating_booms', model: 'AB38W/N', working_height_m: 10.0, 
+    base_rate_monthly: 24142.56, diesel_allowance_monthly: 0.00 },
+  { category: 'electric_articulating_booms', model: 'E450AJ', working_height_m: 12.0, 
+    base_rate_monthly: 28873.34, diesel_allowance_monthly: 0.00 },
+  { category: 'electric_articulating_booms', model: 'E600JP', working_height_m: 12.5, 
+    base_rate_monthly: 28334.86, diesel_allowance_monthly: 0.00 },
+  { category: 'electric_articulating_booms', model: 'AB38W/N', working_height_m: 13.8, 
+    base_rate_monthly: 23446.14, diesel_allowance_monthly: 0.00 },
+  { category: 'electric_articulating_booms', model: 'E450AJ', working_height_m: 15.5, 
+    base_rate_monthly: 28634.84, diesel_allowance_monthly: 0.00 },
+  { category: 'electric_articulating_booms', model: 'E600JP', working_height_m: 20.0, 
+    base_rate_monthly: 46349.56, diesel_allowance_monthly: 0.00 },
+  
+  # Diesel Articulating Booms (7 items)
+  { category: 'diesel_articulating_booms', model: '340AJ', working_height_m: 12.5, 
+    base_rate_monthly: 28136.64, diesel_allowance_monthly: 16500.00 },
+  { category: 'diesel_articulating_booms', model: '450AJ', working_height_m: 15.5, 
+    base_rate_monthly: 30021.32, diesel_allowance_monthly: 19500.00 },
+  { category: 'diesel_articulating_booms', model: '510AJ', working_height_m: 17.0, 
+    base_rate_monthly: 32405.26, diesel_allowance_monthly: 19500.00 },
+  { category: 'diesel_articulating_booms', model: '520AJ', working_height_m: 18.0, 
+    base_rate_monthly: 31301.80, diesel_allowance_monthly: 19500.00 },
+  { category: 'diesel_articulating_booms', model: '600AJ', working_height_m: 20.0, 
+    base_rate_monthly: 40486.70, diesel_allowance_monthly: 19500.00 },
+  { category: 'diesel_articulating_booms', model: '800AJ', working_height_m: 26.0, 
+    base_rate_monthly: 73045.66, diesel_allowance_monthly: 22500.00 },
+  { category: 'diesel_articulating_booms', model: '1250AJP', working_height_m: 41.0, 
+    base_rate_monthly: 165723.58, diesel_allowance_monthly: 22500.00 },
+  
+  # Diesel Telescopic Booms (6 items)
+  { category: 'diesel_telescopic_booms', model: '660SJ', working_height_m: 22.0, 
+    base_rate_monthly: 46900.76, diesel_allowance_monthly: 19500.00 },
+  { category: 'diesel_telescopic_booms', model: '860SJ', working_height_m: 28.0, 
+    base_rate_monthly: 79101.44, diesel_allowance_monthly: 22500.00 },
+  { category: 'diesel_telescopic_booms', model: '1200SJP', working_height_m: 39.0, 
+    base_rate_monthly: 147633.62, diesel_allowance_monthly: 19500.00 },
+  { category: 'diesel_telescopic_booms', model: '1350SJP', working_height_m: 43.0, 
+    base_rate_monthly: 160226.42, diesel_allowance_monthly: 22500.00 },
+  { category: 'diesel_telescopic_booms', model: '1500SJP', working_height_m: 48.0, 
+    base_rate_monthly: 222209.92, diesel_allowance_monthly: 19500.00 },
+  { category: 'diesel_telescopic_booms', model: '1850SJP', working_height_m: 57.0, 
+    base_rate_monthly: 278112.20, diesel_allowance_monthly: 22500.00 },
+  
+  # Telehandlers (1 item)
+  { category: 'telehandler', model: 'TH4017', working_height_m: 17.0, 
+    base_rate_monthly: 66231.98, diesel_allowance_monthly: 11700.00 },
 ]
 
 EQUIPMENT_TYPES.each do |attrs|
