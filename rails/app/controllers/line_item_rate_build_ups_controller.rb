@@ -38,6 +38,10 @@ class LineItemRateBuildUpsController < ApplicationController
 
   # PATCH/PUT /line_item_rate_build_ups/1 or /line_item_rate_build_ups/1.json
   def update
+    # 🪲 DEBUG: Log the params to see if custom items are being sent
+    Rails.logger.info("🪲 DEBUG: line_item_rate_build_up_params = #{line_item_rate_build_up_params.inspect}")
+    Rails.logger.info("🪲 DEBUG: custom items attributes = #{line_item_rate_build_up_params[:rate_buildup_custom_items_attributes].inspect}")
+    
     respond_to do |format|
       if @line_item_rate_build_up.update(line_item_rate_build_up_params)
         format.html { redirect_to @line_item_rate_build_up, notice: "Line item rate build up was successfully updated.", status: :see_other }
@@ -105,6 +109,15 @@ class LineItemRateBuildUpsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def line_item_rate_build_up_params
-      params.require(:line_item_rate_build_up).permit(:tender_line_item_id, :material_supply_rate, :material_supply_included, :fabrication_rate, :fabrication_included, :overheads_rate, :overheads_included, :shop_priming_rate, :shop_priming_included, :onsite_painting_rate, :onsite_painting_included, :delivery_rate, :delivery_included, :bolts_rate, :bolts_included, :erection_rate, :erection_included, :crainage_rate, :crainage_included, :cherry_picker_rate, :cherry_picker_included, :galvanizing_rate, :galvanizing_included, :subtotal, :margin_percentage, :total_before_rounding, :rounded_rate)
+      params.require(:line_item_rate_build_up).permit(
+        :tender_line_item_id, :material_supply_rate, :material_supply_included, :fabrication_rate, 
+        :fabrication_included, :overheads_rate, :overheads_included, :shop_priming_rate, 
+        :shop_priming_included, :onsite_painting_rate, :onsite_painting_included, :delivery_rate, 
+        :delivery_included, :bolts_rate, :bolts_included, :erection_rate, :erection_included, 
+        :crainage_rate, :crainage_included, :cherry_picker_rate, :cherry_picker_included, 
+        :galvanizing_rate, :galvanizing_included, :subtotal, :margin_percentage, :total_before_rounding, 
+        :rounded_rate,
+        rate_buildup_custom_items_attributes: [:id, :description, :rate, :included, :sort_order, :_destroy]
+      )
     end
 end

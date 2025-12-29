@@ -14,7 +14,14 @@ export default class extends Controller {
     "roundedRate",
     "dirtyIndicator",
     "totalDirtyIndicator",
-    "saveButton"
+    "saveButton",
+    "customRow",
+    "customDescription",
+    "customIncluded",
+    "customRate",
+    "customAmount",
+    "addButtonRow",
+    "destroyField"
   ]
 
   connect() {
@@ -110,7 +117,22 @@ export default class extends Controller {
 
   saveOnBlur(event) {
     // Auto-save rate or multiplier field on blur via Turbo
-    const form = this.element.closest('form')
+    // But ONLY for existing (saved) rows, not new ones
+    // New rows should only save when user clicks "Save & Calculate"
+    
+    const row = event.target.closest('tr')
+    if (!row) {
+      return
+    }
+    
+    // Check if this is a new custom item row (not yet saved to database)
+    if (row.hasAttribute('data-new-item')) {
+      // Don't auto-save new items, wait for "Save & Calculate" button
+      return
+    }
+    
+    // For existing rows, auto-save via form submission
+    const form = this.element.querySelector('form')
     if (form) {
       form.requestSubmit()
     }
@@ -118,9 +140,112 @@ export default class extends Controller {
 
   saveOnMarginBlur(event) {
     // Save margin field via Turbo form submission
-    const form = this.element.closest('form')
+    // The form is a child of the controller element, not a parent
+    const form = this.element.querySelector('form')
     if (form) {
       form.requestSubmit()
     }
+  }
+
+  addCustomItem(event) {
+    event.preventDefault()
+    
+    // Find the button row
+    const buttonRow = this.addButtonRowTarget
+    if (!buttonRow) return
+    
+    // Generate a unique timestamp-based key for the nested attribute index
+    const timestamp = new Date().getTime()
+    
+    // Create the HTML for a new custom item row
+    const html = `
+      <tr class="hover:bg-base-200 border-t-2 border-orange-200 bg-orange-50" 
+          data-line-item-rate-build-up-target="customRow"
+          data-new-item="true">
+        <td class="font-medium">
+          <input type="text" 
+                 name="line_item_rate_build_up[rate_buildup_custom_items_attributes][${timestamp}][description]"
+                 placeholder="e.g., Special Coating" 
+                 class="input input-sm input-bordered w-full"
+                 data-line-item-rate-build-up-target="customDescription"
+                 data-action="blur->line-item-rate-build-up#saveOnBlur" />
+        </td>
+        <td class="text-center">
+          <input type="number" 
+                 name="line_item_rate_build_up[rate_buildup_custom_items_attributes][${timestamp}][included]"
+                 step="0.01" 
+                 min="0.01" 
+                 max="5.0" 
+                 value="1.0"
+                 placeholder="1.0"
+                 class="input input-sm input-bordered w-20 text-center"
+                 data-line-item-rate-build-up-target="customIncluded"
+                 data-action="blur->line-item-rate-build-up#saveOnBlur" />
+        </td>
+        <td class="text-right">
+          <input type="number" 
+                 name="line_item_rate_build_up[rate_buildup_custom_items_attributes][${timestamp}][rate]"
+                 step="0.01" 
+                 min="0"
+                 placeholder="0.00"
+                 class="input input-sm input-bordered w-28 text-right"
+                 data-line-item-rate-build_up-target="customRate"
+                 data-action="blur->line-item-rate-build-up#saveOnBlur" />
+        </td>
+        <td class="text-right font-semibold" data-line-item-rate-build-up-target="customAmount">—</td>
+        <td class="text-center">
+          <button type="button" 
+                  class="btn btn-sm btn-ghost text-red-500 hover:text-red-700"
+                  data-action="click->line-item-rate-build-up#removeCustomItem">
+            <i class="fas fa-trash"></i>
+          </button>
+          <input type="hidden" 
+                 name="line_item_rate_build_up[rate_buildup_custom_items_attributes][${timestamp}][_destroy]"
+                 value="false"
+                 data-line-item-rate-build-up-target="destroyField" />
+        </td>
+      </tr>
+    `
+    
+    // Insert the new row before the button row
+    buttonRow.insertAdjacentHTML('beforebegin', html)
+    
+    // Focus on the description field of the new row
+    const newRows = this.customRowTargets
+    if (newRows.length > 0) {
+      const lastNewRow = newRows[newRows.length - 1]
+      const descriptionInput = lastNewRow.querySelector('[data-line-item-rate-build-up-target="customDescription"]')
+      if (descriptionInput) {
+        descriptionInput.focus()
+      }
+    }
+    
+    this.checkDirtyState()
+  }
+
+
+
+  removeCustomItem(event) {
+    event.preventDefault()
+    
+    const row = event.target.closest('tr[data-line-item-rate-build-up-target="customRow"]')
+    if (!row) return
+    
+    // Check if this is a newly added (unsaved) item
+    if (row.hasAttribute('data-new-item')) {
+      // Just remove the row from the DOM
+      row.remove()
+    } else {
+      // For saved items, mark for deletion using the _destroy field
+      const destroyField = row.querySelector('[data-line-item-rate-build-up-target="destroyField"]')
+      if (destroyField) {
+        destroyField.value = "true"
+        // Hide the row and add visual indication
+        row.classList.add('opacity-50', 'line-through')
+        row.style.display = 'none'
+      }
+    }
+    
+    this.checkDirtyState()
   }
 }
