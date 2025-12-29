@@ -1,0 +1,87 @@
+<%# Equipment Cost Summary Section %>
+<%# Displays total equipment cost calculations: equipment subtotal, tonnage, and cost per tonne %>
+<%# Parameters: tender_equipment_summary (object) %>
+
+<%= turbo_frame_tag "equipment_cost_summary" do %>
+  <% if tender_equipment_summary.equipment_subtotal > 0 || tender_equipment_summary.total_equipment_cost > 0 %>
+    <div class="mt-8 p-6 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg">
+      <h3 class="text-lg font-bold text-emerald-900 mb-6 flex items-center gap-2">
+        <i class="fas fa-calculator text-emerald-600"></i>
+        Equipment Cost Summary
+      </h3>
+
+      <div class="grid grid-cols-3 gap-6">
+        <!-- Total Equipment Cost -->
+        <div class="bg-white p-4 rounded-lg border border-emerald-100">
+          <p class="text-xs text-gray-600 uppercase tracking-wider font-semibold mb-2">
+            <i class="fas fa-coins text-green-600 mr-1"></i>
+            Total Access Equipment Cost
+          </p>
+          <p class="text-2xl font-bold text-emerald-900">
+            <%= number_to_currency(tender_equipment_summary.total_equipment_cost, unit: "R ", precision: 2) %>
+          </p>
+          <p class="text-xs text-gray-500 mt-2">Sum of all equipment costs + mobilization</p>
+        </div>
+
+        <!-- Project Tonnes -->
+        <div class="bg-white p-4 rounded-lg border border-emerald-100">
+          <p class="text-xs text-gray-600 uppercase tracking-wider font-semibold mb-2">
+            <i class="fas fa-weight text-blue-600 mr-1"></i>
+            Project Tonnes
+          </p>
+          <p class="text-2xl font-bold text-blue-900">
+            <%= number_with_precision(tender_equipment_summary.tender.total_tonnage, precision: 3, delimiter: ",") %> t
+          </p>
+          <p class="text-xs text-gray-500 mt-2">Total project tonnage</p>
+        </div>
+
+        <!-- Cost Per Tonne -->
+        <div class="bg-white p-4 rounded-lg border border-emerald-100">
+          <p class="text-xs text-gray-600 uppercase tracking-wider font-semibold mb-2">
+            <i class="fas fa-chart-line text-purple-600 mr-1"></i>
+            Cost Per Tonne
+          </p>
+          <p class="text-2xl font-bold text-purple-900">
+            <% if tender_equipment_summary.rate_per_tonne_raw.present? %>
+              <%= number_to_currency(tender_equipment_summary.rate_per_tonne_raw, unit: "R ", precision: 2) %>
+            <% else %>
+              -
+            <% end %>
+          </p>
+          <p class="text-xs text-gray-500 mt-2">Raw cost per tonne</p>
+        </div>
+      </div>
+
+      <!-- Equipment Breakdown by Purpose (Optional) -->
+      <% if tender_equipment_summary.tender.tender_equipment_selections.any? %>
+        <div class="mt-6 pt-6 border-t border-emerald-200">
+          <p class="text-sm font-semibold text-gray-700 mb-4">Equipment Breakdown:</p>
+          <div class="grid grid-cols-2 gap-4">
+            <% purposes = tender_equipment_summary.tender.tender_equipment_selections.pluck(:purpose).compact.uniq %>
+            <% if purposes.any? %>
+              <% purposes.each do |purpose| %>
+                <% selections = tender_equipment_summary.tender.tender_equipment_selections.where(purpose: purpose) %>
+                <% cost = selections.sum(:total_cost) %>
+                <div class="text-sm">
+                  <span class="font-medium text-gray-700"><%= purpose.titleize %>:</span>
+                  <span class="font-bold text-gray-900"><%= number_to_currency(cost, unit: "R ", precision: 2) %></span>
+                  <span class="text-gray-500 text-xs ml-2">(<%= selections.count %> item<%= selections.count != 1 ? 's' : '' %>)</span>
+                </div>
+              <% end %>
+            <% else %>
+              <div class="text-sm text-gray-500">
+                No purpose specified for equipment items
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="mt-8 p-6 bg-gray-50 border border-gray-200 rounded-lg text-center">
+      <i class="fas fa-info-circle text-gray-400 text-2xl mb-3"></i>
+      <p class="text-gray-600 font-medium">No equipment selections yet</p>
+      <p class="text-sm text-gray-500 mt-2">Add equipment selections above to see cost calculations</p>
+    </div>
+  <% end %>
+<% end %>

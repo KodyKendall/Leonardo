@@ -51,6 +51,16 @@
         R<%= number_with_precision(equipment_selection.total_cost, precision: 2, delimiter: ",") %>
       </td>
 
+      <!-- Establishment Cost (Editable) -->
+      <td class="px-6 py-4 text-sm">
+        <%= f.number_field :establishment_cost, step: 0.01, min: 0, class: "input input-sm input-bordered w-28", placeholder: "0.00" %>
+      </td>
+
+      <!-- De-establishment Cost (Editable) -->
+      <td class="px-6 py-4 text-sm">
+        <%= f.number_field :de_establishment_cost, step: 0.01, min: 0, class: "input input-sm input-bordered w-28", placeholder: "0.00" %>
+      </td>
+
       <!-- Actions -->
       <td class="px-6 py-4 text-sm">
         <div class="flex items-center gap-2">

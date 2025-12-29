@@ -44,6 +44,18 @@ class Tender < ApplicationRecord
     new_tonnage = tender_line_items.where(unit_of_measure: "tonne").sum(:quantity)
     update_column(:total_tonnage, new_tonnage)
     broadcast_update_total_tonnage
+    # Also recalculate equipment summary since cost per tonne depends on total_tonnage
+    recalculate_equipment_summary!
+  end
+
+  # Recalculate equipment summary when tender tonnage changes
+  def recalculate_equipment_summary!
+    summary = tender_equipment_summary
+    if summary.present?
+      summary.calculate!
+      # Broadcast the update to the equipment selections page
+      summary.broadcast_update
+    end
   end
 
   private
