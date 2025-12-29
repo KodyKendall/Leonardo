@@ -59,8 +59,9 @@
     </div>
   <% end %>
 
-  <!-- Back Link -->
-  <div class="mt-6">
+  <!-- Navigation Links -->
+  <div class="mt-6 flex gap-4">
     <%= link_to "Back to Tender", tender_path(@tender), class: "text-blue-600 hover:text-blue-800 font-medium" %>
+    <%= link_to "View Equipment Types", equipment_types_path, class: "btn btn-primary btn-sm" %>
   </div>
 </div>
