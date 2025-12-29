@@ -9,6 +9,8 @@ class TenderCraneSelection < ApplicationRecord
   before_save :calculate_wet_rate_per_day
   before_save :calculate_total_cost
   after_save :verify_total_cost_calculated
+  after_save_commit :trigger_rate_buildup_update
+  after_destroy_commit :trigger_rate_buildup_update
 
   private
 
@@ -61,5 +63,15 @@ class TenderCraneSelection < ApplicationRecord
     if total_cost != expected_total
       update_column(:total_cost, expected_total)
     end
+  end
+
+  # Trigger parent ProjectRateBuildUp to recalculate crainage_rate when crane selections change
+  def trigger_rate_buildup_update
+    return unless tender.present?
+    
+    rate_buildup = tender.project_rate_build_ups.first
+    return unless rate_buildup.present?
+    
+    rate_buildup.save!
   end
 end
