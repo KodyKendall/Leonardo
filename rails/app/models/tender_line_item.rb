@@ -13,6 +13,7 @@ class TenderLineItem < ApplicationRecord
 
   after_initialize :build_defaults, if: :new_record?
   after_create :create_line_item_rate_build_up, if: -> { line_item_rate_build_up.nil? }
+  after_create :inherit_inclusion_defaults
   after_create :populate_rates_from_project_buildup
   after_create :create_line_item_material_breakdown, if: -> { line_item_material_breakdown.nil? }
   after_save :update_tender_grand_total
@@ -66,7 +67,9 @@ class TenderLineItem < ApplicationRecord
     return unless line_item_rate_build_up && tender.project_rate_buildup
 
     project_buildup = tender.project_rate_buildup
-    line_item_rate_build_up.update(
+    # Use update_columns to avoid triggering normalize_multipliers callback
+    # which would override inherited 0.0 inclusion values with 1.0
+    line_item_rate_build_up.update_columns(
       material_supply_rate: project_buildup.material_supply_rate,
       fabrication_rate: project_buildup.fabrication_rate,
       overheads_rate: project_buildup.overheads_rate,
@@ -83,5 +86,29 @@ class TenderLineItem < ApplicationRecord
 
   def create_line_item_material_breakdown
     LineItemMaterialBreakdown.create!(tender_line_item_id: id) unless line_item_material_breakdown
+  end
+
+  def inherit_inclusion_defaults
+    return unless line_item_rate_build_up && tender.tender_inclusions_exclusion
+
+    inclusions = tender.tender_inclusions_exclusion
+    
+    # Map TenderInclusionsExclusion boolean fields to LineItemRateBuildUp decimal fields
+    # Includes 4 field name mismatches that need explicit mapping
+    inclusion_values = {
+      fabrication_included: inclusions.fabrication_included ? 1.0 : 0.0,
+      overheads_included: inclusions.overheads_included ? 1.0 : 0.0,
+      shop_priming_included: inclusions.primer_included ? 1.0 : 0.0,        # NAME MISMATCH: primer → shop_priming
+      onsite_painting_included: inclusions.final_paint_included ? 1.0 : 0.0, # NAME MISMATCH: final_paint → onsite_painting
+      delivery_included: inclusions.delivery_included ? 1.0 : 0.0,
+      bolts_included: inclusions.bolts_included ? 1.0 : 0.0,
+      erection_included: inclusions.erection_included ? 1.0 : 0.0,
+      crainage_included: inclusions.crainage_included ? 1.0 : 0.0,
+      cherry_picker_included: inclusions.cherry_pickers_included ? 1.0 : 0.0, # NAME MISMATCH: cherry_pickers → cherry_picker
+      galvanizing_included: inclusions.steel_galvanized ? 1.0 : 0.0            # NAME MISMATCH: steel_galvanized → galvanizing
+    }
+
+    # Update rate buildup with inherited values using update_columns to avoid triggering callbacks
+    line_item_rate_build_up.update_columns(inclusion_values)
   end
 end
