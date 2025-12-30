@@ -145,6 +145,17 @@
         data: { "project-rate-buildup-form-target": "field" }
       %>
     </div>
+
+    <!-- Shop Drawings Rate -->
+    <div class="form-control">
+      <%= form.label :shop_drawings_rate, "Shop Drawings Rate (R/tonne)", { class: "label" } %>
+      <%= form.number_field :shop_drawings_rate, 
+        step: :any,
+        placeholder: "0.00",
+        class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:shop_drawings_rate].any? }],
+        data: { "project-rate-buildup-form-target": "field" }
+      %>
+    </div>
   </div>
 
   <!-- Form Actions -->

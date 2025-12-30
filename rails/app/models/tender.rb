@@ -32,9 +32,15 @@ class Tender < ApplicationRecord
   # Project types enum-like constant
   PROJECT_TYPES = ['Commercial', 'Mining'].freeze
   
-  # Recalculate grand total as sum of all line item totals and broadcast update
+  # Recalculate grand total as sum of all line item totals + shop drawings total and broadcast update
   def recalculate_grand_total!
-    new_total = tender_line_items.sum { |item| (item.line_item_rate_build_up&.rounded_rate || 0) * item.quantity }
+    line_items_total = tender_line_items.sum { |item| (item.line_item_rate_build_up&.rounded_rate || 0) * item.quantity }
+    shop_drawings_total = if project_rate_buildup&.shop_drawings_rate.present?
+                             project_rate_buildup.shop_drawings_rate * (total_tonnage || 0)
+                           else
+                             0
+                           end
+    new_total = line_items_total + shop_drawings_total
     update_column(:grand_total, new_total)
     broadcast_update_grand_total
   end

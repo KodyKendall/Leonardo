@@ -1,0 +1,22 @@
+<div id="tender_<%= tender.id %>_shop_drawings" class="mb-6 bg-purple-50 border-l-4 border-purple-500 p-4 rounded">
+  <div class="flex items-start gap-3">
+    <i class="fa-solid fa-drafting-compass text-purple-600 text-lg flex-shrink-0 mt-0.5"></i>
+    <div class="flex-grow">
+      <h3 class="font-semibold text-purple-900 mb-2">Shop Drawings</h3>
+      <div class="flex items-baseline gap-4">
+        <div>
+          <span class="text-sm text-purple-700">Rate:</span>
+          <span class="font-semibold text-lg text-purple-900 ml-2">
+            <%= number_to_currency(tender.project_rate_buildup&.shop_drawings_rate || 0, unit: "R", precision: 2) %>/tonne
+          </span>
+        </div>
+        <div>
+          <span class="text-sm text-purple-700">Total:</span>
+          <span class="font-semibold text-lg text-purple-900 ml-2">
+            <%= number_to_currency((tender.project_rate_buildup&.shop_drawings_rate || 0) * (tender.total_tonnage || 0), unit: "R", precision: 2) %>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
