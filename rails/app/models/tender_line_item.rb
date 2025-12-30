@@ -80,7 +80,8 @@ class TenderLineItem < ApplicationRecord
       erection_rate: project_buildup.erection_rate,
       crainage_rate: project_buildup.crainage_rate,
       cherry_picker_rate: project_buildup.cherry_picker_rate,
-      galvanizing_rate: project_buildup.galvanizing_rate
+      galvanizing_rate: project_buildup.galvanizing_rate,
+      shop_drawings_rate: project_buildup.shop_drawings_rate
     )
   end
 

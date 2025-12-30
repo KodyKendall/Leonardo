@@ -104,11 +104,19 @@
                 </code>
               </td>
             </tr>
-            <tr class="hover:bg-base-200">
+            <tr class="border-b hover:bg-base-200">
               <td class="font-medium">Galvanizing</td>
               <td class="text-right">
                 <code class="text-lg font-semibold">
                   <%= number_with_precision(project_rate_build_up.galvanizing_rate || 0, precision: 2) %>
+                </code>
+              </td>
+            </tr>
+            <tr class="hover:bg-base-200">
+              <td class="font-medium">Shop Drawings</td>
+              <td class="text-right">
+                <code class="text-lg font-semibold">
+                  <%= number_with_precision(project_rate_build_up.shop_drawings_rate || 0, precision: 2) %>
                 </code>
               </td>
             </tr>
