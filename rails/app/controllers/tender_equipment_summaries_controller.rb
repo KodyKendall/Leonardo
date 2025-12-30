@@ -38,11 +38,22 @@ class TenderEquipmentSummariesController < ApplicationController
   def update
     respond_to do |format|
       if @tender_equipment_summary.update(tender_equipment_summary_params)
+        # Recalculate totals when establishment_cost changes
+        @tender_equipment_summary.calculate!
+        
         format.html { redirect_to @tender_equipment_summary, notice: "Tender equipment summary was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @tender_equipment_summary }
+        format.turbo_stream do
+          # Broadcast updates to both the establishment cost row and the summary card
+          render turbo_stream: [
+            turbo_stream.update("establishment_cost_row", partial: "equipment_selections/establishment_cost_row", locals: { tender_equipment_summary: @tender_equipment_summary }),
+            turbo_stream.update("equipment_cost_summary", partial: "tender_equipment_summaries/summary", locals: { tender_equipment_summary: @tender_equipment_summary })
+          ]
+        end
       else
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @tender_equipment_summary.errors, status: :unprocessable_entity }
+        format.turbo_stream { head :unprocessable_entity }
       end
     end
   end
@@ -65,6 +76,6 @@ class TenderEquipmentSummariesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def tender_equipment_summary_params
-      params.require(:tender_equipment_summary).permit(:tender_id, :equipment_subtotal, :mobilization_fee, :total_equipment_cost, :rate_per_tonne_raw, :rate_per_tonne_rounded)
+      params.require(:tender_equipment_summary).permit(:tenant_id, :equipment_subtotal, :mobilization_fee, :establishment_cost, :total_equipment_cost, :rate_per_tonne_raw, :rate_per_tonne_rounded)
     end
 end

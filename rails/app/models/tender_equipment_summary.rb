@@ -3,15 +3,17 @@ class TenderEquipmentSummary < ApplicationRecord
 
   validates :equipment_subtotal, :mobilization_fee, :total_equipment_cost,
             presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :establishment_cost, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
   # Calculate equipment costs and rate per tonne
   def calculate!
     # equipment_subtotal = sum of all tender_equipment_selections.total_cost
     self.equipment_subtotal = tender.tender_equipment_selections.sum(:total_cost)
 
-    # total_equipment_cost = equipment_subtotal + mobilization_fee
+    # total_equipment_cost = equipment_subtotal + mobilization_fee + establishment_cost
     fee = mobilization_fee.presence || 0
-    self.total_equipment_cost = equipment_subtotal + fee
+    est_cost = establishment_cost.presence || 0
+    self.total_equipment_cost = equipment_subtotal + fee + est_cost
 
     # rate_per_tonne_raw = total_equipment_cost ÷ tender.total_tonnage (raw, no rounding)
     # Handle edge case: if total_tonnage is zero, set to nil
