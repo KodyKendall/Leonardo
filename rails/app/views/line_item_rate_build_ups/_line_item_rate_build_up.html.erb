@@ -204,7 +204,7 @@
                         action: "blur->line-item-rate-build-up#saveOnMarginBlur"
                       } %>
                 </td>
-                <td class="text-right font-semibold text-orange-600" data-line_item_rate_build_up_target="marginDisplay">
+                <td class="text-right font-semibold text-orange-600" data-line-item-rate-build-up-target="marginDisplay">
                   <%= "#{line_item_rate_build_up.margin_percentage}%" %>
                 </td>
               </tr>
@@ -217,7 +217,7 @@
               <tr class="bg-green-50">
                 <td colspan="3" class="text-right font-bold text-lg">
                   Final Rate:
-                  <span class="hidden text-warning" data-line_item_rate_build_up_target="totalDirtyIndicator">*</span>
+                  <span class="hidden text-warning" data-line-item-rate-build-up-target="totalDirtyIndicator">*</span>
                 </td>
                 <td class="text-right font-bold text-lg text-green-600" data-line-item-rate-build-up-target="roundedRate">
                   <%= number_to_currency(line_item_rate_build_up.rounded_rate, unit: "R ", precision: 2) %>
@@ -230,7 +230,7 @@
             <%= form.submit "Save & Calculate",
                 class: "btn btn-primary btn-sm transition-colors",
                 data: { line_item_rate_build_up_target: "saveButton" } %>
-            <span class="hidden text-warning text-sm font-medium" data-line_item_rate_build_up_target="dirtyIndicator">
+            <span class="hidden text-warning text-sm font-medium" data-line-item-rate-build-up-target="dirtyIndicator">
               <span class="text-warning font-bold">*</span> Unsaved changes
             </span>
           </div>

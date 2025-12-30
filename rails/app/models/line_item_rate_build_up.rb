@@ -19,7 +19,6 @@ class LineItemRateBuildUp < ApplicationRecord
   before_save :calculate_totals
   after_save :sync_rate_to_tender_line_item
   after_commit :broadcast_to_tender_line_item
-  after_commit :broadcast_to_self
   after_save :update_tender_grand_total
 
   private
@@ -91,13 +90,5 @@ class LineItemRateBuildUp < ApplicationRecord
     )
   end
 
-  def broadcast_to_self
-    # Broadcast update directly to this RateBuildUp frame
-    # This ensures the RateBuildUp table updates immediately when material_supply_rate changes
-    broadcast_replace_to(
-      ActionView::RecordIdentifier.dom_id(self),
-      partial: "line_item_rate_build_ups/line_item_rate_build_up",
-      locals: { line_item_rate_build_up: self }
-    )
-  end
+
 end
