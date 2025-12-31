@@ -76,8 +76,7 @@
                           placeholder: "1.0",
                           class: "input input-sm input-bordered w-20 text-center",
                           data: {
-                            line_item_rate_build_up_target: "multiplierInput",
-                            action: "blur->line-item-rate-build-up#saveOnBlur"
+                            line_item_rate_build_up_target: "multiplierInput"
                           } %>
                     <% end %>
                   </td>
@@ -90,8 +89,7 @@
                           min: 0,
                           class: "input input-sm input-bordered w-28 text-right",
                           data: {
-                            line_item_rate_build_up_target: "rateInput",
-                            action: "blur->line-item-rate-build-up#saveOnBlur"
+                            line_item_rate_build_up_target: "rateInput"
                           } %>
                     <% end %>
                   </td>
@@ -114,39 +112,36 @@
                       data-custom-item-id="<%= custom_item.id %>">
                     <td class="font-medium">
                       <%= form.fields_for :rate_buildup_custom_items, custom_item do |cf| %>
-                        <%= cf.text_field :description, 
-                            placeholder: "e.g., Special Coating", 
+                        <%= cf.text_field :description,
+                            placeholder: "e.g., Special Coating",
                             class: "input input-sm input-bordered w-full",
-                            data: { 
-                              line_item_rate_build_up_target: "customDescription",
-                              action: "blur->line-item-rate-build-up#saveOnBlur"
+                            data: {
+                              line_item_rate_build_up_target: "customDescription"
                             } %>
                       <% end %>
                     </td>
                     <td class="text-center">
                       <%= form.fields_for :rate_buildup_custom_items, custom_item do |cf| %>
-                        <%= cf.number_field :included, 
-                            step: 0.01, 
-                            min: 0.01, 
-                            max: 5.0, 
+                        <%= cf.number_field :included,
+                            step: 0.01,
+                            min: 0.01,
+                            max: 5.0,
                             placeholder: "1.0",
                             class: "input input-sm input-bordered w-20 text-center",
-                            data: { 
-                              line_item_rate_build_up_target: "customIncluded",
-                              action: "blur->line-item-rate-build-up#saveOnBlur"
+                            data: {
+                              line_item_rate_build_up_target: "customIncluded"
                             } %>
                       <% end %>
                     </td>
                     <td class="text-right">
                       <%= form.fields_for :rate_buildup_custom_items, custom_item do |cf| %>
-                        <%= cf.number_field :rate, 
-                            step: 0.01, 
+                        <%= cf.number_field :rate,
+                            step: 0.01,
                             min: 0,
                             placeholder: "0.00",
                             class: "input input-sm input-bordered w-28 text-right",
-                            data: { 
-                              line_item_rate_build_up_target: "customRate",
-                              action: "blur->line-item-rate-build-up#saveOnBlur"
+                            data: {
+                              line_item_rate_build_up_target: "customRate"
                             } %>
                       <% end %>
                     </td>
@@ -200,8 +195,7 @@
                       placeholder: "e.g., 10.5 for 10.5%",
                       class: "input input-sm input-bordered w-28 text-right",
                       data: {
-                        line_item_rate_build_up_target: "marginInput",
-                        action: "blur->line-item-rate-build-up#saveOnMarginBlur"
+                        line_item_rate_build_up_target: "marginInput"
                       } %>
                 </td>
                 <td class="text-right font-semibold text-orange-600" data-line-item-rate-build-up-target="marginDisplay">
