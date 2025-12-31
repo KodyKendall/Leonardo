@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_31_180621) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_31_212703) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -355,6 +355,18 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_31_180621) do
     t.index ["tender_id"], name: "index_on_site_mobile_crane_breakdowns_on_tender_id", unique: true
   end
 
+  create_table "preliminaries_general_items", force: :cascade do |t|
+    t.bigint "tender_id", null: false
+    t.string "category", null: false
+    t.text "description"
+    t.decimal "quantity", precision: 10, scale: 3, default: "0.0"
+    t.decimal "rate", precision: 12, scale: 2, default: "0.0"
+    t.integer "sort_order", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tender_id"], name: "index_preliminaries_general_items_on_tender_id"
+  end
+
   create_table "project_rate_build_ups", force: :cascade do |t|
     t.bigint "tender_id", null: false
     t.decimal "material_supply_rate"
@@ -585,6 +597,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_31_180621) do
   add_foreign_key "material_supply_rates", "monthly_material_supply_rates"
   add_foreign_key "material_supply_rates", "suppliers"
   add_foreign_key "on_site_mobile_crane_breakdowns", "tenders", on_delete: :cascade
+  add_foreign_key "preliminaries_general_items", "tenders"
   add_foreign_key "project_rate_build_ups", "tenders"
   add_foreign_key "projects", "tenders"
   add_foreign_key "projects", "users", column: "created_by_id"

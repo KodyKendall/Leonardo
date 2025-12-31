@@ -1,0 +1,49 @@
+<% content_for :title, "Showing P&G Item" %>
+
+<div class="md:w-2/3 w-full">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
+  <% end %>
+
+  <h1 class="font-bold text-4xl mb-2">P&G Item Details</h1>
+  <p class="text-gray-600 mb-8">Tender: <%= link_to @tender.tender_name, tender_path(@tender), class: "text-blue-600 hover:underline" %></p>
+
+  <div class="bg-white rounded-lg border border-gray-200 p-6 mb-8">
+    <div class="grid grid-cols-1 gap-4">
+      <div>
+        <span class="block text-sm font-medium text-gray-500">Category</span>
+        <span class="text-lg font-semibold"><%= @preliminaries_general_item.category.titleize %></span>
+      </div>
+      <div>
+        <span class="block text-sm font-medium text-gray-500">Description</span>
+        <p class="text-lg"><%= @preliminaries_general_item.description %></p>
+      </div>
+      <div class="grid grid-cols-3 gap-4">
+        <div>
+          <span class="block text-sm font-medium text-gray-500">Quantity</span>
+          <span class="text-lg font-mono"><%= number_with_precision(@preliminaries_general_item.quantity, precision: 3) %></span>
+        </div>
+        <div>
+          <span class="block text-sm font-medium text-gray-500">Rate</span>
+          <span class="text-lg font-mono"><%= number_to_currency(@preliminaries_general_item.rate) %></span>
+        </div>
+        <div>
+          <span class="block text-sm font-medium text-gray-500">Total</span>
+          <span class="text-lg font-mono font-bold"><%= number_to_currency(@preliminaries_general_item.quantity * @preliminaries_general_item.rate) %></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-2">
+    <%= link_to edit_tender_preliminaries_general_item_path(@tender, @preliminaries_general_item), class: "rounded-md px-3.5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium inline-flex items-center gap-2" do %>
+      <i class="fa-solid fa-pencil"></i> Edit
+    <% end %>
+    <%= link_to tender_preliminaries_general_items_path(@tender), class: "rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 font-medium inline-flex items-center gap-2" do %>
+      <i class="fa-solid fa-arrow-left"></i> Back to P&Gs
+    <% end %>
+    <%= button_to tender_preliminaries_general_item_path(@tender, @preliminaries_general_item), method: :delete, class: "rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer inline-flex items-center gap-2", data: { turbo_confirm: "Are you sure?" } do %>
+      <i class="fa-solid fa-trash"></i> Delete
+    <% end %>
+  </div>
+</div>

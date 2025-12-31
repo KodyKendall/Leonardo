@@ -7,6 +7,7 @@ class Tender < ApplicationRecord
   has_many :tender_specific_material_rates, dependent: :destroy
   has_many :material_supplies, through: :tender_specific_material_rates
   has_many :tender_equipment_selections, dependent: :destroy
+  has_many :preliminaries_general_items, dependent: :destroy
   has_many :equipment_types, through: :tender_equipment_selections
   has_one :tender_inclusions_exclusion, dependent: :destroy
   has_one :on_site_mobile_crane_breakdown, dependent: :destroy

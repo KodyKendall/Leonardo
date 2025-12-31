@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  # resources :preliminaries_general_items
   resources :tender_equipment_summaries
   resources :equipment_types
   resources :on_site_mobile_crane_breakdowns do
@@ -55,6 +56,11 @@ Rails.application.routes.draw do
     resources :tender_specific_material_rates
     resources :project_rate_build_ups, only: [:edit, :update, :show]
     resources :equipment_selections
+    resources :preliminaries_general_items, path: 'p_and_g' do
+      collection do
+        get :totals
+      end
+    end
   end
 
     resources :tender_line_items
