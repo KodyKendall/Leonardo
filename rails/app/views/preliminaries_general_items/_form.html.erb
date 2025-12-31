@@ -1,0 +1,44 @@
+<%= form_with(model: [@tender, preliminaries_general_item], class: "contents") do |form| %>
+  <% if preliminaries_general_item.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(preliminaries_general_item.errors.count, "error") %> prohibited this preliminaries_general_item from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% preliminaries_general_item.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :category, class: "block font-medium text-gray-700" %>
+    <%= form.select :category, PreliminariesGeneralItem.categories.keys.map { |k| [k.titleize, k] }, { prompt: "Select a category" }, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": preliminaries_general_item.errors[:category].none?, "border-red-400 focus:outline-red-600": preliminaries_general_item.errors[:category].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :description, class: "block font-medium text-gray-700" %>
+    <%= form.text_area :description, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": preliminaries_general_item.errors[:description].none?, "border-red-400 focus:outline-red-600": preliminaries_general_item.errors[:description].any?}] %>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div class="my-5">
+      <%= form.label :quantity, class: "block font-medium text-gray-700" %>
+      <%= form.number_field :quantity, step: 0.001, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": preliminaries_general_item.errors[:quantity].none?, "border-red-400 focus:outline-red-600": preliminaries_general_item.errors[:quantity].any?}] %>
+    </div>
+
+    <div class="my-5">
+      <%= form.label :rate, class: "block font-medium text-gray-700" %>
+      <%= form.number_field :rate, step: 0.01, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": preliminaries_general_item.errors[:rate].none?, "border-red-400 focus:outline-red-600": preliminaries_general_item.errors[:rate].any?}] %>
+    </div>
+
+    <div class="my-5">
+      <%= form.label :sort_order, class: "block font-medium text-gray-700" %>
+      <%= form.number_field :sort_order, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": preliminaries_general_item.errors[:sort_order].none?, "border-red-400 focus:outline-red-600": preliminaries_general_item.errors[:sort_order].any?}] %>
+    </div>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>
