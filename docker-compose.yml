@@ -32,7 +32,7 @@ services:
       - llama-network
 
   llamabot:
-    image: kody06/llamabot:0.3.3d
+    image: kody06/llamabot:0.3.3g
     env_file:
       - .env
     command: bash -c "python init_pg_checkpointer.py && uvicorn main:app --host 0.0.0.0 --port 8000"
