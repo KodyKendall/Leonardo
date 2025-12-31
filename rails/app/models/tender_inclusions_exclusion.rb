@@ -1,7 +1,7 @@
 class TenderInclusionsExclusion < ApplicationRecord
   belongs_to :tender
 
-  after_save :sync_inclusions_to_rate_buildups
+  after_update :sync_inclusions_to_rate_buildups
 
   private
 
@@ -29,6 +29,11 @@ class TenderInclusionsExclusion < ApplicationRecord
       steel_galvanized: :galvanizing_included
     }
 
+    # Only sync fields that were actually changed in this update
+    # This prevents overwriting manual overrides in the LineItemRateBuildUp table
+    changed_mapping = field_mapping.select { |source_field, _| saved_changes.key?(source_field.to_s) }
+    return if changed_mapping.empty?
+
     # Iterate through all tender line items for this tender
     tender.tender_line_items.each do |line_item|
       rate_buildup = line_item.line_item_rate_build_up
@@ -36,13 +41,13 @@ class TenderInclusionsExclusion < ApplicationRecord
 
       # Build a hash of updates: convert boolean (true/false) to decimal (1.0/0.0)
       updates = {}
-      field_mapping.each do |source_field, target_field|
+      changed_mapping.each do |source_field, target_field|
         source_value = send(source_field)
         # Convert true → 1.0, false/nil → 0.0
         updates[target_field] = source_value ? 1.0 : 0.0
       end
 
-      # Update all mapped fields at once
+      # Update only the changed fields
       # Use update_columns to avoid triggering callbacks on rate_buildup that would
       # create a recursive loop. Instead, manually trigger broadcast after all updates.
       rate_buildup.update_columns(updates)
