@@ -59,7 +59,8 @@ class LineItemRateBuildUp < ApplicationRecord
     self.subtotal += ((galvanizing_rate || 0).to_f * (galvanizing_included || 0).to_f)
 
     # Add custom items to subtotal
-    rate_buildup_custom_items.each do |item|
+    # Use reject(&:marked_for_destruction?) to ensure totals are correct when items are deleted via nested attributes
+    rate_buildup_custom_items.reject(&:marked_for_destruction?).each do |item|
       self.subtotal += (item.rate || 0).to_f * (item.included || 1.0).to_f
     end
 
