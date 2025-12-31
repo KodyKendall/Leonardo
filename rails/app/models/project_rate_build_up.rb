@@ -5,7 +5,7 @@ class ProjectRateBuildUp < ApplicationRecord
 
   # Validations
   validates :tender_id, presence: true, uniqueness: true
-  validates :material_supply_rate, :fabrication_rate, :overheads_rate, 
+  validates :profit_margin_percentage, :material_supply_rate, :fabrication_rate, :overheads_rate, 
             :shop_priming_rate, :onsite_painting_rate, :delivery_rate,
             :bolts_rate, :erection_rate, :crainage_rate, :cherry_picker_rate,
             :galvanizing_rate, :shop_drawings_rate, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
