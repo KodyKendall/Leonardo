@@ -19,15 +19,20 @@ class ProjectRateBuildUp < ApplicationRecord
   def calculate_crainage_rate
     return if tender.blank?
     
+    # Ensure we use fresh data by avoiding association caching if possible
+    # or explicitly reloading the breakdown's crane selections
     crane_breakdown = tender.on_site_mobile_crane_breakdown
-    self.crainage_rate = crane_breakdown&.crainage_rate_per_tonne || 0
+    return self.crainage_rate = 0 if crane_breakdown.nil?
+
+    # Force a fresh calculation from the breakdown
+    self.crainage_rate = crane_breakdown.crainage_rate_per_tonne
   end
 
   # Syncs changed rates to child line item rate buildups if they haven't been overridden
   def sync_rates_to_child_line_items
     inherited_categories = [
       :fabrication, :overheads, :shop_priming, :onsite_painting,
-      :delivery, :bolts, :erection, :galvanizing
+      :delivery, :bolts, :erection, :galvanizing, :crainage
     ]
 
     # Identify which inherited rates actually changed
@@ -63,6 +68,17 @@ class ProjectRateBuildUp < ApplicationRecord
     )
     # Also broadcast shop drawings update to the builder page
     broadcast_shop_drawings_update
+    # Broadcast crainage rate update to the edit form if it's open
+    broadcast_crainage_update
+  end
+
+  def broadcast_crainage_update
+    broadcast_replace_to(
+      "tender_#{tender_id}_builder",
+      target: dom_id(self, :crainage_rate_field),
+      partial: "project_rate_build_ups/crainage_rate_field",
+      locals: { project_rate_build_up: self }
+    )
   end
 
   def broadcast_shop_drawings_update

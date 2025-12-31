@@ -58,10 +58,18 @@ class Tender < ApplicationRecord
   # Recalculate total tonnage as sum of all line item quantities where unit_of_measure == "tonne"
   def recalculate_total_tonnage!
     new_tonnage = tender_line_items.where(unit_of_measure: "tonne").sum(:quantity)
+    self.total_tonnage = new_tonnage
     update_column(:total_tonnage, new_tonnage)
     broadcast_update_total_tonnage
     # Also recalculate equipment summary since cost per tonne depends on total_tonnage
     recalculate_equipment_summary!
+    # Recalculate project rate buildup since crainage rate depends on total_tonnage
+    recalculate_project_rate_buildup!
+  end
+
+  # Recalculate project rate buildup when tender tonnage changes
+  def recalculate_project_rate_buildup!
+    project_rate_buildup&.save!
   end
 
   # Recalculate equipment summary when tender tonnage changes

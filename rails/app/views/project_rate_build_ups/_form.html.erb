@@ -121,19 +121,7 @@
     </div>
 
     <!-- Crainage Rate (Calculated & Disabled) -->
-    <div class="form-control">
-      <label class="label flex items-center gap-2">
-        <span>Crainage Rate (R/tonne)</span>
-        <i class="fas fa-lock text-gray-400" title="Calculated from Crane Rates"></i>
-      </label>
-      <%= form.number_field :crainage_rate, 
-        step: :any,
-        placeholder: "0.00",
-        disabled: true,
-        class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:crainage_rate].any? }],
-        data: { "project-rate-buildup-form-target": "field" }
-      %>
-    </div>
+    <%= render "project_rate_build_ups/crainage_rate_field", project_rate_build_up: project_rate_build_up %>
 
     <!-- Cherry Picker Rate -->
     <div class="form-control">
