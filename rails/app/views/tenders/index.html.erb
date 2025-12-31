@@ -2,12 +2,20 @@
 
 <div class="w-full">
   <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
+    <div class="alert alert-success shadow-lg mb-6">
+      <div>
+        <i class="fas fa-check-circle mr-2"></i>
+        <span><%= notice %></span>
+      </div>
+    </div>
   <% end %>
 
-  <div class="flex justify-between items-center mb-6">
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
     <h1 class="font-bold text-4xl">Tenders</h1>
-    <%= link_to "New tender", new_tender_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
+    <%= link_to new_tender_path, class: "btn btn-primary" do %>
+      <i class="fas fa-plus mr-2"></i>
+      New Tender
+    <% end %>
   </div>
 
   <div class="mb-6">
@@ -15,51 +23,57 @@
       <label for="status" class="font-medium text-gray-700">Filter by Status:</label>
       <select name="status" id="status" class="select select-bordered select-sm" onchange="this.form.submit()">
         <option value="">All Statuses</option>
-        <option value="Draft" <%= 'selected' if params[:status] == 'Draft' %>>Draft</option>
-        <option value="Submitted" <%= 'selected' if params[:status] == 'Submitted' %>>Submitted</option>
-        <option value="In Progress" <%= 'selected' if params[:status] == 'In Progress' %>>In Progress</option>
-        <option value="Won" <%= 'selected' if params[:status] == 'Won' %>>Won</option>
-        <option value="Lost" <%= 'selected' if params[:status] == 'Lost' %>>Lost</option>
+        <% Tender::STATUSES.each do |status| %>
+          <option value="<%= status %>" <%= 'selected' if params[:status] == status %>><%= status %></option>
+        <% end %>
       </select>
     </form>
   </div>
 
-  <div id="tenders" class="overflow-x-auto">
+  <div id="tenders" class="overflow-x-auto bg-white rounded-lg shadow">
     <% if @tenders.any? %>
-      <table class="w-full border-collapse">
+      <table class="table w-full">
         <thead>
-          <tr class="bg-gray-100 border-b border-gray-300">
-            <th class="px-4 py-3 text-left font-semibold text-gray-700">E-Number</th>
-            <th class="px-4 py-3 text-left font-semibold text-gray-700">Tender Name</th>
-            <th class="px-4 py-3 text-left font-semibold text-gray-700">Client Name</th>
-            <th class="px-4 py-3 text-left font-semibold text-gray-700">Tender Value</th>
-            <th class="px-4 py-3 text-left font-semibold text-gray-700">Project Type</th>
-            <th class="px-4 py-3 text-left font-semibold text-gray-700">Status</th>
-            <th class="px-4 py-3 text-left font-semibold text-gray-700">Created</th>
-            <th class="px-4 py-3 text-center font-semibold text-gray-700">Actions</th>
+          <tr class="bg-base-200">
+            <th class="text-left font-bold">E-Number</th>
+            <th class="text-left font-bold">Tender Name</th>
+            <th class="text-left font-bold">Client Name</th>
+            <th class="text-left font-bold">Tender Value</th>
+            <th class="text-left font-bold">Project Type</th>
+            <th class="text-left font-bold">Status</th>
+            <th class="text-left font-bold">Created</th>
+            <th class="text-center font-bold">Actions</th>
           </tr>
         </thead>
         <tbody>
           <% @tenders.order(created_at: :desc).each do |tender| %>
-            <tr class="border-b border-gray-200 hover:bg-gray-50 transition">
-              <td class="px-4 py-3 text-blue-600 font-medium"><%= link_to tender.e_number, tender_path(tender), class: "hover:underline" %></td>
-              <td class="px-4 py-3"><%= tender.tender_name %></td>
-              <td class="px-4 py-3"><%= tender.client_name %></td>
-              <td class="px-4 py-3"><%= number_to_currency(tender.tender_value, unit: "R") if tender.tender_value %></td>
-              <td class="px-4 py-3"><%= tender.project_type %></td>
-              <td class="px-4 py-3">
+            <tr class="hover">
+              <td class="font-bold text-primary">
+                <%= link_to tender.e_number, tender_path(tender), class: "link link-hover" %>
+              </td>
+              <td><%= tender.tender_name %></td>
+              <td class="italic text-gray-600"><%= tender.display_client_name %></td>
+              <td><%= number_to_currency(tender.tender_value, unit: "R") if tender.tender_value %></td>
+              <td><%= tender.project_type %></td>
+              <td>
                 <% if tender.status.present? %>
-                  <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium <%= case tender.status when 'Won' then 'bg-green-100 text-green-800' when 'Lost' then 'bg-red-100 text-red-800' else 'bg-yellow-100 text-yellow-800' end %>">
+                  <div class="badge <%= case tender.status when 'Awarded' then 'badge-success' when 'Not Awarded' then 'badge-error' when 'Submitted' then 'badge-info' when 'In Progress' then 'badge-warning' else 'badge-ghost' end %> badge-sm font-medium">
                     <%= tender.status %>
-                  </span>
+                  </div>
                 <% end %>
               </td>
-              <td class="px-4 py-3 text-sm text-gray-600"><%= tender.created_at.strftime('%b %d, %Y') %></td>
-              <td class="px-4 py-3 text-center">
+              <td class="text-sm opacity-70"><%= tender.created_at.strftime('%b %d, %Y') %></td>
+              <td class="text-center">
                 <div class="flex gap-2 justify-center">
-                  <%= link_to "View", tender_path(tender), class: "text-blue-600 hover:text-blue-800 font-medium" %>
-                  <%= link_to "Edit", edit_tender_path(tender), class: "text-gray-600 hover:text-gray-800 font-medium" %>
-                  <%= button_to "Delete", tender_path(tender), method: :delete, class: "text-red-600 hover:text-red-800 font-medium", data: { turbo_confirm: "Are you sure?" } %>
+                  <%= link_to tender_path(tender), class: "btn btn-ghost btn-xs text-primary", title: "View" do %>
+                    <i class="fas fa-eye"></i>
+                  <% end %>
+                  <%= link_to edit_tender_path(tender), class: "btn btn-ghost btn-xs text-info", title: "Edit" do %>
+                    <i class="fas fa-edit"></i>
+                  <% end %>
+                  <%= button_to tender_path(tender), method: :delete, class: "btn btn-ghost btn-xs text-error", title: "Delete", data: { turbo_confirm: "Are you sure?" } do %>
+                    <i class="fas fa-trash"></i>
+                  <% end %>
                 </div>
               </td>
             </tr>
