@@ -10,6 +10,7 @@ class TenderEquipmentSelection < ApplicationRecord
 
   before_validation :calculate_costs
   after_save_commit :update_tender_equipment_summary
+  after_commit :trigger_rate_buildup_update, on: [:create, :update, :destroy]
 
   private
 
@@ -46,5 +47,18 @@ class TenderEquipmentSelection < ApplicationRecord
     
     # Broadcast the summary update
     summary.broadcast_update
+  end
+
+  # Trigger parent ProjectRateBuildUp to recalculate cherry_picker_rate when equipment selections change
+  def trigger_rate_buildup_update
+    return unless tender.present?
+    
+    rate_buildup = tender.project_rate_buildup
+    return unless rate_buildup.present?
+    
+    # Clear cache to ensure fresh calculation
+    tender.tender_equipment_summary&.reload
+    
+    rate_buildup.save!
   end
 end
