@@ -123,16 +123,8 @@
     <!-- Crainage Rate (Calculated & Disabled) -->
     <%= render "project_rate_build_ups/crainage_rate_field", project_rate_build_up: project_rate_build_up %>
 
-    <!-- Cherry Picker Rate -->
-    <div class="form-control">
-      <%= form.label :cherry_picker_rate, "Cherry Picker Rate (R/tonne)", { class: "label" } %>
-      <%= form.number_field :cherry_picker_rate, 
-        step: :any,
-        placeholder: "0.00",
-        class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:cherry_picker_rate].any? }],
-        data: { "project-rate-buildup-form-target": "field" }
-      %>
-    </div>
+    <!-- Cherry Picker Rate (Calculated & Disabled) -->
+    <%= render "project_rate_build_ups/cherry_picker_rate_field", project_rate_build_up: project_rate_build_up %>
 
     <!-- Galvanizing Rate -->
     <div class="form-control">

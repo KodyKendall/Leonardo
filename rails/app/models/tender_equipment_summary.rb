@@ -26,6 +26,19 @@ class TenderEquipmentSummary < ApplicationRecord
     save!
   end
 
+  # Calculate cherry picker rate per tonne using CEILING to nearest R20
+  # Returns 0 if total_equipment_cost is not available or is zero
+  def cherry_picker_rate_per_tonne
+    return 0 if total_equipment_cost.blank? || total_equipment_cost.zero?
+    
+    # Get total tonnage from tender (if available)
+    tonnage = tender.respond_to?(:total_tonnage) ? tender.total_tonnage.to_f : 0
+    return 0 if tonnage.zero?
+    
+    rate = total_equipment_cost / tonnage
+    (rate / 20.0).ceil * 20
+  end
+
   # Broadcast update to equipment_cost_summary turbo frame
   def broadcast_update
     broadcast_update_to(
