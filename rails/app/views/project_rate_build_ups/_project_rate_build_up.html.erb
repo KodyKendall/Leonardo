@@ -19,16 +19,24 @@
         <table class="table table-compact w-full">
           <thead>
             <tr class="border-b">
-              <th class="text-left">Processing Component</th>
-              <th class="text-right">Rate (R/tonne)</th>
+              <th class="text-left">Component</th>
+              <th class="text-right">Value</th>
             </tr>
           </thead>
           <tbody>
             <tr class="border-b hover:bg-base-200">
-              <td class="font-medium">Material Supply</td>
+              <td class="font-medium">Profit Margin</td>
+              <td class="text-right">
+                <code class="text-lg font-semibold text-primary">
+                  <%= number_with_precision(project_rate_build_up.profit_margin_percentage || 0, precision: 2) %>%
+                </code>
+              </td>
+            </tr>
+            <tr class="border-b hover:bg-base-200">
+              <td class="font-medium">Shop Drawings</td>
               <td class="text-right">
                 <code class="text-lg font-semibold">
-                  <%= number_with_precision(project_rate_build_up.material_supply_rate || 0, precision: 2) %>
+                  <%= number_with_precision(project_rate_build_up.shop_drawings_rate || 0, precision: 2) %> R/t
                 </code>
               </td>
             </tr>
@@ -36,7 +44,7 @@
               <td class="font-medium">Fabrication</td>
               <td class="text-right">
                 <code class="text-lg font-semibold">
-                  <%= number_with_precision(project_rate_build_up.fabrication_rate || 0, precision: 2) %>
+                  <%= number_with_precision(project_rate_build_up.fabrication_rate || 0, precision: 2) %> R/t
                 </code>
               </td>
             </tr>
@@ -104,19 +112,11 @@
                 </code>
               </td>
             </tr>
-            <tr class="border-b hover:bg-base-200">
+            <tr class="hover:bg-base-200">
               <td class="font-medium">Galvanizing</td>
               <td class="text-right">
                 <code class="text-lg font-semibold">
                   <%= number_with_precision(project_rate_build_up.galvanizing_rate || 0, precision: 2) %>
-                </code>
-              </td>
-            </tr>
-            <tr class="hover:bg-base-200">
-              <td class="font-medium">Shop Drawings</td>
-              <td class="text-right">
-                <code class="text-lg font-semibold">
-                  <%= number_with_precision(project_rate_build_up.shop_drawings_rate || 0, precision: 2) %>
                 </code>
               </td>
             </tr>
