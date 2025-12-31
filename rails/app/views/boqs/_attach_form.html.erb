@@ -61,14 +61,43 @@
 </dialog>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const searchInput = document.getElementById('boq_search_input');
-  const resultsContainer = document.getElementById('boq_search_results');
-  const refreshBtn = document.getElementById('refresh_boqs_btn');
-  const modal = document.getElementById('boq_attach_modal');
+document.addEventListener('turbo:load', function() {
   let debounceTimer;
 
-  function loadBoqs(query = '') {
+  // Initialize BOQ search - called when modal opens
+  window.initializeBoqSearch = function() {
+    const searchInput = document.getElementById('boq_search_input');
+    const refreshBtn = document.getElementById('refresh_boqs_btn');
+    
+    // Remove any existing listeners to prevent duplicates
+    if (searchInput && !searchInput.dataset.initialized) {
+      searchInput.dataset.initialized = 'true';
+      
+      searchInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const query = this.value.trim();
+        debounceTimer = setTimeout(() => {
+          loadBoqs(query);
+        }, 300);
+      });
+    }
+    
+    if (refreshBtn && !refreshBtn.dataset.initialized) {
+      refreshBtn.dataset.initialized = 'true';
+      
+      refreshBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        searchInput.value = '';
+        loadBoqs('');
+      });
+    }
+  };
+
+  window.loadBoqs = function(query = '') {
+    const resultsContainer = document.getElementById('boq_search_results');
+    if (!resultsContainer) return;
+    
     resultsContainer.innerHTML = '<p class="text-gray-500 text-sm">Loading BOQs...</p>';
     
     fetch(`/boqs/search?q=${encodeURIComponent(query)}`, {
@@ -82,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
       return response.json();
     })
     .then(data => {
-      console.log('BOQs loaded:', data);
+      console.log('🪲 DEBUG: BOQs loaded:', data);
       if (!data || data.length === 0) {
         resultsContainer.innerHTML = '<p class="text-gray-500 text-sm">No BOQs found</p>';
         return;
@@ -116,36 +145,16 @@ document.addEventListener('DOMContentLoaded', function() {
       }).join('');
     })
     .catch(error => {
-      console.error('Error loading BOQs:', error);
+      console.error('🪲 DEBUG: Error loading BOQs:', error);
       resultsContainer.innerHTML = '<p class="text-red-500 text-sm">Error loading BOQs. Check console.</p>';
     });
   }
 
-  // Refresh button
-  if (refreshBtn) {
-    refreshBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      searchInput.value = '';
-      loadBoqs('');
-    });
-  }
-
-  // Search input
-  if (searchInput) {
-    searchInput.addEventListener('input', function() {
-      clearTimeout(debounceTimer);
-      const query = this.value.trim();
-      debounceTimer = setTimeout(() => {
-        loadBoqs(query);
-      }, 300);
-    });
-  }
-
-  // Global function for button trigger - loads BOQs
+  // Global function for button trigger - initializes and loads BOQs
   window.loadBoqsForAttach = function() {
-    console.log('Loading BOQs for attach...');
-    loadBoqs('');
+    console.log('🪲 DEBUG: Loading BOQs for attach...');
+    window.initializeBoqSearch();
+    window.loadBoqs('');
   };
 
   // Detach modal
@@ -153,18 +162,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
   window.openDetachModal = function(boqId, boqName, tenderName) {
     pendingBoqForAttach = { id: boqId, name: boqName };
-    document.getElementById('detach_tender_name').innerText = tenderName;
+    const nameEl = document.getElementById('detach_tender_name');
+    if (nameEl) nameEl.innerText = tenderName;
     const detachModal = document.getElementById('boq_detach_modal');
-    if (detachModal.showModal) {
-      detachModal.showModal();
+    if (detachModal) {
+      if (typeof detachModal.showModal === 'function') {
+        detachModal.showModal();
+      } else {
+        detachModal.classList.add('modal-open');
+      }
     }
   };
 
   const confirmDetachBtn = document.getElementById('confirm_detach_btn');
-  if (confirmDetachBtn) {
+  if (confirmDetachBtn && !confirmDetachBtn.dataset.initialized) {
+    confirmDetachBtn.dataset.initialized = 'true';
     confirmDetachBtn.addEventListener('click', function() {
       if (!pendingBoqForAttach) return;
       
+      confirmDetachBtn.classList.add('loading');
+      confirmDetachBtn.disabled = true;
+
       fetch(`/boqs/${pendingBoqForAttach.id}/detach`, {
         method: 'POST',
         headers: {
@@ -176,8 +194,15 @@ document.addEventListener('DOMContentLoaded', function() {
       .then(r => r.json())
       .then(data => {
         if (data.success) {
-          document.getElementById('boq_detach_modal').close();
-          attachBoq(pendingBoqForAttach.id, pendingBoqForAttach.name);
+          const detachModal = document.getElementById('boq_detach_modal');
+          if (detachModal) {
+            if (typeof detachModal.close === 'function') {
+              detachModal.close();
+            } else {
+              detachModal.classList.remove('modal-open');
+            }
+          }
+          window.attachBoq(pendingBoqForAttach.id, pendingBoqForAttach.name);
         } else {
           alert('Error: ' + (data.message || 'Could not detach'));
         }
@@ -185,6 +210,10 @@ document.addEventListener('DOMContentLoaded', function() {
       .catch(err => {
         console.error('Detach error:', err);
         alert('Error detaching BOQ');
+      })
+      .finally(() => {
+        confirmDetachBtn.classList.remove('loading');
+        confirmDetachBtn.disabled = false;
       });
     });
   }
@@ -204,7 +233,14 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(r => r.json())
     .then(data => {
       if (data.success) {
-        document.getElementById('boq_attach_modal').close();
+        const attachModal = document.getElementById('boq_attach_modal');
+        if (attachModal) {
+          if (typeof attachModal.close === 'function') {
+            attachModal.close();
+          } else {
+            attachModal.classList.remove('modal-open');
+          }
+        }
         window.location.reload();
       } else {
         alert('Error: ' + (data.message || 'Could not attach'));

@@ -12,6 +12,7 @@ class ProjectRateBuildUp < ApplicationRecord
 
   # Callbacks
   before_save :calculate_crainage_rate
+  after_update_commit :sync_rates_to_child_line_items
   after_update_commit :broadcast_update
 
   # Calculates crainage_rate from crane selections and tender tonnage
@@ -20,6 +21,34 @@ class ProjectRateBuildUp < ApplicationRecord
     
     crane_breakdown = tender.on_site_mobile_crane_breakdown
     self.crainage_rate = crane_breakdown&.crainage_rate_per_tonne || 0
+  end
+
+  # Syncs changed rates to child line item rate buildups if they haven't been overridden
+  def sync_rates_to_child_line_items
+    inherited_categories = [
+      :fabrication, :overheads, :shop_priming, :onsite_painting,
+      :delivery, :bolts, :erection, :galvanizing
+    ]
+
+    # Identify which inherited rates actually changed
+    changes = saved_changes.slice(*inherited_categories.map { |cat| "#{cat}_rate" })
+    return if changes.empty?
+
+    tender.tender_line_items.includes(:line_item_rate_build_up).find_each do |line_item|
+      rate_buildup = line_item.line_item_rate_build_up
+      next unless rate_buildup
+
+      should_save = false
+      changes.each do |rate_attr, (old_val, new_val)|
+        # Aggressive Sync: Project rates act as the master source of truth.
+        # This overrides any manual edits previously made at the line item level.
+        rate_buildup.send("#{rate_attr}=", new_val)
+        should_save = true
+      end
+
+      # Saving triggers LineItemRateBuildUp's own calculation and broadcast chain
+      rate_buildup.save! if should_save
+    end
   end
 
   # Broadcasts update to tender builder channel

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_12_30_174705) do
+ActiveRecord::Schema[7.2].define(version: 2025_12_31_165614) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -371,7 +371,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_12_30_174705) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "shop_drawings_rate", precision: 12, scale: 2, default: "0.0"
-    t.index ["tender_id"], name: "index_project_rate_build_ups_on_tender_id"
+    t.index ["tender_id"], name: "index_project_rate_build_ups_on_tender_id", unique: true
   end
 
   create_table "projects", force: :cascade do |t|
