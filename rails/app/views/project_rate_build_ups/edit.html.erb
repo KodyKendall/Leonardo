@@ -1,5 +1,6 @@
 <div id="toast_container"></div>
 
+<%= turbo_stream_from "tender_#{@tender.id}_builder" %>
 <%= turbo_stream_from @tender %>
 
 <div class="container mx-auto px-4 py-8">

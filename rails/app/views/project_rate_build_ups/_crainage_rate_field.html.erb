@@ -1,0 +1,17 @@
+<div id="<%= dom_id(project_rate_build_up, :crainage_rate_field) %>" class="form-control">
+  <label class="label flex items-center gap-2">
+    <span>Crainage Rate (R/tonne)</span>
+    <div class="tooltip tooltip-right" data-tip="Calculated from Crane Rates">
+      <i class="fas fa-lock text-gray-400 cursor-help"></i>
+    </div>
+  </label>
+  <%= number_field_tag "project_rate_build_up[crainage_rate]", 
+    number_with_precision(project_rate_build_up.crainage_rate, precision: 2),
+    step: :any,
+    placeholder: "0.00",
+    disabled: true,
+    id: "project_rate_build_up_crainage_rate",
+    class: "input input-bordered w-full bg-base-200",
+    data: { "project-rate-buildup-form-target": "field" }
+  %>
+</div>
