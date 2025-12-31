@@ -115,38 +115,6 @@ export default class extends Controller {
     }
   }
 
-  saveOnBlur(event) {
-    // Auto-save rate or multiplier field on blur via Turbo
-    // But ONLY for existing (saved) rows, not new ones
-    // New rows should only save when user clicks "Save & Calculate"
-    
-    const row = event.target.closest('tr')
-    if (!row) {
-      return
-    }
-    
-    // Check if this is a new custom item row (not yet saved to database)
-    if (row.hasAttribute('data-new-item')) {
-      // Don't auto-save new items, wait for "Save & Calculate" button
-      return
-    }
-    
-    // For existing rows, auto-save via form submission
-    const form = this.element.querySelector('form')
-    if (form) {
-      form.requestSubmit()
-    }
-  }
-
-  saveOnMarginBlur(event) {
-    // Save margin field via Turbo form submission
-    // The form is a child of the controller element, not a parent
-    const form = this.element.querySelector('form')
-    if (form) {
-      form.requestSubmit()
-    }
-  }
-
   addCustomItem(event) {
     event.preventDefault()
     
@@ -159,47 +127,44 @@ export default class extends Controller {
     
     // Create the HTML for a new custom item row
     const html = `
-      <tr class="hover:bg-base-200 border-t-2 border-orange-200 bg-orange-50" 
+      <tr class="hover:bg-base-200 border-t-2 border-orange-200 bg-orange-50"
           data-line-item-rate-build-up-target="customRow"
           data-new-item="true">
         <td class="font-medium">
-          <input type="text" 
+          <input type="text"
                  name="line_item_rate_build_up[rate_buildup_custom_items_attributes][${timestamp}][description]"
-                 placeholder="e.g., Special Coating" 
+                 placeholder="e.g., Special Coating"
                  class="input input-sm input-bordered w-full"
-                 data-line-item-rate-build-up-target="customDescription"
-                 data-action="blur->line-item-rate-build-up#saveOnBlur" />
+                 data-line-item-rate-build-up-target="customDescription" />
         </td>
         <td class="text-center">
-          <input type="number" 
+          <input type="number"
                  name="line_item_rate_build_up[rate_buildup_custom_items_attributes][${timestamp}][included]"
-                 step="0.01" 
-                 min="0.01" 
-                 max="5.0" 
+                 step="0.01"
+                 min="0.01"
+                 max="5.0"
                  value="1.0"
                  placeholder="1.0"
                  class="input input-sm input-bordered w-20 text-center"
-                 data-line-item-rate-build-up-target="customIncluded"
-                 data-action="blur->line-item-rate-build-up#saveOnBlur" />
+                 data-line-item-rate-build-up-target="customIncluded" />
         </td>
         <td class="text-right">
-          <input type="number" 
+          <input type="number"
                  name="line_item_rate_build_up[rate_buildup_custom_items_attributes][${timestamp}][rate]"
-                 step="0.01" 
+                 step="0.01"
                  min="0"
                  placeholder="0.00"
                  class="input input-sm input-bordered w-28 text-right"
-                 data-line-item-rate-build_up-target="customRate"
-                 data-action="blur->line-item-rate-build-up#saveOnBlur" />
+                 data-line-item-rate-build_up-target="customRate" />
         </td>
         <td class="text-right font-semibold" data-line-item-rate-build-up-target="customAmount">—</td>
         <td class="text-center">
-          <button type="button" 
+          <button type="button"
                   class="btn btn-sm btn-ghost text-red-500 hover:text-red-700"
                   data-action="click->line-item-rate-build-up#removeCustomItem">
             <i class="fas fa-trash"></i>
           </button>
-          <input type="hidden" 
+          <input type="hidden"
                  name="line_item_rate_build_up[rate_buildup_custom_items_attributes][${timestamp}][_destroy]"
                  value="false"
                  data-line-item-rate-build-up-target="destroyField" />
