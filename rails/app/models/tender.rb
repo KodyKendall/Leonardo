@@ -17,6 +17,7 @@ class Tender < ApplicationRecord
   has_one_attached :qob_file
   
   # Callbacks
+  before_save :sync_client_name, if: -> { client_id_changed? }
   before_create :generate_e_number
   after_create :populate_material_rates
   after_create :create_project_rate_buildup
@@ -41,8 +42,16 @@ class Tender < ApplicationRecord
                              0
                            end
     new_total = line_items_total + shop_drawings_total
-    update_column(:grand_total, new_total)
+    update_columns(grand_total: new_total, tender_value: new_total)
     broadcast_update_grand_total
+  end
+
+  # Returns the client name with fallbacks
+  def display_client_name
+    return client_name if client_name.present?
+    return client&.business_name if client&.business_name.present?
+    return boqs.first&.client_name if boqs.first&.client_name.present?
+    "(No client specified)"
   end
 
   # Recalculate total tonnage as sum of all line item quantities where unit_of_measure == "tonne"
@@ -65,6 +74,10 @@ class Tender < ApplicationRecord
   end
 
   private
+
+  def sync_client_name
+    self.client_name = client&.business_name
+  end
 
   def populate_material_rates
     PopulateTenderMaterialRates.new(self).execute
