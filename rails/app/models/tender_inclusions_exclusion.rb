@@ -48,13 +48,20 @@ class TenderInclusionsExclusion < ApplicationRecord
       rate_buildup.update_columns(updates)
     end
 
-    # After all rate buildups are updated, trigger broadcasts for each line item
+    # After all rate buildups are updated, trigger recalculation and broadcasts for each line item
     # This ensures Builder page updates in real-time without page refresh
     tender.tender_line_items.each do |line_item|
       rate_buildup = line_item.line_item_rate_build_up
       next unless rate_buildup.present?
 
-      # Manually invoke the private broadcast callback using send
+      # 1. Recalculate derived totals (subtotal, before rounding, final rate)
+      # This uses update_columns internally to avoid recursion
+      rate_buildup.recalculate_totals!
+
+      # 2. Broadcast to the Rate Buildup frame (updates the table totals)
+      rate_buildup.send(:broadcast_to_self)
+
+      # 3. Broadcast to the Tender Line Item frame (updates the parent card/rate)
       rate_buildup.send(:broadcast_to_tender_line_item)
     end
   end
