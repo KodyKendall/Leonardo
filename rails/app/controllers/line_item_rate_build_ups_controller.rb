@@ -38,10 +38,6 @@ class LineItemRateBuildUpsController < ApplicationController
 
   # PATCH/PUT /line_item_rate_build_ups/1 or /line_item_rate_build_ups/1.json
   def update
-    # 🪲 DEBUG: Log the params to see if custom items are being sent
-    Rails.logger.info("🪲 DEBUG: line_item_rate_build_up_params = #{line_item_rate_build_up_params.inspect}")
-    Rails.logger.info("🪲 DEBUG: custom items attributes = #{line_item_rate_build_up_params[:rate_buildup_custom_items_attributes].inspect}")
-    
     respond_to do |format|
       if @line_item_rate_build_up.update(line_item_rate_build_up_params)
         format.html { redirect_to @line_item_rate_build_up, notice: "Line item rate build up was successfully updated.", status: :see_other }
