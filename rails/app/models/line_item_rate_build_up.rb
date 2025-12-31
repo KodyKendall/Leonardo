@@ -21,6 +21,26 @@ class LineItemRateBuildUp < ApplicationRecord
   after_commit :broadcast_to_tender_line_item
   after_save :update_tender_grand_total
 
+  # PUBLIC METHODS
+  
+  def recalculate_totals!
+    calculate_totals
+    update_columns(
+      subtotal: subtotal,
+      total_before_rounding: total_before_rounding,
+      rounded_rate: rounded_rate
+    )
+    sync_rate_to_tender_line_item
+  end
+
+  def broadcast_to_self
+    broadcast_replace_to(
+      ActionView::RecordIdentifier.dom_id(self),
+      partial: "line_item_rate_build_ups/line_item_rate_build_up",
+      locals: { line_item_rate_build_up: self }
+    )
+  end
+
   private
 
   def normalize_multipliers
@@ -90,6 +110,4 @@ class LineItemRateBuildUp < ApplicationRecord
       locals: { tender_line_item: tender_line_item, open_breakdown: true }
     )
   end
-
-
 end
