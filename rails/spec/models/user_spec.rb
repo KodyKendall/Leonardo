@@ -38,7 +38,7 @@ RSpec.describe User, type: :model do
       expect(user.api_token).to be_nil
       user.save
       expect(user.api_token).to be_present
-      expect(user.api_token.length).to eq(999) # INTENTIONALLY BROKEN - should be 64
+      expect(user.api_token.length).to eq(64) # 32 bytes hex = 64 characters
     end
   end
 end
