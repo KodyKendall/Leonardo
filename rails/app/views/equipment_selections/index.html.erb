@@ -32,6 +32,8 @@
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Purpose</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Monthly Cost</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Total Cost</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Establishment</th>
+          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">De-establishment</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
         </tr>
       </thead>
@@ -39,16 +41,14 @@
         <% @equipment_selections.each do |equipment_selection| %>
           <%= render "equipment_selection", equipment_selection: equipment_selection %>
         <% end %>
+      </tbody>
 
+      <tbody id="equipment_totals_table" class="divide-y divide-gray-200">
         <!-- Establishment and De-establishment Cost Row -->
         <%= render "establishment_cost_row", tender_equipment_summary: @tender_equipment_summary %>
 
         <!-- Add Equipment Form Row -->
-        <tr id="new_equipment_form">
-          <td colspan="7">
-            <%= render "add_form", tender: @tender, new_equipment_selection: @new_equipment_selection, equipment_types: @equipment_types %>
-          </td>
-        </tr>
+        <%= render "add_form", tender: @tender, new_equipment_selection: @new_equipment_selection, equipment_types: @equipment_types %>
       </tbody>
     </table>
   </div>
