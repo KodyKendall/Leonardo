@@ -9,10 +9,14 @@
     </div>
     <select data-pg-inline-edit-target="editTemplate" data-action="change->pg-inline-edit#applyTemplate" class="select select-bordered select-sm w-full <%= 'hidden' unless editing %>">
       <option value="">Apply Template...</option>
-      <% templates.each do |template| %>
-        <option value="<%= template.id %>" <%= "selected" if preliminaries_general_item.preliminaries_general_item_template_id == template.id %>>
-          <%= template.description.truncate(40) %>
-        </option>
+      <% templates.group_by(&:category).each do |category, group_templates| %>
+        <optgroup label="<%= category.to_s.humanize %>">
+          <% group_templates.each do |template| %>
+            <option value="<%= template.id %>" <%= "selected" if preliminaries_general_item.preliminaries_general_item_template_id == template.id %>>
+              <%= template.description.truncate(40) %>
+            </option>
+          <% end %>
+        </optgroup>
       <% end %>
     </select>
   </td>

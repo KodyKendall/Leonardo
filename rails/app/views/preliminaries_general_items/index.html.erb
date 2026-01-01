@@ -22,29 +22,36 @@
     <% end %>
   </div>
 
-  <div id="preliminaries_general_items_container">
-    <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Template</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">Category</th>
-              <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20"><i class="fa-solid fa-truck-pickup" title="Crane"></i> Crane</th>
-              <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20"><i class="fa-solid fa-stairs" title="Access Equipment"></i> Access</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Quantity</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Rate</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Total</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="pg_items_table_body" class="bg-white divide-y divide-gray-200">
-            <%= render partial: "preliminaries_general_item", collection: @preliminaries_general_items, as: :preliminaries_general_item, locals: { tender: @tender } %>
-          </tbody>
-        </table>
+  <div id="preliminaries_general_items_container" class="space-y-10">
+    <% @grouped_items.each do |category, items| %>
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+        <div class="bg-gray-50 px-6 py-3 border-b border-gray-200">
+          <h2 class="text-lg font-semibold text-gray-800 capitalize">
+            <%= category.to_s.humanize %> Items
+          </h2>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Template</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">Category</th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20"><i class="fa-solid fa-truck-pickup" title="Crane"></i> Crane</th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20"><i class="fa-solid fa-stairs" title="Access Equipment"></i> Access</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Quantity</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Rate</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Total</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="pg_items_table_body_<%= category %>" class="bg-white divide-y divide-gray-200">
+              <%= render partial: "preliminaries_general_item", collection: items, as: :preliminaries_general_item, locals: { tender: @tender } %>
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    <% end %>
 
     <%= render "totals", tender: @tender %>
   </div>

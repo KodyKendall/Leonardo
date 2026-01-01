@@ -10,15 +10,40 @@
     <%= link_to "New preliminaries general item template", new_preliminaries_general_item_template_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
   </div>
 
-  <div id="preliminaries_general_item_templates" class="min-w-full divide-y divide-gray-200 space-y-5">
+  <div id="preliminaries_general_item_templates" class="min-w-full space-y-8">
     <% if @preliminaries_general_item_templates.any? %>
-      <% @preliminaries_general_item_templates.each do |preliminaries_general_item_template| %>
-        <div class="flex flex-col sm:flex-row justify-between items-center pb-5 sm:pb-0">
-          <%= render preliminaries_general_item_template %>
-          <div class="w-full sm:w-auto flex flex-col sm:flex-row space-x-2 space-y-2">
-            <%= link_to "Show", preliminaries_general_item_template, class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= link_to "Edit", edit_preliminaries_general_item_template_path(preliminaries_general_item_template), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= button_to "Destroy", preliminaries_general_item_template, method: :delete, class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+      <% @preliminaries_general_item_templates.group_by(&:category).each do |category, templates| %>
+        <div class="space-y-4">
+          <h2 class="text-2xl font-semibold border-b-2 border-gray-100 pb-2 capitalize">
+            <%= category.to_s.humanize %>
+          </h2>
+          
+          <div class="hidden md:flex justify-between items-center px-4 py-2 text-xs font-bold uppercase tracking-wider text-gray-500 bg-gray-50 rounded-t-md border border-gray-100">
+            <div class="flex-1 grid grid-cols-4 gap-4">
+              <div class="col-span-2">Description / Equipment</div>
+              <div class="text-center">Quantity</div>
+              <div class="text-right">Rate</div>
+            </div>
+            <div class="w-64 text-right">Actions</div>
+          </div>
+
+          <div class="divide-y divide-gray-100 border-x border-b border-gray-100 rounded-b-md overflow-hidden mb-8">
+            <% templates.each do |preliminaries_general_item_template| %>
+              <div class="flex flex-col md:flex-row justify-between items-center py-4 px-4 hover:bg-gray-50 transition-colors">
+                <%= render preliminaries_general_item_template %>
+                <div class="w-full md:w-64 flex flex-col sm:flex-row justify-end gap-2 mt-4 md:mt-0">
+                  <%= link_to preliminaries_general_item_template, class: "btn btn-sm btn-ghost" do %>
+                    <i class="fas fa-eye"></i> Show
+                  <% end %>
+                  <%= link_to edit_preliminaries_general_item_template_path(preliminaries_general_item_template), class: "btn btn-sm btn-ghost" do %>
+                    <i class="fas fa-edit"></i> Edit
+                  <% end %>
+                  <%= button_to preliminaries_general_item_template, method: :delete, class: "btn btn-sm btn-ghost text-error", data: { turbo_confirm: "Are you sure?" } do %>
+                    <i class="fas fa-trash"></i>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
           </div>
         </div>
       <% end %>
