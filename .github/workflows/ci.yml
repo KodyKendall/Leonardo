@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, darren/proportion-improvemen]
   pull_request:
-    branches: [main]
+    branches: [main, darren/proportion-improvemen]
 
 jobs:
   test:
