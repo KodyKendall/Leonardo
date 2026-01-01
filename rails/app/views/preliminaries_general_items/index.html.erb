@@ -1,6 +1,9 @@
 <% content_for :title, "P&G Items - #{@tender.tender_name}" %>
 
-<div class="w-full" data-tender-id="<%= @tender.id %>">
+<div class="w-full" 
+     data-tender-id="<%= @tender.id %>"
+     data-total-tonnage="<%= @tender.total_tonnage %>"
+     data-crane-rate="<%= @tender.on_site_mobile_crane_breakdown&.crainage_rate_per_tonne || 0 %>">
   <% if notice.present? %>
     <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
   <% end %>

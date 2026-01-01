@@ -18,12 +18,17 @@ class PreliminariesGeneralItem < ApplicationRecord
   def set_crane_defaults
     return unless preliminaries_general_item_template&.is_crane?
 
-    # Only set if not already set (preserve manual overrides)
-    self.quantity = tender.total_tonnage if quantity.to_f.zero? || quantity == 1
+    self.is_crane = true
+
+    # Inherit quantity from tender's total tonnes (default to 1 if 0)
+    if quantity.to_f.zero? || quantity == 1
+      self.quantity = (tender.total_tonnage.to_f > 0 ? tender.total_tonnage : 1)
+    end
     
+    # Inherit rate from tender's crane breakdown
     if rate.to_f.zero?
       crane_breakdown = tender.on_site_mobile_crane_breakdown
-      self.rate = crane_breakdown.crainage_rate_per_tonne if crane_breakdown
+      self.rate = crane_breakdown&.crainage_rate_per_tonne || 0
     end
   end
 

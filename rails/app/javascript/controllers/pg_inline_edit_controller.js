@@ -94,8 +94,27 @@ export default class extends Controller {
         // Update edit fields with template data
         this.editDescriptionTarget.value = template.description
         this.editCategoryTarget.value = template.category
-        if (template.rate) this.editRateTarget.value = template.rate
-        if (template.quantity) this.editQuantityTarget.value = template.quantity
+        
+        if (template.is_crane) {
+          const container = this.element.closest('[data-total-tonnage]')
+          const tonnage = parseFloat(container?.dataset.totalTonnage || 0)
+          const craneRate = parseFloat(container?.dataset.craneRate || 0)
+
+          if (tonnage > 0) {
+            this.editQuantityTarget.value = tonnage
+          } else if (template.quantity) {
+            this.editQuantityTarget.value = template.quantity
+          }
+
+          if (craneRate > 0) {
+            this.editRateTarget.value = craneRate
+          } else if (template.rate) {
+            this.editRateTarget.value = template.rate
+          }
+        } else {
+          if (template.rate) this.editRateTarget.value = template.rate
+          if (template.quantity) this.editQuantityTarget.value = template.quantity
+        }
         
         this.editIsCraneTarget.checked = template.is_crane
         this.editIsAccessEquipmentTarget.checked = template.is_access_equipment
