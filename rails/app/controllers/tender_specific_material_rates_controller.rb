@@ -15,9 +15,6 @@ class TenderSpecificMaterialRatesController < ApplicationController
     @tender_specific_material_rate = @tender.tender_specific_material_rates.build(
       material_supply_id: nil,
       rate: nil,
-      unit: nil,
-      effective_from: nil,
-      effective_to: nil,
       notes: nil
     )
 
@@ -115,7 +112,7 @@ class TenderSpecificMaterialRatesController < ApplicationController
   end
 
   def tender_specific_material_rate_params
-    params.require(:tender_specific_material_rate).permit(:material_supply_id, :rate, :unit, :effective_from, :effective_to, :notes)
+    params.require(:tender_specific_material_rate).permit(:material_supply_id, :rate, :notes)
   end
 
   def rate_being_changed?

@@ -9,16 +9,12 @@ class TenderSpecificMaterialRate < ApplicationRecord
   validates :material_supply_id, presence: true, if: :rate_present_or_notes_present?
   validates :rate, numericality: { greater_than_or_equal_to: 0 }, if: :rate_present?
   validates :tender_id, uniqueness: { scope: :material_supply_id, message: "and material supply combination must be unique" }, unless: :material_supply_id_blank?, if: :material_supply_id_changed?
-  validate :effective_dates_valid
 
   # Callbacks
   after_update :cascade_rate_updates_if_rate_changed
   
   # Log when rate changes
   before_save :log_rate_change
-
-  # Scopes
-  scope :active, -> { where("effective_from IS NULL OR effective_from <= ?", Date.current).where("effective_to IS NULL OR effective_to >= ?", Date.current) }
 
   private
 
@@ -112,13 +108,5 @@ class TenderSpecificMaterialRate < ApplicationRecord
 
   def material_supply_id_blank?
     material_supply_id.blank?
-  end
-
-  def effective_dates_valid
-    return if effective_from.blank? || effective_to.blank?
-
-    if effective_to <= effective_from
-      errors.add(:effective_to, "must be after effective_from")
-    end
   end
 end

@@ -37,9 +37,6 @@
                       class: "contents" do |f| %>
           <%= f.hidden_field :material_supply_id, value: tender_specific_material_rate.material_supply_id %>
           <%= f.hidden_field :rate, value: new_rate %>
-          <%= f.hidden_field :unit, value: tender_specific_material_rate.unit %>
-          <%= f.hidden_field :effective_from, value: tender_specific_material_rate.effective_from %>
-          <%= f.hidden_field :effective_to, value: tender_specific_material_rate.effective_to %>
           <%= f.hidden_field :notes, value: tender_specific_material_rate.notes %>
           <%= f.hidden_field :confirm_cascade, value: "true" %>
           
