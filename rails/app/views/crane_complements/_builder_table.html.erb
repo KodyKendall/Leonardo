@@ -50,7 +50,7 @@
             <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold <%= is_matching ? 'text-yellow-900' : 'text-gray-900' %>">
               <% if is_matching %>
                 <div class="flex items-center gap-2">
-                  <span><%= number_to_currency(complement.default_wet_rate_per_day, unit: "R ", precision: 2) %></span>
+                  <span><%= number_to_currency(complement.calculated_wet_rate_for(breakdown), unit: "R ", precision: 2) %></span>
                   <%= button_to "Add Recommended Cranes",
                       populate_crane_selections_on_site_mobile_crane_breakdown_path(breakdown),
                       method: :post,
@@ -58,7 +58,7 @@
                       data: { turbo_stream: true } %>
                 </div>
               <% else %>
-                <%= number_to_currency(complement.default_wet_rate_per_day, unit: "R ", precision: 2) %>
+                <%= number_to_currency(complement.calculated_wet_rate_for(breakdown), unit: "R ", precision: 2) %>
               <% end %>
             </td>
           </tr>

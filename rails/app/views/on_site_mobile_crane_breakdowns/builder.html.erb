@@ -35,10 +35,8 @@
 
     <%= turbo_stream_from "on_site_mobile_crane_breakdown_#{@on_site_mobile_crane_breakdown.id}" %>
     <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
-      <turbo-frame id="<%= dom_id(@on_site_mobile_crane_breakdown) %>_crane_complements_table" class="block">
-        <%= render "crane_complements/builder_table",
-            on_site_mobile_crane_breakdown_id: @on_site_mobile_crane_breakdown.id %>
-      </turbo-frame>
+      <%= render "crane_complements/builder_table",
+          on_site_mobile_crane_breakdown_id: @on_site_mobile_crane_breakdown.id %>
     </div>
 
     <!-- Alert for missing crane rates -->
