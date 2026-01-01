@@ -1,0 +1,22 @@
+<div id="tender_<%= tender.id %>_p_and_g_summary" class="mb-6 bg-teal-50 border-l-4 border-teal-500 p-4 rounded">
+  <div class="flex items-start gap-3">
+    <i class="fa-solid fa-list-check text-teal-600 text-lg flex-shrink-0 mt-0.5"></i>
+    <div class="flex-grow">
+      <h3 class="font-semibold text-teal-900 mb-2">P&Gs (Preliminaries & Generals)</h3>
+      <div class="flex items-center justify-between">
+        <div class="flex items-baseline gap-4">
+          <div>
+            <span class="text-sm text-teal-700">Total:</span>
+            <span class="font-semibold text-lg text-teal-900 ml-2">
+              <%= number_to_currency(tender.preliminaries_general_items.sum { |item| item.quantity * item.rate }, unit: "R", precision: 2) %>
+            </span>
+          </div>
+        </div>
+
+        <%= link_to tender_preliminaries_general_items_path(tender), class: "btn btn-xs btn-outline border-teal-400 text-teal-700 hover:bg-teal-100 hover:border-teal-500 hover:text-teal-800" do %>
+          <i class="fa-solid fa-pen-to-square mr-1"></i> Manage P&Gs
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
