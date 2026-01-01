@@ -946,7 +946,49 @@ ProjectRateBuildUp.find_or_create_by!(tender: tender4) do |prbu|
   prbu.galvanizing_rate = 650.00
 end
 
+# ===== P&G ITEM TEMPLATES =====
+pg_templates = [
+  # Fixed Based
+  { description: 'Site establishment & demobilisation', category: 'fixed_based' },
+  { description: 'Site offices, containers, ablutions (initial setup)', category: 'fixed_based' },
+  { description: 'Initial insurances, guarantees', category: 'fixed_based' },
+  { description: 'Contractual documentation', category: 'fixed_based' },
+  { description: 'Health & Safety file setup', category: 'fixed_based' },
+  { description: 'Initial surveys / setting out', category: 'fixed_based' },
+  { description: 'Site signage, fencing', category: 'fixed_based' },
+
+  # Duration Based
+  { description: 'Cranage', category: 'duration_based', is_crane: true },
+  { description: 'Cherry picker', category: 'duration_based', is_access_equipment: true },
+  { description: 'Site supervision (foreman, site agent allocation)', category: 'duration_based' },
+  { description: 'Temporary services (power, water, data)', category: 'duration_based' },
+  { description: 'Plant & equipment standing time (cranes if dedicated, telehandler, cherry picker)', category: 'duration_based', is_crane: true },
+  { description: 'Security', category: 'duration_based' },
+  { description: 'Site offices rental', category: 'duration_based' },
+  { description: 'H&S officer', category: 'duration_based' },
+  { description: 'Accommodation & travel', category: 'duration_based' },
+
+  # Percentage Based
+  { description: 'Head office overhead allocation', category: 'percentage_based' },
+  { description: 'Contract administration', category: 'percentage_based' },
+  { description: 'Financial management', category: 'percentage_based' },
+  { description: 'QA systems', category: 'percentage_based' },
+  { description: 'IT systems', category: 'percentage_based' },
+  { description: 'Corporate insurances not project-specific', category: 'percentage_based' }
+]
+
+pg_templates.each_with_index do |attrs, index|
+  PreliminariesGeneralItemTemplate.find_or_create_by!(description: attrs[:description]) do |t|
+    t.category = attrs[:category]
+    t.is_crane = attrs[:is_crane] || false
+    t.is_access_equipment = attrs[:is_access_equipment] || false
+    t.sort_order = index + 1
+  end
+end
+
+puts "  • P&G Templates: #{PreliminariesGeneralItemTemplate.count}"
 puts "✅ Database seeded successfully!"
+
 puts ""
 puts "📊 SEEDED DATA SUMMARY:"
 puts "  • Users: #{User.count}"

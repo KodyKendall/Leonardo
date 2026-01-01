@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_01_172404) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_01_180738) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -358,7 +358,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_01_172404) do
   create_table "preliminaries_general_item_templates", force: :cascade do |t|
     t.string "category"
     t.text "description"
-    t.decimal "quantity", precision: 10, scale: 3
+    t.decimal "quantity", precision: 10, scale: 3, default: "1.0"
     t.decimal "rate", precision: 12, scale: 2
     t.integer "sort_order"
     t.boolean "is_crane", default: false, null: false
@@ -371,7 +371,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_01_172404) do
     t.bigint "tender_id", null: false
     t.string "category", null: false
     t.text "description"
-    t.decimal "quantity", precision: 10, scale: 3, default: "0.0"
+    t.decimal "quantity", precision: 10, scale: 3, default: "1.0"
     t.decimal "rate", precision: 12, scale: 2, default: "0.0"
     t.integer "sort_order", default: 0
     t.datetime "created_at", null: false

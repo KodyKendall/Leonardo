@@ -70,7 +70,7 @@ class PreliminariesGeneralItemsController < ApplicationController
         end
         format.turbo_stream do
           render turbo_stream: [
-            turbo_stream.append("pg_items_table_body", 
+            turbo_stream.append("pg_items_table_body_#{@preliminaries_general_item.category}", 
                                 partial: "preliminaries_general_items/preliminaries_general_item", 
                                 locals: { preliminaries_general_item: @preliminaries_general_item, editing: true, tender: @tender }),
             turbo_stream.replace("pg_totals", partial: "preliminaries_general_items/totals", locals: { tender: @tender })
