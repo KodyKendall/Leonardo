@@ -4,6 +4,7 @@ class PreliminariesGeneralItemsController < ApplicationController
   
   before_action :set_tender
   before_action :set_preliminaries_general_item, only: %i[ show edit update destroy ]
+  before_action :set_templates, only: %i[ index edit create update ]
 
   # GET /tenders/:tender_id/p_and_g
   def index
@@ -138,8 +139,12 @@ class PreliminariesGeneralItemsController < ApplicationController
       @preliminaries_general_item = @tender.preliminaries_general_items.find(params[:id])
     end
 
+    def set_templates
+      @templates = PreliminariesGeneralItemTemplate.order(:description)
+    end
+
     # Only allow a list of trusted parameters through.
     def preliminaries_general_item_params
-      params.require(:preliminaries_general_item).permit(:category, :description, :quantity, :rate, :sort_order)
+      params.require(:preliminaries_general_item).permit(:category, :description, :quantity, :rate, :sort_order, :is_crane, :is_access_equipment, :preliminaries_general_item_template_id)
     end
 end

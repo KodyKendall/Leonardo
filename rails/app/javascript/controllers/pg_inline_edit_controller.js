@@ -7,7 +7,10 @@ export default class extends Controller {
     "viewQuantity", "editQuantity",
     "viewRate", "editRate",
     "viewTotal",
-    "viewActions", "editActions"
+    "viewActions", "editActions",
+    "viewTemplate", "editTemplate",
+    "viewIsCrane", "editIsCrane",
+    "viewIsAccessEquipment", "editIsAccessEquipment"
   ]
 
   static values = {
@@ -33,6 +36,15 @@ export default class extends Controller {
     this.viewRateTarget.classList.add("hidden")
     this.editRateTarget.classList.remove("hidden")
 
+    if (this.hasEditTemplateTarget) this.editTemplateTarget.classList.remove("hidden")
+    if (this.hasViewTemplateTarget) this.viewTemplateTarget.classList.add("hidden")
+
+    if (this.hasEditIsCraneTarget) this.editIsCraneTarget.classList.remove("hidden")
+    if (this.hasViewIsCraneTarget) this.viewIsCraneTarget.classList.add("hidden")
+
+    if (this.hasEditIsAccessEquipmentTarget) this.editIsAccessEquipmentTarget.classList.remove("hidden")
+    if (this.hasViewIsAccessEquipmentTarget) this.viewIsAccessEquipmentTarget.classList.add("hidden")
+
     // Focus on description field
     this.editDescriptionTarget.focus()
   }
@@ -40,8 +52,8 @@ export default class extends Controller {
   cancel() {
     // Reset edit fields to current values (in case user made changes)
     this.editDescriptionTarget.value = this.viewDescriptionTarget.textContent.trim()
-    this.editQuantityTarget.value = this.viewQuantityTarget.textContent.trim()
-    this.editRateTarget.value = this.viewRateTarget.textContent.trim()
+    this.editQuantityTarget.value = this.viewQuantityTarget.textContent.trim().replace(/[^0-9.]/g, '')
+    this.editRateTarget.value = this.viewRateTarget.textContent.trim().replace(/[^0-9.]/g, '')
 
     // Show view mode, hide edit mode
     this.viewActionsTarget.classList.remove("hidden")
@@ -59,6 +71,38 @@ export default class extends Controller {
 
     this.viewRateTarget.classList.remove("hidden")
     this.editRateTarget.classList.add("hidden")
+
+    if (this.hasEditTemplateTarget) this.editTemplateTarget.classList.add("hidden")
+    if (this.hasViewTemplateTarget) this.viewTemplateTarget.classList.remove("hidden")
+
+    if (this.hasEditIsCraneTarget) this.editIsCraneTarget.classList.add("hidden")
+    if (this.hasViewIsCraneTarget) this.viewIsCraneTarget.classList.remove("hidden")
+
+    if (this.hasEditIsAccessEquipmentTarget) this.editIsAccessEquipmentTarget.classList.add("hidden")
+    if (this.hasViewIsAccessEquipmentTarget) this.viewIsAccessEquipmentTarget.classList.remove("hidden")
+  }
+
+  async applyTemplate(event) {
+    const templateId = event.target.value
+    if (!templateId) return
+
+    try {
+      const response = await fetch(`/p_and_g_templates/${templateId}.json`)
+      if (response.ok) {
+        const template = await response.json()
+        
+        // Update edit fields with template data
+        this.editDescriptionTarget.value = template.description
+        this.editCategoryTarget.value = template.category
+        if (template.rate) this.editRateTarget.value = template.rate
+        if (template.quantity) this.editQuantityTarget.value = template.quantity
+        
+        this.editIsCraneTarget.checked = template.is_crane
+        this.editIsAccessEquipmentTarget.checked = template.is_access_equipment
+      }
+    } catch (error) {
+      console.error("🪲 Error fetching template:", error)
+    }
   }
 
   async save() {
@@ -70,7 +114,10 @@ export default class extends Controller {
         description: this.editDescriptionTarget.value,
         category: this.editCategoryTarget.value,
         quantity: this.editQuantityTarget.value,
-        rate: this.editRateTarget.value
+        rate: this.editRateTarget.value,
+        is_crane: this.editIsCraneTarget.checked,
+        is_access_equipment: this.editIsAccessEquipmentTarget.checked,
+        preliminaries_general_item_template_id: this.editTemplateTarget.value || null
       }
     }
 
@@ -81,6 +128,7 @@ export default class extends Controller {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
+            "Accept": "text/vnd.turbo-stream.html",
             "X-CSRF-Token": this.getCSRFToken()
           },
           body: JSON.stringify(data)
@@ -88,20 +136,11 @@ export default class extends Controller {
       )
 
       if (response.ok) {
-        const result = await response.json()
-
-        // Update display values
-        this.viewDescriptionTarget.textContent = result.description
-        this.viewCategoryTarget.textContent = result.category_display
-        this.viewQuantityTarget.textContent = result.quantity_display
-        this.viewRateTarget.textContent = result.rate_display
-        this.viewTotalTarget.textContent = result.total_display
-
-        // Exit edit mode
-        this.cancel()
-
-        // Update totals section
-        this.updateTotals(tenderId)
+        // If the server returns a Turbo Stream, Turbo will handle it.
+        // But since we're manually calling fetch, we might need to process it.
+        // Actually, the simplest is to just request turbo_stream and let the controller handle it.
+        const streamText = await response.text()
+        Turbo.renderStreamMessage(streamText)
       } else {
         alert("Error saving item")
       }
