@@ -16,11 +16,16 @@
       </div>
     </div>
 
-    <!-- Back link -->
-    <div class="mt-4">
+    <!-- Back links -->
+    <div class="mt-4 flex gap-4">
       <%= link_to tender_path(@tender), class: "inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm" do %>
         <i class="fas fa-arrow-left"></i>
         Back to <%= @tender.tender_name %>
+      <% end %>
+
+      <%= link_to builder_tender_path(@tender), class: "inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm border-l pl-4" do %>
+        <i class="fas fa-hammer"></i>
+        Tender Builder
       <% end %>
     </div>
   </div>

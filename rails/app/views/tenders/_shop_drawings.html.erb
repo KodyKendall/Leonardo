@@ -3,19 +3,27 @@
     <i class="fa-solid fa-drafting-compass text-purple-600 text-lg flex-shrink-0 mt-0.5"></i>
     <div class="flex-grow">
       <h3 class="font-semibold text-purple-900 mb-2">Shop Drawings</h3>
-      <div class="flex items-baseline gap-4">
-        <div>
-          <span class="text-sm text-purple-700">Rate:</span>
-          <span class="font-semibold text-lg text-purple-900 ml-2">
-            <%= number_to_currency(tender.project_rate_buildup&.shop_drawings_rate || 0, unit: "R", precision: 2) %>/tonne
-          </span>
+      <div class="flex items-center justify-between">
+        <div class="flex items-baseline gap-4">
+          <div>
+            <span class="text-sm text-purple-700">Rate:</span>
+            <span class="font-semibold text-lg text-purple-900 ml-2">
+              <%= number_to_currency(tender.project_rate_buildup&.shop_drawings_rate || 0, unit: "R", precision: 2) %>/tonne
+            </span>
+          </div>
+          <div>
+            <span class="text-sm text-purple-700">Total:</span>
+            <span class="font-semibold text-lg text-purple-900 ml-2">
+              <%= number_to_currency((tender.project_rate_buildup&.shop_drawings_rate || 0) * (tender.total_tonnage || 0), unit: "R", precision: 2) %>
+            </span>
+          </div>
         </div>
-        <div>
-          <span class="text-sm text-purple-700">Total:</span>
-          <span class="font-semibold text-lg text-purple-900 ml-2">
-            <%= number_to_currency((tender.project_rate_buildup&.shop_drawings_rate || 0) * (tender.total_tonnage || 0), unit: "R", precision: 2) %>
-          </span>
-        </div>
+
+        <% if tender.project_rate_buildup %>
+          <%= link_to edit_tender_project_rate_build_up_path(tender, tender.project_rate_buildup), class: "btn btn-xs btn-outline border-purple-400 text-purple-700 hover:bg-purple-100 hover:border-purple-500 hover:text-purple-800" do %>
+            <i class="fa-solid fa-pen-to-square mr-1"></i> Manage Rates
+          <% end %>
+        <% end %>
       </div>
     </div>
   </div>

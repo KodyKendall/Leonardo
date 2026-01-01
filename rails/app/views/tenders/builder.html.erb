@@ -8,10 +8,20 @@
       <div class="flex justify-between items-start mb-4">
         <div>
           <h1 class="text-3xl font-bold"><%= link_to @tender.tender_name, tender_path(@tender), class: "text-blue-600 hover:text-blue-800 underline" %></h1>
-          <p class="text-gray-600 mt-1">
+          <div class="flex items-center gap-2 mt-2">
             <span class="badge badge-lg"><%= @tender.e_number %></span>
-            <span class="text-sm ml-3">Client: <%= @tender.client_name || "—" %></span>
-          </p>
+            <span class="text-sm text-gray-600 ml-1">Client: <%= @tender.client_name || "—" %></span>
+            
+            <div class="flex gap-4 ml-4">
+              <%= link_to edit_tender_project_rate_build_up_path(@tender, @tender.project_rate_buildup), class: "text-blue-600 hover:text-blue-800 underline text-sm font-medium" do %>
+                <i class="fa-solid fa-calculator mr-1"></i> Project Rates
+              <% end if @tender.project_rate_buildup %>
+
+              <%= link_to tender_inclusions_exclusions_tender_path(@tender), class: "text-blue-600 hover:text-blue-800 underline text-sm font-medium" do %>
+                <i class="fa-solid fa-list-check mr-1"></i> Inclusions/Exclusions
+              <% end %>
+            </div>
+          </div>
         </div>
 
         <!-- Grand Total and Total Tonnes in targetable Turbo Frames -->
