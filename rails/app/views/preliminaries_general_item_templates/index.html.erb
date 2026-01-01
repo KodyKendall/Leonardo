@@ -28,22 +28,7 @@
           </div>
 
           <div class="divide-y divide-gray-100 border-x border-b border-gray-100 rounded-b-md overflow-hidden mb-8">
-            <% templates.each do |preliminaries_general_item_template| %>
-              <div class="flex flex-col md:flex-row justify-between items-center py-4 px-4 hover:bg-gray-50 transition-colors">
-                <%= render preliminaries_general_item_template %>
-                <div class="w-full md:w-64 flex flex-col sm:flex-row justify-end gap-2 mt-4 md:mt-0">
-                  <%= link_to preliminaries_general_item_template, class: "btn btn-sm btn-ghost" do %>
-                    <i class="fas fa-eye"></i> Show
-                  <% end %>
-                  <%= link_to edit_preliminaries_general_item_template_path(preliminaries_general_item_template), class: "btn btn-sm btn-ghost" do %>
-                    <i class="fas fa-edit"></i> Edit
-                  <% end %>
-                  <%= button_to preliminaries_general_item_template, method: :delete, class: "btn btn-sm btn-ghost text-error", data: { turbo_confirm: "Are you sure?" } do %>
-                    <i class="fas fa-trash"></i>
-                  <% end %>
-                </div>
-              </div>
-            <% end %>
+            <%= render templates %>
           </div>
         </div>
       <% end %>

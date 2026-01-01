@@ -15,6 +15,18 @@ class PreliminariesGeneralItem < ApplicationRecord
 
   after_commit :broadcast_builder_update
 
+  def set_crane_defaults
+    return unless preliminaries_general_item_template&.is_crane?
+
+    # Only set if not already set (preserve manual overrides)
+    self.quantity = tender.total_tonnage if quantity.to_f.zero? || quantity == 1
+    
+    if rate.to_f.zero?
+      crane_breakdown = tender.on_site_mobile_crane_breakdown
+      self.rate = crane_breakdown.crainage_rate_per_tonne if crane_breakdown
+    end
+  end
+
   private
 
   def broadcast_builder_update
