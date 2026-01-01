@@ -11,11 +11,6 @@ class TenderInclusionsExclusion < ApplicationRecord
     return unless tender.present?
 
     # Define mapping between TenderInclusionsExclusion fields and LineItemRateBuildUp fields
-    # Handles 4 field name mismatches:
-    # - primer_included → shop_priming_included
-    # - final_paint_included → onsite_painting_included
-    # - cherry_pickers_included → cherry_picker_included (plural → singular)
-    # - steel_galvanized → galvanizing_included
     field_mapping = {
       fabrication_included: :fabrication_included,
       overheads_included: :overheads_included,
@@ -30,44 +25,34 @@ class TenderInclusionsExclusion < ApplicationRecord
     }
 
     # Only sync fields that were actually changed in this update
-    # This prevents overwriting manual overrides in the LineItemRateBuildUp table
     changed_mapping = field_mapping.select { |source_field, _| saved_changes.key?(source_field.to_s) }
     return if changed_mapping.empty?
 
-    # Iterate through all tender line items for this tender
-    tender.tender_line_items.each do |line_item|
-      rate_buildup = line_item.line_item_rate_build_up
-      next unless rate_buildup.present?
-
+    # Use a JOIN to find all rate buildups for this tender's line items
+    # This avoids transaction isolation issues with separate queries
+    rate_buildups = LineItemRateBuildUp
+      .joins(:tender_line_item)
+      .where(tender_line_items: { tender_id: tender.id })
+    
+    rate_buildups.each do |rate_buildup|
       # Build a hash of updates: convert boolean (true/false) to decimal (1.0/0.0)
       updates = {}
       changed_mapping.each do |source_field, target_field|
         source_value = send(source_field)
-        # Convert true → 1.0, false/nil → 0.0
         updates[target_field] = source_value ? 1.0 : 0.0
       end
 
-      # Update only the changed fields
-      # Use update_columns to avoid triggering callbacks on rate_buildup that would
-      # create a recursive loop. Instead, manually trigger broadcast after all updates.
+      # Update only the changed fields using update_columns to bypass callbacks
+      # This prevents recursive loops and preserves the 0.0 values (excluded)
       rate_buildup.update_columns(updates)
-    end
-
-    # After all rate buildups are updated, trigger recalculation and broadcasts for each line item
-    # This ensures Builder page updates in real-time without page refresh
-    tender.tender_line_items.each do |line_item|
-      rate_buildup = line_item.line_item_rate_build_up
-      next unless rate_buildup.present?
-
-      # 1. Recalculate derived totals (subtotal, before rounding, final rate)
-      # This uses update_columns internally to avoid recursion
+      
+      # Reload to get the updated values in memory before recalculating
+      rate_buildup.reload
+      
+      # Recalculate derived totals
+      # This will trigger before_save callbacks which normalize_multipliers, but since
+      # we now only normalize nil (not 0.0), excluded items stay excluded
       rate_buildup.recalculate_totals!
-
-      # 2. Broadcast to the Rate Buildup frame (updates the table totals)
-      rate_buildup.send(:broadcast_to_self)
-
-      # 3. Broadcast to the Tender Line Item frame (updates the parent card/rate)
-      rate_buildup.send(:broadcast_to_tender_line_item)
     end
   end
 end
