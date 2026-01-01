@@ -52,6 +52,7 @@ class PreliminariesGeneralItemsController < ApplicationController
     create_params = preliminaries_general_item_params rescue { description: "New P&G Item", category: "fixed_based", quantity: 1, rate: 0 }
     @preliminaries_general_item = @tender.preliminaries_general_items.build(create_params)
     @preliminaries_general_item.set_crane_defaults
+    @preliminaries_general_item.set_access_equipment_defaults
 
     respond_to do |format|
       if @preliminaries_general_item.save
