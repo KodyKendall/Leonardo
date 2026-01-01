@@ -1,4 +1,4 @@
-<%= turbo_frame_tag "establishment_cost_row" do %>
+<%= turbo_frame_tag "establishment_cost_row", class: "contents" do %>
   <tr class="bg-blue-50 hover:bg-blue-100 border-t-2 border-blue-200" data-controller="establishment-cost">
     <!-- Label: Establishment and de-establishment -->
     <td class="px-6 py-4 text-sm font-semibold text-gray-900">
@@ -41,6 +41,10 @@
         </div>
       <% end %>
     </td>
+
+    <!-- Empty cells for Establishment, De-establishment to align with table -->
+    <td class="px-6 py-4"></td>
+    <td class="px-6 py-4"></td>
 
     <!-- Actions: Empty cell to align with table -->
     <td class="px-6 py-4"></td>
