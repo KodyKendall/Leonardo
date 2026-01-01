@@ -12,10 +12,9 @@ class TenderLineItem < ApplicationRecord
   validates :rate, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
   after_initialize :build_defaults, if: :new_record?
-  after_create :create_line_item_rate_build_up, if: -> { line_item_rate_build_up.nil? }
+  after_create :ensure_persisted_associations
   after_create :inherit_inclusion_defaults
   after_create :populate_rates_from_project_buildup
-  after_create :create_line_item_material_breakdown, if: -> { line_item_material_breakdown.nil? }
   after_save :update_tender_grand_total
   after_save :update_tender_total_tonnage
   after_destroy :update_tender_grand_total
@@ -45,6 +44,12 @@ class TenderLineItem < ApplicationRecord
   end
 
   private
+
+  def ensure_persisted_associations
+    # Force creation of associations if they were only built in memory by build_defaults
+    line_item_rate_build_up.save! if line_item_rate_build_up&.new_record?
+    line_item_material_breakdown.save! if line_item_material_breakdown&.new_record?
+  end
 
   def update_tender_grand_total
     tender.recalculate_grand_total!

@@ -44,12 +44,13 @@ class LineItemRateBuildUp < ApplicationRecord
   private
 
   def normalize_multipliers
-    # Convert empty/zero multiplier values to 1.0 (default)
+    # Convert nil multiplier values to 1.0 (default)
+    # DO NOT convert 0.0 to 1.0 — 0.0 means "excluded" and must be preserved
     %i[material_supply_included fabrication_included overheads_included shop_priming_included 
        onsite_painting_included delivery_included bolts_included erection_included 
        crainage_included cherry_picker_included galvanizing_included].each do |field|
       value = send(field)
-      if value.nil? || value.zero?
+      if value.nil?
         send("#{field}=", 1.0)
       end
     end
