@@ -1,5 +1,6 @@
 class PreliminariesGeneralItem < ApplicationRecord
   belongs_to :tender
+  belongs_to :preliminaries_general_item_template, optional: true
 
   enum :category, {
     fixed_based: 'fixed_based',

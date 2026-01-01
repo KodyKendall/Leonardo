@@ -1,0 +1,30 @@
+<div id="<%= dom_id preliminaries_general_item_template %>" class="w-full sm:w-auto my-5 space-y-5">
+  <div>
+    <strong class="block font-medium mb-1">Category:</strong>
+    <%= preliminaries_general_item_template.category %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Description:</strong>
+    <%= preliminaries_general_item_template.description %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Quantity:</strong>
+    <%= preliminaries_general_item_template.quantity %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Rate:</strong>
+    <%= preliminaries_general_item_template.rate %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Sort order:</strong>
+    <%= preliminaries_general_item_template.sort_order %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Is crane:</strong>
+    <%= preliminaries_general_item_template.is_crane? ? "Yes" : "No" %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Is access equipment:</strong>
+    <%= preliminaries_general_item_template.is_access_equipment? ? "Yes" : "No" %>
+  </div>
+</div>

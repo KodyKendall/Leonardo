@@ -1,17 +1,34 @@
 <% tender = local_assigns[:tender] || @tender %>
+<% templates = local_assigns[:templates] || @templates || [] %>
+<% editing = local_assigns[:editing] || false %>
 <tr id="<%= dom_id(preliminaries_general_item) %>" class="hover:bg-gray-50 border-b border-gray-200 group" data-controller="pg-inline-edit" data-item-id="<%= preliminaries_general_item.id %>">
+  <!-- Template -->
+  <td class="px-6 py-4 text-sm text-gray-500">
+    <div data-pg-inline-edit-target="viewTemplate" class="<%= 'hidden' if editing %>">
+      <%= preliminaries_general_item.preliminaries_general_item_template&.description&.truncate(30) || "-" %>
+    </div>
+    <select data-pg-inline-edit-target="editTemplate" data-action="change->pg-inline-edit#applyTemplate" class="select select-bordered select-sm w-full <%= 'hidden' unless editing %>">
+      <option value="">Apply Template...</option>
+      <% templates.each do |template| %>
+        <option value="<%= template.id %>" <%= "selected" if preliminaries_general_item.preliminaries_general_item_template_id == template.id %>>
+          <%= template.description.truncate(40) %>
+        </option>
+      <% end %>
+    </select>
+  </td>
+
   <!-- Description -->
   <td class="px-6 py-4 text-sm text-gray-900 font-medium">
-    <span data-pg-inline-edit-target="viewDescription" class="cursor-pointer inline-block"><%= preliminaries_general_item.description %></span>
-    <input type="text" data-pg-inline-edit-target="editDescription" class="input input-bordered input-sm w-full hidden" value="<%= preliminaries_general_item.description %>">
+    <span data-pg-inline-edit-target="viewDescription" class="cursor-pointer inline-block <%= 'hidden' if editing %>"><%= preliminaries_general_item.description %></span>
+    <input type="text" data-pg-inline-edit-target="editDescription" class="input input-bordered input-sm w-full <%= 'hidden' unless editing %>" value="<%= preliminaries_general_item.description %>">
   </td>
   
   <!-- Category -->
   <td class="px-6 py-4 text-sm text-gray-500 w-40">
-    <span data-pg-inline-edit-target="viewCategory" class="cursor-pointer inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+    <span data-pg-inline-edit-target="viewCategory" class="cursor-pointer inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 <%= 'hidden' if editing %>">
       <%= preliminaries_general_item.category.titleize %>
     </span>
-    <select data-pg-inline-edit-target="editCategory" class="select select-bordered select-sm w-full hidden">
+    <select data-pg-inline-edit-target="editCategory" class="select select-bordered select-sm w-full <%= 'hidden' unless editing %>">
       <% PreliminariesGeneralItem.categories.keys.each do |category| %>
         <option value="<%= category %>" <%= "selected" if preliminaries_general_item.category == category %>>
           <%= category.titleize %>
@@ -19,17 +36,40 @@
       <% end %>
     </select>
   </td>
+
+  <!-- Flags -->
+  <td class="px-6 py-4 text-sm text-center w-20">
+    <div data-pg-inline-edit-target="viewIsCrane" class="<%= 'hidden' if editing %>">
+      <% if preliminaries_general_item.is_crane %>
+        <i class="fa-solid fa-circle-check text-green-500"></i>
+      <% else %>
+        <i class="fa-solid fa-circle-xmark text-gray-300"></i>
+      <% end %>
+    </div>
+    <input type="checkbox" data-pg-inline-edit-target="editIsCrane" class="checkbox checkbox-sm <%= 'hidden' unless editing %>" <%= "checked" if preliminaries_general_item.is_crane %>>
+  </td>
+
+  <td class="px-6 py-4 text-sm text-center w-20">
+    <div data-pg-inline-edit-target="viewIsAccessEquipment" class="<%= 'hidden' if editing %>">
+      <% if preliminaries_general_item.is_access_equipment %>
+        <i class="fa-solid fa-circle-check text-green-500"></i>
+      <% else %>
+        <i class="fa-solid fa-circle-xmark text-gray-300"></i>
+      <% end %>
+    </div>
+    <input type="checkbox" data-pg-inline-edit-target="editIsAccessEquipment" class="checkbox checkbox-sm <%= 'hidden' unless editing %>" <%= "checked" if preliminaries_general_item.is_access_equipment %>>
+  </td>
   
   <!-- Quantity -->
   <td class="px-6 py-4 text-sm text-gray-600 text-right w-32">
-    <span data-pg-inline-edit-target="viewQuantity" class="cursor-pointer inline-block"><%= number_with_precision(preliminaries_general_item.quantity, precision: 3) %></span>
-    <input type="number" step="0.001" data-pg-inline-edit-target="editQuantity" class="input input-bordered input-sm w-full text-right hidden" value="<%= preliminaries_general_item.quantity %>">
+    <span data-pg-inline-edit-target="viewQuantity" class="cursor-pointer inline-block <%= 'hidden' if editing %>"><%= number_with_precision(preliminaries_general_item.quantity, precision: 3) %></span>
+    <input type="number" step="0.001" data-pg-inline-edit-target="editQuantity" class="input input-bordered input-sm w-full text-right <%= 'hidden' unless editing %>" value="<%= preliminaries_general_item.quantity %>">
   </td>
   
   <!-- Rate -->
   <td class="px-6 py-4 text-sm text-gray-600 text-right w-32">
-    <span data-pg-inline-edit-target="viewRate" class="cursor-pointer inline-block"><%= number_to_currency(preliminaries_general_item.rate) %></span>
-    <input type="number" step="0.01" data-pg-inline-edit-target="editRate" class="input input-bordered input-sm w-full text-right hidden" value="<%= preliminaries_general_item.rate %>">
+    <span data-pg-inline-edit-target="viewRate" class="cursor-pointer inline-block <%= 'hidden' if editing %>"><%= number_to_currency(preliminaries_general_item.rate) %></span>
+    <input type="number" step="0.01" data-pg-inline-edit-target="editRate" class="input input-bordered input-sm w-full text-right <%= 'hidden' unless editing %>" value="<%= preliminaries_general_item.rate %>">
   </td>
   
   <!-- Total -->
@@ -40,8 +80,8 @@
   <!-- Actions -->
   <td class="px-6 py-4 text-right text-sm font-medium w-24">
     <div class="flex justify-end gap-3">
-      <!-- Edit Mode Button (hidden by default) -->
-      <div data-pg-inline-edit-target="editActions" class="flex gap-2 hidden">
+      <!-- Edit Mode Button -->
+      <div data-pg-inline-edit-target="editActions" class="flex gap-2 <%= 'hidden' unless editing %>">
         <button data-action="pg-inline-edit#save" class="text-green-600 hover:text-green-900" title="Save">
           <i class="fa-solid fa-check"></i>
         </button>
@@ -51,7 +91,7 @@
       </div>
       
       <!-- View Mode Buttons -->
-      <div data-pg-inline-edit-target="viewActions" class="flex gap-3">
+      <div data-pg-inline-edit-target="viewActions" class="flex gap-3 <%= 'hidden' if editing %>">
         <button data-action="pg-inline-edit#enterEditMode" class="text-indigo-600 hover:text-indigo-900 opacity-0 group-hover:opacity-100 transition-opacity" title="Edit">
           <i class="fa-solid fa-pencil"></i>
         </button>

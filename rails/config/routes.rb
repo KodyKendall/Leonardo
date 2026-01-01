@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :preliminaries_general_item_templates, path: 'p_and_g_templates'
   # resources :preliminaries_general_items
   resources :tender_equipment_summaries
   resources :equipment_types

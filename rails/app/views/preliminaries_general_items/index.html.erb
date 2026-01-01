@@ -8,11 +8,18 @@
   <div class="flex justify-between items-center mb-10">
     <div>
       <h1 class="font-bold text-4xl">Preliminaries & General</h1>
-      <p class="text-gray-600 mt-2">Tender: <%= link_to @tender.tender_name, tender_path(@tender), class: "text-blue-600 hover:underline" %> (<%= @tender.e_number %>)</p>
+      <p class="text-gray-600 mt-2">
+        Tender: <%= link_to @tender.tender_name, tender_path(@tender), class: "text-blue-600 hover:underline" %> (<%= @tender.e_number %>) |
+        <%= link_to "Template Catalogue", preliminaries_general_item_templates_path, class: "text-blue-600 hover:underline" %>
+      </p>
     </div>
-    <button id="quick-add-btn" data-controller="pg-quick-add" data-action="pg-quick-add#quickAdd" class="rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium flex items-center gap-2">
+    <%= button_to tender_preliminaries_general_items_path(@tender), 
+                   method: :post, 
+                   params: { preliminaries_general_item: { description: "New P&G Item", category: "fixed_based", quantity: 1, rate: 0 } },
+                   data: { turbo_stream: true },
+                   class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium flex items-center gap-2" do %>
       <i class="fa-solid fa-plus"></i> Quick Add P&G Item
-    </button>
+    <% end %>
   </div>
 
   <div id="preliminaries_general_items_container">
@@ -21,8 +28,11 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-50">
             <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Template</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">Category</th>
+              <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20"><i class="fa-solid fa-truck-pickup" title="Crane"></i> Crane</th>
+              <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-20"><i class="fa-solid fa-stairs" title="Access Equipment"></i> Access</th>
               <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Quantity</th>
               <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Rate</th>
               <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Total</th>
