@@ -62,12 +62,11 @@ class LineItemRateBuildUp < ApplicationRecord
 
   def calculate_totals
     # Calculate subtotal by summing all components with their multipliers
-    # Material supply rate is the BASE cost and is always included (multiplier default 1.0)
-    self.subtotal = (material_supply_rate || 0).to_f
+    # Material supply rate is multiplied by its inclusion/multiplier
+    self.subtotal = (material_supply_rate || 0).to_f * (material_supply_included || 0).to_f
     
     # All components now use decimal multipliers (default to 0 if nil/not set)
     # Add all other cost components with their multipliers
-    # Nil rates are coerced to 0 before multiplication to prevent NoMethodError
     self.subtotal += ((fabrication_rate || 0).to_f * (fabrication_included || 0).to_f)
     self.subtotal += ((overheads_rate || 0).to_f * (overheads_included || 0).to_f)
     self.subtotal += ((shop_priming_rate || 0).to_f * (shop_priming_included || 0).to_f)
@@ -78,6 +77,7 @@ class LineItemRateBuildUp < ApplicationRecord
     self.subtotal += ((crainage_rate || 0).to_f * (crainage_included || 0).to_f)
     self.subtotal += ((cherry_picker_rate || 0).to_f * (cherry_picker_included || 0).to_f)
     self.subtotal += ((galvanizing_rate || 0).to_f * (galvanizing_included || 0).to_f)
+    self.subtotal += ((shop_drawings_rate || 0).to_f * (fabrication_included || 0).to_f) # Shop drawings are usually linked to fabrication inclusion status
 
     # Add custom items to subtotal
     # Use reject(&:marked_for_destruction?) to ensure totals are correct when items are deleted via nested attributes

@@ -83,11 +83,14 @@ class TenderLineItem < ApplicationRecord
       delivery_rate: project_buildup.delivery_rate,
       bolts_rate: project_buildup.bolts_rate,
       erection_rate: project_buildup.erection_rate,
-      crainage_rate: project_buildup.crainage_rate,
-      cherry_picker_rate: project_buildup.cherry_picker_rate,
-      galvanizing_rate: project_buildup.galvanizing_rate,
-      shop_drawings_rate: project_buildup.shop_drawings_rate
+      crainage_rate: project_buildup.crainage_rate || 0,
+      cherry_picker_rate: project_buildup.cherry_picker_rate || 0,
+      galvanizing_rate: project_buildup.galvanizing_rate || 0,
+      shop_drawings_rate: project_buildup.shop_drawings_rate || 0,
+      margin_percentage: project_buildup.profit_margin_percentage || 0
     )
+    
+    line_item_rate_build_up.recalculate_totals!
   end
 
   def create_line_item_material_breakdown

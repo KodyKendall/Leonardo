@@ -57,12 +57,14 @@ class ProjectRateBuildUp < ApplicationRecord
   # Syncs changed rates to child line item rate buildups if they haven't been overridden
   def sync_rates_to_child_line_items
     inherited_categories = [
-      :fabrication, :overheads, :shop_priming, :onsite_painting,
-      :delivery, :bolts, :erection, :galvanizing, :crainage, :cherry_picker
+      :material_supply, :fabrication, :overheads, :shop_priming, :onsite_painting,
+      :delivery, :bolts, :erection, :galvanizing, :crainage, :cherry_picker,
+      :shop_drawings, :profit_margin
     ]
 
     # Identify which inherited rates actually changed
-    changes = saved_changes.slice(*inherited_categories.map { |cat| "#{cat}_rate" })
+    # Note: profit_margin_percentage maps to margin_percentage on the child
+    changes = saved_changes.slice(*inherited_categories.map { |cat| cat == :profit_margin ? "profit_margin_percentage" : "#{cat}_rate" })
     return if changes.empty?
 
     tender.tender_line_items.includes(:line_item_rate_build_up).find_each do |line_item|
@@ -73,7 +75,8 @@ class ProjectRateBuildUp < ApplicationRecord
       changes.each do |rate_attr, (old_val, new_val)|
         # Aggressive Sync: Project rates act as the master source of truth.
         # This overrides any manual edits previously made at the line item level.
-        rate_buildup.send("#{rate_attr}=", new_val)
+        target_attr = rate_attr == "profit_margin_percentage" ? "margin_percentage" : rate_attr
+        rate_buildup.send("#{target_attr}=", new_val)
         should_save = true
       end
 
