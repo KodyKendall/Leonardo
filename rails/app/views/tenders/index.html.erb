@@ -53,7 +53,7 @@
               </td>
               <td><%= tender.tender_name %></td>
               <td class="italic text-gray-600"><%= tender.display_client_name %></td>
-              <td><%= number_to_currency(tender.tender_value, unit: "R") if tender.tender_value %></td>
+              <td><%= number_to_currency(tender.tender_value, unit: "R ") if tender.tender_value %></td>
               <td><%= tender.project_type %></td>
               <td>
                 <% if tender.status.present? %>

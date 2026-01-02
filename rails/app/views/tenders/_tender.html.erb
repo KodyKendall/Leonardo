@@ -21,7 +21,7 @@
   </div>
   <div>
     <strong class="block font-medium mb-1">Tender value:</strong>
-    <%= tender.tender_value %>
+    <%= number_to_currency(tender.tender_value, unit: "R ") if tender.tender_value.present? %>
   </div>
   <div>
     <strong class="block font-medium mb-1">Submission deadline:</strong>
