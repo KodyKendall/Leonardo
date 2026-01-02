@@ -37,11 +37,7 @@ class Tender < ApplicationRecord
   # Recalculate grand total as sum of all line item totals + shop drawings total + P&G items and broadcast update
   def recalculate_grand_total!
     line_items_total = tender_line_items.sum { |item| (item.line_item_rate_build_up&.rounded_rate || 0) * item.quantity }
-    shop_drawings_total = if project_rate_buildup&.shop_drawings_rate.present?
-                             project_rate_buildup.shop_drawings_rate * (total_tonnage || 0)
-                           else
-                             0
-                           end
+    shop_drawings_total = project_rate_buildup&.shop_drawings_total || 0
     p_and_g_total = preliminaries_general_items.sum { |item| item.quantity * item.rate }
     
     new_total = line_items_total + shop_drawings_total + p_and_g_total

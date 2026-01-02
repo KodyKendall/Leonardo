@@ -8,11 +8,21 @@ class ProjectRateBuildUp < ApplicationRecord
   validates :profit_margin_percentage, :material_supply_rate, :fabrication_rate, :overheads_rate, 
             :shop_priming_rate, :onsite_painting_rate, :delivery_rate,
             :bolts_rate, :erection_rate, :crainage_rate, :cherry_picker_rate,
-            :galvanizing_rate, :shop_drawings_rate, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
+            :galvanizing_rate, :shop_drawings_rate, :shop_drawings_tonnes, numericality: { greater_than_or_equal_to: 0, allow_nil: true }
+
+  # Shop Drawings calculation helpers
+  def shop_drawings_tonnes_for_calculation
+    shop_drawings_tonnes.presence || tender&.total_tonnage || 0
+  end
+
+  def shop_drawings_total
+    (shop_drawings_rate || 0) * shop_drawings_tonnes_for_calculation
+  end
 
   # Callbacks
   before_save :calculate_crainage_rate
   before_save :calculate_cherry_picker_rate
+  after_save :recalculate_tender_grand_total
   after_update_commit :sync_rates_to_child_line_items
   after_update_commit :broadcast_update
 
@@ -38,6 +48,10 @@ class ProjectRateBuildUp < ApplicationRecord
 
     # Force a fresh calculation from the summary
     self.cherry_picker_rate = equipment_summary.cherry_picker_rate_per_tonne
+  end
+
+  def recalculate_tender_grand_total
+    tender&.recalculate_grand_total!
   end
 
   # Syncs changed rates to child line item rate buildups if they haven't been overridden
