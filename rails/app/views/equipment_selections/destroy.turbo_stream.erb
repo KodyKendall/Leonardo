@@ -1,1 +1,9 @@
 <%= turbo_stream.remove @equipment_selection %>
+
+<% if @tender.tender_equipment_selections.empty? %>
+  <%= turbo_stream.update "equipment_empty_state" do %>
+    <div class="mt-6 p-6 bg-gray-50 border border-gray-200 rounded-lg text-center">
+      <p class="text-gray-500 text-sm mb-4">No equipment selections yet. Add one using the form below.</p>
+    </div>
+  <% end %>
+<% end %>
