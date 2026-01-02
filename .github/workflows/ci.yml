@@ -1,4 +1,4 @@
-name: CI
+name: CI Tests
 
 on:
   push:
@@ -38,9 +38,9 @@ jobs:
 
       - name: Copy overlay files into container
         run: |
-          cp -r rails/app /rails/app
-          cp -r rails/db /rails/db
-          cp -r rails/spec /rails/spec
+          cp -r rails/app/* /rails/app/
+          cp -r rails/db/* /rails/db/
+          cp -r rails/spec /rails/
           cp rails/config/routes.rb /rails/config/routes.rb
           cp rails/config/database.yml /rails/config/database.yml
 
