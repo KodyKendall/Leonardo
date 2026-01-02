@@ -327,7 +327,8 @@ material_supplies_data = [
   { name: 'PFC Sections', waste_percentage: 7.50 },
   { name: 'Heavy PFC Sections', waste_percentage: 7.50 },
   { name: 'IPE Sections', waste_percentage: 7.50 },
-  { name: 'Sheets of Plate', waste_percentage: 12.50 },
+  { name: 'Sheets of Plate Decoil up to 12mm', waste_percentage: 12.50 },
+  { name: 'Sheets of Plate As Rolled 16mm & up', waste_percentage: 12.50 },
   { name: 'Cut to Size Plate', waste_percentage: 0.00 },
   { name: 'Standard Hollow Sections', waste_percentage: 12.50 },
   { name: 'Non-Standard Hollow Sections', waste_percentage: 10.00 },
@@ -344,12 +345,24 @@ material_supplies_data = [
 ]
 
 material_supplies = material_supplies_data.map.with_index do |attrs, index|
-  ms = MaterialSupply.find_or_create_by!(name: attrs[:name]) do |m|
+  ms = MaterialSupply.find_by(name: attrs[:name])
+  
+  # Special case for the split item if it doesn't exist yet but "Sheets of Plate" does
+  if attrs[:name] == 'Sheets of Plate Decoil up to 12mm' && !ms
+    old_item = MaterialSupply.find_by(name: 'Sheets of Plate')
+    if old_item
+      old_item.update!(name: attrs[:name])
+      ms = old_item
+    end
+  end
+
+  ms ||= MaterialSupply.find_or_create_by!(name: attrs[:name]) do |m|
     m.waste_percentage = attrs[:waste_percentage]
     m.position = index + 1
   end
-  # Always update position to ensure correct ordering
-  ms.update(position: index + 1) unless ms.position == index + 1
+
+  # Always update to ensure correct state
+  ms.update!(waste_percentage: attrs[:waste_percentage], position: index + 1)
   ms
 end
 
