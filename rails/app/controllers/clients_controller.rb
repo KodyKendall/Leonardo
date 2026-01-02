@@ -1,5 +1,5 @@
 class ClientsController < ApplicationController
-  before_action :set_client, only: %i[ show edit update destroy ]
+  before_action :set_client, only: %i[ show edit update destroy contacts ]
 
   # GET /clients or /clients.json
   def index
@@ -15,6 +15,24 @@ class ClientsController < ApplicationController
 
   # GET /clients/1 or /clients/1.json
   def show
+  end
+
+  # GET /clients/1/contacts.json
+  def contacts
+    respond_to do |format|
+      format.json do
+        contacts = @client.contacts.map do |contact|
+          {
+            id: contact.id,
+            name: contact.name,
+            email: contact.email,
+            phone: contact.phone,
+            is_primary: contact.is_primary
+          }
+        end
+        render json: contacts
+      end
+    end
   end
 
   # GET /clients/new

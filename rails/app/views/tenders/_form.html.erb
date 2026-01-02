@@ -35,27 +35,50 @@
     <% end %>
   </div>
 
-  <!-- Client Selection with Search & Add Modal -->
-  <div class="form-control">
-    <%= form.label :client_id, "Client *", class: "label" %>
-    <div class="flex gap-2">
-      <select id="client_select" name="tender[client_id]" class="select select-bordered flex-1 #{tender.errors[:client_id].any? ? 'select-error' : ''}">
-        <option value="">-- Search or Create Client --</option>
-        <% @clients.each do |client| %>
-          <option value="<%= client.id %>" <%= 'selected' if tender.client_id == client.id %>>
-            <%= client.business_name %>
-          </option>
+  <!-- Client & Contact Selection with Stimulus Controller -->
+  <div data-controller="client-contact-selector">
+    <!-- Client Selection with Search & Add Modal -->
+    <div class="form-control">
+      <%= form.label :client_id, "Client *", class: "label" %>
+      <div class="flex gap-2">
+        <select id="client_select" name="tender[client_id]" class="select select-bordered flex-1 #{tender.errors[:client_id].any? ? 'select-error' : ''}" data-client-contact-selector-target="clientSelect" data-action="change->client-contact-selector#updateContacts">
+          <option value="">-- Search or Create Client --</option>
+          <% @clients.each do |client| %>
+            <option value="<%= client.id %>" <%= 'selected' if tender.client_id == client.id %>>
+              <%= client.business_name %>
+            </option>
+          <% end %>
+        </select>
+        <button type="button" class="btn btn-outline" onclick="document.getElementById('add_client_modal').showModal()">
+          <i class="fas fa-plus"></i> Add
+        </button>
+      </div>
+      <% if tender.errors[:client_id].any? %>
+        <div class="label">
+          <span class="label-text-alt text-error"><%= tender.errors[:client_id].first %></span>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Contact Selection (populated dynamically) -->
+    <div class="form-control">
+      <%= form.label :contact_id, "Contact", class: "label" %>
+      <select name="tender[contact_id]" class="select select-bordered w-full" data-client-contact-selector-target="contactSelect" <%= 'disabled' unless tender.client_id.present? %>>
+        <% if tender.client_id.present? %>
+          <option value="">-- Select a contact --</option>
+          <% tender.client.contacts.each do |contact| %>
+            <option value="<%= contact.id %>" <%= 'selected' if tender.contact_id == contact.id %>>
+              <%= contact.email ? "#{contact.name} (#{contact.email})" : contact.name %>
+            </option>
+          <% end %>
+        <% else %>
+          <option value="">-- Select a client first --</option>
         <% end %>
       </select>
-      <button type="button" class="btn btn-outline" onclick="document.getElementById('add_client_modal').showModal()">
-        <i class="fas fa-plus"></i> Add
-      </button>
-    </div>
-    <% if tender.errors[:client_id].any? %>
-      <div class="label">
-        <span class="label-text-alt text-error"><%= tender.errors[:client_id].first %></span>
+      <div class="label mt-1">
+        <span class="label-text-alt text-gray-500">Primary contact is selected by default</span>
       </div>
-    <% end %>
+    </div>
   </div>
 
   <!-- Submission Deadline -->

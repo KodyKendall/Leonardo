@@ -20,6 +20,17 @@
     <% end %>
   </div>
   <div>
+    <strong class="block font-medium mb-1">Contact person:</strong>
+    <% if tender.contact %>
+      <span><%= tender.contact.name %></span>
+      <% if tender.contact.email %>
+        <span class="text-gray-600 ml-1">(<%= tender.contact.email %>)</span>
+      <% end %>
+    <% else %>
+      <span class="text-gray-500">No contact selected</span>
+    <% end %>
+  </div>
+  <div>
     <strong class="block font-medium mb-1">Tender value:</strong>
     <%= number_to_currency(tender.tender_value, unit: "R ") if tender.tender_value.present? %>
   </div>

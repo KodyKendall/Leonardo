@@ -32,7 +32,11 @@ Rails.application.routes.draw do
     end
   end
   resources :boq_items
-  resources :clients
+  resources :clients do
+    member do
+      get :contacts
+    end
+  end
   resources :fabrication_records
   resources :budget_allowances
   resources :budget_categories

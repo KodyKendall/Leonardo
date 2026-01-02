@@ -1,6 +1,7 @@
 class Tender < ApplicationRecord
   belongs_to :awarded_project, class_name: 'Project', optional: true
   belongs_to :client, optional: true
+  belongs_to :contact, optional: true
   has_many :boqs, dependent: :destroy
   has_many :tender_line_items, dependent: :destroy
   has_many :tender_crane_selections, dependent: :destroy
@@ -19,6 +20,7 @@ class Tender < ApplicationRecord
   
   # Callbacks
   before_save :sync_client_name, if: -> { client_id_changed? }
+  before_save :set_default_contact, if: -> { client_id_changed? && contact_id.blank? }
   before_create :generate_e_number
   after_create :populate_material_rates
   after_create :create_project_rate_buildup
@@ -56,6 +58,12 @@ class Tender < ApplicationRecord
     "(No client specified)"
   end
 
+  # Returns both client name and contact person (if available)
+  def display_client_and_contact
+    contact_part = contact&.name ? " (#{contact.name})" : ""
+    "#{display_client_name}#{contact_part}"
+  end
+
   # Recalculate total tonnage as sum of all line item quantities where unit_of_measure is a weight unit
   def recalculate_total_tonnage!
     new_tonnage = tender_line_items.where(unit_of_measure: WEIGHT_UNITS).sum(:quantity)
@@ -87,6 +95,12 @@ class Tender < ApplicationRecord
 
   def sync_client_name
     self.client_name = client&.business_name
+  end
+
+  def set_default_contact
+    return unless client.present?
+    # Set to the client's primary contact if available
+    self.contact = client.primary_contact
   end
 
   def populate_material_rates

@@ -527,8 +527,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_02_185324) do
     t.string "unit_of_measure"
     t.enum "section_category", enum_type: "section_category_enum"
     t.text "notes"
-    t.integer "position", default: 0
-    t.boolean "is_heading", default: false
     t.index ["tender_id"], name: "index_tender_line_items_on_tender_id"
   end
 

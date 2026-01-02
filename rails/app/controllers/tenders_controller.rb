@@ -194,7 +194,7 @@ class TendersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def tender_params
-      params.require(:tender).permit(:tender_name, :status, :client_id, :submission_deadline, :tender_value, :project_type, :notes, :awarded_project_id, :qob_file)
+      params.require(:tender).permit(:tender_name, :status, :client_id, :contact_id, :submission_deadline, :tender_value, :project_type, :notes, :awarded_project_id, :qob_file)
     end
 
     def inclusions_exclusions_params
