@@ -1,14 +1,15 @@
-<div id="<%= dom_id client %>" class="w-full sm:w-auto my-5 space-y-5">
+<div id="<%= dom_id client %>" class="w-full sm:w-auto my-5 space-y-2">
   <div>
-    <strong class="block font-medium mb-1">Business name:</strong>
+    <strong class="block font-medium">Business name:</strong>
     <%= client.business_name %>
   </div>
-  <div>
-    <strong class="block font-medium mb-1">Contact name:</strong>
-    <%= client.contact_name %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Contact email:</strong>
-    <%= client.contact_email %>
-  </div>
+  <% if client.primary_contact %>
+    <div>
+      <strong class="block font-medium">Primary Contact:</strong>
+      <%= client.primary_contact.name %> 
+      <% if client.primary_contact.email.present? %>
+        (<%= client.primary_contact.email %>)
+      <% end %>
+    </div>
+  <% end %>
 </div>

@@ -16,14 +16,26 @@
     <%= form.text_field :business_name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": client.errors[:business_name].none?, "border-red-400 focus:outline-red-600": client.errors[:business_name].any?}] %>
   </div>
 
-  <div class="my-5">
-    <%= form.label :contact_name %>
-    <%= form.text_field :contact_name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": client.errors[:contact_name].none?, "border-red-400 focus:outline-red-600": client.errors[:contact_name].any?}] %>
-  </div>
+  <div class="my-5" data-controller="nested-form">
+    <h3 class="text-lg font-semibold mb-4">Contacts</h3>
+    
+    <div data-nested-form-target="container">
+      <%= form.fields_for :contacts do |contact_form| %>
+        <%= render "contact_fields", f: contact_form %>
+      <% end %>
+    </div>
 
-  <div class="my-5">
-    <%= form.label :contact_email %>
-    <%= form.text_field :contact_email, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": client.errors[:contact_email].none?, "border-red-400 focus:outline-red-600": client.errors[:contact_email].any?}] %>
+    <template data-nested-form-target="template">
+      <%= form.fields_for :contacts, Contact.new, child_index: "NEW_RECORD" do |contact_form| %>
+        <%= render "contact_fields", f: contact_form %>
+      <% end %>
+    </template>
+
+    <div class="mt-4">
+      <button type="button" data-action="nested-form#add" class="btn btn-outline btn-sm">
+        <i class="fas fa-plus mr-2"></i> Add Contact
+      </button>
+    </div>
   </div>
 
   <div class="inline">
