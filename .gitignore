@@ -18,3 +18,8 @@ auth.json
 new-a-record.json
 
 .idea/
+
+# Database backups (too large for git)
+backups/
+*.sql
+*.sql.gz

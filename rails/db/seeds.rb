@@ -1158,3 +1158,69 @@ EQUIPMENT_TYPES.each do |attrs|
 end
 
 puts "  • Equipment Types: #{EquipmentType.count}"
+
+# ===== PRELIMINARIES & GENERAL (P&G) ITEM TEMPLATES =====
+# Fixed-Based Templates
+[
+  'Site establishment & demobilisation',
+  'Site offices, containers, ablutions (initial setup)',
+  'Initial insurances, guarantees',
+  'Contractual documentation',
+  'Health & Safety file setup',
+  'Initial surveys / setting out',
+  'Site signage, fencing'
+].each_with_index do |desc, index|
+  PreliminariesGeneralItemTemplate.find_or_create_by!(
+    category: 'fixed_based',
+    description: desc
+  ) do |t|
+    t.quantity = 1.0
+    t.rate = 0.0
+    t.sort_order = index + 1
+  end
+end
+
+# Duration-Based Templates
+[
+  { desc: 'Crainage', is_crane: true },
+  { desc: 'Cherry picker', is_access: true },
+  { desc: 'Site supervision (foreman, site agent allocation)' },
+  { desc: 'Temporary services (power, water, data)' },
+  { desc: 'Plant & equipment standing time (cranes if dedicated, telehandler, cherry picker)', is_crane: true },
+  { desc: 'Security' },
+  { desc: 'Site offices rental' },
+  { desc: 'H&S officer' },
+  { desc: 'Accommodation & travel' }
+].each_with_index do |item, index|
+  PreliminariesGeneralItemTemplate.find_or_create_by!(
+    category: 'duration_based',
+    description: item[:desc]
+  ) do |t|
+    t.quantity = 1.0
+    t.rate = 0.0
+    t.sort_order = index + 10
+    t.is_crane = item[:is_crane] || false
+    t.is_access_equipment = item[:is_access] || false
+  end
+end
+
+# Percentage-Based Templates
+[
+  'Head office overhead allocation',
+  'Contract administration',
+  'Financial management',
+  'QA systems',
+  'IT systems',
+  'Corporate insurances not project-specific'
+].each_with_index do |desc, index|
+  PreliminariesGeneralItemTemplate.find_or_create_by!(
+    category: 'percentage_based',
+    description: desc
+  ) do |t|
+    t.quantity = 0.0
+    t.rate = 0.0
+    t.sort_order = index + 20
+  end
+end
+
+puts "  • P&G Item Templates: #{PreliminariesGeneralItemTemplate.count}"

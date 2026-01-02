@@ -1,21 +1,41 @@
-<div id="<%= dom_id preliminaries_general_item_template %>" class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
-  <div class="col-span-1 md:col-span-2">
-    <div class="font-semibold text-gray-900"><%= preliminaries_general_item_template.description %></div>
-    <div class="text-xs text-gray-500 flex gap-2 mt-1">
-      <% if preliminaries_general_item_template.is_crane? %>
-        <span class="badge badge-sm badge-outline gap-1"><i class="fa-solid fa-truck-pickup text-[10px]"></i> Crane</span>
+<%= turbo_frame_tag dom_id(preliminaries_general_item_template) do %>
+  <div class="flex flex-col md:flex-row justify-between items-center py-4 px-4 hover:bg-gray-50 transition-colors">
+    <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4 items-center">
+      <div class="col-span-1 md:col-span-2">
+        <div class="font-semibold text-gray-900"><%= preliminaries_general_item_template.description %></div>
+        <div class="text-xs text-gray-500 flex gap-2 mt-1">
+          <% if preliminaries_general_item_template.is_crane? %>
+            <span class="badge badge-sm badge-outline gap-1"><i class="fa-solid fa-truck-pickup text-[10px]"></i> Crane</span>
+          <% end %>
+          <% if preliminaries_general_item_template.is_access_equipment? %>
+            <span class="badge badge-sm badge-outline gap-1"><i class="fa-solid fa-stairs text-[10px]"></i> Access</span>
+          <% end %>
+        </div>
+      </div>
+      
+      <div class="text-sm text-gray-600 md:text-center">
+        <span class="md:hidden font-medium">Qty:</span> <%= preliminaries_general_item_template.quantity %>
+      </div>
+      
+      <div class="text-sm text-gray-600 font-mono md:text-right">
+        <span class="md:hidden font-medium">Rate:</span> <%= number_to_currency(preliminaries_general_item_template.rate) %>
+      </div>
+    </div>
+
+    <div class="w-full md:w-64 flex flex-col sm:flex-row justify-end gap-2 mt-4 md:mt-0">
+      <%= link_to preliminaries_general_item_template, class: "btn btn-sm btn-ghost", data: { turbo_frame: "_top" } do %>
+        <i class="fas fa-eye"></i>
       <% end %>
-      <% if preliminaries_general_item_template.is_access_equipment? %>
-        <span class="badge badge-sm badge-outline gap-1"><i class="fa-solid fa-stairs text-[10px]"></i> Access</span>
+      <%= link_to edit_preliminaries_general_item_template_path(preliminaries_general_item_template), class: "btn btn-sm btn-ghost" do %>
+        <i class="fas fa-edit"></i>
+      <% end %>
+      <%= button_to preliminaries_general_item_template, 
+          method: :delete, 
+          class: "btn btn-sm btn-ghost text-error", 
+          data: { turbo_confirm: "Are you sure?" },
+          form_class: "contents" do %>
+        <i class="fas fa-trash"></i>
       <% end %>
     </div>
   </div>
-  
-  <div class="text-sm text-gray-600 md:text-center">
-    <span class="md:hidden font-medium">Qty:</span> <%= preliminaries_general_item_template.quantity %>
-  </div>
-  
-  <div class="text-sm text-gray-600 font-mono md:text-right">
-    <span class="md:hidden font-medium">Rate:</span> <%= number_to_currency(preliminaries_general_item_template.rate) %>
-  </div>
-</div>
+<% end %>
