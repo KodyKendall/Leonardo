@@ -86,16 +86,56 @@ export default class extends Controller {
     const templateId = event.target.value
     if (!templateId) return
 
+    console.log("🪲 DEBUG: Applying template ID:", templateId)
+
     try {
       const response = await fetch(`/p_and_g_templates/${templateId}.json`)
       if (response.ok) {
         const template = await response.json()
+        console.log("🪲 DEBUG: Template data:", template)
         
         // Update edit fields with template data
         this.editDescriptionTarget.value = template.description
         this.editCategoryTarget.value = template.category
-        if (template.rate) this.editRateTarget.value = template.rate
-        if (template.quantity) this.editQuantityTarget.value = template.quantity
+        
+        const container = this.element.closest('[data-total-tonnage]')
+        const tonnage = parseFloat(container?.dataset.totalTonnage || 0)
+        const craneRate = parseFloat(container?.dataset.craneRate || 0)
+        const accessRate = parseFloat(container?.dataset.accessRate || 0)
+
+        console.log("🪲 DEBUG: Container data - Tonnage:", tonnage, "CraneRate:", craneRate, "AccessRate:", accessRate)
+
+        if (template.is_crane) {
+          console.log("🪲 DEBUG: Item is CRANE")
+          if (tonnage > 0) {
+            this.editQuantityTarget.value = tonnage
+          } else if (template.quantity) {
+            this.editQuantityTarget.value = template.quantity
+          }
+
+          if (craneRate > 0) {
+            this.editRateTarget.value = craneRate
+          } else if (template.rate) {
+            this.editRateTarget.value = template.rate
+          }
+        } else if (template.is_access_equipment) {
+          console.log("🪲 DEBUG: Item is ACCESS EQUIPMENT")
+          if (tonnage > 0) {
+            this.editQuantityTarget.value = tonnage
+          } else if (template.quantity) {
+            this.editQuantityTarget.value = template.quantity
+          }
+
+          if (accessRate > 0) {
+            this.editRateTarget.value = accessRate
+          } else if (template.rate) {
+            this.editRateTarget.value = template.rate
+          }
+        } else {
+          console.log("🪲 DEBUG: Item is NORMAL")
+          if (template.rate) this.editRateTarget.value = template.rate
+          if (template.quantity) this.editQuantityTarget.value = template.quantity
+        }
         
         this.editIsCraneTarget.checked = template.is_crane
         this.editIsAccessEquipmentTarget.checked = template.is_access_equipment
