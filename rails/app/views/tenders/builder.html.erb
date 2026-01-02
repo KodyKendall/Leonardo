@@ -51,11 +51,11 @@
         </div>
       <% end %>
 
-      <!-- Shop Drawings Section -->
-      <%= render "tenders/shop_drawings", tender: @tender %>
-
       <!-- P&Gs Summary Section -->
       <%= render "tenders/p_and_g_summary", tender: @tender %>
+
+      <!-- Shop Drawings Section -->
+      <%= render "tenders/shop_drawings", tender: @tender %>
 
     </div>
 
@@ -63,13 +63,13 @@
     <div id="line_items_container" class="bg-white rounded-lg shadow-sm border overflow-hidden">
       <!-- Sticky Header -->
       <div class="sticky top-0 z-20 bg-gray-100 border-b py-2 px-4 font-bold text-xs uppercase text-gray-600 grid grid-cols-12 gap-2 items-center">
-        <div class="col-span-1">Page</div>
-        <div class="col-span-1">Item</div>
-        <div class="col-span-3">Description</div>
-        <div class="col-span-1">Unit</div>
-        <div class="col-span-1 text-right">Qty</div>
-        <div class="col-span-1 text-right">Rate</div>
-        <div class="col-span-2 text-right">Total</div>
+        <div class="col-span-1 text-center">Page</div>
+        <div class="col-span-1 text-center">Item</div>
+        <div class="col-span-3 text-center">Description</div>
+        <div class="col-span-1 text-center">Unit</div>
+        <div class="col-span-1 text-center">Qty</div>
+        <div class="col-span-1 text-center">Rate</div>
+        <div class="col-span-2 text-center">Total</div>
         <div class="col-span-2 text-center">Actions</div>
       </div>
 
