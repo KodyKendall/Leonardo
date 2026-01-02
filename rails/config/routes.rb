@@ -54,7 +54,11 @@ Rails.application.routes.draw do
     end
     resources :boqs, only: [:create]
     resources :tender_line_items
-    resources :tender_specific_material_rates
+    resources :tender_specific_material_rates do
+      collection do
+        post :populate_from_month
+      end
+    end
     resources :project_rate_build_ups, only: [:edit, :update, :show]
     resources :equipment_selections
     resources :preliminaries_general_items, path: 'p_and_g' do

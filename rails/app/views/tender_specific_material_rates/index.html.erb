@@ -6,6 +6,29 @@
       <h1 class="text-3xl font-bold">Material Rates for <%= @tender.e_number %></h1>
       <p class="text-gray-600 text-sm"><%= @tender.tender_name %></p>
     </div>
+
+    <div class="flex items-center gap-4 bg-base-200 p-4 rounded-lg shadow-sm">
+      <div class="form-control">
+        <%= form_with url: populate_from_month_tender_tender_specific_material_rates_path(@tender), method: :post, data: { turbo: true } do |f| %>
+          <div class="flex items-center gap-2">
+            <span class="label-text font-semibold whitespace-nowrap">Source Month:</span>
+            <%= f.select :monthly_material_supply_rate_id, 
+                options_from_collection_for_select(
+                  @months, 
+                  :id, 
+                  ->(m) { m.effective_from.strftime("%B %Y") },
+                  @default_month_id
+                ), 
+                { include_blank: "Select Month..." }, 
+                { 
+                  class: "select select-bordered select-sm w-full max-w-xs",
+                  onchange: "if(confirm('This will override existing rates for this tender with the winning/cheapest rates from the selected month. Are you sure?')) { this.form.requestSubmit() } else { this.value = '' }"
+                } 
+            %>
+          </div>
+        <% end %>
+      </div>
+    </div>
   </div>
 
   <p class="text-gray-600 text-sm mb-4">
@@ -16,13 +39,7 @@
   <div id="cascade_messages" class="mb-4"></div>
 
   <div id="<%= dom_id(@tender, :tender_specific_material_rates) %>">
-    <% if @tender_specific_material_rates.any? %>
-      <%= render @tender_specific_material_rates %>
-    <% else %>
-      <div class="alert alert-info mb-4">
-        <p>No material rate overrides set for this tender.</p>
-      </div>
-    <% end %>
+    <%= render "tender_specific_material_rates/rates_list", tender: @tender, tender_specific_material_rates: @tender_specific_material_rates %>
   </div>
 
   <div class="mt-6 mb-6">
