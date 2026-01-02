@@ -33,6 +33,9 @@ class Tender < ApplicationRecord
   
   # Project types enum-like constant
   PROJECT_TYPES = ['Commercial', 'Mining'].freeze
+
+  # Weight units for tonnage calculation
+  WEIGHT_UNITS = ["t", "ton", "tons", "tonne", "tonnes"].freeze
   
   # Recalculate grand total as sum of all line item totals + shop drawings total + P&G items and broadcast update
   def recalculate_grand_total!
@@ -53,9 +56,9 @@ class Tender < ApplicationRecord
     "(No client specified)"
   end
 
-  # Recalculate total tonnage as sum of all line item quantities where unit_of_measure == "tonne"
+  # Recalculate total tonnage as sum of all line item quantities where unit_of_measure is a weight unit
   def recalculate_total_tonnage!
-    new_tonnage = tender_line_items.where(unit_of_measure: "tonne").sum(:quantity)
+    new_tonnage = tender_line_items.where(unit_of_measure: WEIGHT_UNITS).sum(:quantity)
     self.total_tonnage = new_tonnage
     update_column(:total_tonnage, new_tonnage)
     broadcast_update_total_tonnage
