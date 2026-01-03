@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_01_180738) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_02_185324) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -192,6 +192,17 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_01_180738) do
     t.string "contact_email"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "contacts", force: :cascade do |t|
+    t.string "name"
+    t.string "email"
+    t.string "phone"
+    t.boolean "is_primary", default: false, null: false
+    t.bigint "client_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_contacts_on_client_id"
   end
 
   create_table "crane_complements", force: :cascade do |t|
@@ -400,6 +411,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_01_180738) do
     t.datetime "updated_at", null: false
     t.decimal "shop_drawings_rate", precision: 12, scale: 2, default: "0.0"
     t.decimal "profit_margin_percentage", precision: 10, scale: 2
+    t.decimal "shop_drawings_tonnes", precision: 12, scale: 3
     t.index ["tender_id"], name: "index_project_rate_build_ups_on_tender_id", unique: true
   end
 
@@ -603,6 +615,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_01_180738) do
   add_foreign_key "claim_line_items", "claims"
   add_foreign_key "claims", "projects"
   add_foreign_key "claims", "users", column: "submitted_by_id"
+  add_foreign_key "contacts", "clients"
   add_foreign_key "fabrication_records", "projects"
   add_foreign_key "line_item_material_breakdowns", "tender_line_items"
   add_foreign_key "line_item_materials", "line_item_material_breakdowns"

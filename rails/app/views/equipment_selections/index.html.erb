@@ -48,16 +48,22 @@
         <%= render "establishment_cost_row", tender_equipment_summary: @tender_equipment_summary %>
 
         <!-- Add Equipment Form Row -->
-        <%= render "add_form", tender: @tender, new_equipment_selection: @new_equipment_selection, equipment_types: @equipment_types %>
+        <tr>
+          <td colspan="9" class="p-0">
+            <%= render "add_form", tender: @tender, new_equipment_selection: @new_equipment_selection, equipment_types: @equipment_types %>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
 
   <!-- No Equipment Message -->
-  <% if @equipment_selections.empty? %>
-    <div class="mt-6 p-6 bg-gray-50 border border-gray-200 rounded-lg text-center">
-      <p class="text-gray-500 text-sm mb-4">No equipment selections yet. Add one using the form below.</p>
-    </div>
+  <%= turbo_frame_tag "equipment_empty_state" do %>
+    <% if @equipment_selections.empty? %>
+      <div class="mt-6 p-6 bg-gray-50 border border-gray-200 rounded-lg text-center">
+        <p class="text-gray-500 text-sm mb-4">No equipment selections yet. Add one using the form below.</p>
+      </div>
+    <% end %>
   <% end %>
 
   <!-- Navigation Links -->

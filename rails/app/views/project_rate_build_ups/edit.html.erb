@@ -5,8 +5,16 @@
 
 <div class="container mx-auto px-4 py-8">
   <div class="max-w-4xl">
-    <div class="mb-4">
-      <%= link_to "← Back to #{@tender.tender_name}", tender_path(@tender), class: "link link-primary" %>
+    <div class="mb-4 flex items-center gap-4">
+      <%= link_to tender_path(@tender), class: "inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm" do %>
+        <i class="fas fa-arrow-left"></i>
+        Back to <%= @tender.tender_name %>
+      <% end %>
+
+      <%= link_to builder_tender_path(@tender), class: "inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium text-sm border-l pl-4" do %>
+        <i class="fas fa-hammer"></i>
+        Tender Builder
+      <% end %>
     </div>
     
     <h1 class="text-3xl font-bold mb-6">Edit Project Rate Build-Up</h1>

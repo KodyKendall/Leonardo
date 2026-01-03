@@ -1,0 +1,9 @@
+<%= turbo_frame_tag dom_id(tender, :tender_specific_material_rates) do %>
+  <% if tender_specific_material_rates.any? %>
+    <%= render tender_specific_material_rates %>
+  <% else %>
+    <div class="alert alert-info mb-4">
+      <p>No material rate overrides set for this tender.</p>
+    </div>
+  <% end %>
+<% end %>

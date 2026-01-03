@@ -17,16 +17,11 @@ class EquipmentSelectionsController < ApplicationController
 
     respond_to do |format|
       if @equipment_selection.save
-        format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.prepend("equipment_selections_table", partial: "equipment_selections/equipment_selection", locals: { equipment_selection: @equipment_selection }),
-            turbo_stream.update("equipment_form", partial: "equipment_selections/add_form", locals: { tender: @tender, new_equipment_selection: TenderEquipmentSelection.new(tender: @tender), equipment_types: @equipment_types })
-          ]
-        end
+        format.turbo_stream
         format.html { redirect_to tender_equipment_selections_path(@tender), notice: "Equipment selection was successfully created." }
       else
         format.turbo_stream do
-          render turbo_stream: turbo_stream.update("equipment_form", partial: "equipment_selections/add_form", locals: { tender: @tender, new_equipment_selection: @equipment_selection, equipment_types: @equipment_types })
+          render turbo_stream: turbo_stream.replace("equipment_form", partial: "equipment_selections/add_form", locals: { tender: @tender, new_equipment_selection: @equipment_selection, equipment_types: @equipment_types })
         end
         format.html { render :index, status: :unprocessable_entity }
       end

@@ -7,6 +7,8 @@ class TenderSpecificMaterialRatesController < ApplicationController
     @tender_specific_material_rates = @tender.tender_specific_material_rates
                                              .includes(:material_supply)
                                              .sort_by { |rate| rate.material_supply&.position || Float::INFINITY }
+    @months = MonthlyMaterialSupplyRate.all.order(effective_from: :desc)
+    @default_month_id = current_active_monthly_rate_id
   end
 
   # POST /tenders/:tender_id/tender_specific_material_rates
@@ -101,6 +103,34 @@ class TenderSpecificMaterialRatesController < ApplicationController
     end
   end
 
+  # POST /tenders/:tender_id/tender_specific_material_rates/populate_from_month
+  def populate_from_month
+    @monthly_material_supply_rate = MonthlyMaterialSupplyRate.find(params[:monthly_material_supply_rate_id])
+    
+    PopulateTenderMaterialRates.new(@tender, monthly_material_supply_rate: @monthly_material_supply_rate).execute
+    
+    @tender_specific_material_rates = @tender.tender_specific_material_rates
+                                             .includes(:material_supply)
+                                             .sort_by { |rate| rate.material_supply&.position || Float::INFINITY }
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: [
+          turbo_stream.replace(
+            ActionView::RecordIdentifier.dom_id(@tender, :tender_specific_material_rates),
+            partial: "tender_specific_material_rates/rates_list",
+            locals: { tender: @tender, tender_specific_material_rates: @tender_specific_material_rates }
+          ),
+          turbo_stream.append("cascade_messages", 
+            partial: "tender_specific_material_rates/population_success", 
+            locals: { month_name: @monthly_material_supply_rate.effective_from.strftime("%B %Y") }
+          )
+        ]
+      end
+      format.html { redirect_to tender_tender_specific_material_rates_path(@tender), notice: "Rates populated from #{@monthly_material_supply_rate.effective_from.strftime('%B %Y')}." }
+    end
+  end
+
   private
 
   def set_tender
@@ -128,5 +158,13 @@ class TenderSpecificMaterialRatesController < ApplicationController
       .joins(:tender_line_item)
       .where(tender_line_items: { tender_id: @tender.id })
       .count
+  end
+
+  def current_active_monthly_rate_id
+    MonthlyMaterialSupplyRate
+      .where("effective_from <= ?", Date.current)
+      .where("effective_to >= ?", Date.current)
+      .order(effective_from: :desc)
+      .first&.id || MonthlyMaterialSupplyRate.order(effective_from: :desc).first&.id
   end
 end

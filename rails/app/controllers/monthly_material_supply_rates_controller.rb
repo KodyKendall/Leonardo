@@ -8,7 +8,7 @@ class MonthlyMaterialSupplyRatesController < ApplicationController
 
   # GET /monthly_material_supply_rates/1 or /monthly_material_supply_rates/1.json
   def show
-    @material_supplies = MaterialSupply.all.order(:name)
+    @material_supplies = MaterialSupply.all
     supplier_order = ["BSI", "MacSteel", "Steelrode", "S&L", "BBD", "Fast Flame"]
     @suppliers = Supplier.all.sort_by { |s| supplier_order.index(s.name) || supplier_order.length }
     @existing_rates = @monthly_material_supply_rate.material_supply_rates.index_by { |rate| [rate.material_supply_id, rate.supplier_id] }

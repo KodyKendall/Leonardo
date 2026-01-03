@@ -12,7 +12,7 @@ RSpec.describe ProjectRateBuildUp, type: :model do
 
   describe '#calculate_crainage_rate' do
     let(:tender) { create(:tender, total_tonnage: 100) }
-    let(:project_rate_build_up) { tender.project_rate_buildup }
+    let(:project_rate_build_up) { tender.reload.project_rate_buildup }
 
     context 'when tender has no crane breakdown' do
       it 'sets crainage_rate to 0' do
@@ -89,7 +89,7 @@ RSpec.describe ProjectRateBuildUp, type: :model do
 
   describe 'before_save callback' do
     let(:tender) { create(:tender, total_tonnage: 200) }
-    let(:project_rate_build_up) { tender.project_rate_buildup }
+    let(:project_rate_build_up) { tender.reload.project_rate_buildup }
     let!(:crane_breakdown) { create(:on_site_mobile_crane_breakdown, tender: tender) }
     # wet_rate_per_day = 500 + 0 = 500
     let(:crane_rate) { create(:crane_rate, dry_rate_per_day: 500, diesel_per_day: 0) }
@@ -119,7 +119,7 @@ RSpec.describe ProjectRateBuildUp, type: :model do
 
   describe 'crainage_rate rounding' do
     let(:tender) { create(:tender, total_tonnage: 100) }
-    let(:project_rate_build_up) { tender.project_rate_buildup }
+    let(:project_rate_build_up) { tender.reload.project_rate_buildup }
     let!(:crane_breakdown) { create(:on_site_mobile_crane_breakdown, tender: tender) }
 
     it 'rounds up to nearest R20 using ceiling' do
@@ -144,6 +144,26 @@ RSpec.describe ProjectRateBuildUp, type: :model do
       tender.reload
       project_rate_build_up.calculate_crainage_rate
       expect(project_rate_build_up.crainage_rate).to eq(60)
+    end
+  end
+
+  describe '#sync_rates_to_child_line_items' do
+    let(:tender) { create(:tender) }
+    let(:project_rate_buildup) { tender.reload.project_rate_buildup }
+    let!(:line_item) { create(:tender_line_item, tender: tender) }
+    let(:rate_buildup) { line_item.line_item_rate_build_up }
+
+    it 'syncs changed rates to all child line items' do
+      project_rate_buildup.update!(
+        material_supply_rate: 5500,
+        shop_drawings_rate: 150,
+        profit_margin_percentage: 15
+      )
+
+      rate_buildup.reload
+      expect(rate_buildup.material_supply_rate).to eq(5500)
+      expect(rate_buildup.shop_drawings_rate).to eq(150)
+      expect(rate_buildup.margin_percentage).to eq(15)
     end
   end
 end

@@ -1,0 +1,29 @@
+<div class="nested-form-wrapper" data-nested-form-wrapper="true">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end border p-4 rounded-lg mb-4 bg-gray-50 relative">
+    <div>
+      <%= f.label :name, class: "label p-0" %>
+      <%= f.text_field :name, class: "input input-bordered w-full" %>
+    </div>
+    <div>
+      <%= f.label :email, class: "label p-0" %>
+      <%= f.email_field :email, class: "input input-bordered w-full" %>
+    </div>
+    <div>
+      <%= f.label :phone, class: "label p-0" %>
+      <%= f.text_field :phone, class: "input input-bordered w-full" %>
+    </div>
+    <div class="flex items-center gap-4 h-12">
+      <div class="form-control">
+        <label class="label cursor-pointer gap-2">
+          <span class="label-text">Primary?</span>
+          <%= f.check_box :is_primary, class: "checkbox checkbox-primary" %>
+        </label>
+      </div>
+      
+      <%= f.hidden_field :_destroy %>
+      <button type="button" data-action="nested-form#remove" class="btn btn-error btn-sm btn-outline">
+        <i class="fas fa-trash"></i>
+      </button>
+    </div>
+  </div>
+</div>

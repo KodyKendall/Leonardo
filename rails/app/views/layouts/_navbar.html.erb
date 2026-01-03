@@ -7,8 +7,17 @@
         </button>
         <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
           <li><a href="<%= tenders_path %>"><i class="fas fa-file-invoice mr-2"></i>Tenders</a></li>
+          <li><a href="<%= clients_path %>"><i class="fas fa-address-book mr-2"></i>Clients</a></li>
           <li><a href="<%= boqs_path %>"><i class="fas fa-file-csv mr-2"></i>BOQs</a></li>
-          <li><a href="<%= monthly_material_supply_rates_path %>"><i class="fas fa-dollar-sign mr-2"></i>Material Supply Rates</a></li>
+          <li><a href="<%= monthly_material_supply_rates_path %>">
+            <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fill-current mr-2 inline-block">
+              <rect width="24" height="24" stroke="none" fill="none" opacity="0"></rect>
+              <g transform="matrix(0.45 0 0 0.45 12 12)">
+                <path style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill-rule: nonzero; opacity: 1;" transform=" translate(-25.5, -26)" d="M 29.806641 4 L 4 14.322266 L 4 22 L 12 22 L 12 35.447266 L 4 40.445312 L 4 48 L 28.361328 48 L 47 32.46875 L 47 27 L 41 27 L 41 13.535156 L 47 9.5351562 L 47 4 L 29.806641 4 z M 30.193359 6 L 42.138672 6 L 27.742188 14 L 10.193359 14 L 30.193359 6 z M 45 6.7011719 L 45 8.4648438 L 29 19.130859 L 29 15.587891 L 45 6.7011719 z M 39 14.869141 L 39 29 L 42.90625 29 L 27.675781 40 L 20 40 L 20 22 L 28.302734 22 L 39 14.869141 z M 6 16 L 27 16 L 27 20 L 18 20 L 18 42 L 27 42 L 27 46 L 6 46 L 6 42 L 14 42 L 14 20 L 6 20 L 6 16 z M 45 29.955078 L 45 31.53125 L 29 44.865234 L 29 41.511719 L 45 29.955078 z M 12 37.804688 L 12 40 L 8.4863281 40 L 12 37.804688 z" stroke-linecap="round" fill="currentColor"></path>
+              </g>
+            </svg>
+            Material Supply Rates
+          </a></li>
         </ul>
       </div>
       <a href="<%= dashboard_path %>" class="btn btn-ghost text-xl font-bold text-blue-600">

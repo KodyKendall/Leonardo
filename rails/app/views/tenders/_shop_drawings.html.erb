@@ -6,6 +6,12 @@
       <div class="flex items-center justify-between">
         <div class="flex items-baseline gap-4">
           <div>
+            <span class="text-sm text-purple-700">Tonnes:</span>
+            <span class="font-semibold text-lg text-purple-900 ml-2">
+              <%= number_with_precision(tender.project_rate_buildup&.shop_drawings_tonnes_for_calculation || 0, precision: 3) %>
+            </span>
+          </div>
+          <div>
             <span class="text-sm text-purple-700">Rate:</span>
             <span class="font-semibold text-lg text-purple-900 ml-2">
               <%= number_to_currency(tender.project_rate_buildup&.shop_drawings_rate || 0, unit: "R", precision: 2) %>/tonne
@@ -14,7 +20,7 @@
           <div>
             <span class="text-sm text-purple-700">Total:</span>
             <span class="font-semibold text-lg text-purple-900 ml-2">
-              <%= number_to_currency((tender.project_rate_buildup&.shop_drawings_rate || 0) * (tender.total_tonnage || 0), unit: "R", precision: 2) %>
+              <%= number_to_currency(tender.project_rate_buildup&.shop_drawings_total || 0, unit: "R", precision: 2) %>
             </span>
           </div>
         </div>

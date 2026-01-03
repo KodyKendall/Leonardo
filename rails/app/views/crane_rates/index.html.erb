@@ -11,6 +11,14 @@
   </div>
 
   <% if @crane_rates.any? %>
+    <div class="flex gap-4 mb-2 text-sm font-semibold text-gray-600" style="padding-left: 25px; padding-right: 25px;">
+      <div class="flex-1">Crane size</div>
+      <div class="flex-1">RSB Owned / Rental</div>
+      <div class="flex-1">Dry Rate / Day (9 hours)</div>
+      <div class="flex-1">Diesel Allowance / Day</div>
+      <div class="flex-1">All Inclusive Rate per Day</div>
+      <div class="w-20"></div> <!-- Placeholder for actions -->
+    </div>
     <div id="crane_rates_list" class="space-y-6">
       <%= render @crane_rates %>
     </div>

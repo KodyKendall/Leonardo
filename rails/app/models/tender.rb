@@ -1,6 +1,7 @@
 class Tender < ApplicationRecord
   belongs_to :awarded_project, class_name: 'Project', optional: true
   belongs_to :client, optional: true
+  belongs_to :contact, optional: true
   has_many :boqs, dependent: :destroy
   has_many :tender_line_items, dependent: :destroy
   has_many :tender_crane_selections, dependent: :destroy
@@ -19,6 +20,7 @@ class Tender < ApplicationRecord
   
   # Callbacks
   before_save :sync_client_name, if: -> { client_id_changed? }
+  before_save :set_default_contact, if: -> { client_id_changed? && contact_id.blank? }
   before_create :generate_e_number
   after_create :populate_material_rates
   after_create :create_project_rate_buildup
@@ -33,15 +35,14 @@ class Tender < ApplicationRecord
   
   # Project types enum-like constant
   PROJECT_TYPES = ['Commercial', 'Mining'].freeze
+
+  # Weight units for tonnage calculation
+  WEIGHT_UNITS = ["t", "ton", "tons", "tonne", "tonnes"].freeze
   
   # Recalculate grand total as sum of all line item totals + shop drawings total + P&G items and broadcast update
   def recalculate_grand_total!
     line_items_total = tender_line_items.sum { |item| (item.line_item_rate_build_up&.rounded_rate || 0) * item.quantity }
-    shop_drawings_total = if project_rate_buildup&.shop_drawings_rate.present?
-                             project_rate_buildup.shop_drawings_rate * (total_tonnage || 0)
-                           else
-                             0
-                           end
+    shop_drawings_total = project_rate_buildup&.shop_drawings_total || 0
     p_and_g_total = preliminaries_general_items.sum { |item| item.quantity * item.rate }
     
     new_total = line_items_total + shop_drawings_total + p_and_g_total
@@ -57,9 +58,15 @@ class Tender < ApplicationRecord
     "(No client specified)"
   end
 
-  # Recalculate total tonnage as sum of all line item quantities where unit_of_measure == "tonne"
+  # Returns both client name and contact person (if available)
+  def display_client_and_contact
+    contact_part = contact&.name ? " (#{contact.name})" : ""
+    "#{display_client_name}#{contact_part}"
+  end
+
+  # Recalculate total tonnage as sum of all line item quantities where unit_of_measure is a weight unit
   def recalculate_total_tonnage!
-    new_tonnage = tender_line_items.where(unit_of_measure: "tonne").sum(:quantity)
+    new_tonnage = tender_line_items.where(unit_of_measure: WEIGHT_UNITS).sum(:quantity)
     self.total_tonnage = new_tonnage
     update_column(:total_tonnage, new_tonnage)
     broadcast_update_total_tonnage
@@ -88,6 +95,12 @@ class Tender < ApplicationRecord
 
   def sync_client_name
     self.client_name = client&.business_name
+  end
+
+  def set_default_contact
+    return unless client.present?
+    # Set to the client's primary contact if available
+    self.contact = client.primary_contact
   end
 
   def populate_material_rates
