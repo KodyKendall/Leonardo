@@ -6,13 +6,40 @@ class TenderEquipmentSelection < ApplicationRecord
   validates :units_required, :period_months, numericality: { greater_than: 0 }
   validates :calculated_monthly_cost, :total_cost, presence: true, numericality: true
 
+  attr_accessor :skip_broadcast
+  
   scope :ordered, -> { order(:sort_order) }
 
   before_validation :calculate_costs
-  after_save_commit :update_tender_equipment_summary
+  after_commit :update_tender_equipment_summary, on: [:create, :update, :destroy]
+  after_create_commit :broadcast_create
+  after_update_commit :broadcast_row_update, unless: :skip_broadcast
+  after_destroy_commit :broadcast_destroy
   after_commit :trigger_rate_buildup_update, on: [:create, :update, :destroy]
 
   private
+
+  def broadcast_create
+    broadcast_append_to(
+      tender,
+      target: "equipment_selections_table",
+      partial: "equipment_selections/equipment_selection",
+      locals: { equipment_selection: self }
+    )
+  end
+
+  def broadcast_row_update
+    broadcast_replace_to(
+      tender,
+      target: self,
+      partial: "equipment_selections/equipment_selection",
+      locals: { equipment_selection: self }
+    )
+  end
+
+  def broadcast_destroy
+    broadcast_remove_to(tender, target: self)
+  end
 
   def calculate_costs
     # Ensure equipment_type_id is present
