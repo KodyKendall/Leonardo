@@ -4,7 +4,7 @@ class CraneRatesController < ApplicationController
 
   # GET /crane_rates or /crane_rates.json
   def index
-    @crane_rates = CraneRate.all
+    @crane_rates = CraneRate.ordered_by_size
   end
 
   # GET /crane_rates/1 or /crane_rates/1.json
