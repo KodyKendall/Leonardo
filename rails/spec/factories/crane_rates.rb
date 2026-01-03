@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :crane_rate do
-    size { "50T" }
+    size { "50t" }
     ownership_type { "rental" }
     dry_rate_per_day { 1200.0 }
     diesel_per_day { 150.0 }
