@@ -26,4 +26,35 @@ RSpec.describe TenderLineItem, type: :model do
       expect(rate_buildup.rounded_rate).to eq(1600)
     end
   end
+
+  describe 'heading positioning' do
+    let(:tender) { create(:tender) }
+
+    it 'assigns correct positions to headings and line items' do
+      # Create a mix of headings and line items
+      line_item_1 = create(:tender_line_item, tender: tender, item_description: "Item 1")
+      heading_1 = create(:tender_line_item, tender: tender, is_heading: true, item_description: "Section A")
+      line_item_2 = create(:tender_line_item, tender: tender, item_description: "Item 2")
+      heading_2 = create(:tender_line_item, tender: tender, is_heading: true, item_description: "Section B")
+
+      # Verify positions are sequential
+      expect(line_item_1.position).to eq(1)
+      expect(heading_1.position).to eq(2)
+      expect(line_item_2.position).to eq(3)
+      expect(heading_2.position).to eq(4)
+    end
+
+    it 'maintains position ordering when items are mixed' do
+      items = []
+      items << create(:tender_line_item, tender: tender, item_description: "Item A")
+      items << create(:tender_line_item, tender: tender, is_heading: true, item_description: "Heading A")
+      items << create(:tender_line_item, tender: tender, item_description: "Item B")
+      items << create(:tender_line_item, tender: tender, is_heading: true, item_description: "Heading B")
+      items << create(:tender_line_item, tender: tender, item_description: "Item C")
+
+      # Verify ordered scope returns items in position order
+      ordered_items = tender.tender_line_items.ordered
+      expect(ordered_items.map(&:item_description)).to eq(["Item A", "Heading A", "Item B", "Heading B", "Item C"])
+    end
+  end
 end

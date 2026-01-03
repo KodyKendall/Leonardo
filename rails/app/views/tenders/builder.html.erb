@@ -135,12 +135,18 @@
       </div>
     </div>
 
-    <!-- Add New Line Item Button -->
-    <div class="mt-6 text-center">
+    <!-- Add New Line Item / Heading Buttons -->
+    <div class="mt-6 flex justify-center gap-4">
       <%= button_to "＋ Add New Line Item",
           tender_tender_line_items_path(@tender),
           method: :post,
           class: "btn btn-lg btn-outline" %>
+      
+      <%= button_to "＋ Add New Heading",
+          tender_tender_line_items_path(@tender),
+          method: :post,
+          params: { tender_line_item: { is_heading: true, item_description: "New Heading" } },
+          class: "btn btn-lg btn-outline btn-secondary" %>
     </div>
   </div>
 </div>
