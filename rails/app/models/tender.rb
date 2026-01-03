@@ -3,7 +3,7 @@ class Tender < ApplicationRecord
   belongs_to :client, optional: true
   belongs_to :contact, optional: true
   has_many :boqs, dependent: :destroy
-  has_many :tender_line_items, dependent: :destroy
+  has_many :tender_line_items, -> { ordered }, dependent: :destroy
   has_many :tender_crane_selections, dependent: :destroy
   has_many :tender_specific_material_rates, dependent: :destroy
   has_many :material_supplies, through: :tender_specific_material_rates

@@ -1,3 +1,4 @@
+# LEONARDO WAS HERE
 Rails.application.routes.draw do
   resources :preliminaries_general_item_templates, path: 'p_and_g_templates'
   # resources :preliminaries_general_items
@@ -57,7 +58,11 @@ Rails.application.routes.draw do
       post :quick_create
     end
     resources :boqs, only: [:create]
-    resources :tender_line_items
+    resources :tender_line_items do
+      collection do
+        patch :reorder
+      end
+    end
     resources :tender_specific_material_rates do
       collection do
         post :populate_from_month
@@ -71,8 +76,6 @@ Rails.application.routes.draw do
       end
     end
   end
-
-    resources :tender_line_items
 
   resources :suppliers
   resources :material_supplies

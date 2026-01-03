@@ -17,7 +17,7 @@ class TendersController < ApplicationController
     @line_items = @tender.tender_line_items
                          .includes(:line_item_rate_build_up, 
                                    line_item_material_breakdown: :line_item_materials)
-                         .order(:created_at)
+                         .ordered
   end
 
   # GET /tenders/1/tender_inclusions_exclusions
