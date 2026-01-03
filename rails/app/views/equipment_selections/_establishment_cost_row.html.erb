@@ -1,52 +1,56 @@
-<%= turbo_frame_tag "establishment_cost_row", class: "contents" do %>
-  <tr class="bg-blue-50 hover:bg-blue-100 border-t-2 border-blue-200" data-controller="establishment-cost">
+<tr id="establishment_cost_row" 
+    class="bg-blue-50 hover:bg-blue-100 border-t-2 border-blue-200" 
+    data-controller="establishment-cost"
+    data-action="turbo:submit-end->establishment-cost#reset input->establishment-cost#markDirty change->establishment-cost#markDirty">
+  <%= form_with model: tender_equipment_summary,
+                method: :patch,
+                local: true,
+                data: {
+                  turbo_stream: true
+                },
+                class: "contents" do |f| %>
     <!-- Label: Establishment and de-establishment -->
     <td class="px-6 py-4 text-sm font-semibold text-gray-900">
       Establishment and de-establishment
     </td>
 
-    <!-- Empty cells for Units, Months, Purpose, Monthly Cost to align with table -->
+    <!-- Empty cells for Units, Months -->
     <td class="px-6 py-4"></td>
     <td class="px-6 py-4"></td>
-    <td class="px-6 py-4"></td>
+
+    <!-- Notes (Purpose column) -->
+    <td class="px-6 py-4 text-sm">
+      <%= f.text_field :notes, placeholder: "Notes (e.g. 2 trucks...)", class: "input input-sm input-bordered w-full" %>
+    </td>
+
+    <!-- Empty cell for Monthly Cost -->
     <td class="px-6 py-4"></td>
 
     <!-- Total Cost: Editable field for establishment cost -->
     <td class="px-6 py-4 text-sm">
-      <%= form_with model: tender_equipment_summary,
-                    method: :patch,
-                    local: true,
-                    data: {
-                      turbo_stream: true,
-                      action: "turbo:submit-end->establishment-cost#reset"
-                    },
-                    class: "contents" do |f| %>
-        <div class="flex items-center gap-2">
-          <span class="text-sm font-medium text-gray-600">R</span>
-          <%= f.number_field :establishment_cost,
-                              step: 0.01,
-                              min: 0,
-                              class: "input input-sm input-bordered w-32",
-                              data: { action: "change->establishment-cost#markDirty" },
-                              placeholder: "0.00" %>
-          <button type="submit"
-                  class="btn btn-primary btn-sm hidden"
-                  data-establishment-cost-target="submit"
-                  title="Save establishment cost">
-            <i class="fas fa-check"></i>
-          </button>
-          <span class="hidden text-warning text-xs font-medium" data-establishment-cost-target="indicator">
-            <i class="fas fa-circle-exclamation"></i>
-          </span>
-        </div>
-      <% end %>
+      <div class="flex items-center gap-2">
+        <span class="text-sm font-medium text-gray-600">R</span>
+        <%= f.number_field :establishment_cost,
+                            step: 0.01,
+                            min: 0,
+                            class: "input input-sm input-bordered w-32",
+                            placeholder: "0.00" %>
+      </div>
     </td>
 
-    <!-- Empty cells for Establishment, De-establishment to align with table -->
-    <td class="px-6 py-4"></td>
-    <td class="px-6 py-4"></td>
-
-    <!-- Actions: Empty cell to align with table -->
-    <td class="px-6 py-4"></td>
-  </tr>
-<% end %>
+    <!-- Actions -->
+    <td class="px-6 py-4 text-sm">
+      <div class="flex items-center gap-2">
+        <button type="submit"
+                class="btn btn-primary btn-sm hidden"
+                data-establishment-cost-target="submit"
+                title="Save">
+          <i class="fas fa-check"></i>
+        </button>
+        <span class="hidden text-warning text-xs font-medium" data-establishment-cost-target="indicator">
+          <i class="fas fa-circle-exclamation"></i>
+        </span>
+      </div>
+    </td>
+  <% end %>
+</tr>

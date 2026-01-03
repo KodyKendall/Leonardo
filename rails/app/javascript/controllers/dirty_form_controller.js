@@ -4,7 +4,10 @@ export default class extends Controller {
   static targets = ["indicator", "submit", "savedIndicator"]
 
   connect() {
-    this.originalData = new FormData(this.element)
+    this.form = this.element.tagName === "FORM" ? this.element : this.element.querySelector("form")
+    if (!this.form) return
+
+    this.originalData = new FormData(this.form)
     this.isDirty = false
     this.hasValidationErrors = false
     
@@ -16,7 +19,7 @@ export default class extends Controller {
     }
     
     // Intercept form submission BEFORE Turbo processes it
-    this.element.addEventListener("submit", (e) => this.handleFormSubmit(e), true)
+    this.form.addEventListener("submit", (e) => this.handleFormSubmit(e), true)
     // Listen for form submission to validate before submit
     this.element.addEventListener("turbo:submit-start", (e) => this.handleSubmitStart(e))
     // Listen for successful form submission
@@ -24,7 +27,8 @@ export default class extends Controller {
   }
 
   change() {
-    const currentData = new FormData(this.element)
+    if (!this.form) return
+    const currentData = new FormData(this.form)
     this.isDirty = !this.formDataEqual(this.originalData, currentData)
     this.updateIndicator()
     // Hide saved message when user makes new changes
@@ -126,7 +130,8 @@ export default class extends Controller {
   }
 
   showSavedState() {
-    this.originalData = new FormData(this.element)
+    if (!this.form) return
+    this.originalData = new FormData(this.form)
     this.isDirty = false
     this.updateIndicator()
     

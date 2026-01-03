@@ -1,12 +1,14 @@
-<tr class="hover:bg-gray-50" id="<%= dom_id(equipment_selection) %>">
+<tr class="hover:bg-gray-50" 
+    id="<%= dom_id(equipment_selection) %>"
+    data-controller="dirty-form"
+    data-action="input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset">
     <%= form_with model: [equipment_selection.tender, equipment_selection],
                   url: tender_equipment_selection_path(equipment_selection.tender, equipment_selection),
                   method: :patch,
                   local: true,
                   class: "contents",
                   data: {
-                    controller: "dirty-form",
-                    action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset"
+                    turbo_stream: true
                   } do |f| %>
       <!-- Equipment Type (Read-only) -->
       <td class="px-6 py-4 text-sm font-medium text-gray-900">
@@ -49,16 +51,6 @@
       <!-- Total Cost (Calculated, Read-only) -->
       <td class="px-6 py-4 text-sm font-bold text-green-700">
         R<%= number_with_precision(equipment_selection.total_cost, precision: 2, delimiter: ",") %>
-      </td>
-
-      <!-- Establishment (Editable) -->
-      <td class="px-6 py-4 text-sm">
-        <%= f.number_field :establishment_cost, step: 0.01, class: "input input-sm input-bordered w-24", placeholder: "0.00" %>
-      </td>
-
-      <!-- De-establishment (Editable) -->
-      <td class="px-6 py-4 text-sm">
-        <%= f.number_field :de_establishment_cost, step: 0.01, class: "input input-sm input-bordered w-24", placeholder: "0.00" %>
       </td>
 
       <!-- Actions -->

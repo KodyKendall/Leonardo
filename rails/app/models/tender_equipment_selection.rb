@@ -31,14 +31,11 @@ class TenderEquipmentSelection < ApplicationRecord
       self.calculated_monthly_cost = base_monthly * damage_multiplier
     end
 
-    # Calculate total: (monthly_cost × units × months) + establishment_cost + de_establishment_cost
+    # Calculate total: (monthly_cost × units × months)
     # Set defaults if units or months are nil
     units = units_required.presence || 1
     months = period_months.presence || 1
-    monthly_total = calculated_monthly_cost * units * months
-    establishment = establishment_cost.presence || 0
-    de_establishment = de_establishment_cost.presence || 0
-    self.total_cost = monthly_total + establishment + de_establishment
+    self.total_cost = calculated_monthly_cost * units * months
   end
 
   def update_tender_equipment_summary

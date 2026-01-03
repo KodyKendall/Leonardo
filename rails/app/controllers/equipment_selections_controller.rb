@@ -68,6 +68,6 @@ class EquipmentSelectionsController < ApplicationController
   end
 
   def equipment_selection_params
-    params.require(:tender_equipment_selection).permit(:equipment_type_id, :units_required, :period_months, :purpose, :monthly_cost_override, :establishment_cost, :de_establishment_cost)
+    params.require(:tender_equipment_selection).permit(:equipment_type_id, :units_required, :period_months, :purpose, :monthly_cost_override)
   end
 end

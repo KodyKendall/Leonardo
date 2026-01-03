@@ -46,7 +46,7 @@ class TenderEquipmentSummariesController < ApplicationController
         format.turbo_stream do
           # Broadcast updates to both the establishment cost row and the summary card
           render turbo_stream: [
-            turbo_stream.update("establishment_cost_row", partial: "equipment_selections/establishment_cost_row", locals: { tender_equipment_summary: @tender_equipment_summary }),
+            turbo_stream.replace("establishment_cost_row", partial: "equipment_selections/establishment_cost_row", locals: { tender_equipment_summary: @tender_equipment_summary }),
             turbo_stream.update("equipment_cost_summary", partial: "tender_equipment_summaries/summary", locals: { tender_equipment_summary: @tender_equipment_summary })
           ]
         end
@@ -76,6 +76,6 @@ class TenderEquipmentSummariesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def tender_equipment_summary_params
-      params.require(:tender_equipment_summary).permit(:tenant_id, :equipment_subtotal, :mobilization_fee, :establishment_cost, :total_equipment_cost, :rate_per_tonne_raw, :rate_per_tonne_rounded)
+      params.require(:tender_equipment_summary).permit(:tenant_id, :equipment_subtotal, :mobilization_fee, :establishment_cost, :total_equipment_cost, :rate_per_tonne_raw, :rate_per_tonne_rounded, :notes)
     end
 end

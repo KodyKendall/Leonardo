@@ -32,8 +32,6 @@
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Purpose</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Monthly Cost</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Total Cost</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Establishment</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">De-establishment</th>
           <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
         </tr>
       </thead>
@@ -49,7 +47,7 @@
 
         <!-- Add Equipment Form Row -->
         <tr>
-          <td colspan="9" class="p-0">
+          <td colspan="7" class="p-0">
             <%= render "add_form", tender: @tender, new_equipment_selection: @new_equipment_selection, equipment_types: @equipment_types %>
           </td>
         </tr>
