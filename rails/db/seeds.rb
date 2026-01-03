@@ -1000,11 +1000,16 @@ pg_templates.each_with_index do |attrs, index|
 end
 
 puts "  • P&G Templates: #{PreliminariesGeneralItemTemplate.count}"
+# ===== SECTION CATEGORIES =====
+SectionCategory.seed_from_enums
+
 puts "✅ Database seeded successfully!"
 
 puts ""
 puts "📊 SEEDED DATA SUMMARY:"
-puts "  • Users: #{User.count}"
+puts "  • Users: #{User.count}
+  • Section Categories: #{SectionCategory.count}
+"
 puts "  • Tenders: #{Tender.count}"
 puts "  • Projects: #{Project.count}"
 puts "  • Budget Categories: #{BudgetCategory.count}"
