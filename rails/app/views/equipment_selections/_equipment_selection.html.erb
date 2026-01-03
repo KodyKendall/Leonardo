@@ -70,11 +70,9 @@
           </button>
 
           <!-- Delete Button -->
-          <%= button_to tender_equipment_selection_path(equipment_selection.tender, equipment_selection),
-              method: :delete,
-              form_class: "contents",
+          <%= link_to tender_equipment_selection_path(equipment_selection.tender, equipment_selection),
+              data: { turbo_method: :delete, turbo_confirm: "Delete this equipment selection?" },
               class: "btn btn-error btn-sm",
-              data: { turbo_confirm: "Delete this equipment selection?" },
               title: "Delete" do %>
             <i class="fas fa-trash"></i>
           <% end %>
