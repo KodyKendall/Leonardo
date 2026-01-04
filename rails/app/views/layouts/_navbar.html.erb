@@ -38,8 +38,14 @@
     </div>
     <div class="navbar-end pr-6">
       <div class="dropdown dropdown-end">
-        <button class="btn btn-circle btn-ghost">
-          <i class="fas fa-user text-xl"></i>
+        <button class="btn btn-circle btn-ghost avatar <%= 'placeholder' unless current_user.profile_pic.attached? %>">
+          <div class="w-10 rounded-full <%= 'bg-slate-100' unless current_user.profile_pic.attached? %>">
+            <% if current_user.profile_pic.attached? %>
+              <%= image_tag current_user.profile_pic %>
+            <% else %>
+              <i class="fas fa-user text-xl text-slate-500"></i>
+            <% end %>
+          </div>
         </button>
         <ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
           <li class="menu-title">
