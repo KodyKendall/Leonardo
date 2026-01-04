@@ -4,24 +4,29 @@ class SectionCategoriesController < ApplicationController
   # GET /section_categories or /section_categories.json
   def index
     @section_categories = SectionCategory.all
+    authorize SectionCategory
   end
 
   # GET /section_categories/1 or /section_categories/1.json
   def show
+    authorize @section_category
   end
 
   # GET /section_categories/new
   def new
     @section_category = SectionCategory.new
+    authorize @section_category
   end
 
   # GET /section_categories/1/edit
   def edit
+    authorize @section_category
   end
 
   # POST /section_categories or /section_categories.json
   def create
     @section_category = SectionCategory.new(section_category_params)
+    authorize @section_category
 
     respond_to do |format|
       if @section_category.save
@@ -36,6 +41,7 @@ class SectionCategoriesController < ApplicationController
 
   # PATCH/PUT /section_categories/1 or /section_categories/1.json
   def update
+    authorize @section_category
     respond_to do |format|
       if @section_category.update(section_category_params)
         format.html { redirect_to @section_category, notice: "Section category was successfully updated.", status: :see_other }
@@ -49,6 +55,7 @@ class SectionCategoriesController < ApplicationController
 
   # DELETE /section_categories/1 or /section_categories/1.json
   def destroy
+    authorize @section_category
     @section_category.destroy!
 
     respond_to do |format|

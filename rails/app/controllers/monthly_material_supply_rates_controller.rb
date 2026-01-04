@@ -4,10 +4,12 @@ class MonthlyMaterialSupplyRatesController < ApplicationController
   # GET /monthly_material_supply_rates or /monthly_material_supply_rates.json
   def index
     @monthly_material_supply_rates = MonthlyMaterialSupplyRate.order(effective_from: :desc)
+    authorize MonthlyMaterialSupplyRate
   end
 
   # GET /monthly_material_supply_rates/1 or /monthly_material_supply_rates/1.json
   def show
+    authorize @monthly_material_supply_rate
     @material_supplies = MaterialSupply.all
     supplier_order = ["BSI", "MacSteel", "Steelrode", "S&L", "BBD", "Fast Flame"]
     @suppliers = Supplier.all.sort_by { |s| supplier_order.index(s.name) || supplier_order.length }
@@ -17,15 +19,18 @@ class MonthlyMaterialSupplyRatesController < ApplicationController
   # GET /monthly_material_supply_rates/new
   def new
     @monthly_material_supply_rate = MonthlyMaterialSupplyRate.new
+    authorize @monthly_material_supply_rate
   end
 
   # GET /monthly_material_supply_rates/1/edit
   def edit
+    authorize @monthly_material_supply_rate
   end
 
   # POST /monthly_material_supply_rates or /monthly_material_supply_rates.json
   def create
     @monthly_material_supply_rate = MonthlyMaterialSupplyRate.new(monthly_material_supply_rate_params)
+    authorize @monthly_material_supply_rate
     
     # Parse month string (e.g., "2025-12") from HTML5 month field to Date object
     if params[:monthly_material_supply_rate][:effective_from].present?
@@ -50,6 +55,7 @@ class MonthlyMaterialSupplyRatesController < ApplicationController
 
   # PATCH/PUT /monthly_material_supply_rates/1 or /monthly_material_supply_rates/1.json
   def update
+    authorize @monthly_material_supply_rate
     # Parse month string (e.g., "2025-12") from HTML5 month field to Date object
     if params[:monthly_material_supply_rate][:effective_from].present?
       month_string = params[:monthly_material_supply_rate][:effective_from]
@@ -77,6 +83,7 @@ class MonthlyMaterialSupplyRatesController < ApplicationController
 
   # POST /monthly_material_supply_rates/1/save_rate
   def save_rate
+    authorize @monthly_material_supply_rate
     material_supply_rate = MaterialSupplyRate.find_or_initialize_by(
       material_supply_id: params[:material_supply_id],
       supplier_id: params[:supplier_id],
@@ -95,6 +102,7 @@ class MonthlyMaterialSupplyRatesController < ApplicationController
 
   # POST /monthly_material_supply_rates/1/set_2nd_cheapest_as_winners
   def set_2nd_cheapest_as_winners
+    authorize @monthly_material_supply_rate
     material_supplies = MaterialSupply.all
     materials_updated = 0
 
@@ -134,6 +142,7 @@ class MonthlyMaterialSupplyRatesController < ApplicationController
 
   # DELETE /monthly_material_supply_rates/1 or /monthly_material_supply_rates/1.json
   def destroy
+    authorize @monthly_material_supply_rate
     @monthly_material_supply_rate.destroy!
 
     respond_to do |format|
