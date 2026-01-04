@@ -1,5 +1,11 @@
 # LEONARDO WAS HERE
 Rails.application.routes.draw do
+  resources :line_item_material_templates
+  resources :section_category_templates do
+    member do
+      post :bulk_create_slots
+    end
+  end
   resources :section_categories
   resources :preliminaries_general_item_templates, path: 'p_and_g_templates'
   # resources :preliminaries_general_items

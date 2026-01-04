@@ -7,7 +7,10 @@
 
   <div class="flex justify-between items-center">
     <h1 class="font-bold text-4xl">Section categories</h1>
-    <%= link_to "New section category", new_section_category_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
+    <div class="flex space-x-2">
+      <%= link_to "Templates", section_category_templates_path, class: "rounded-md px-3.5 py-2.5 bg-gray-600 hover:bg-gray-500 text-white block font-medium" %>
+      <%= link_to "New section category", new_section_category_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
+    </div>
   </div>
 
   <div id="section_categories" class="min-w-full divide-y divide-gray-200 space-y-5">

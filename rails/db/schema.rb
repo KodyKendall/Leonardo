@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_03_185848) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_04_170431) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -268,6 +268,18 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_03_185848) do
     t.index ["tender_line_item_id"], name: "index_line_item_material_breakdowns_on_tender_line_item_id"
   end
 
+  create_table "line_item_material_templates", force: :cascade do |t|
+    t.bigint "section_category_template_id", null: false
+    t.bigint "material_supply_id"
+    t.decimal "proportion_percentage"
+    t.decimal "waste_percentage"
+    t.integer "sort_order"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["material_supply_id"], name: "index_line_item_material_templates_on_material_supply_id"
+    t.index ["section_category_template_id"], name: "idx_on_section_category_template_id_ea93871d82"
+  end
+
   create_table "line_item_materials", force: :cascade do |t|
     t.bigint "tender_line_item_id", null: false
     t.bigint "material_supply_id"
@@ -286,36 +298,36 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_03_185848) do
 
   create_table "line_item_rate_build_ups", force: :cascade do |t|
     t.bigint "tender_line_item_id", null: false
-    t.decimal "material_supply_rate", precision: 12, scale: 2, default: "0.0"
-    t.decimal "fabrication_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "material_supply_rate", precision: 15, scale: 2, default: "0.0"
+    t.decimal "fabrication_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "fabrication_included", precision: 5, scale: 2, default: "1.0"
-    t.decimal "overheads_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "overheads_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "overheads_included", precision: 5, scale: 2, default: "1.0"
-    t.decimal "shop_priming_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "shop_priming_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "shop_priming_included", precision: 5, scale: 2, default: "0.0"
-    t.decimal "onsite_painting_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "onsite_painting_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "onsite_painting_included", precision: 5, scale: 2, default: "0.0"
-    t.decimal "delivery_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "delivery_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "delivery_included", precision: 5, scale: 2, default: "1.0"
-    t.decimal "bolts_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "bolts_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "bolts_included", precision: 5, scale: 2, default: "1.0"
-    t.decimal "erection_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "erection_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "erection_included", precision: 5, scale: 2, default: "1.0"
-    t.decimal "crainage_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "crainage_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "crainage_included", precision: 5, scale: 2, default: "0.0"
-    t.decimal "cherry_picker_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "cherry_picker_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "cherry_picker_included", precision: 5, scale: 2, default: "1.0"
-    t.decimal "galvanizing_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "galvanizing_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "galvanizing_included", precision: 5, scale: 2, default: "0.0"
-    t.decimal "subtotal", precision: 12, scale: 2, default: "0.0"
-    t.decimal "margin_amount", precision: 12, scale: 2, default: "0.0"
-    t.decimal "total_before_rounding", precision: 12, scale: 2, default: "0.0"
-    t.decimal "rounded_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "subtotal", precision: 15, scale: 2, default: "0.0"
+    t.decimal "margin_amount", precision: 15, scale: 2, default: "0.0"
+    t.decimal "total_before_rounding", precision: 15, scale: 2, default: "0.0"
+    t.decimal "rounded_rate", precision: 15, scale: 2, default: "0.0"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "margin_percentage", precision: 5, scale: 2, default: "0.0", null: false
     t.decimal "material_supply_included", precision: 5, scale: 2
-    t.decimal "shop_drawings_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "shop_drawings_rate", precision: 15, scale: 2, default: "0.0"
     t.index ["tender_line_item_id"], name: "index_line_item_rate_build_ups_on_tender_line_item_id"
   end
 
@@ -451,6 +463,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_03_185848) do
     t.index ["name"], name: "index_section_categories_on_name", unique: true
   end
 
+  create_table "section_category_templates", force: :cascade do |t|
+    t.bigint "section_category_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["section_category_id"], name: "index_section_category_templates_on_section_category_id"
+  end
+
   create_table "suppliers", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -495,11 +514,11 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_03_185848) do
 
   create_table "tender_equipment_summaries", force: :cascade do |t|
     t.bigint "tender_id", null: false
-    t.decimal "equipment_subtotal", precision: 14, scale: 2, default: "0.0", null: false
+    t.decimal "equipment_subtotal", precision: 15, scale: 2, default: "0.0", null: false
     t.decimal "mobilization_fee", precision: 10, scale: 2, default: "15000.0", null: false
-    t.decimal "total_equipment_cost", precision: 14, scale: 2, default: "0.0", null: false
-    t.decimal "rate_per_tonne_raw", precision: 12, scale: 4
-    t.decimal "rate_per_tonne_rounded", precision: 12, scale: 2
+    t.decimal "total_equipment_cost", precision: 15, scale: 2, default: "0.0", null: false
+    t.decimal "rate_per_tonne_raw", precision: 15, scale: 4
+    t.decimal "rate_per_tonne_rounded", precision: 15, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "establishment_cost", default: "15000.0"
@@ -527,7 +546,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_03_185848) do
   create_table "tender_line_items", force: :cascade do |t|
     t.bigint "tender_id", null: false
     t.decimal "quantity", precision: 12, scale: 2, default: "0.0"
-    t.decimal "rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "rate", precision: 15, scale: 2, default: "0.0"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "page_number"
@@ -560,7 +579,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_03_185848) do
     t.string "e_number", null: false
     t.string "status", default: "draft", null: false
     t.string "client_name"
-    t.decimal "tender_value", precision: 12, scale: 2
+    t.decimal "tender_value", precision: 15, scale: 2
     t.string "project_type", default: "commercial"
     t.text "notes"
     t.bigint "awarded_project_id"
@@ -570,7 +589,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_03_185848) do
     t.string "tender_name"
     t.bigint "client_id"
     t.date "submission_deadline"
-    t.decimal "grand_total", precision: 12, scale: 2, default: "0.0"
+    t.decimal "grand_total", precision: 15, scale: 2, default: "0.0"
     t.decimal "total_tonnage", precision: 12, scale: 3, default: "0.0"
     t.bigint "contact_id"
     t.index ["awarded_project_id"], name: "index_tenders_on_awarded_project_id"
@@ -631,6 +650,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_03_185848) do
   add_foreign_key "contacts", "clients"
   add_foreign_key "fabrication_records", "projects"
   add_foreign_key "line_item_material_breakdowns", "tender_line_items"
+  add_foreign_key "line_item_material_templates", "material_supplies"
+  add_foreign_key "line_item_material_templates", "section_category_templates"
   add_foreign_key "line_item_materials", "line_item_material_breakdowns"
   add_foreign_key "line_item_materials", "material_supplies"
   add_foreign_key "line_item_materials", "tender_line_items"
@@ -645,6 +666,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_03_185848) do
   add_foreign_key "projects", "tenders"
   add_foreign_key "projects", "users", column: "created_by_id"
   add_foreign_key "rate_buildup_custom_items", "line_item_rate_build_ups", on_delete: :cascade
+  add_foreign_key "section_category_templates", "section_categories"
   add_foreign_key "tender_crane_selections", "crane_rates"
   add_foreign_key "tender_crane_selections", "on_site_mobile_crane_breakdowns"
   add_foreign_key "tender_crane_selections", "tenders"

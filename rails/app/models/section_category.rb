@@ -1,4 +1,5 @@
 class SectionCategory < ApplicationRecord
+  has_many :section_category_templates, dependent: :destroy
   validates :name, presence: true, uniqueness: true
   validates :display_name, presence: true
 

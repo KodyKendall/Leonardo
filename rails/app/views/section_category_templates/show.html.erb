@@ -1,0 +1,51 @@
+<% content_for :title, "Showing section category template" %>
+
+<div class="md:w-2/3 w-full">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
+  <% end %>
+
+  <h1 class="font-bold text-4xl">Showing section category template</h1>
+
+  <div class="flex justify-between items-center mt-8">
+    <h2 class="text-2xl font-bold">Material Templates</h2>
+    <%= button_to "Add Default Materials", bulk_create_slots_section_category_template_path(@section_category_template), class: "rounded-md px-3.5 py-2.5 bg-green-600 hover:bg-green-500 text-white block font-medium" %>
+  </div>
+
+  <div id="material_templates" class="min-w-full divide-y divide-gray-200 space-y-5 my-5">
+    <% if @section_category_template.line_item_material_templates.any? %>
+      <table class="table w-full">
+        <thead>
+          <tr>
+            <th>Material</th>
+            <th>Proportion %</th>
+            <th>Waste %</th>
+            <th>Sort Order</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @section_category_template.line_item_material_templates.order(:sort_order).each do |material_template| %>
+            <tr>
+              <td><%= material_template.material_supply&.name || "Placeholder" %></td>
+              <td><%= material_template.proportion_percentage %></td>
+              <td><%= material_template.waste_percentage %></td>
+              <td><%= material_template.sort_order %></td>
+              <td>
+                <%= link_to "Edit", edit_line_item_material_template_path(material_template), class: "text-blue-600 hover:underline" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="text-gray-500 italic">No material templates added yet.</p>
+    <% end %>
+  </div>
+
+  <%= render @section_category_template %>
+
+  <%= link_to "Edit this section category template", edit_section_category_template_path(@section_category_template), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+  <%= link_to "Back to section category templates", section_category_templates_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+  <%= button_to "Destroy this section category template", @section_category_template, method: :delete, form_class: "sm:inline-block mt-2 sm:mt-0 sm:ml-2", class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+</div>
