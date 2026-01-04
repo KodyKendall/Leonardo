@@ -96,6 +96,9 @@ Rails.application.routes.draw do
   resources :material_supply_rates
   devise_for :users, controllers: { registrations: 'users/registrations' }
   resources :users do
+    collection do
+      post :create_managed, action: :create
+    end
     member do
       get :generate_profile_pic, action: :generate_profile_pic_form
       post :generate_profile_pic

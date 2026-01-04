@@ -33,6 +33,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def authenticate_admin!
+    redirect_to root_path, alert: "Access Denied" unless current_user&.admin?
+  end
+
   private
 
   def authenticate_user_from_token!

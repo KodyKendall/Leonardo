@@ -41,4 +41,41 @@ RSpec.describe User, type: :model do
       expect(user.api_token.length).to eq(64) # 32 bytes hex = 64 characters
     end
   end
+
+  describe 'role enum' do
+    it 'defines valid roles' do
+      expect(User.roles.keys).to match_array(['quantity_surveyor', 'office', 'material_buyer', 'admin'])
+    end
+
+    it 'sets default role to quantity_surveyor' do
+      user = User.new
+      expect(user.role).to eq('quantity_surveyor')
+    end
+
+    it 'allows valid roles' do
+      user = User.new
+      expect { user.role = 'office' }.not_to raise_error
+      expect { user.role = 'material_buyer' }.not_to raise_error
+      expect { user.role = 'admin' }.not_to raise_error
+    end
+
+    it 'rejects invalid roles' do
+      user = User.new
+      expect { user.role = 'invalid_role' }.to raise_error(ArgumentError)
+    end
+
+    it 'syncs admin boolean when role is admin' do
+      user = User.new(email: 'admin@example.com', password: 'password123', role: 'admin')
+      user.valid?
+      expect(user.admin).to be_truthy
+    end
+
+    it 'unsyncs admin boolean when role is changed from admin' do
+      user = User.create!(email: 'admin@example.com', password: 'password123', role: 'admin')
+      expect(user.admin).to be_truthy
+      user.role = 'office'
+      user.save!
+      expect(user.admin).to be_falsey
+    end
+  end
 end

@@ -1,4 +1,4 @@
-<%= form_with(model: user, class: "contents") do |form| %>
+<%= form_with(model: user, url: (user.new_record? ? create_managed_users_path : user), class: "contents") do |form| %>
   <% if user.errors.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
       <h2><%= pluralize(user.errors.count, "error") %> prohibited this user from being saved:</h2>
@@ -17,6 +17,24 @@
   </div>
 
   <div class="my-5">
+    <%= form.label :email %>
+    <%= form.email_field :email, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": user.errors[:email].none?, "border-red-400 focus:outline-red-600": user.errors[:email].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :password %>
+    <% if user.persisted? %>
+      <p class="text-xs text-slate-500 mb-2">Leave blank if you don't want to change it</p>
+    <% end %>
+    <%= form.password_field :password, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": user.errors[:password].none?, "border-red-400 focus:outline-red-600": user.errors[:password].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :password_confirmation %>
+    <%= form.password_field :password_confirmation, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": user.errors[:password_confirmation].none?, "border-red-400 focus:outline-red-600": user.errors[:password_confirmation].any?}] %>
+  </div>
+
+  <div class="my-5">
     <%= form.label :profile_pic, "Profile Picture" %>
     <div class="flex items-center gap-4 mt-2">
       <% if user.profile_pic.attached? %>
@@ -28,6 +46,11 @@
       <% end %>
       <%= form.file_field :profile_pic, class: "file-input file-input-bordered w-full max-w-xs" %>
     </div>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :role %>
+    <%= form.select :role, User.roles.keys.map { |r| [r.titleize, r] }, {}, class: "block shadow-sm rounded-md border border-gray-400 focus:outline-blue-600 px-3 py-2 mt-2 w-full" %>
   </div>
 
   <div class="inline">
