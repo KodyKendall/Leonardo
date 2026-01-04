@@ -12,34 +12,27 @@
     <%= button_to "Add Default Materials", bulk_create_slots_section_category_template_path(@section_category_template), class: "rounded-md px-3.5 py-2.5 bg-green-600 hover:bg-green-500 text-white block font-medium" %>
   </div>
 
-  <div id="material_templates" class="min-w-full divide-y divide-gray-200 space-y-5 my-5">
+  <div id="material_templates" class="min-w-full my-5 bg-white border rounded-lg overflow-hidden">
     <% if @section_category_template.line_item_material_templates.any? %>
-      <table class="table w-full">
-        <thead>
-          <tr>
-            <th>Material</th>
-            <th>Proportion %</th>
-            <th>Waste %</th>
-            <th>Sort Order</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @section_category_template.line_item_material_templates.order(:sort_order).each do |material_template| %>
-            <tr>
-              <td><%= material_template.material_supply&.name || "Placeholder" %></td>
-              <td><%= material_template.proportion_percentage %></td>
-              <td><%= material_template.waste_percentage %></td>
-              <td><%= material_template.sort_order %></td>
-              <td>
-                <%= link_to "Edit", edit_line_item_material_template_path(material_template), class: "text-blue-600 hover:underline" %>
-              </td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
+      <!-- Header -->
+      <div class="grid grid-cols-12 gap-2 px-4 py-2 font-bold text-xs uppercase text-gray-500 border-b bg-gray-50">
+        <div class="col-span-4">Material</div>
+        <div class="col-span-2 text-right">Proportion %</div>
+        <div class="col-span-2 text-right">Waste %</div>
+        <div class="col-span-2 text-right">Sort Order</div>
+        <div class="col-span-2 text-right pr-2">Actions</div>
+      </div>
+      
+      <!-- Rows -->
+      <div class="divide-y divide-gray-200">
+        <%= render partial: 'line_item_material_templates/line_item_material_template', 
+                   collection: @section_category_template.line_item_material_templates.order(:sort_order), 
+                   as: :line_item_material_template %>
+      </div>
     <% else %>
-      <p class="text-gray-500 italic">No material templates added yet.</p>
+      <div class="p-4 text-gray-500 italic text-center">
+        No material templates added yet.
+      </div>
     <% end %>
   </div>
 

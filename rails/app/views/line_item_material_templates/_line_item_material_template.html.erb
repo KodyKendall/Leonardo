@@ -1,22 +1,62 @@
-<div id="<%= dom_id line_item_material_template %>" class="w-full sm:w-auto my-5 space-y-5">
-  <div>
-    <strong class="block font-medium mb-1">Section category template:</strong>
-    <%= line_item_material_template.section_category_template_id %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Material supply:</strong>
-    <%= line_item_material_template.material_supply_id %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Proportion percentage:</strong>
-    <%= line_item_material_template.proportion_percentage %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Waste percentage:</strong>
-    <%= line_item_material_template.waste_percentage %>
-  </div>
-  <div>
-    <strong class="block font-medium mb-1">Sort order:</strong>
-    <%= line_item_material_template.sort_order %>
-  </div>
-</div>
+<%= turbo_frame_tag dom_id(line_item_material_template) do %>
+  <%= form_with(model: line_item_material_template, 
+                data: { 
+                  controller: "dirty-form",
+                  action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset"
+                }, 
+                class: "contents") do |form| %>
+    <div class="grid grid-cols-12 gap-2 px-4 py-2 border-b hover:bg-gray-50 items-center bg-white">
+      
+      <!-- Material Supply -->
+      <div class="col-span-4">
+        <%= form.collection_select :material_supply_id, MaterialSupply.all, :id, :name, 
+            { prompt: "Select Material" }, 
+            class: "select select-bordered select-xs w-full text-xs" %>
+      </div>
+
+      <!-- Proportion % -->
+      <div class="col-span-2">
+        <%= form.number_field :proportion_percentage, 
+            step: 0.01, 
+            class: "input input-bordered input-xs w-full text-right text-xs",
+            placeholder: "Prop %" %>
+      </div>
+
+      <!-- Waste % -->
+      <div class="col-span-2">
+        <%= form.number_field :waste_percentage, 
+            step: 0.01, 
+            class: "input input-bordered input-xs w-full text-right text-xs",
+            placeholder: "Waste %" %>
+      </div>
+
+      <!-- Sort Order -->
+      <div class="col-span-2">
+        <%= form.number_field :sort_order, 
+            class: "input input-bordered input-xs w-full text-right text-xs",
+            placeholder: "Sort" %>
+      </div>
+
+      <!-- Actions -->
+      <div class="col-span-2 flex items-center justify-end gap-1">
+        <!-- Dirty Indicator -->
+        <div class="w-2 h-2 rounded-full bg-error hidden" data-dirty-form-target="indicator" title="Unsaved changes"></div>
+
+        <!-- Save Button -->
+        <%= form.button type: :submit, class: "btn btn-xs btn-ghost text-success p-1", data: { dirty_form_target: "submit" } do %>
+          <i class="fas fa-check"></i>
+        <% end %>
+
+        <!-- Delete Button -->
+        <%= link_to line_item_material_template_path(line_item_material_template), 
+                    data: { 
+                      turbo_method: :delete, 
+                      turbo_confirm: "Are you sure?"
+                    },
+                    class: "btn btn-ghost btn-xs text-error p-1" do %>
+          <i class="fas fa-trash"></i>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+<% end %>

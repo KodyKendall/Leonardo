@@ -13,16 +13,29 @@ require 'rails_helper'
 # sticking to rails and rspec-rails APIs to keep things simple and stable.
 
 RSpec.describe "/line_item_material_templates", type: :request do
-  
-  # This should return the minimal set of attributes required to create a valid
-  # LineItemMaterialTemplate. As you add validations to LineItemMaterialTemplate, be sure to
-  # adjust the attributes here as well.
+  include Devise::Test::IntegrationHelpers
+
+  let(:user) { User.create!(email: "test@example.com", password: "password", role: "admin") }
+  before { sign_in user }
+
+  let(:section_category) { SectionCategory.create!(name: "Test Category", display_name: "Test Category") }
+  let(:section_category_template) { SectionCategoryTemplate.create!(section_category: section_category) }
+  let(:material_supply) { MaterialSupply.create!(name: "Test Material", waste_percentage: 5.0) }
+
   let(:valid_attributes) {
-    skip("Add a hash of attributes valid for your model")
+    {
+      section_category_template_id: section_category_template.id,
+      material_supply_id: material_supply.id,
+      proportion_percentage: 50.0,
+      waste_percentage: 5.0,
+      sort_order: 1
+    }
   }
 
   let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
+    {
+      proportion_percentage: 150.0
+    }
   }
 
   describe "GET /index" do
@@ -85,16 +98,30 @@ RSpec.describe "/line_item_material_templates", type: :request do
   end
 
   describe "PATCH /update" do
+    context "with Turbo Stream" do
+      it "returns a turbo stream response when updated via turbo" do
+        line_item_material_template = LineItemMaterialTemplate.create! valid_attributes
+        patch line_item_material_template_url(line_item_material_template), 
+              params: { line_item_material_template: { proportion_percentage: 60.0 } },
+              as: :turbo_stream
+        
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("turbo-stream")
+        expect(response.body).to include("replace")
+        expect(response.body).to include("line_item_material_template_#{line_item_material_template.id}")
+      end
+    end
+
     context "with valid parameters" do
       let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
+        { proportion_percentage: 75.0 }
       }
 
       it "updates the requested line_item_material_template" do
         line_item_material_template = LineItemMaterialTemplate.create! valid_attributes
         patch line_item_material_template_url(line_item_material_template), params: { line_item_material_template: new_attributes }
         line_item_material_template.reload
-        skip("Add assertions for updated state")
+        expect(line_item_material_template.proportion_percentage).to eq(75.0)
       end
 
       it "redirects to the line_item_material_template" do
@@ -122,10 +149,10 @@ RSpec.describe "/line_item_material_templates", type: :request do
       }.to change(LineItemMaterialTemplate, :count).by(-1)
     end
 
-    it "redirects to the line_item_material_templates list" do
+    it "redirects to the section_category_template" do
       line_item_material_template = LineItemMaterialTemplate.create! valid_attributes
       delete line_item_material_template_url(line_item_material_template)
-      expect(response).to redirect_to(line_item_material_templates_url)
+      expect(response).to redirect_to(section_category_template_path(section_category_template))
     end
   end
 end

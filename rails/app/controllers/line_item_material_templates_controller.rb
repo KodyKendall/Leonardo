@@ -40,20 +40,24 @@ class LineItemMaterialTemplatesController < ApplicationController
       if @line_item_material_template.update(line_item_material_template_params)
         format.html { redirect_to @line_item_material_template, notice: "Line item material template was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @line_item_material_template }
+        format.turbo_stream
       else
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @line_item_material_template.errors, status: :unprocessable_entity }
+        format.turbo_stream { render turbo_stream: turbo_stream.replace(@line_item_material_template, partial: "line_item_material_templates/line_item_material_template", locals: { line_item_material_template: @line_item_material_template }) }
       end
     end
   end
 
   # DELETE /line_item_material_templates/1 or /line_item_material_templates/1.json
   def destroy
+    section_category_template = @line_item_material_template.section_category_template
     @line_item_material_template.destroy!
 
     respond_to do |format|
-      format.html { redirect_to line_item_material_templates_path, notice: "Line item material template was successfully destroyed.", status: :see_other }
+      format.html { redirect_to section_category_template_path(section_category_template), notice: "Line item material template was successfully destroyed.", status: :see_other }
       format.json { head :no_content }
+      format.turbo_stream { render turbo_stream: turbo_stream.remove(@line_item_material_template) }
     end
   end
 
