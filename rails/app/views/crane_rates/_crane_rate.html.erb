@@ -73,22 +73,26 @@
         </div>
 
         <!-- Edit Button (Pencil Icon / Checkmark) -->
-        <button type="button" 
-          data-crane-rate-target="editBtn" 
-          data-action="crane-rate#toggleEditMode"
-          class="btn btn-circle btn-outline btn-sm"
-          title="Edit">
-          <i class="fas fa-pencil text-lg" data-crane-rate-target="editIcon"></i>
-        </button>
+        <% if policy(crane_rate).edit? %>
+          <button type="button" 
+            data-crane-rate-target="editBtn" 
+            data-action="crane-rate#toggleEditMode"
+            class="btn btn-circle btn-outline btn-sm"
+            title="Edit">
+            <i class="fas fa-pencil text-lg" data-crane-rate-target="editIcon"></i>
+          </button>
+        <% end %>
 
         <!-- Delete Button (Trash Icon) -->
-        <button type="button"
-          data-crane-rate-target="deleteBtn"
-          class="btn btn-circle btn-error btn-sm"
-          title="Delete"
-          onclick="if(confirm('Are you sure?')) { Rails.csrf.token(document.querySelector('meta[name=csrf-token]').content); fetch('<%= crane_rate_path(crane_rate) %>', { method: 'DELETE', headers: { 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]').content } }).then(() => window.location = '<%= crane_rates_path %>'); }">
-          <i class="fas fa-trash text-lg"></i>
-        </button>
+        <% if policy(crane_rate).destroy? %>
+          <button type="button"
+            data-crane-rate-target="deleteBtn"
+            class="btn btn-circle btn-error btn-sm"
+            title="Delete"
+            onclick="if(confirm('Are you sure?')) { Rails.csrf.token(document.querySelector('meta[name=csrf-token]').content); fetch('<%= crane_rate_path(crane_rate) %>', { method: 'DELETE', headers: { 'X-CSRF-Token': document.querySelector('meta[name=csrf-token]').content } }).then(() => window.location = '<%= crane_rates_path %>'); }">
+            <i class="fas fa-trash text-lg"></i>
+          </button>
+        <% end %>
       </div>
 
       <!-- Status Indicator (Unsaved/Saved) -->

@@ -26,4 +26,12 @@
       <%= equipment_type.is_active? ? "Active" : "Inactive" %>
     </span>
   </td>
+  <% if policy(equipment_type).edit? %>
+    <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2 flex justify-center">
+      <%= link_to "Edit", edit_equipment_type_path(equipment_type), class: "text-blue-600 hover:text-blue-800 font-medium" %>
+      <% if policy(equipment_type).destroy? %>
+        <%= button_to "Delete", equipment_type, method: :delete, class: "text-red-600 hover:text-red-800 font-medium", data: { turbo_confirm: "Are you sure?" } %>
+      <% end %>
+    </td>
+  <% end %>
 </tr>

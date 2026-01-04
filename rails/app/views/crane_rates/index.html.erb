@@ -7,7 +7,9 @@
 
   <div class="flex justify-between items-center mb-8">
     <h1 class="font-bold text-4xl">Crane rates</h1>
-    <%= link_to "Add Crane Rate", new_crane_rate_path, class: "btn btn-primary" %>
+    <% if policy(CraneRate).new? %>
+      <%= link_to "Add Crane Rate", new_crane_rate_path, class: "btn btn-primary" %>
+    <% end %>
   </div>
 
   <% if @crane_rates.any? %>
@@ -17,14 +19,20 @@
       <div class="flex-1">Dry Rate / Day (9 hours)</div>
       <div class="flex-1">Diesel Allowance / Day</div>
       <div class="flex-1">All Inclusive Rate per Day</div>
-      <div class="w-20"></div> <!-- Placeholder for actions -->
+      <% if policy(CraneRate).edit? %>
+        <div class="w-20"></div> <!-- Placeholder for actions -->
+      <% end %>
     </div>
     <div id="crane_rates_list" class="space-y-6">
       <%= render @crane_rates %>
     </div>
   <% else %>
     <div class="alert alert-info">
-      <span>No crane rates found. <%= link_to "Create one", new_crane_rate_path, class: "link" %></span>
+      <span>No crane rates found. 
+        <% if policy(CraneRate).new? %>
+          <%= link_to "Create one", new_crane_rate_path, class: "link" %>
+        <% end %>
+      </span>
     </div>
   <% end %>
 </div>
