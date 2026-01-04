@@ -10,10 +10,19 @@
     <% end %>
     <!-- Header -->
     <div class="card-body pb-3">
-      <div class="flex items-center justify-between">
+      <div class="flex items-center justify-between gap-4">
         <div>
           <h3 class="card-title text-lg font-bold">Material Breakdown</h3>
-          <span class="badge badge-primary"><%= line_item_material_breakdown.tender_line_item&.item_description || "No Line Item" %></span>
+        </div>
+        <div class="flex-grow">
+          <%= form_with url: update_section_category_line_item_material_breakdown_path(line_item_material_breakdown), method: :patch, class: "flex items-center justify-end gap-2", data: { turbo_stream: true } do |f| %>
+            <div class="form-control flex-grow max-w-md">
+              <%= f.collection_select :section_category_id, SectionCategory.all, :id, :display_name, 
+                  { selected: line_item_material_breakdown.tender_line_item&.section_category_id, prompt: "Section Category..." }, 
+                  { class: "select select-sm select-bordered w-full" } %>
+            </div>
+            <%= f.submit "Save", class: "btn btn-sm btn-primary" %>
+          <% end %>
         </div>
       </div>
     </div>

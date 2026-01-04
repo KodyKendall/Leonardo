@@ -21,7 +21,11 @@ Rails.application.routes.draw do
   resources :tender_crane_selections
   resources :crane_complements
   resources :crane_rates
-  resources :line_item_material_breakdowns
+  resources :line_item_material_breakdowns do
+    member do
+      patch :update_section_category
+    end
+  end
   resources :line_item_materials
   resources :line_item_rate_build_ups
   resources :boqs do
