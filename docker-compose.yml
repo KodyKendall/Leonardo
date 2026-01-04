@@ -41,6 +41,7 @@ services:
       - ./langgraph/langgraph.json:/app/app/langgraph.json
       - ./langgraph/agents:/app/app/user_agents
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./:/app/leonardo  # Full Leonardo repo for git access
     ports:
       - "8080:8000"
     depends_on:
