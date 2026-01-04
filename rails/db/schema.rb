@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_04_185220) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_04_192540) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -572,7 +572,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_04_185220) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "supplier_id"
     t.index ["material_supply_id"], name: "index_tender_specific_material_rates_on_material_supply_id"
+    t.index ["supplier_id"], name: "index_tender_specific_material_rates_on_supplier_id"
     t.index ["tender_id", "material_supply_id"], name: "idx_tender_material_unique", unique: true
     t.index ["tender_id"], name: "index_tender_specific_material_rates_on_tender_id"
   end
@@ -679,6 +681,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_04_185220) do
   add_foreign_key "tender_line_items", "section_categories"
   add_foreign_key "tender_line_items", "tenders"
   add_foreign_key "tender_specific_material_rates", "material_supplies", on_delete: :cascade
+  add_foreign_key "tender_specific_material_rates", "suppliers"
   add_foreign_key "tender_specific_material_rates", "tenders", on_delete: :cascade
   add_foreign_key "tenders", "clients"
   add_foreign_key "tenders", "contacts"

@@ -2,6 +2,7 @@ class TenderSpecificMaterialRate < ApplicationRecord
   # Associations
   belongs_to :tender
   belongs_to :material_supply, optional: true
+  belongs_to :supplier, optional: true
   has_many :line_item_materials, foreign_key: :material_supply_id, primary_key: :material_supply_id
 
   # Validations
