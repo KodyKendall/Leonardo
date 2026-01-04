@@ -74,5 +74,20 @@ RSpec.describe TenderLineItem, type: :model do
       ordered_items = tender.tender_line_items.ordered
       expect(ordered_items.map(&:item_description)).to eq(["Item A", "Heading A", "Item B", "Heading B", "Item C"])
     end
+
+    it 'allows manual reordering and maintains it' do
+      item1 = create(:tender_line_item, tender: tender, item_description: "Item 1")
+      item2 = create(:tender_line_item, tender: tender, item_description: "Item 2")
+      item3 = create(:tender_line_item, tender: tender, item_description: "Item 3")
+
+      expect(tender.tender_line_items.ordered.map(&:item_description)).to eq(["Item 1", "Item 2", "Item 3"])
+
+      # Simulate reordering via controller logic
+      item3.update_column(:position, 1)
+      item1.update_column(:position, 2)
+      item2.update_column(:position, 3)
+
+      expect(tender.tender_line_items.ordered.map(&:item_description)).to eq(["Item 3", "Item 1", "Item 2"])
+    end
   end
 end
