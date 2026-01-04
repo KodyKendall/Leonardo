@@ -29,7 +29,27 @@ class TendersController < ApplicationController
     @p_and_g_items = @tender.preliminaries_general_items
     @shop_drawings_total = @tender.project_rate_buildup&.shop_drawings_total || 0
 
-    render layout: 'print'
+    respond_to do |format|
+      format.html { render layout: 'print' }
+      format.pdf do
+        html = render_to_string(template: 'tenders/report', layout: 'print', formats: [:html])
+        grover = Grover.new(html,
+          format: 'Letter',
+          margin: { top: '0.5in', bottom: '0.5in', left: '0.5in', right: '0.5in' },
+          emulate_media: 'print',
+          display_header_footer: false,
+          prefer_css_page_size: true,
+          wait_until: 'networkidle0',
+          display_url: request.base_url,
+          print_background: true
+        )
+        pdf = grover.to_pdf
+        send_data pdf,
+                  filename: "tender_#{@tender.e_number}.pdf",
+                  type: 'application/pdf',
+                  disposition: 'attachment'
+      end
+    end
   end
 
   # GET /tenders/1/tender_inclusions_exclusions
@@ -100,6 +120,7 @@ class TendersController < ApplicationController
         format.html { redirect_to @tender, notice: "Tender was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @tender }
       else
+        @clients = Client.all
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @tender.errors, status: :unprocessable_entity }
       end

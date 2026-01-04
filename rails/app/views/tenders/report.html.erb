@@ -1,5 +1,23 @@
 <% content_for :title, "Tender Report - #{@tender.e_number}" %>
 
+<!-- Action Bar (Hidden on Print) -->
+<div class="no-print sticky top-0 z-50 bg-white border-b border-gray-200 px-4 py-3 mb-6 shadow-sm flex justify-between items-center">
+  <div class="flex items-center gap-4">
+    <%= link_to tender_path(@tender), class: "text-gray-600 hover:text-gray-900 flex items-center gap-2" do %>
+      <i class="fa-solid fa-arrow-left"></i> Back to Tender
+    <% end %>
+    <h1 class="text-xl font-bold text-gray-800">Tender Report Preview: <%= @tender.e_number %></h1>
+  </div>
+  <div class="flex gap-2">
+    <button onclick="window.print()" class="rounded-md px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium inline-flex items-center gap-2">
+      <i class="fa-solid fa-print"></i> Browser Print
+    </button>
+    <%= link_to report_tender_path(@tender, format: :pdf), class: "rounded-md px-4 py-2 bg-red-600 hover:bg-red-500 text-white font-medium inline-flex items-center gap-2" do %>
+      <i class="fa-solid fa-file-pdf"></i> Download PDF
+    <% end %>
+  </div>
+</div>
+
 <%
   # Configuration
   items_per_first_page = 18
