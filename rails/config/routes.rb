@@ -49,6 +49,7 @@ Rails.application.routes.draw do
   resources :tenders do
     member do
       get :builder
+      get :report
       get :tender_inclusions_exclusions
       patch :update_inclusions_exclusions
       post :mirror_boq_items

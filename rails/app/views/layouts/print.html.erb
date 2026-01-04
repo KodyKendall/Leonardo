@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= content_for(:title) || "Tender Report" %></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'rsb-blue': '#1e3a5f',
+              'rsb-light': '#7ba3c9',
+            }
+          }
+        }
+      }
+    </script>
+
+    <!-- Print-specific styles -->
+    <style type="text/tailwindcss">
+      @page {
+        size: 8.5in 11in;
+        margin: 0.5in 0.4in;
+      }
+
+      @media print {
+        body {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+
+        .page {
+          page-break-after: always;
+          width: 100% !important;
+          min-height: auto !important;
+          margin: 0 !important;
+          box-shadow: none !important;
+        }
+
+        .page:last-child {
+          page-break-after: auto;
+        }
+
+        thead {
+          display: table-header-group;
+        }
+
+        tr {
+          page-break-inside: avoid;
+        }
+
+        .no-print {
+          display: none !important;
+        }
+      }
+
+      @media screen {
+        body {
+          background: #e5e7eb;
+        }
+      }
+
+      /* Currency prefix */
+      .currency::before {
+        content: "R ";
+      }
+    </style>
+
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="font-sans text-gray-800 text-[9pt] leading-snug">
+    <%= yield %>
+  </body>
+</html>
