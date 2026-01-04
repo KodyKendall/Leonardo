@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   llamapress:
-    image: kody06/llamapress-simple:0.2.6a          # <— pre-built tag
+    image: kody06/llamapress-simple:0.2.7          # <— pre-built tag
     # build: ../Simple/LlamaPress-Simple
     env_file: .env                           # read secrets from this file
     environment:
@@ -32,7 +32,7 @@ services:
       - llama-network
 
   llamabot:
-    image: kody06/llamabot:0.2.21
+    image: kody06/llamabot:0.3.3o
     # build: ../LlamaBot
     env_file:
       - .env
@@ -42,7 +42,7 @@ services:
     # docker compose exec -it llamabot langgraph dev --host 0.0.0.0
     volumes:
       - auth_json:/app/auth.json
-      - ../LlamaBot/app:/app/app  # Dev: full mount for hot reload
+      - ../../LlamaBot/app:/app/app  # Dev: full mount for hot reload
       - ./rails:/app/app/rails  # Override: Leonardo's Rails code
       - ./langgraph/langgraph.json:/app/app/langgraph.json  # Override: merged config
       - ./langgraph/agents:/app/app/user_agents  # Add: custom agents
