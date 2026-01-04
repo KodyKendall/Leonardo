@@ -36,19 +36,18 @@
         }
 
         .page {
-          page-break-after: always;
           width: 100% !important;
           min-height: auto !important;
           margin: 0 !important;
           box-shadow: none !important;
         }
 
-        .page:last-child {
-          page-break-after: auto;
-        }
-
         thead {
           display: table-header-group;
+        }
+
+        tfoot {
+          display: table-footer-group;
         }
 
         tr {
@@ -72,6 +71,10 @@
       }
       .currency::before {
         content: "R ";
+      }
+      /* Page numbering */
+      .page-number::after {
+        content: counter(page);
       }
     </style>
 
