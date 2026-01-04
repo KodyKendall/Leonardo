@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_04_172109) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_04_185220) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -467,6 +467,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_04_172109) do
     t.bigint "section_category_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "name"
     t.index ["section_category_id"], name: "index_section_category_templates_on_section_category_id"
   end
 
@@ -553,10 +554,11 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_04_172109) do
     t.string "item_number"
     t.text "item_description"
     t.string "unit_of_measure"
-    t.enum "section_category", enum_type: "section_category_enum"
     t.text "notes"
     t.integer "position", default: 0
     t.boolean "is_heading", default: false
+    t.bigint "section_category_id"
+    t.index ["section_category_id"], name: "index_tender_line_items_on_section_category_id"
     t.index ["tender_id"], name: "index_tender_line_items_on_tender_id"
   end
 
@@ -674,6 +676,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_04_172109) do
   add_foreign_key "tender_equipment_selections", "tenders", on_delete: :cascade
   add_foreign_key "tender_equipment_summaries", "tenders", on_delete: :cascade
   add_foreign_key "tender_inclusions_exclusions", "tenders"
+  add_foreign_key "tender_line_items", "section_categories"
   add_foreign_key "tender_line_items", "tenders"
   add_foreign_key "tender_specific_material_rates", "material_supplies", on_delete: :cascade
   add_foreign_key "tender_specific_material_rates", "tenders", on_delete: :cascade

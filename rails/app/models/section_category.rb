@@ -1,5 +1,6 @@
 class SectionCategory < ApplicationRecord
   has_many :section_category_templates, dependent: :destroy
+  has_many :tender_line_items, dependent: :nullify
   validates :name, presence: true, uniqueness: true
   validates :display_name, presence: true
 

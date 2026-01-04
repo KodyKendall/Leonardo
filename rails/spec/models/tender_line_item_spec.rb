@@ -1,8 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe TenderLineItem, type: :model do
+  let(:tender) { create(:tender) }
+
   describe 'inheritance from project rate buildup' do
-    let(:tender) { create(:tender) }
     let!(:project_rate_buildup) do
       tender.reload.project_rate_buildup.update!(
         material_supply_rate: 1000,
@@ -24,6 +25,23 @@ RSpec.describe TenderLineItem, type: :model do
       # (Assuming default inclusions are 1.0 for fab and shop drawings)
       expect(rate_buildup.subtotal).to eq(1600)
       expect(rate_buildup.rounded_rate).to eq(1600)
+    end
+  end
+
+  describe 'associations' do
+    it { is_expected.to belong_to(:section_category).optional }
+  end
+
+  describe 'validations' do
+    it 'requires section_category_id for non-headings' do
+      line_item = build(:tender_line_item, tender: tender, section_category: nil, is_heading: false)
+      expect(line_item).not_to be_valid
+      expect(line_item.errors[:section_category_id]).to include("can't be blank")
+    end
+
+    it 'does not require section_category_id for headings' do
+      line_item = build(:tender_line_item, tender: tender, section_category: nil, is_heading: true)
+      expect(line_item).to be_valid
     end
   end
 

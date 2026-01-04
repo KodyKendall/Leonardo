@@ -28,9 +28,10 @@
 
       <!-- Section Category -->
       <div class="form-control">
-        <%= f.label :section_category, "Category", class: "label" %>
-        <%= f.select :section_category,
-                    TenderLineItem.section_categories.keys.map { |k| [k, k] },
+        <%= f.label :section_category_id, "Category", class: "label" %>
+        <%= f.collection_select :section_category_id,
+                    SectionCategory.all.order(:display_name),
+                    :id, :display_name,
                     { include_blank: "Select category" },
                     class: "select select-bordered select-sm" %>
       </div>

@@ -1,5 +1,6 @@
 class TenderLineItem < ApplicationRecord
   belongs_to :tender, touch: true
+  belongs_to :section_category, optional: true
   has_one :line_item_rate_build_up, dependent: :destroy
   has_one :line_item_material_breakdown, dependent: :destroy
   has_many :line_item_materials, dependent: :destroy
@@ -8,6 +9,7 @@ class TenderLineItem < ApplicationRecord
   accepts_nested_attributes_for :line_item_material_breakdown, allow_destroy: true
 
   validates :tender_id, presence: true
+  validates :section_category_id, presence: true, unless: :is_heading
   validates :quantity, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :rate, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
@@ -23,23 +25,6 @@ class TenderLineItem < ApplicationRecord
   after_destroy :update_tender_grand_total
   after_destroy :update_tender_total_tonnage
 
-  enum section_category: {
-    "Blank" => "Blank",
-    "Steel Sections" => "Steel Sections",
-    "Paintwork" => "Paintwork",
-    "Bolts" => "Bolts",
-    "Gutter Meter" => "Gutter Meter",
-    "M16 Mechanical Anchor" => "M16 Mechanical Anchor",
-    "M16 Chemical" => "M16 Chemical",
-    "M20 Chemical" => "M20 Chemical",
-    "M24 Chemical" => "M24 Chemical",
-    "M16 HD Bolt" => "M16 HD Bolt",
-    "M20 HD Bolt" => "M20 HD Bolt",
-    "M24 HD Bolt" => "M24 HD Bolt",
-    "M30 HD Bolt" => "M30 HD Bolt",
-    "M36 HD Bolt" => "M36 HD Bolt",
-    "M42 HD Bolt" => "M42 HD Bolt"
-  }
 
   # Calculate the total amount for this line item
   def total_amount

@@ -55,7 +55,7 @@
                   </td>
                   <td>
                     <% if line_item.section_category.present? %>
-                      <span class="badge badge-sm"><%= line_item.section_category %></span>
+                      <span class="badge badge-sm"><%= line_item.section_category.display_name %></span>
                     <% else %>
                       <span class="text-gray-400">—</span>
                     <% end %>

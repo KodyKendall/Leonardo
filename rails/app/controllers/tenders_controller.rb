@@ -189,7 +189,8 @@ class TendersController < ApplicationController
     # Create Tender Line Items from BOQ items
     count = 0
     boq.boq_items.each do |boq_item|
-      category_value = boq_item.section_category.present? ? category_mapping[boq_item.section_category] : nil
+      category_name = boq_item.section_category.present? ? category_mapping[boq_item.section_category] : nil
+      section_category = SectionCategory.find_by(display_name: category_name) if category_name
       
       @tender.tender_line_items.create(
         quantity: boq_item.quantity,
@@ -197,7 +198,7 @@ class TendersController < ApplicationController
         item_number: boq_item.item_number,
         item_description: boq_item.item_description,
         unit_of_measure: boq_item.unit_of_measure,
-        section_category: category_value,
+        section_category: section_category,
         page_number: boq_item.page_number,
         notes: boq_item.notes
       )
