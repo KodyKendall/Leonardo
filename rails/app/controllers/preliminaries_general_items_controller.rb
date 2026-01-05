@@ -70,15 +70,8 @@ class PreliminariesGeneralItemsController < ApplicationController
             total_display: number_to_currency(@preliminaries_general_item.quantity * @preliminaries_general_item.rate)
           }
         end
-        format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.append("pg_items_table_body_#{@preliminaries_general_item.category}", 
-                                partial: "preliminaries_general_items/preliminaries_general_item", 
-                                locals: { preliminaries_general_item: @preliminaries_general_item, editing: true, tender: @tender }),
-            turbo_stream.replace("pg_totals", partial: "preliminaries_general_items/totals", locals: { tender: @tender })
-          ]
-        end
         format.html { redirect_to tender_preliminaries_general_items_path(@tender), notice: "Item added." }
+        format.turbo_stream { redirect_to tender_preliminaries_general_items_path(@tender), notice: "Item added." }
       else
         format.html { render :new, status: :unprocessable_entity }
       end
