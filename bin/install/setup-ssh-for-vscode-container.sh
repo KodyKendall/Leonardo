@@ -40,6 +40,8 @@ Host leonardo
     IdentityFile $SSH_KEY
     StrictHostKeyChecking no
     UserKnownHostsFile /dev/null
+    RequestTTY yes
+    RemoteCommand cd ~/Leonardo && exec \$SHELL -l
 EOF
 chmod 600 "$SSH_CONFIG"
 echo "✅ SSH config created"
@@ -51,7 +53,7 @@ if ! grep -q "LEONARDO_CONNECTED" "$BASHRC" 2>/dev/null; then
 
 # Leonardo SSH auto-connect
 # Set AUTO_SSH_LEONARDO=1 in your environment or uncomment the line below to enable
-# export AUTO_SSH_LEONARDO=1
+export AUTO_SSH_LEONARDO=1
 
 # Alias for quick access
 alias leo='ssh leonardo'
@@ -77,12 +79,7 @@ echo "1. Copy the public key below:"
 echo ""
 cat "$SSH_KEY.pub"
 echo ""
-echo "2. On the Leonardo server ($LEONARDO_IP), run:"
-echo ""
-echo "   echo \"$(cat $SSH_KEY.pub)\" >> ~/.ssh/authorized_keys"
-echo "   chmod 600 ~/.ssh/authorized_keys"
-echo ""
-echo "3. Connect to Leonardo:"
+echo "2. Connect to Leonardo:"
 echo ""
 echo "   • Quick alias: leo"
 echo "   • Full command: ssh leonardo"
@@ -106,4 +103,9 @@ echo "   environment:"
 echo "     - AUTO_SSH_LEONARDO=1"
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "3. On the Leonardo server ($LEONARDO_IP), run:"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+echo "   echo \"$(cat $SSH_KEY.pub)\" >> ~/.ssh/authorized_keys"
+echo "   chmod 600 ~/.ssh/authorized_keys"
 echo ""
