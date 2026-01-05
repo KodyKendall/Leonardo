@@ -15,25 +15,33 @@ if [ -z "$INSTANCE_NAME" ] || [ "$INSTANCE_NAME" = "null" ]; then
   exit 1
 fi
 
-# Your real S3 root prefix
-S3_BUCKET="s3://llampress-ai-backups/backups/leonardos/${INSTANCE_NAME}"
+S3_PATH="s3://llampress-ai-backups/backups/leonardos/${INSTANCE_NAME}/llamapress_manual_latest.sql.gz"
 
-BACKUP_NAME="llamapress_manual_latest.sql.gz"
+echo ""
+echo "⚠️  WARNING: This will DESTROY all existing data in the database!"
+echo "   Instance: ${INSTANCE_NAME}"
+echo "   Database: llamapress_production"
+echo ""
+read -p "Are you sure you want to continue? (y/N): " CONFIRM
 
-echo "🔵 Starting S3 backup for instance: ${INSTANCE_NAME}"
-echo "📦 Upload target: ${S3_BUCKET}/${BACKUP_NAME}"
+if [ "$CONFIRM" != "y" ] && [ "$CONFIRM" != "Y" ]; then
+  echo "❌ Restore cancelled."
+  exit 0
+fi
+
+echo ""
+echo "🔵 Starting S3 restore for instance: ${INSTANCE_NAME}"
+echo "📥 Download source: ${S3_PATH}"
 echo "⏱️  Start: $(date +%H:%M:%S)"
 
 START=$(date +%s)
 
-docker compose exec -T db pg_dump -U postgres llamapress_production \
-  | gzip \
-  | aws s3 cp - "${S3_BUCKET}/${BACKUP_NAME}" \
-      --storage-class STANDARD_IA
+aws s3 cp "$S3_PATH" - \
+  | gunzip \
+  | docker compose exec -T db psql -U postgres llamapress_production
 
 END=$(date +%s)
 DURATION=$((END - START))
 
-echo "✅ Backup complete in ${DURATION} seconds"
-echo "📍 S3 Path: ${S3_BUCKET}/${BACKUP_NAME}"
+echo "✅ Restore complete in ${DURATION} seconds"
 echo "⏱️  End: $(date +%H:%M:%S)"
