@@ -41,8 +41,8 @@ class TenderEquipmentSummary < ApplicationRecord
 
   # Broadcast update to equipment_cost_summary turbo frame
   def broadcast_update
-    broadcast_update_to(
-      "tender_#{tender.id}",
+    broadcast_replace_to(
+      tender,
       target: "equipment_cost_summary",
       partial: "tender_equipment_summaries/summary",
       locals: { tender_equipment_summary: self }

@@ -1,5 +1,5 @@
 class TendersController < ApplicationController
-  before_action :set_tender, only: %i[ show edit update destroy update_inclusions_exclusions tender_inclusions_exclusions ]
+  before_action :set_tender, only: %i[ show edit update destroy update_inclusions_exclusions tender_inclusions_exclusions report ]
 
   # GET /tenders or /tenders.json
   def index
@@ -15,9 +15,21 @@ class TendersController < ApplicationController
   def builder
     @tender = Tender.find(params[:id])
     @line_items = @tender.tender_line_items
-                         .includes(:line_item_rate_build_up, 
+                         .includes(:line_item_rate_build_up,
                                    line_item_material_breakdown: :line_item_materials)
-                         .order(:created_at)
+                         .ordered
+  end
+
+  # GET /tenders/1/report
+  # Print-ready report view for PDF generation via Grover
+  def report
+    @line_items = @tender.tender_line_items
+                         .includes(:line_item_rate_build_up)
+                         .ordered
+    @p_and_g_items = @tender.preliminaries_general_items
+    @shop_drawings_total = @tender.project_rate_buildup&.shop_drawings_total || 0
+
+    render layout: 'print'
   end
 
   # GET /tenders/1/tender_inclusions_exclusions

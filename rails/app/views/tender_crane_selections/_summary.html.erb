@@ -51,7 +51,7 @@
     <div class="mt-6 pt-6 border-t border-blue-200">
       <p class="text-sm font-semibold text-gray-700 mb-4">Breakdown by Purpose:</p>
       <div class="grid grid-cols-3 gap-4">
-        <% ['main', 'splicing'].each do |purpose| %>
+        <% ['main', 'splicing', 'misc'].each do |purpose| %>
           <% selections = on_site_mobile_crane_breakdown.tender_crane_selections.where(purpose: purpose) %>
           <% cost = selections.sum(:total_cost) %>
           <div class="text-sm">

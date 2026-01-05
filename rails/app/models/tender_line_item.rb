@@ -11,6 +11,9 @@ class TenderLineItem < ApplicationRecord
   validates :quantity, presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :rate, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
+  scope :ordered, -> { order(:position, :created_at) }
+
+  before_create :set_position
   after_initialize :build_defaults, if: :new_record?
   after_create :ensure_persisted_associations
   after_create :inherit_inclusion_defaults
@@ -62,6 +65,12 @@ class TenderLineItem < ApplicationRecord
   def build_defaults
     build_line_item_rate_build_up unless line_item_rate_build_up
     build_line_item_material_breakdown unless line_item_material_breakdown
+  end
+
+  def set_position
+    return if position.present? && position > 0
+    max_position = tender.tender_line_items.maximum(:position) || 0
+    self.position = max_position + 1
   end
 
   def create_line_item_rate_build_up

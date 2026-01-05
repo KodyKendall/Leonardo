@@ -1,5 +1,5 @@
-<%= turbo_frame_tag dom_id(tender_line_item) do %>
-  <div class="group border-b last:border-b-0 hover:bg-gray-50 transition-colors">
+<%= turbo_frame_tag dom_id(tender_line_item), data: { id: tender_line_item.id } do %>
+  <div class="group border-b last:border-b-0 transition-colors <%= 'bg-gray-100 hover:bg-gray-100' if tender_line_item.is_heading %> <%= 'hover:bg-gray-50' unless tender_line_item.is_heading %>">
     <%= form_with model: [tender_line_item.tender, tender_line_item],
                   data: {
                     controller: "dirty-form",
@@ -8,6 +8,13 @@
                   class: "px-4 py-2" do |f| %>
       
       <div class="grid grid-cols-12 gap-2 items-center">
+        <!-- Drag Handle -->
+        <div class="col-span-1 flex justify-center">
+          <div class="drag-handle cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600 p-2">
+            <i class="fas fa-grip-vertical"></i>
+          </div>
+        </div>
+
         <!-- Page -->
         <div class="col-span-1">
           <%= f.text_field :page_number, class: "input input-xs input-bordered w-full", placeholder: "Pg" %>
@@ -19,43 +26,47 @@
         </div>
 
         <!-- Description -->
-        <div class="col-span-3">
-          <%= f.text_field :item_description, class: "input input-xs input-bordered w-full", placeholder: "Description" %>
+        <div class="<%= tender_line_item.is_heading ? 'col-span-5 font-bold' : 'col-span-2' %>">
+          <%= f.text_field :item_description, class: "input input-xs input-bordered w-full #{ tender_line_item.is_heading ? 'font-bold' : '' }", placeholder: "Description" %>
         </div>
 
-        <!-- Unit -->
-        <div class="col-span-1">
-          <%= f.text_field :unit_of_measure, class: "input input-xs input-bordered w-full text-center", placeholder: "Unit" %>
-        </div>
-
-        <!-- Quantity -->
-        <div class="col-span-1">
-          <%= f.number_field :quantity, step: 0.01, min: 0, class: "input input-xs input-bordered w-full text-right" %>
-        </div>
-
-        <!-- Rate -->
-        <div class="col-span-1 text-right">
-          <div class="text-xs font-mono text-gray-600 px-2 py-1 bg-gray-100 rounded border border-gray-200">
-            <%= number_with_precision(tender_line_item.rate || 0, precision: 2, delimiter: ",") %>
+        <!-- Unit (Hidden for headings) -->
+        <% unless tender_line_item.is_heading %>
+          <div class="col-span-1">
+            <%= f.text_field :unit_of_measure, class: "input input-xs input-bordered w-full text-center", placeholder: "Unit" %>
           </div>
-          <%= f.hidden_field :rate %>
-        </div>
 
-        <!-- Line Total -->
-        <div class="col-span-2 text-right">
-          <% final_rate = tender_line_item.line_item_rate_build_up&.rounded_rate || 0 %>
-          <% line_total = final_rate * (tender_line_item.quantity || 0) %>
-          <div class="text-sm font-bold text-green-700 tabular-nums">
-            R<%= number_with_precision(line_total, precision: 2, delimiter: ",") %>
+          <!-- Quantity (Hidden for headings) -->
+          <div class="col-span-1">
+            <%= f.number_field :quantity, step: 0.01, min: 0, class: "input input-xs input-bordered w-full text-right" %>
           </div>
-        </div>
+
+          <!-- Rate (Hidden for headings) -->
+          <div class="col-span-1 text-right">
+            <div class="text-xs font-mono text-gray-600 px-2 py-1 bg-gray-100 rounded border border-gray-200">
+              <%= number_with_precision(tender_line_item.rate || 0, precision: 2, delimiter: ",") %>
+            </div>
+            <%= f.hidden_field :rate %>
+          </div>
+
+          <!-- Line Total (Hidden for headings) -->
+          <div class="col-span-2 text-right">
+            <% final_rate = tender_line_item.line_item_rate_build_up&.rounded_rate || 0 %>
+            <% line_total = final_rate * (tender_line_item.quantity || 0) %>
+            <div class="text-sm font-bold text-green-700 tabular-nums">
+              R<%= number_with_precision(line_total, precision: 2, delimiter: ",") %>
+            </div>
+          </div>
+        <% end %>
 
         <!-- Actions -->
         <div class="col-span-2 flex items-center justify-center gap-1">
-          <!-- Rate Buildup Toggle -->
-          <label for="toggle_<%= tender_line_item.id %>" class="btn btn-ghost btn-xs text-success hover:bg-success/10 p-0 w-8 h-8" title="Toggle Rate Buildup">
-            <i class="fas fa-chevron-down transform transition-transform duration-200" id="chevron_<%= tender_line_item.id %>"></i>
-          </label>
+          <!-- Rate Buildup Toggle (Hidden for headings) -->
+          <% unless tender_line_item.is_heading %>
+            <label for="toggle_<%= tender_line_item.id %>" class="btn btn-ghost btn-xs text-success hover:bg-success/10 p-0 w-8 h-8" title="Toggle Rate Buildup">
+              <i class="fas fa-chevron-down transform transition-transform duration-200" id="chevron_<%= tender_line_item.id %>"></i>
+            </label>
+          <% end %>
 
           <!-- Dirty Indicator -->
           <div class="w-2 h-2 rounded-full bg-warning hidden" data-dirty-form-target="indicator" title="Unsaved changes"></div>
@@ -69,7 +80,7 @@
           <%= link_to tender_tender_line_item_path(tender_line_item.tender, tender_line_item),
                       method: :delete,
                       class: "btn btn-ghost btn-xs text-error hover:bg-error/10 p-0 w-8 h-8",
-                      data: { turbo_method: :delete, turbo_confirm: "Delete this line item?" },
+                      data: { turbo_method: :delete, turbo_confirm: "Delete this #{ tender_line_item.is_heading ? 'heading' : 'line item' }?" },
                       title: "Delete" do %>
             <i class="fas fa-trash"></i>
           <% end %>
@@ -77,45 +88,47 @@
       </div>
     <% end %>
 
-    <!-- Expandable Breakdown Details Section -->
-    <div class="collapse overflow-visible" data-line-item-id="<%= tender_line_item.id %>" id="collapse_<%= tender_line_item.id %>">
-      <!-- Checkbox Toggle (hidden) -->
-      <input type="checkbox" class="line-item-toggle hidden peer" id="toggle_<%= tender_line_item.id %>" <%= "checked" if local_assigns[:open_breakdown] %> />
-      
-      <div class="collapse-content !p-0 max-h-0 peer-checked:max-h-[2000px] transition-all duration-300 overflow-hidden bg-gray-50/50">
-        <div class="p-6 border-t border-gray-200">
-          <!-- Two-Column Layout: Rate Build-Up (Left) | Material Breakdown (Right) -->
-          <div class="grid grid-cols-2 gap-8">
-            <!-- Rate Build-Up (Left) -->
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-              <h4 class="text-sm font-bold mb-4 flex items-center gap-2">
-                <i class="fas fa-calculator text-blue-500"></i>
-                Rate Build-Up
-              </h4>
-              <% if tender_line_item.line_item_rate_build_up %>
-                <%= turbo_frame_tag dom_id(tender_line_item.line_item_rate_build_up) do %>
-                  <%= render tender_line_item.line_item_rate_build_up, show_success: local_assigns[:show_success] %>
+    <!-- Expandable Breakdown Details Section (Hidden for headings) -->
+    <% unless tender_line_item.is_heading %>
+      <div class="collapse overflow-visible" data-line-item-id="<%= tender_line_item.id %>" id="collapse_<%= tender_line_item.id %>">
+        <!-- Checkbox Toggle (hidden) -->
+        <input type="checkbox" class="line-item-toggle hidden peer" id="toggle_<%= tender_line_item.id %>" <%= "checked" if local_assigns[:open_breakdown] %> />
+        
+        <div class="collapse-content !p-0 max-h-0 peer-checked:max-h-[2000px] transition-all duration-300 overflow-hidden bg-gray-50/50">
+          <div class="p-6 border-t border-gray-200">
+            <!-- Two-Column Layout: Rate Build-Up (Left) | Material Breakdown (Right) -->
+            <div class="grid grid-cols-2 gap-8">
+              <!-- Rate Build-Up (Left) -->
+              <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                <h4 class="text-sm font-bold mb-4 flex items-center gap-2">
+                  <i class="fas fa-calculator text-blue-500"></i>
+                  Rate Build-Up
+                </h4>
+                <% if tender_line_item.line_item_rate_build_up %>
+                  <%= turbo_frame_tag dom_id(tender_line_item.line_item_rate_build_up) do %>
+                    <%= render tender_line_item.line_item_rate_build_up, show_success: local_assigns[:show_success] %>
+                  <% end %>
+                <% else %>
+                  <div class="alert alert-warning">No rate build-up found</div>
                 <% end %>
-              <% else %>
-                <div class="alert alert-warning">No rate build-up found</div>
-              <% end %>
-            </div>
+              </div>
 
-            <!-- Material Breakdown (Right) -->
-            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-              <h4 class="text-sm font-bold mb-4 flex items-center gap-2">
-                <i class="fas fa-layer-group text-purple-500"></i>
-                Material Breakdown
-              </h4>
-              <% if tender_line_item.line_item_material_breakdown %>
-                <%= render tender_line_item.line_item_material_breakdown %>
-              <% else %>
-                <div class="alert alert-warning">No material breakdown found</div>
-              <% end %>
+              <!-- Material Breakdown (Right) -->
+              <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                <h4 class="text-sm font-bold mb-4 flex items-center gap-2">
+                  <i class="fas fa-layer-group text-purple-500"></i>
+                  Material Breakdown
+                </h4>
+                <% if tender_line_item.line_item_material_breakdown %>
+                  <%= render tender_line_item.line_item_material_breakdown %>
+                <% else %>
+                  <div class="alert alert-warning">No material breakdown found</div>
+                <% end %>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    <% end %>
   </div>
 <% end %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_02_185324) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_03_185848) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -443,6 +443,14 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_02_185324) do
     t.index ["line_item_rate_build_up_id"], name: "index_rate_buildup_custom_items_on_line_item_rate_build_up_id"
   end
 
+  create_table "section_categories", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "display_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_section_categories_on_name", unique: true
+  end
+
   create_table "suppliers", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -495,6 +503,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_02_185324) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "establishment_cost", default: "15000.0"
+    t.text "notes"
     t.index ["tender_id"], name: "index_tender_equipment_summaries_on_tender_id", unique: true
   end
 
@@ -527,6 +536,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_02_185324) do
     t.string "unit_of_measure"
     t.enum "section_category", enum_type: "section_category_enum"
     t.text "notes"
+    t.integer "position", default: 0
+    t.boolean "is_heading", default: false
     t.index ["tender_id"], name: "index_tender_line_items_on_tender_id"
   end
 
@@ -561,8 +572,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_02_185324) do
     t.date "submission_deadline"
     t.decimal "grand_total", precision: 12, scale: 2, default: "0.0"
     t.decimal "total_tonnage", precision: 12, scale: 3, default: "0.0"
+    t.bigint "contact_id"
     t.index ["awarded_project_id"], name: "index_tenders_on_awarded_project_id"
     t.index ["client_id"], name: "index_tenders_on_client_id"
+    t.index ["contact_id"], name: "index_tenders_on_contact_id"
     t.index ["e_number"], name: "index_tenders_on_e_number", unique: true
     t.index ["status"], name: "index_tenders_on_status"
   end
@@ -643,6 +656,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_02_185324) do
   add_foreign_key "tender_specific_material_rates", "material_supplies", on_delete: :cascade
   add_foreign_key "tender_specific_material_rates", "tenders", on_delete: :cascade
   add_foreign_key "tenders", "clients"
+  add_foreign_key "tenders", "contacts"
   add_foreign_key "tenders", "projects", column: "awarded_project_id"
   add_foreign_key "variation_orders", "projects"
   add_foreign_key "variation_orders", "users", column: "approved_by_id"

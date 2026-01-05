@@ -4,27 +4,22 @@ export default class extends Controller {
   static targets = ["indicator", "submit", "savedIndicator"]
 
   connect() {
-    this.originalData = new FormData(this.element)
+    this.form = this.element.tagName === "FORM" ? this.element : this.element.querySelector("form")
+    if (!this.form) return
+
+    this.originalData = new FormData(this.form)
     this.isDirty = false
     this.hasValidationErrors = false
     
-    // Check if we just saved - show success message on fresh form after stream render
-    if (sessionStorage.getItem("dirty-form:show-saved")) {
-      sessionStorage.removeItem("dirty-form:show-saved")
-      // Give the DOM a moment to fully render before showing success
-      setTimeout(() => this.showSavedState(), 50)
-    }
-    
     // Intercept form submission BEFORE Turbo processes it
-    this.element.addEventListener("submit", (e) => this.handleFormSubmit(e), true)
+    this.form.addEventListener("submit", (e) => this.handleFormSubmit(e), true)
     // Listen for form submission to validate before submit
     this.element.addEventListener("turbo:submit-start", (e) => this.handleSubmitStart(e))
-    // Listen for successful form submission
-    this.element.addEventListener("turbo:submit-end", (e) => this.handleSubmitEnd(e))
   }
 
   change() {
-    const currentData = new FormData(this.element)
+    if (!this.form) return
+    const currentData = new FormData(this.form)
     this.isDirty = !this.formDataEqual(this.originalData, currentData)
     this.updateIndicator()
     // Hide saved message when user makes new changes
@@ -109,15 +104,7 @@ export default class extends Controller {
     // Only show success for successful responses (200-299)
     // Validation errors return 422 with success: false
     if (event.detail.success) {
-      // Check if there are error messages in the form after re-render
-      const errorBox = this.element.querySelector("[id='error_explanation']")
-      if (!errorBox || errorBox.classList.contains("hidden")) {
-        // No errors, set a flag to show saved state after the Turbo Stream re-renders the form
-        sessionStorage.setItem("dirty-form:show-saved", "true")
-      } else {
-        // Errors exist - set flag to keep edit mode active
-        sessionStorage.setItem("dirty-form:keep-edit-mode", "true")
-      }
+      this.showSavedState()
     }
   }
 
@@ -126,7 +113,8 @@ export default class extends Controller {
   }
 
   showSavedState() {
-    this.originalData = new FormData(this.element)
+    if (!this.form) return
+    this.originalData = new FormData(this.form)
     this.isDirty = false
     this.updateIndicator()
     

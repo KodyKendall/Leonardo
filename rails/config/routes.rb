@@ -1,4 +1,6 @@
+# LEONARDO WAS HERE
 Rails.application.routes.draw do
+  resources :section_categories
   resources :preliminaries_general_item_templates, path: 'p_and_g_templates'
   # resources :preliminaries_general_items
   resources :tender_equipment_summaries
@@ -47,6 +49,7 @@ Rails.application.routes.draw do
   resources :tenders do
     member do
       get :builder
+      get :report
       get :tender_inclusions_exclusions
       patch :update_inclusions_exclusions
       post :mirror_boq_items
@@ -57,7 +60,11 @@ Rails.application.routes.draw do
       post :quick_create
     end
     resources :boqs, only: [:create]
-    resources :tender_line_items
+    resources :tender_line_items do
+      collection do
+        patch :reorder
+      end
+    end
     resources :tender_specific_material_rates do
       collection do
         post :populate_from_month
@@ -71,8 +78,6 @@ Rails.application.routes.draw do
       end
     end
   end
-
-    resources :tender_line_items
 
   resources :suppliers
   resources :material_supplies

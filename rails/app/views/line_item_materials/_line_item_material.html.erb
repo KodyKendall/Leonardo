@@ -70,7 +70,7 @@
           <%= form.button type: :submit, class: "btn btn-ghost btn-xs text-green-600 p-1" do %>
             <i class="fa-solid fa-check text-xs"></i>
           <% end %>
-          <%= button_to line_item_material, method: :delete, form: { class: "inline" }, data: { turbo_confirm: "Delete?" }, class: "btn btn-ghost btn-xs text-red-600 p-1" do %>
+          <%= link_to line_item_material, data: { turbo_method: :delete, turbo_confirm: "Delete?" }, class: "btn btn-ghost btn-xs text-red-600 p-1" do %>
             <i class="fa-solid fa-trash text-xs"></i>
           <% end %>
         </div>

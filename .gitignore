@@ -23,3 +23,6 @@ new-a-record.json
 backups/
 *.sql
 *.sql.gz
+# Rails storage - ignore contents but keep directory for proper ownership
+rails/storage/*
+!rails/storage/.gitkeep

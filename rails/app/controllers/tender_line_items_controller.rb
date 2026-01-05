@@ -1,6 +1,6 @@
 class TenderLineItemsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_tender, only: %i[ index new create edit update destroy ]
+  before_action :set_tender, only: %i[ index new create edit update destroy reorder ]
   before_action :set_tender_line_item, only: %i[ show edit update destroy ]
   before_action :set_tender_from_line_item, only: %i[ show ], unless: -> { params[:tender_id].present? }
 
@@ -11,6 +11,15 @@ class TenderLineItemsController < ApplicationController
       format.html
       format.json { render json: @tender_line_items.map { |item| item.as_json.merge(line_item_rate_build_up_id: item.line_item_rate_build_up&.id) } }
     end
+  end
+
+  def reorder
+    TenderLineItem.transaction do
+      params[:ids].each_with_index do |id, index|
+        @tender.tender_line_items.find(id).update_column(:position, index + 1)
+      end
+    end
+    head :ok
   end
 
   # GET /tenders/:tender_id/tender_line_items/:id or /tender_line_items/:id
@@ -117,7 +126,7 @@ class TenderLineItemsController < ApplicationController
     def tender_line_item_params
       params.require(:tender_line_item).permit(
         :page_number, :item_number, :item_description, :section_category, 
-        :unit_of_measure, :quantity, :rate, :notes,
+        :unit_of_measure, :quantity, :rate, :notes, :is_heading,
         line_item_rate_build_up_attributes: [
           :id, :material_supply_rate, :fabrication_rate, :fabrication_included,
           :overheads_rate, :overheads_included, :shop_priming_rate,

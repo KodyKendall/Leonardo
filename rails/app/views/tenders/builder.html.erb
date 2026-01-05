@@ -1,3 +1,24 @@
+<% content_for :head do %>
+  <style>
+    /* Ensure turbo-frames behave like block elements for SortableJS */
+    #line_items_container turbo-frame {
+      display: block;
+      width: 100%;
+    }
+
+    /* Prevent text selection while dragging to avoid "grabbing multiple" look */
+    .sortable-chosen {
+      user-select: none;
+    }
+
+    /* Improve visual of the item being moved */
+    .bg-blue-50 {
+      background-color: #eff6ff !important;
+      border: 2px dashed #3b82f6 !important;
+    }
+  </style>
+<% end %>
+
 <div class="min-h-screen bg-gray-50 py-6">
   <!-- Turbo Stream subscription for real-time grand total updates -->
   <%= turbo_stream_from "tender_#{@tender.id}_builder" %>
@@ -60,12 +81,13 @@
     </div>
 
     <!-- Line Items Section -->
-    <div id="line_items_container" class="bg-white rounded-lg shadow-sm border overflow-hidden">
+    <div class="bg-white rounded-lg shadow-sm border overflow-hidden">
       <!-- Sticky Header -->
       <div class="sticky top-0 z-20 bg-gray-100 border-b py-2 px-4 font-bold text-xs uppercase text-gray-600 grid grid-cols-12 gap-2 items-center">
+        <div class="col-span-1 text-center"></div>
         <div class="col-span-1 text-center">Page</div>
         <div class="col-span-1 text-center">Item</div>
-        <div class="col-span-3 text-center">Description</div>
+        <div class="col-span-2 text-center">Description</div>
         <div class="col-span-1 text-center">Unit</div>
         <div class="col-span-1 text-center">Qty</div>
         <div class="col-span-1 text-center">Rate</div>
@@ -73,7 +95,10 @@
         <div class="col-span-2 text-center">Actions</div>
       </div>
 
-      <div class="divide-y divide-gray-100">
+      <div id="line_items_container" 
+           class="divide-y divide-gray-100" 
+           data-controller="sortable" 
+           data-sortable-url-value="<%= reorder_tender_tender_line_items_path(@tender) %>">
         <% if @line_items.any? %>
           <%= render @line_items %>
         <% else %>
@@ -110,12 +135,18 @@
       </div>
     </div>
 
-    <!-- Add New Line Item Button -->
-    <div class="mt-6 text-center">
+    <!-- Add New Line Item / Heading Buttons -->
+    <div class="mt-6 flex justify-center gap-4">
       <%= button_to "＋ Add New Line Item",
           tender_tender_line_items_path(@tender),
           method: :post,
           class: "btn btn-lg btn-outline" %>
+      
+      <%= button_to "＋ Add New Heading",
+          tender_tender_line_items_path(@tender),
+          method: :post,
+          params: { tender_line_item: { is_heading: true, item_description: "New Heading" } },
+          class: "btn btn-lg btn-outline btn-secondary" %>
     </div>
   </div>
 </div>

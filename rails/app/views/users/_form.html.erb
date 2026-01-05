@@ -16,6 +16,20 @@
     <%= form.text_field :name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": user.errors[:name].none?, "border-red-400 focus:outline-red-600": user.errors[:name].any?}] %>
   </div>
 
+  <div class="my-5">
+    <%= form.label :profile_pic, "Profile Picture" %>
+    <div class="flex items-center gap-4 mt-2">
+      <% if user.profile_pic.attached? %>
+        <div class="avatar">
+          <div class="w-16 rounded-full">
+            <%= image_tag user.profile_pic %>
+          </div>
+        </div>
+      <% end %>
+      <%= form.file_field :profile_pic, class: "file-input file-input-bordered w-full max-w-xs" %>
+    </div>
+  </div>
+
   <div class="inline">
     <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
   </div>

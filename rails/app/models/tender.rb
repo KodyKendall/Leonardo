@@ -3,7 +3,7 @@ class Tender < ApplicationRecord
   belongs_to :client, optional: true
   belongs_to :contact, optional: true
   has_many :boqs, dependent: :destroy
-  has_many :tender_line_items, dependent: :destroy
+  has_many :tender_line_items, -> { ordered }, dependent: :destroy
   has_many :tender_crane_selections, dependent: :destroy
   has_many :tender_specific_material_rates, dependent: :destroy
   has_many :material_supplies, through: :tender_specific_material_rates
@@ -40,8 +40,9 @@ class Tender < ApplicationRecord
   WEIGHT_UNITS = ["t", "ton", "tons", "tonne", "tonnes"].freeze
   
   # Recalculate grand total as sum of all line item totals + shop drawings total + P&G items and broadcast update
+  # Excludes heading rows (is_heading: true) from calculations
   def recalculate_grand_total!
-    line_items_total = tender_line_items.sum { |item| (item.line_item_rate_build_up&.rounded_rate || 0) * item.quantity }
+    line_items_total = tender_line_items.where(is_heading: false).sum { |item| (item.line_item_rate_build_up&.rounded_rate || 0) * item.quantity }
     shop_drawings_total = project_rate_buildup&.shop_drawings_total || 0
     p_and_g_total = preliminaries_general_items.sum { |item| item.quantity * item.rate }
     
@@ -65,8 +66,9 @@ class Tender < ApplicationRecord
   end
 
   # Recalculate total tonnage as sum of all line item quantities where unit_of_measure is a weight unit
+  # Excludes heading rows (is_heading: true) from calculations
   def recalculate_total_tonnage!
-    new_tonnage = tender_line_items.where(unit_of_measure: WEIGHT_UNITS).sum(:quantity)
+    new_tonnage = tender_line_items.where(is_heading: false, unit_of_measure: WEIGHT_UNITS).sum(:quantity)
     self.total_tonnage = new_tonnage
     update_column(:total_tonnage, new_tonnage)
     broadcast_update_total_tonnage
