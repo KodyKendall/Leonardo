@@ -18,6 +18,18 @@ RSpec.describe "EquipmentSelections", type: :request do
     sign_in user
   end
 
+  describe "PATCH /tenders/:tender_id/equipment_selections/:id" do
+    it "updates the monthly_cost_override and returns success" do
+      patch tender_equipment_selection_path(tender, equipment_selection), 
+            params: { tender_equipment_selection: { monthly_cost_override: 2500.0 } },
+            as: :turbo_stream
+
+      expect(response).to have_http_status(:ok)
+      expect(equipment_selection.reload.monthly_cost_override).to eq(2500.0)
+      expect(equipment_selection.calculated_monthly_cost).to eq(2500.0)
+    end
+  end
+
   describe "DELETE /tenders/:tender_id/equipment_selections/:id" do
     it "destroys the equipment selection and returns a turbo stream response" do
       expect {
