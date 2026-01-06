@@ -77,7 +77,6 @@ class LineItemRateBuildUp < ApplicationRecord
     self.subtotal += ((crainage_rate || 0).to_f * (crainage_included || 0).to_f)
     self.subtotal += ((cherry_picker_rate || 0).to_f * (cherry_picker_included || 0).to_f)
     self.subtotal += ((galvanizing_rate || 0).to_f * (galvanizing_included || 0).to_f)
-    self.subtotal += ((shop_drawings_rate || 0).to_f * (fabrication_included || 0).to_f) # Shop drawings are usually linked to fabrication inclusion status
 
     # Add custom items to subtotal
     # Use reject(&:marked_for_destruction?) to ensure totals are correct when items are deleted via nested attributes

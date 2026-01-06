@@ -44,7 +44,6 @@ RSpec.describe "Shop Drawings Double Counting", type: :model do
       crainage_rate: 0,
       cherry_picker_rate: 0,
       galvanizing_rate: 0,
-      shop_drawings_rate: 0,
       margin_percentage: 0,
       fabrication_included: 1.0
     )
@@ -60,10 +59,6 @@ RSpec.describe "Shop Drawings Double Counting", type: :model do
     
     # Reload EVERYTHING to ensure association caches are cleared
     tender.reload
-    
-    # The sync should have pushed this to the line item
-    rate_buildup.reload
-    expect(rate_buildup.shop_drawings_rate).to eq(shop_drawings_rate)
     
     # Manually trigger recalculation to be sure
     tender.recalculate_grand_total!

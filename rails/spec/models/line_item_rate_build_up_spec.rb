@@ -20,29 +20,12 @@ RSpec.describe LineItemRateBuildUp, type: :model do
         crainage_rate: 0,
         cherry_picker_rate: 0,
         galvanizing_rate: 0,
-        shop_drawings_rate: 0,
         margin_percentage: 0
       )
       # Subtotal should be 1000 * 0.5 = 500
       # Rounded rate (nearest R50 up) = 500
       expect(rate_buildup.subtotal).to eq(500)
       expect(rate_buildup.rounded_rate).to eq(500)
-    end
-
-    it "includes shop_drawings_rate linked to fabrication_included" do
-      rate_buildup.update!(
-        material_supply_rate: 0,
-        fabrication_rate: 0,
-        shop_drawings_rate: 200,
-        fabrication_included: 1.0,
-        margin_percentage: 0
-      )
-      # Subtotal should be 200 * 1.0 = 200
-      expect(rate_buildup.subtotal).to eq(200)
-
-      rate_buildup.update!(fabrication_included: 0.0)
-      # Subtotal should be 200 * 0.0 = 0
-      expect(rate_buildup.subtotal).to eq(0)
     end
 
     it "rounds up to nearest R50" do
