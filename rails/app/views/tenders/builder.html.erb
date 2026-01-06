@@ -140,13 +140,15 @@
       <%= button_to "＋ Add New Line Item",
           tender_tender_line_items_path(@tender),
           method: :post,
-          class: "btn btn-lg btn-outline" %>
+          class: "btn btn-lg btn-outline",
+          data: { turbo_stream: true } %>
       
       <%= button_to "＋ Add New Heading",
           tender_tender_line_items_path(@tender),
           method: :post,
           params: { tender_line_item: { is_heading: true, item_description: "New Heading" } },
-          class: "btn btn-lg btn-outline btn-secondary" %>
+          class: "btn btn-lg btn-outline btn-secondary",
+          data: { turbo_stream: true } %>
     </div>
   </div>
 </div>
