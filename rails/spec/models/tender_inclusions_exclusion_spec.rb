@@ -59,5 +59,57 @@ RSpec.describe TenderInclusionsExclusion, type: :model do
         expect(rate_buildup.delivery_included).to eq(1.0)
       end
     end
+
+    describe "#sync_all_to_line_items!" do
+      it "updates ALL fields on all associated rate buildups regardless of previous state" do
+        # Manually set all rate buildup fields to something else (e.g., 0.5) to ensure they get overwritten
+        line_items.each do |li|
+          li.line_item_rate_build_up.update_columns(
+            fabrication_included: 0.5,
+            overheads_included: 0.5,
+            shop_priming_included: 0.5,
+            onsite_painting_included: 0.5,
+            delivery_included: 0.5,
+            bolts_included: 0.5,
+            erection_included: 0.5,
+            crainage_included: 0.5,
+            cherry_picker_included: 0.5,
+            galvanizing_included: 0.5
+          )
+        end
+
+        # Set specific values on inclusions
+        inclusions.update_columns(
+          fabrication_included: true,
+          overheads_included: false,
+          primer_included: true,
+          final_paint_included: false,
+          delivery_included: true,
+          bolts_included: false,
+          erection_included: true,
+          crainage_included: false,
+          cherry_pickers_included: true,
+          steel_galvanized: false
+        )
+
+        # Trigger full sync
+        inclusions.sync_all_to_line_items!
+
+        # Verify all fields match the inclusions
+        line_items.each do |li|
+          rb = li.line_item_rate_build_up.reload
+          expect(rb.fabrication_included).to eq(1.0)
+          expect(rb.overheads_included).to eq(0.0)
+          expect(rb.shop_priming_included).to eq(1.0)
+          expect(rb.onsite_painting_included).to eq(0.0)
+          expect(rb.delivery_included).to eq(1.0)
+          expect(rb.bolts_included).to eq(0.0)
+          expect(rb.erection_included).to eq(1.0)
+          expect(rb.crainage_included).to eq(0.0)
+          expect(rb.cherry_picker_included).to eq(1.0)
+          expect(rb.galvanizing_included).to eq(0.0)
+        end
+      end
+    end
   end
 end

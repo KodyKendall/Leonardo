@@ -1,5 +1,5 @@
 class TendersController < ApplicationController
-  before_action :set_tender, only: %i[ show edit update destroy update_inclusions_exclusions tender_inclusions_exclusions report ]
+  before_action :set_tender, only: %i[ show edit update destroy update_inclusions_exclusions tender_inclusions_exclusions sync_all_inclusions_exclusions report ]
 
   # GET /tenders or /tenders.json
   def index
@@ -152,6 +152,18 @@ class TendersController < ApplicationController
       render json: { success: true, data: ie }, status: :ok
     else
       render json: { success: false, errors: ie.errors }, status: :unprocessable_entity
+    end
+  end
+
+  # POST /tenders/1/sync_all_inclusions_exclusions
+  def sync_all_inclusions_exclusions
+    ie = @tender.tender_inclusions_exclusion || @tender.build_tender_inclusions_exclusion
+    
+    if ie.persisted? || ie.save
+      ie.sync_all_to_line_items!
+      redirect_to tender_inclusions_exclusions_tender_path(@tender), notice: "Successfully synced all inclusions to line items."
+    else
+      redirect_to tender_inclusions_exclusions_tender_path(@tender), alert: "Unable to sync inclusions: #{ie.errors.full_messages.join(', ')}"
     end
   end
 
