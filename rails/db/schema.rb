@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_04_192540) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_06_171232) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -516,7 +516,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_04_192540) do
   create_table "tender_equipment_summaries", force: :cascade do |t|
     t.bigint "tender_id", null: false
     t.decimal "equipment_subtotal", precision: 15, scale: 2, default: "0.0", null: false
-    t.decimal "mobilization_fee", precision: 10, scale: 2, default: "15000.0", null: false
+    t.decimal "mobilization_fee", precision: 10, scale: 2, default: "0.0", null: false
     t.decimal "total_equipment_cost", precision: 15, scale: 2, default: "0.0", null: false
     t.decimal "rate_per_tonne_raw", precision: 15, scale: 4
     t.decimal "rate_per_tonne_rounded", precision: 15, scale: 2
