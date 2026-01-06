@@ -72,13 +72,13 @@
   
   <!-- Rate -->
   <td class="px-6 py-4 text-sm text-gray-600 text-right w-32">
-    <span data-pg-inline-edit-target="viewRate" class="cursor-pointer inline-block <%= 'hidden' if editing %>"><%= number_to_currency(preliminaries_general_item.rate) %></span>
+    <span data-pg-inline-edit-target="viewRate" class="cursor-pointer inline-block <%= 'hidden' if editing %>"><%= number_to_currency(preliminaries_general_item.rate, unit: "R ", precision: 2) %></span>
     <input type="number" step="0.01" data-pg-inline-edit-target="editRate" class="input input-bordered input-sm w-full text-right <%= 'hidden' unless editing %>" value="<%= preliminaries_general_item.rate %>">
   </td>
   
   <!-- Total -->
   <td class="px-6 py-4 text-sm font-semibold text-gray-900 text-right w-32">
-    <span data-pg-inline-edit-target="viewTotal"><%= number_to_currency(preliminaries_general_item.quantity * preliminaries_general_item.rate) %></span>
+    <span data-pg-inline-edit-target="viewTotal"><%= number_to_currency(preliminaries_general_item.quantity * preliminaries_general_item.rate, unit: "R ", precision: 2) %></span>
   </td>
   
   <!-- Actions -->
