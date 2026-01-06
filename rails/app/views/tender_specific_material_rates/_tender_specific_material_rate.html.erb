@@ -17,6 +17,16 @@
                                 { prompt: "Select material..." },
                                 class: "material-select" %>
       </div>
+
+      <div class="row-field supplier-name">
+        <%= f.label :supplier_id, "Supplier" %>
+        <%= f.collection_select :supplier_id, 
+                                Supplier.order(:name), 
+                                :id, 
+                                :name, 
+                                { include_blank: true },
+                                class: "supplier-select" %>
+      </div>
       
       <div class="row-field rate-value">
         <%= f.label :rate, "Rate" %>

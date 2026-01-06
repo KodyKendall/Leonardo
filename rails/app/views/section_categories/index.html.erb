@@ -7,7 +7,12 @@
 
   <div class="flex justify-between items-center">
     <h1 class="font-bold text-4xl">Section categories</h1>
-    <%= link_to "New section category", new_section_category_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
+    <div class="flex space-x-2">
+      <%= link_to "Templates", section_category_templates_path, class: "rounded-md px-3.5 py-2.5 bg-gray-600 hover:bg-gray-500 text-white block font-medium" %>
+      <% if policy(SectionCategory).new? %>
+        <%= link_to "New section category", new_section_category_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
+      <% end %>
+    </div>
   </div>
 
   <div id="section_categories" class="min-w-full divide-y divide-gray-200 space-y-5">
@@ -17,8 +22,12 @@
           <%= render section_category %>
           <div class="w-full sm:w-auto flex flex-col sm:flex-row space-x-2 space-y-2">
             <%= link_to "Show", section_category, class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= link_to "Edit", edit_section_category_path(section_category), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= button_to "Destroy", section_category, method: :delete, class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+            <% if policy(section_category).edit? %>
+              <%= link_to "Edit", edit_section_category_path(section_category), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+            <% end %>
+            <% if policy(section_category).destroy? %>
+              <%= button_to "Destroy", section_category, method: :delete, class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+            <% end %>
           </div>
         </div>
       <% end %>

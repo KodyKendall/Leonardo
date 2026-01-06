@@ -19,14 +19,38 @@ RSpec.describe "/tenders", type: :request do
   # Tender. As you add validations to Tender, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) {
-    skip("Add a hash of attributes valid for your model")
+    {
+      tender_name: "Test Tender",
+      status: "Draft"
+    }
   }
 
   let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
+    {
+      tender_name: "",
+      status: "Invalid Status"
+    }
   }
 
   before { sign_in(user) }
+
+  describe "GET /report" do
+    let(:tender) { Tender.create! valid_attributes }
+
+    it "renders a successful HTML response" do
+      get report_tender_url(tender)
+      expect(response).to be_successful
+    end
+
+    it "returns a successful PDF response" do
+      # Grover might need a running browser or mock, but let's see if it works in the test env
+      get report_tender_url(tender, format: :pdf)
+      expect(response).to be_successful
+      expect(response.content_type).to eq('application/pdf')
+      expect(response.headers['Content-Disposition']).to include("filename=\"tender_#{tender.e_number}.pdf\"")
+      expect(response.body).not_to be_empty
+    end
+  end
 
   describe "GET /index" do
     it "renders a successful response" do

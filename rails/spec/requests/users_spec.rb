@@ -6,12 +6,23 @@ RSpec.describe "/users", type: :request do
       email: "test@example.com",
       password: "password123",
       password_confirmation: "password123",
-      name: "Test User"
+      name: "Test User",
+      admin: false
+    )
+  }
+
+  let(:admin_user) {
+    User.create!(
+      email: "admin@example.com",
+      password: "password123",
+      password_confirmation: "password123",
+      name: "Admin User",
+      role: "admin"
     )
   }
 
   let(:valid_attributes) {
-    { name: "Updated Name" }
+    { name: "Updated Name", role: "office" }
   }
 
   let(:invalid_attributes) {
@@ -19,8 +30,15 @@ RSpec.describe "/users", type: :request do
   }
 
   describe "GET /index" do
-    it "renders a successful response when signed in" do
+    it "redirects to root path for non-admin user" do
       sign_in user
+      get users_url
+      expect(response).to redirect_to(root_url)
+      expect(flash[:alert]).to eq("Access Denied")
+    end
+
+    it "renders a successful response for admin user" do
+      sign_in admin_user
       get users_url
       expect(response).to be_successful
     end
@@ -50,18 +68,56 @@ RSpec.describe "/users", type: :request do
     end
   end
 
+  describe "POST /create" do
+    context "as admin" do
+      it "creates a new User without signing them in" do
+        sign_in admin_user
+        expect {
+          post create_managed_users_url, params: { user: { email: "newuser@example.com", password: "password123", role: "office" } }
+        }.to change(User, :count).by(1)
+        
+        expect(response).to redirect_to(user_url(User.last))
+        expect(controller.current_user).to eq(admin_user)
+      end
+    end
+  end
+
   describe "PATCH /update" do
-    it "updates the requested user" do
-      sign_in user
-      patch user_url(user), params: { user: valid_attributes }
-      user.reload
-      expect(user.name).to eq("Updated Name")
+    context "as admin" do
+      it "updates another user" do
+        sign_in admin_user
+        patch user_url(user), params: { user: { name: "New Name", role: "admin" } }
+        user.reload
+        expect(user.name).to eq("New Name")
+        expect(user.role).to eq("admin")
+      end
+
+      it "updates a user without changing the password if blank" do
+        sign_in admin_user
+        original_encrypted_password = user.encrypted_password
+        patch user_url(user), params: { user: { name: "New Name", password: "", password_confirmation: "" } }
+        user.reload
+        expect(user.encrypted_password).to eq(original_encrypted_password)
+        expect(user.name).to eq("New Name")
+      end
     end
 
-    it "redirects to the user" do
-      sign_in user
-      patch user_url(user), params: { user: valid_attributes }
-      expect(response).to redirect_to(user_url(user))
+    context "as regular user" do
+      it "updates themselves even if another id is passed" do
+        sign_in user
+        another_user = User.create!(email: "another@example.com", password: "password123", name: "Another")
+        patch user_url(another_user), params: { user: { name: "Changed" } }
+        user.reload
+        another_user.reload
+        expect(user.name).to eq("Changed")
+        expect(another_user.name).to eq("Another")
+      end
+
+      it "redirects to the user" do
+        sign_in user
+        patch user_url(user), params: { user: valid_attributes }
+        expect(response).to redirect_to(user_url(user))
+      end
     end
   end
 

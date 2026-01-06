@@ -142,7 +142,7 @@ class TenderSpecificMaterialRatesController < ApplicationController
   end
 
   def tender_specific_material_rate_params
-    params.require(:tender_specific_material_rate).permit(:material_supply_id, :rate, :notes)
+    params.require(:tender_specific_material_rate).permit(:material_supply_id, :rate, :notes, :supplier_id)
   end
 
   def rate_being_changed?

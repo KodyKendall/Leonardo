@@ -20,7 +20,6 @@
     <%= button_to tender_preliminaries_general_items_path(@tender), 
                    method: :post, 
                    params: { preliminaries_general_item: { description: "New P&G Item", category: "fixed_based", quantity: 1, rate: 0 } },
-                   data: { turbo_stream: true },
                    class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium flex items-center gap-2" do %>
       <i class="fa-solid fa-plus"></i> Quick Add P&G Item
     <% end %>

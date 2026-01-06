@@ -29,7 +29,27 @@ class TendersController < ApplicationController
     @p_and_g_items = @tender.preliminaries_general_items
     @shop_drawings_total = @tender.project_rate_buildup&.shop_drawings_total || 0
 
-    render layout: 'print'
+    respond_to do |format|
+      format.html { render layout: 'print' }
+      format.pdf do
+        html = render_to_string(template: 'tenders/report', layout: 'print', formats: [:html])
+        grover = Grover.new(html,
+          format: 'Letter',
+          margin: { top: '0', bottom: '0', left: '0', right: '0' },
+          emulate_media: 'print',
+          display_header_footer: false,
+          prefer_css_page_size: true,
+          wait_until: 'networkidle0',
+          display_url: request.base_url,
+          print_background: true
+        )
+        pdf = grover.to_pdf
+        send_data pdf,
+                  filename: "tender_#{@tender.e_number}.pdf",
+                  type: 'application/pdf',
+                  disposition: 'attachment'
+      end
+    end
   end
 
   # GET /tenders/1/tender_inclusions_exclusions
@@ -100,6 +120,7 @@ class TendersController < ApplicationController
         format.html { redirect_to @tender, notice: "Tender was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @tender }
       else
+        @clients = Client.all
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @tender.errors, status: :unprocessable_entity }
       end
@@ -168,7 +189,8 @@ class TendersController < ApplicationController
     # Create Tender Line Items from BOQ items
     count = 0
     boq.boq_items.each do |boq_item|
-      category_value = boq_item.section_category.present? ? category_mapping[boq_item.section_category] : nil
+      category_name = boq_item.section_category.present? ? category_mapping[boq_item.section_category] : nil
+      section_category = SectionCategory.find_by(display_name: category_name) if category_name
       
       @tender.tender_line_items.create(
         quantity: boq_item.quantity,
@@ -176,7 +198,7 @@ class TendersController < ApplicationController
         item_number: boq_item.item_number,
         item_description: boq_item.item_description,
         unit_of_measure: boq_item.unit_of_measure,
-        section_category: category_value,
+        section_category: section_category,
         page_number: boq_item.page_number,
         notes: boq_item.notes
       )

@@ -1,6 +1,8 @@
 class ApplicationController < ActionController::Base
   include Pundit::Authorization
   
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
+
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
   before_action :authenticate_user_from_token!
@@ -33,6 +35,10 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def authenticate_admin!
+    redirect_to root_path, alert: "Access Denied" unless current_user&.admin?
+  end
+
   private
 
   def authenticate_user_from_token!
@@ -55,6 +61,11 @@ class ApplicationController < ActionController::Base
   def api_request?
     request.headers['Authorization']&.start_with?('Bearer ') ||
     params['api_token'].present?
+  end
+
+  def user_not_authorized
+    flash[:alert] = "You are not authorized to perform this action."
+    redirect_to(request.referrer || root_path)
   end
 
   def resolve_view_path

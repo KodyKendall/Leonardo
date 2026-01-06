@@ -36,6 +36,71 @@ class LineItemMaterialBreakdownsController < ApplicationController
     end
   end
 
+  # PATCH /line_item_material_breakdowns/1/update_section_category
+  def update_section_category
+    @line_item_material_breakdown = LineItemMaterialBreakdown.find(params[:id])
+    tender_line_item = @line_item_material_breakdown.tender_line_item
+    section_category_id = params[:section_category_id]
+
+    # Only populate if category changed
+    should_populate = tender_line_item.section_category_id != (section_category_id.present? ? section_category_id.to_i : nil)
+
+    if tender_line_item.update(section_category_id: section_category_id)
+      @line_item_material_breakdown.populate_from_category(section_category_id) if should_populate && section_category_id.present?
+      
+      # Re-save breakdown to trigger sync
+      @line_item_material_breakdown.save!
+
+      respond_to do |format|
+        format.turbo_stream do
+          turbo_updates = []
+          turbo_updates << turbo_stream.replace(
+            @line_item_material_breakdown,
+            partial: 'line_item_material_breakdowns/line_item_material_breakdown',
+            locals: { line_item_material_breakdown: @line_item_material_breakdown, show_success: true }
+          )
+          
+          # Update rate buildup and tender line item if needed
+          rate_buildup = tender_line_item.line_item_rate_build_up
+          if rate_buildup.present?
+            # Ensure rate buildup is updated with the new breakdown total
+            rate_buildup.update(material_supply_rate: @line_item_material_breakdown.total)
+            
+            turbo_updates << turbo_stream.replace(
+              rate_buildup,
+              partial: 'line_item_rate_build_ups/line_item_rate_build_up',
+              locals: { line_item_rate_build_up: rate_buildup }
+            )
+            
+            turbo_updates << turbo_stream.replace(
+              tender_line_item,
+              partial: 'tender_line_items/tender_line_item',
+              locals: { tender_line_item: tender_line_item, open_breakdown: true }
+            )
+          end
+          
+          render turbo_stream: turbo_updates
+        end
+        format.html { redirect_to @line_item_material_breakdown, notice: "Section category updated." }
+      end
+    else
+      respond_to do |format|
+        format.turbo_stream do
+          flash.now[:alert] = "Failed to update category: #{tender_line_item.errors.full_messages.join(', ')}"
+          render turbo_stream: [
+            turbo_stream.replace(
+              @line_item_material_breakdown,
+              partial: 'line_item_material_breakdowns/line_item_material_breakdown',
+              locals: { line_item_material_breakdown: @line_item_material_breakdown }
+            ),
+            turbo_stream.update("flash", partial: "shared/flash")
+          ]
+        end
+        format.html { render :edit, status: :unprocessable_entity }
+      end
+    end
+  end
+
   # PATCH/PUT /line_item_material_breakdowns/1 or /line_item_material_breakdowns/1.json
   def update
     respond_to do |format|

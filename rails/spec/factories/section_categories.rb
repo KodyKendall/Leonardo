@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :section_category do
-    name { "MyString" }
-    display_name { "MyString" }
+    sequence(:name) { |n| "category_#{n}" }
+    sequence(:display_name) { |n| "Category #{n}" }
   end
 end

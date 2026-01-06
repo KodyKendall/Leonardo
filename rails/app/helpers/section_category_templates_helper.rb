@@ -1,0 +1,2 @@
+module SectionCategoryTemplatesHelper
+end

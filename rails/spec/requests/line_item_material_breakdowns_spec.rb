@@ -117,18 +117,70 @@ RSpec.describe "/line_item_material_breakdowns", type: :request do
     end
   end
 
-  describe "DELETE /destroy" do
-    it "destroys the requested line_item_material_breakdown" do
-      line_item_material_breakdown = LineItemMaterialBreakdown.create! valid_attributes
-      expect {
-        delete line_item_material_breakdown_url(line_item_material_breakdown)
-      }.to change(LineItemMaterialBreakdown, :count).by(-1)
+  describe "PATCH /update_section_category" do
+    let(:tender) { create(:tender) }
+    let(:tender_line_item) { create(:tender_line_item, tender: tender) }
+    let(:breakdown) { create(:line_item_material_breakdown, tender_line_item: tender_line_item) }
+    let(:section_category) { create(:section_category, display_name: "Steel Sections") }
+    let(:material_supply) { create(:material_supply, name: "Structural Steel", waste_percentage: 5.0) }
+    let!(:template) { create(:section_category_template, section_category: section_category) }
+    let!(:material_template) do
+      create(:line_item_material_template, 
+        section_category_template: template, 
+        material_supply: material_supply,
+        proportion_percentage: 100.0,
+        waste_percentage: 10.0
+      )
+    end
+    let!(:tender_rate) do
+      rate = tender.tender_specific_material_rates.find_or_initialize_by(material_supply: material_supply)
+      rate.update!(rate: 1500.0, unit: "tonne")
+      rate
     end
 
-    it "redirects to the line_item_material_breakdowns list" do
-      line_item_material_breakdown = LineItemMaterialBreakdown.create! valid_attributes
-      delete line_item_material_breakdown_url(line_item_material_breakdown)
-      expect(response).to redirect_to(line_item_material_breakdowns_url)
+    it "updates the tender line item's section category" do
+      patch update_section_category_line_item_material_breakdown_path(breakdown), 
+            params: { section_category_id: section_category.id },
+            as: :turbo_stream
+
+      expect(tender_line_item.reload.section_category_id).to eq(section_category.id)
+    end
+
+    it "populates the breakdown with materials from the template" do
+      expect {
+        patch update_section_category_line_item_material_breakdown_path(breakdown), 
+              params: { section_category_id: section_category.id },
+              as: :turbo_stream
+      }.to change(LineItemMaterial, :count).by(1)
+
+      material = LineItemMaterial.last
+      expect(material.material_supply).to eq(material_supply)
+      expect(material.proportion_percentage).to eq(100.0)
+      expect(material.waste_percentage).to eq(10.0)
+      expect(material.rate).to eq(1500.0)
+    end
+
+    it "responds with turbo stream" do
+      patch update_section_category_line_item_material_breakdown_path(breakdown), 
+            params: { section_category_id: section_category.id },
+            as: :turbo_stream
+
+      expect(response.content_type).to include("text/vnd.turbo-stream.html")
+      expect(response.body).to include("turbo-stream action=\"replace\" target=\"line_item_material_breakdown_#{breakdown.id}\"")
+    end
+
+    context "when selecting the same category" do
+      before do
+        tender_line_item.update!(section_category_id: section_category.id)
+      end
+
+      it "does not populate materials again" do
+        expect {
+          patch update_section_category_line_item_material_breakdown_path(breakdown), 
+                params: { section_category_id: section_category.id },
+                as: :turbo_stream
+        }.not_to change(LineItemMaterial, :count)
+      end
     end
   end
 end

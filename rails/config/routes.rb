@@ -1,5 +1,11 @@
 # LEONARDO WAS HERE
 Rails.application.routes.draw do
+  resources :line_item_material_templates
+  resources :section_category_templates do
+    member do
+      post :bulk_create_slots
+    end
+  end
   resources :section_categories
   resources :preliminaries_general_item_templates, path: 'p_and_g_templates'
   # resources :preliminaries_general_items
@@ -15,7 +21,11 @@ Rails.application.routes.draw do
   resources :tender_crane_selections
   resources :crane_complements
   resources :crane_rates
-  resources :line_item_material_breakdowns
+  resources :line_item_material_breakdowns do
+    member do
+      patch :update_section_category
+    end
+  end
   resources :line_item_materials
   resources :line_item_rate_build_ups
   resources :boqs do
@@ -90,6 +100,9 @@ Rails.application.routes.draw do
   resources :material_supply_rates
   devise_for :users, controllers: { registrations: 'users/registrations' }
   resources :users do
+    collection do
+      post :create_managed, action: :create
+    end
     member do
       get :generate_profile_pic, action: :generate_profile_pic_form
       post :generate_profile_pic

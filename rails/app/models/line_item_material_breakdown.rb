@@ -23,6 +23,24 @@ class LineItemMaterialBreakdown < ApplicationRecord
     (total_with_margin / 50.0).ceil * 50
   end
 
+  def populate_from_category(section_category_id)
+    template = SectionCategoryTemplate.find_by(section_category_id: section_category_id)
+    return unless template.present?
+
+    tender = tender_line_item.tender
+    template.line_item_material_templates.each do |material_template|
+      # Find rate from tender specific rates
+      material_rate = tender.tender_specific_material_rates.find_by(material_supply_id: material_template.material_supply_id)&.rate
+      
+      line_item_materials.create!(
+        material_supply_id: material_template.material_supply_id,
+        proportion_percentage: material_template.proportion_percentage,
+        waste_percentage: material_template.waste_percentage || material_template.material_supply&.waste_percentage,
+        rate: material_rate
+      )
+    end
+  end
+
   private
 
   def sync_material_supply_rate_to_buildup

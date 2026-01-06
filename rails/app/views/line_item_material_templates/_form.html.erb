@@ -1,0 +1,42 @@
+<%= form_with(model: line_item_material_template, class: "contents") do |form| %>
+  <% if line_item_material_template.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(line_item_material_template.errors.count, "error") %> prohibited this line_item_material_template from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% line_item_material_template.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :section_category_template_id %>
+    <%= form.collection_select :section_category_template_id, SectionCategoryTemplate.all, :id, ->(t) { t.section_category.display_name }, { prompt: "Select a Template" }, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_material_template.errors[:section_category_template_id].none?, "border-red-400 focus:outline-red-600": line_item_material_template.errors[:section_category_template_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :material_supply_id %>
+    <%= form.collection_select :material_supply_id, MaterialSupply.all, :id, :name, { prompt: "Select a Material (Optional)", include_blank: true }, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_material_template.errors[:material_supply_id].none?, "border-red-400 focus:outline-red-600": line_item_material_template.errors[:material_supply_id].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :proportion_percentage %>
+    <%= form.text_field :proportion_percentage, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_material_template.errors[:proportion_percentage].none?, "border-red-400 focus:outline-red-600": line_item_material_template.errors[:proportion_percentage].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :waste_percentage %>
+    <%= form.text_field :waste_percentage, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_material_template.errors[:waste_percentage].none?, "border-red-400 focus:outline-red-600": line_item_material_template.errors[:waste_percentage].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :sort_order %>
+    <%= form.number_field :sort_order, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": line_item_material_template.errors[:sort_order].none?, "border-red-400 focus:outline-red-600": line_item_material_template.errors[:sort_order].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>
