@@ -33,4 +33,24 @@ RSpec.describe TenderEquipmentSummary, type: :model do
       expect(new_summary.mobilization_fee).to eq(0)
     end
   end
+
+  describe "P&G sync callback" do
+    let(:tender) { create(:tender, total_tonnage: 100) }
+    let!(:summary) { create(:tender_equipment_summary, tender: tender) }
+    let!(:access_item) { create(:preliminaries_general_item, tender: tender, is_access_equipment: true, category: 'fixed_based', description: 'Access Item') }
+
+    it "triggers a rate update on associated access P&G items when updated" do
+      # Initial state
+      allow_any_instance_of(TenderEquipmentSummary).to receive(:cherry_picker_rate_per_tonne).and_return(1500.0)
+      access_item.save!
+      expect(access_item.reload.rate).to eq(1500.0)
+
+      # Update summary
+      allow_any_instance_of(TenderEquipmentSummary).to receive(:cherry_picker_rate_per_tonne).and_return(2500.0)
+      
+      summary.update!(mobilization_fee: summary.mobilization_fee + 1)
+      
+      expect(access_item.reload.rate).to eq(2500.0)
+    end
+  end
 end

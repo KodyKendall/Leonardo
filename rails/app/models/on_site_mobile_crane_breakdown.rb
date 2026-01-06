@@ -11,6 +11,7 @@ class OnSiteMobileCraneBreakdown < ApplicationRecord
 
   before_save :calculate_program_duration
   after_update_commit :broadcast_complements_update
+  after_update_commit :sync_crane_pg_items
 
   # Calculate total crane cost across all selections
   def total_crane_cost
@@ -57,5 +58,9 @@ class OnSiteMobileCraneBreakdown < ApplicationRecord
         on_site_mobile_crane_breakdown_id: id
       }
     )
+  end
+
+  def sync_crane_pg_items
+    tender.preliminaries_general_items.where(is_crane: true).find_each(&:save!)
   end
 end

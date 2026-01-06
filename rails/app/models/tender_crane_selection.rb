@@ -71,8 +71,8 @@ class TenderCraneSelection < ApplicationRecord
     rate_buildup = tender.project_rate_buildup
     return unless rate_buildup.present?
     
-    # Clear cache to ensure fresh calculation
-    tender.on_site_mobile_crane_breakdown&.reload
+    # Clear cache and trigger P&G sync
+    tender.on_site_mobile_crane_breakdown&.touch
     
     rate_buildup.save!
   end

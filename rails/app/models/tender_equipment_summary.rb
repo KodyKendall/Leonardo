@@ -5,6 +5,9 @@ class TenderEquipmentSummary < ApplicationRecord
             presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :establishment_cost, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
+  after_update_commit :broadcast_update
+  after_update_commit :sync_access_pg_items
+
   # Calculate equipment costs and rate per tonne
   def calculate!
     # equipment_subtotal = sum of all tender_equipment_selections.total_cost
@@ -47,5 +50,9 @@ class TenderEquipmentSummary < ApplicationRecord
       partial: "tender_equipment_summaries/summary",
       locals: { tender_equipment_summary: self }
     )
+  end
+
+  def sync_access_pg_items
+    tender.preliminaries_general_items.where(is_access_equipment: true).find_each(&:save!)
   end
 end
