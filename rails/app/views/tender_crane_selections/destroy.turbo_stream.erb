@@ -1,10 +1,7 @@
 <%= turbo_stream.remove dom_id(@tender_crane_selection) %>
 
-<% Rails.logger.info("🪲 DEBUG destroy.turbo_stream.erb: Breakdown present=#{@on_site_mobile_crane_breakdown.present?}, ID=#{@on_site_mobile_crane_breakdown&.id}") %>
-
 <%= turbo_stream.update "crane_cost_summary" do %>
   <% if @on_site_mobile_crane_breakdown.present? %>
-    <% Rails.logger.info("🪲 DEBUG: Rendering summary partial. Total selections: #{@on_site_mobile_crane_breakdown.tender_crane_selections.count}") %>
     <%= render 'tender_crane_selections/summary', on_site_mobile_crane_breakdown: @on_site_mobile_crane_breakdown %>
   <% end %>
 <% end %>
