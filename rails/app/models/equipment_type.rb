@@ -19,6 +19,6 @@ class EquipmentType < ApplicationRecord
   scope :active, -> { where(is_active: true) }
 
   def monthly_rate_with_waiver
-    (base_rate_monthly || 0) * (1 + (damage_waiver_pct || 0))
+    ((base_rate_monthly || 0) * (1 + (damage_waiver_pct || 0))) + (diesel_allowance_monthly || 0)
   end
 end

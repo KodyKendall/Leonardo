@@ -16,11 +16,11 @@ RSpec.describe TenderEquipmentSelection, type: :model do
 
     context "without monthly_cost_override" do
       it "calculates based on equipment type rates" do
-        # (1000 + 200) * (1 + 0.1) = 1200 * 1.1 = 1320
+        # (1000 * 1.1) + 200 = 1100 + 200 = 1300
         selection.save!
-        expect(selection.calculated_monthly_cost).to eq(1320.0)
-        # 1320 * 2 units * 3 months = 7920
-        expect(selection.total_cost).to eq(7920.0)
+        expect(selection.calculated_monthly_cost).to eq(1300.0)
+        # 1300 * 2 units * 3 months = 7800
+        expect(selection.total_cost).to eq(7800.0)
       end
     end
 

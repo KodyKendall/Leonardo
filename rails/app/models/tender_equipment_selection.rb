@@ -48,14 +48,13 @@ class TenderEquipmentSelection < ApplicationRecord
     # Load equipment_type to get rates
     equipment = EquipmentType.find(equipment_type_id)
 
-    # Calculate monthly cost: (base_rate + diesel_allowance) * (1 + damage_waiver_pct)
+    # Calculate monthly cost: (base_rate * (1 + damage_waiver_pct)) + diesel_allowance_monthly
     # OR use override if provided
     if monthly_cost_override.present?
       self.calculated_monthly_cost = monthly_cost_override
     else
-      base_monthly = equipment.base_rate_monthly + equipment.diesel_allowance_monthly
       damage_multiplier = 1 + (equipment.damage_waiver_pct || 0.06)
-      self.calculated_monthly_cost = base_monthly * damage_multiplier
+      self.calculated_monthly_cost = (equipment.base_rate_monthly * damage_multiplier) + equipment.diesel_allowance_monthly
     end
 
     # Calculate total: (monthly_cost × units × months)
