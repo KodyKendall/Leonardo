@@ -59,7 +59,7 @@ class ProjectRateBuildUp < ApplicationRecord
     inherited_categories = [
       :material_supply, :fabrication, :overheads, :shop_priming, :onsite_painting,
       :delivery, :bolts, :erection, :galvanizing, :crainage, :cherry_picker,
-      :shop_drawings, :profit_margin
+      :profit_margin
     ]
 
     # Identify which inherited rates actually changed

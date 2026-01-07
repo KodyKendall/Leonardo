@@ -38,12 +38,13 @@
 
       <!-- Monthly Cost (Editable - Override) -->
       <td class="px-6 py-4 text-sm">
-        <div class="flex items-center gap-2">
-          <div class="text-xs text-gray-500 font-semibold">
+        <div class="flex flex-col gap-1">
+          <div class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">
             Base: R<%= number_with_precision(equipment_selection.calculated_monthly_cost, precision: 2, delimiter: ",") %>
           </div>
-          <div class="hidden">
-            <%= f.number_field :monthly_cost_override, step: 0.01, class: "input input-sm input-bordered w-24", placeholder: "Override" %>
+          <div class="flex items-center gap-1">
+            <span class="text-xs text-gray-400">R</span>
+            <%= f.number_field :monthly_cost_override, step: 0.01, class: "input input-sm input-bordered w-28 text-xs", placeholder: "Override" %>
           </div>
         </div>
       </td>

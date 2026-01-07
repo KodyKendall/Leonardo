@@ -1,4 +1,5 @@
 <% content_for :title, "P&G Items - #{@tender.tender_name}" %>
+<%= turbo_stream_from "tender_#{@tender.id}_pg_items" %>
 
 <div class="w-full" 
      data-tender-id="<%= @tender.id %>"

@@ -62,6 +62,7 @@ Rails.application.routes.draw do
       get :report
       get :tender_inclusions_exclusions
       patch :update_inclusions_exclusions
+      post :sync_all_inclusions_exclusions
       post :mirror_boq_items
       post :attach_boq, to: "boqs#attach_boq"
       get :material_autofill

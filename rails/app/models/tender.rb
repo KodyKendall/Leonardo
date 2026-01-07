@@ -76,6 +76,13 @@ class Tender < ApplicationRecord
     recalculate_equipment_summary!
     # Recalculate project rate buildup since crainage rate depends on total_tonnage
     recalculate_project_rate_buildup!
+    # Recalculate crane breakdown to trigger P&G sync
+    recalculate_crane_breakdown!
+  end
+
+  # Recalculate crane breakdown to trigger P&G sync
+  def recalculate_crane_breakdown!
+    on_site_mobile_crane_breakdown&.touch
   end
 
   # Recalculate project rate buildup when tender tonnage changes

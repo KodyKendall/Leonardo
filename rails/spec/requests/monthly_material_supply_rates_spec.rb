@@ -13,17 +13,15 @@ require 'rails_helper'
 # sticking to rails and rspec-rails APIs to keep things simple and stable.
 
 RSpec.describe "/monthly_material_supply_rates", type: :request do
-  let(:user) { create(:user) }
-  
-  # This should return the minimal set of attributes required to create a valid
-  # MonthlyMaterialSupplyRate. As you add validations to MonthlyMaterialSupplyRate, be sure to
-  # adjust the attributes here as well.
+  let(:user) { create(:user, :admin) }
+
   let(:valid_attributes) {
-    skip("Add a hash of attributes valid for your model")
+    { effective_from: Date.current.beginning_of_month, effective_to: Date.current.end_of_month }
   }
 
   let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
+    # effective_to must be after effective_from
+    { effective_from: Date.current.end_of_month, effective_to: Date.current.beginning_of_month }
   }
 
   before { sign_in(user) }
@@ -90,14 +88,14 @@ RSpec.describe "/monthly_material_supply_rates", type: :request do
   describe "PATCH /update" do
     context "with valid parameters" do
       let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
+        { effective_from: (Date.current + 1.month).beginning_of_month, effective_to: (Date.current + 1.month).end_of_month }
       }
 
       it "updates the requested monthly_material_supply_rate" do
         monthly_material_supply_rate = MonthlyMaterialSupplyRate.create! valid_attributes
         patch monthly_material_supply_rate_url(monthly_material_supply_rate), params: { monthly_material_supply_rate: new_attributes }
         monthly_material_supply_rate.reload
-        skip("Add assertions for updated state")
+        expect(monthly_material_supply_rate.effective_from).to eq((Date.current + 1.month).beginning_of_month)
       end
 
       it "redirects to the monthly_material_supply_rate" do

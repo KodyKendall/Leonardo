@@ -75,7 +75,14 @@ class MonthlyMaterialSupplyRatesController < ApplicationController
         format.html { redirect_to @monthly_material_supply_rate, notice: "Material supply rates were successfully saved.", status: :see_other }
         format.json { render :show, status: :ok, location: @monthly_material_supply_rate }
       else
-        format.html { render :show, status: :unprocessable_entity }
+        format.html do
+          # Set up instance variables needed by show view
+          @material_supplies = MaterialSupply.all
+          supplier_order = ["BSI", "MacSteel", "Steelrode", "S&L", "BBD", "Fast Flame"]
+          @suppliers = Supplier.all.sort_by { |s| supplier_order.index(s.name) || supplier_order.length }
+          @existing_rates = @monthly_material_supply_rate.material_supply_rates.index_by { |rate| [rate.material_supply_id, rate.supplier_id] }
+          render :show, status: :unprocessable_entity
+        end
         format.json { render json: @monthly_material_supply_rate.errors, status: :unprocessable_entity }
       end
     end

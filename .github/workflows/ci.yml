@@ -53,3 +53,8 @@ jobs:
         run: |
           cd /rails
           bundle exec rspec spec/models --format documentation
+
+      - name: Run request specs
+        run: |
+          cd /rails
+          bundle exec rspec spec/requests --format documentation

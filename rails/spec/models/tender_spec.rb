@@ -136,5 +136,36 @@ RSpec.describe Tender, type: :model do
         expect(tender.total_tonnage).to eq(0)
       end
     end
+
+    describe "P&G sync cascade" do
+      let!(:crane_breakdown) { create(:on_site_mobile_crane_breakdown, tender: tender) }
+      let!(:summary) { create(:tender_equipment_summary, tender: tender) }
+      let!(:crane_pg_item) { create(:preliminaries_general_item, tender: tender, is_crane: true, category: 'fixed_based', description: 'Crane') }
+      let!(:access_pg_item) { create(:preliminaries_general_item, tender: tender, is_access_equipment: true, category: 'fixed_based', description: 'Access') }
+
+      it "triggers a rate update on P&G items when tonnage changes" do
+        # Setup initial stubs
+        allow_any_instance_of(OnSiteMobileCraneBreakdown).to receive(:crainage_rate_per_tonne).and_return(2000.0)
+        allow_any_instance_of(TenderEquipmentSummary).to receive(:cherry_picker_rate_per_tonne).and_return(1500.0)
+        
+        # Initial sync
+        crane_pg_item.save!
+        access_pg_item.save!
+        
+        expect(crane_pg_item.reload.rate).to eq(2000.0)
+        expect(access_pg_item.reload.rate).to eq(1500.0)
+
+        # Change tonnage-dependent rates
+        allow_any_instance_of(OnSiteMobileCraneBreakdown).to receive(:crainage_rate_per_tonne).and_return(3000.0)
+        allow_any_instance_of(TenderEquipmentSummary).to receive(:cherry_picker_rate_per_tonne).and_return(2500.0)
+
+        # Trigger tonnage recalculation
+        create(:tender_line_item, tender: tender, unit_of_measure: 'tonnes', quantity: 50)
+        tender.recalculate_total_tonnage!
+
+        expect(crane_pg_item.reload.rate).to eq(3000.0)
+        expect(access_pg_item.reload.rate).to eq(2500.0)
+      end
+    end
   end
 end

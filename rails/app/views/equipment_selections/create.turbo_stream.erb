@@ -1,3 +1,0 @@
-<%= turbo_stream.prepend "equipment_selections_table", partial: "equipment_selection", locals: { equipment_selection: @equipment_selection } %>
-<%= turbo_stream.replace "equipment_form", partial: "add_form", locals: { tender: @tender, new_equipment_selection: TenderEquipmentSelection.new(tender: @tender), equipment_types: @equipment_types } %>
-<%= turbo_stream.update "equipment_empty_state", "" %>

@@ -211,6 +211,21 @@
             data-action="change->tender-inclusions-exclusions#saveField"
           />
         </div>
+
+        <!-- Sync Bulk Action -->
+        <div class="mt-4 pt-6 border-t border-gray-100 flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+          <div class="text-xs text-gray-500 max-w-md">
+            <i class="fas fa-info-circle mr-1"></i>
+            Clicking sync will immediately apply all above settings to every line item in this tender.
+          </div>
+          <%= button_to sync_all_inclusions_exclusions_tender_path(@tender),
+              method: :post,
+              class: "btn btn-primary btn-sm gap-2",
+              data: { turbo: false } do %>
+            <i class="fas fa-sync-alt"></i>
+            Sync All to Line Items
+          <% end %>
+        </div>
       </div>
     </div>
   </div>

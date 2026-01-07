@@ -10,13 +10,22 @@ export default class extends Controller {
   }
 
   connect() {
+    this.element.classList.add("group") // Ensure group class for CSS-driven UI
+    
     // Store original field values
     this.fieldTargets.forEach((field) => {
       this.originalValues[field.name] = field.value
     })
 
     // Listen for Turbo form submission events
-    this.formTarget.addEventListener("turbo:submit-end", this.onSubmitEnd.bind(this))
+    this.formTarget.addEventListener("turbo:submit-end", (event) => this.onSubmitEnd(event))
+
+    // If it was just saved (passed from server), start the auto-hide timer
+    if (this.hasSavedIndicatorTarget && !this.savedIndicatorTarget.classList.contains("hidden")) {
+      setTimeout(() => {
+        this.hideSavedAlert()
+      }, 3000)
+    }
   }
 
   toggleEditMode() {
@@ -30,73 +39,62 @@ export default class extends Controller {
 
   enterEditMode() {
     this.isEditing = true
+    this.element.classList.add("is-editing")
     
     // Make all fields editable (remove readonly)
     this.fieldTargets.forEach((field) => {
-      // Remove readonly attribute to make field editable
       if (field.getAttribute("readonly") !== null) {
         field.removeAttribute("readonly")
       }
-      field.addEventListener("change", this.markDirty.bind(this))
+      field.addEventListener("input", this.markDirty.bind(this))
     })
-
-    // Change pencil icon to checkmark on edit button
-    const editIcon = this.editBtnTarget.querySelector("[data-inline-edit-target='editIcon']")
-    editIcon.classList.remove("fa-pencil")
-    editIcon.classList.add("fa-check")
-    this.editBtnTarget.classList.remove("btn-outline")
-    this.editBtnTarget.classList.add("btn-success")
     
-    this.formTarget.classList.add("editing")
+    this.addCancelButton()
   }
 
   onSubmitEnd(event) {
-    // 🪲 DEBUG: Log submission end event
-    console.log("🪲 DEBUG: onSubmitEnd called, success:", event.detail.success)
-    
+    this.isSubmitting = false
+
     if (event.detail.success) {
-      // Submission was successful, update original values and exit edit mode
-      this.fieldTargets.forEach((field) => {
-        this.originalValues[field.name] = field.value
-      })
+      // Submission was successful
+      // If Turbo Stream replaces the row, this controller instance will disconnect.
+      // But we call exitEditMode just in case it doesn't or for non-stream responses.
       this.showSavedAlert()
       this.exitEditMode()
     } else {
       // Submission failed, show error and keep in edit mode
-      console.warn("🪲 DEBUG: Form submission failed")
+      console.warn("Form submission failed")
     }
-    
-    this.isSubmitting = false
   }
 
   exitEditMode() {
     this.isEditing = false
+    this.element.classList.remove("is-editing")
 
-    // Reset fields to original values and make readonly
+    // Reset fields to original values (if canceled or if we want to revert on failure)
+    // Actually, if we just saved, we want to update originalValues.
+    // If we are exiting after success, the field.value is already correct.
     this.fieldTargets.forEach((field) => {
-      field.value = this.originalValues[field.name]
       field.setAttribute("readonly", "readonly")
       field.classList.remove("ring-2", "ring-yellow-400")
-      field.removeEventListener("change", this.markDirty.bind(this))
+      field.removeEventListener("input", this.markDirty.bind(this))
+      
+      // Update original values to current values upon successful exit
+      this.originalValues[field.name] = field.value
     })
 
-    // Change checkmark back to pencil icon
-    const editIcon = this.editBtnTarget.querySelector("[data-inline-edit-target='editIcon']")
-    editIcon.classList.remove("fa-check")
-    editIcon.classList.add("fa-pencil")
-    this.editBtnTarget.classList.add("btn-outline")
-    this.editBtnTarget.classList.remove("btn-success")
-    
     // Remove cancel button
     this.removeCancelButton()
     
     // Hide unsaved alert
     this.hideUnsavedAlert()
-    
-    this.formTarget.classList.remove("editing")
   }
 
   cancelEdit() {
+    // Revert to original values before exiting
+    this.fieldTargets.forEach((field) => {
+      field.value = this.originalValues[field.name]
+    })
     this.exitEditMode()
   }
 
@@ -170,24 +168,35 @@ export default class extends Controller {
   }
 
   calculateTotal() {
-    // Get quantity, duration_days, and wet_rate_per_day fields
-    const quantityField = this.formTarget.querySelector('input[name="tender_crane_selection[quantity]"]')
-    const durationField = this.formTarget.querySelector('input[name="tender_crane_selection[duration_days]"]')
-    const rateField = this.formTarget.querySelector('input[name="tender_crane_selection[wet_rate_per_day]"]')
-    const totalDisplay = this.formTarget.querySelector('[data-total-cost-display]')
+    if (this.calculationTimeout) clearTimeout(this.calculationTimeout)
+    this.calculationTimeout = setTimeout(() => {
+      this.performCalculation()
+    }, 50)
+  }
 
-    if (quantityField && durationField && rateField && totalDisplay) {
-      const qty = parseFloat(quantityField.value) || 0
-      const days = parseFloat(durationField.value) || 0
-      const rate = parseFloat(rateField.value) || 0
+  performCalculation() {
+    // Cache fields if not already cached
+    if (!this.quantityField) this.quantityField = this.fieldTargets.find(f => f.name === 'tender_crane_selection[quantity]')
+    if (!this.durationField) this.durationField = this.fieldTargets.find(f => f.name === 'tender_crane_selection[duration_days]')
+    if (!this.rateField) this.rateField = this.fieldTargets.find(f => f.name === 'tender_crane_selection[wet_rate_per_day]')
+    if (!this.totalDisplay) this.totalDisplay = this.formTarget.querySelector('[data-total-cost-display]')
+
+    if (this.quantityField && this.durationField && this.rateField && this.totalDisplay) {
+      const qty = parseFloat(this.quantityField.value) || 0
+      const days = parseFloat(this.durationField.value) || 0
+      const rate = parseFloat(this.rateField.value) || 0
       const total = qty * days * rate
 
       // Format and display the total cost
-      totalDisplay.value = 'R ' + total.toFixed(2)
+      this.totalDisplay.value = 'R ' + total.toFixed(2)
       
       // Mark as dirty to show unsaved alert
-      this.markDirty({ target: quantityField })
+      this.markDirty({ target: this.quantityField })
     }
+  }
+
+  disconnect() {
+    if (this.calculationTimeout) clearTimeout(this.calculationTimeout)
   }
 
 }

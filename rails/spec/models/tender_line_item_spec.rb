@@ -19,12 +19,10 @@ RSpec.describe TenderLineItem, type: :model do
 
       expect(rate_buildup.material_supply_rate).to eq(1000)
       expect(rate_buildup.fabrication_rate).to eq(500)
-      expect(rate_buildup.shop_drawings_rate).to eq(100)
       
-      # Subtotal: 1000 (material) + 500 (fab) + 100 (shop drawings) = 1600
-      # (Assuming default inclusions are 1.0 for fab and shop drawings)
-      expect(rate_buildup.subtotal).to eq(1600)
-      expect(rate_buildup.rounded_rate).to eq(1600)
+      # Subtotal: 1000 (material) + 500 (fab) = 1500
+      expect(rate_buildup.subtotal).to eq(1500)
+      expect(rate_buildup.rounded_rate).to eq(1500)
     end
   end
 
