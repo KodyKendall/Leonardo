@@ -1,5 +1,5 @@
-<%= turbo_stream.update dom_id(@tender_crane_selection) do %>
-  <%= render @tender_crane_selection %>
+<%= turbo_stream.replace dom_id(@tender_crane_selection) do %>
+  <%= render @tender_crane_selection, saved: true %>
 <% end %>
 
 <%# Update the summary when crane selection changes (especially purpose/classification) %>

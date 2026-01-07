@@ -1,5 +1,5 @@
 <%# Standalone show view for tender_crane_selection with inline editing %>
-<turbo-frame id="<%= dom_id tender_crane_selection %>" class="w-full my-5 block" data-controller="inline-edit" data-inline-edit-target="container" data-testid="crane-selection-row">
+<turbo-frame id="<%= dom_id tender_crane_selection %>" class="w-full my-5 block group" data-controller="inline-edit" data-inline-edit-target="container" data-testid="crane-selection-row">
 
   <div class="flex gap-2 items-end">
     <%# Form for Inline Editing %>
@@ -40,14 +40,16 @@
       <div class="form-group flex-1">
         <%= f.number_field :quantity,
           class: "input input-bordered input-sm w-full readonly:bg-gray-100",
-          data: { inline_edit_target: "field", action: "change->inline-edit#calculateTotal" } %>
+          readonly: true,
+          data: { inline_edit_target: "field", action: "input->inline-edit#calculateTotal" } %>
       </div>
 
       <%# Duration Days (Editable) %>
       <div class="form-group flex-1">
         <%= f.number_field :duration_days,
           class: "input input-bordered input-sm w-full readonly:bg-gray-100",
-          data: { inline_edit_target: "field", action: "change->inline-edit#calculateTotal" } %>
+          readonly: true,
+          data: { inline_edit_target: "field", action: "input->inline-edit#calculateTotal" } %>
       </div>
 
       <%# Wet Rate Per Day (Editable) %>
@@ -55,7 +57,8 @@
         <%= f.number_field :wet_rate_per_day,
           step: :any,
           class: "input input-bordered input-sm w-full readonly:bg-gray-100",
-          data: { inline_edit_target: "field" } %>
+          readonly: true,
+          data: { inline_edit_target: "field", action: "input->inline-edit#calculateTotal" } %>
       </div>
 
       <%# Total Cost (Read-only, calculated) %>
@@ -72,9 +75,10 @@
       <button type="button"
         data-inline-edit-target="editBtn"
         data-action="inline-edit#toggleEditMode"
-        class="btn btn-circle btn-outline btn-sm"
+        class="btn btn-circle btn-outline btn-sm group-[.is-editing]:btn-success group-[.is-editing]:btn-active"
         title="Edit">
-        <i class="fas fa-pencil text-lg" data-inline-edit-target="editIcon"></i>
+        <i class="fas fa-pencil text-lg group-[.is-editing]:hidden" data-inline-edit-target="editIcon"></i>
+        <i class="fas fa-check text-lg hidden group-[.is-editing]:block"></i>
       </button>
 
       <%# Hidden Submit Button %>
@@ -99,7 +103,7 @@
   </div>
 
   <%# Saved Confirmation (hidden by default) %>
-  <div data-inline-edit-target="savedIndicator" class="hidden flex items-center gap-2 p-3 mt-4 bg-green-50 border green-200 rounded-md">
+  <div data-inline-edit-target="savedIndicator" class="<%= 'hidden' unless local_assigns[:saved] %> flex items-center gap-2 p-3 mt-4 bg-green-50 border border-green-200 rounded-md">
     <i class="fas fa-check-circle text-green-600"></i>
     <span class="text-sm font-medium text-green-800">Changes saved</span>
   </div>
