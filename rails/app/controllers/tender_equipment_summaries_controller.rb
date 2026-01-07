@@ -76,6 +76,6 @@ class TenderEquipmentSummariesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def tender_equipment_summary_params
-      params.require(:tender_equipment_summary).permit(:tenant_id, :equipment_subtotal, :mobilization_fee, :establishment_cost, :total_equipment_cost, :rate_per_tonne_raw, :rate_per_tonne_rounded, :notes)
+      params.require(:tender_equipment_summary).permit(:tender_id, :equipment_subtotal, :mobilization_fee, :establishment_cost, :total_equipment_cost, :rate_per_tonne_raw, :rate_per_tonne_rounded, :notes)
     end
 end

@@ -23,7 +23,13 @@ class EquipmentSelectionsController < ApplicationController
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace("equipment_form", partial: "equipment_selections/add_form", locals: { tender: @tender, new_equipment_selection: @equipment_selection, equipment_types: @equipment_types })
         end
-        format.html { render :index, status: :unprocessable_entity }
+        format.html do
+          # Set up instance variables needed by index view
+          @equipment_selections = @tender.tender_equipment_selections.ordered
+          @new_equipment_selection = @equipment_selection
+          @tender_equipment_summary = @tender.tender_equipment_summary || @tender.create_tender_equipment_summary!
+          render :index, status: :unprocessable_entity
+        end
       end
     end
   end
@@ -45,7 +51,14 @@ class EquipmentSelectionsController < ApplicationController
         format.turbo_stream do
           render turbo_stream: turbo_stream.replace(@equipment_selection, partial: "equipment_selections/equipment_selection", locals: { equipment_selection: @equipment_selection }), status: :unprocessable_entity
         end
-        format.html { render :index, status: :unprocessable_entity }
+        format.html do
+          # Set up instance variables needed by index view
+          @equipment_selections = @tender.tender_equipment_selections.ordered
+          @new_equipment_selection = TenderEquipmentSelection.new(tender: @tender)
+          @equipment_types = EquipmentType.active
+          @tender_equipment_summary = @tender.tender_equipment_summary || @tender.create_tender_equipment_summary!
+          render :index, status: :unprocessable_entity
+        end
       end
     end
   end
