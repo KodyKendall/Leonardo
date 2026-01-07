@@ -5,7 +5,11 @@
     <%= form_with model: [tender, new_equipment_selection],
                   url: tender_equipment_selections_path(tender),
                   local: true,
-                  data: { turbo_stream: true } do |f| %>
+                  data: { 
+                    turbo_stream: true,
+                    controller: "reset-form",
+                    action: "turbo:submit-end->reset-form#reset"
+                  } do |f| %>
       <div class="grid grid-cols-12 gap-3 items-end">
         <!-- Equipment Type Dropdown -->
         <div class="col-span-3">
