@@ -16,18 +16,22 @@
         </div>
 
         <!-- Page -->
-        <div class="col-span-1">
-          <%= f.text_field :page_number, class: "input input-xs input-bordered w-full", placeholder: "Pg" %>
-        </div>
+        <% unless tender_line_item.is_heading %>
+          <div class="col-span-1">
+            <%= f.text_field :page_number, class: "input input-xs input-bordered w-full", placeholder: "Pg" %>
+          </div>
+        <% end %>
 
         <!-- Item # -->
-        <div class="col-span-1">
-          <%= f.text_field :item_number, class: "input input-xs input-bordered w-full", placeholder: "Item" %>
-        </div>
+        <% unless tender_line_item.is_heading %>
+          <div class="col-span-1">
+            <%= f.text_field :item_number, class: "input input-xs input-bordered w-full", placeholder: "Item" %>
+          </div>
+        <% end %>
 
         <!-- Description -->
-        <div class="<%= tender_line_item.is_heading ? 'col-span-5 font-bold' : 'col-span-2' %>">
-          <%= f.text_field :item_description, class: "input input-xs input-bordered w-full #{ tender_line_item.is_heading ? 'font-bold' : '' }", placeholder: "Description" %>
+        <div class="<%= tender_line_item.is_heading ? 'col-span-9 font-bold' : 'col-span-2' %>">
+          <%= f.text_field :item_description, class: "input input-xs input-bordered w-full #{ tender_line_item.is_heading ? 'font-bold text-center' : '' }", placeholder: "Description" %>
         </div>
 
         <!-- Unit (Hidden for headings) -->
