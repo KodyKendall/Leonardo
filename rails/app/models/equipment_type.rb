@@ -17,6 +17,7 @@ class EquipmentType < ApplicationRecord
   }
 
   scope :active, -> { where(is_active: true) }
+  scope :ordered_by_category_and_height, -> { order(:category, :working_height_m) }
 
   def monthly_rate_with_waiver
     ((base_rate_monthly || 0) * (1 + (damage_waiver_pct || 0))) + (diesel_allowance_monthly || 0)

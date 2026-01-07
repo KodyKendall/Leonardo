@@ -6,14 +6,14 @@ class EquipmentSelectionsController < ApplicationController
   def index
     @equipment_selections = @tender.tender_equipment_selections.ordered
     @new_equipment_selection = TenderEquipmentSelection.new(tender: @tender)
-    @equipment_types = EquipmentType.active
+    @equipment_types = EquipmentType.active.ordered_by_category_and_height
     @tender_equipment_summary = @tender.tender_equipment_summary || @tender.create_tender_equipment_summary!
   end
 
   # POST /tenders/:tender_id/equipment_selections
   def create
     @equipment_selection = @tender.tender_equipment_selections.build(equipment_selection_params)
-    @equipment_types = EquipmentType.active
+    @equipment_types = EquipmentType.active.ordered_by_category_and_height
 
     respond_to do |format|
       if @equipment_selection.save
@@ -55,7 +55,7 @@ class EquipmentSelectionsController < ApplicationController
           # Set up instance variables needed by index view
           @equipment_selections = @tender.tender_equipment_selections.ordered
           @new_equipment_selection = TenderEquipmentSelection.new(tender: @tender)
-          @equipment_types = EquipmentType.active
+          @equipment_types = EquipmentType.active.ordered_by_category_and_height
           @tender_equipment_summary = @tender.tender_equipment_summary || @tender.create_tender_equipment_summary!
           render :index, status: :unprocessable_entity
         end
