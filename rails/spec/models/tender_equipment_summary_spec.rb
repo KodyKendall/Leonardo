@@ -53,4 +53,25 @@ RSpec.describe TenderEquipmentSummary, type: :model do
       expect(access_item.reload.rate).to eq(2500.0)
     end
   end
+
+  describe "#cherry_picker_rate_per_tonne" do
+    let(:tender) { create(:tender, total_tonnage: 100) }
+    let(:summary) { create(:tender_equipment_summary, tender: tender, total_equipment_cost: 43160) }
+
+    it "rounds up to the nearest 10" do
+      # 43160 / 100 = 431.60
+      # (431.60 / 10).ceil * 10 = 44 * 10 = 440
+      expect(summary.cherry_picker_rate_per_tonne).to eq(440)
+    end
+
+    it "returns 0 if total_equipment_cost is zero" do
+      summary.total_equipment_cost = 0
+      expect(summary.cherry_picker_rate_per_tonne).to eq(0)
+    end
+
+    it "returns 0 if tonnage is zero" do
+      tender.update!(total_tonnage: 0)
+      expect(summary.cherry_picker_rate_per_tonne).to eq(0)
+    end
+  end
 end
