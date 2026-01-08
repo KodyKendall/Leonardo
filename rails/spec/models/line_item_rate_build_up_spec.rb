@@ -28,14 +28,41 @@ RSpec.describe LineItemRateBuildUp, type: :model do
       expect(rate_buildup.rounded_rate).to eq(500)
     end
 
-    it "rounds up to nearest R50" do
+    it "rounds up to the specified rounding_interval" do
       rate_buildup.update!(
-        material_supply_rate: 100,
+        material_supply_rate: 101,
         material_supply_included: 1.0,
-        margin_percentage: 10 # 100 + 10% = 110
+        margin_percentage: 0,
+        rounding_interval: 10
       )
-      # 110 rounded up to nearest 50 = 150
+      # 101 rounded up to nearest 10 = 110
+      expect(rate_buildup.rounded_rate).to eq(110)
+
+      rate_buildup.update!(rounding_interval: 100)
+      # 101 rounded up to nearest 100 = 200
+      expect(rate_buildup.rounded_rate).to eq(200)
+    end
+
+    it "defaults rounding_interval to 50" do
+      expect(rate_buildup.rounding_interval).to eq(50)
+      
+      rate_buildup.update!(
+        material_supply_rate: 101,
+        material_supply_included: 1.0,
+        margin_percentage: 0
+      )
+      # 101 rounded up to nearest 50 = 150
       expect(rate_buildup.rounded_rate).to eq(150)
+    end
+
+    it "validates rounding_interval inclusion" do
+      [10, 20, 50, 100].each do |val|
+        rate_buildup.rounding_interval = val
+        expect(rate_buildup).to be_valid
+      end
+
+      rate_buildup.rounding_interval = 30
+      expect(rate_buildup).not_to be_valid
     end
   end
 end

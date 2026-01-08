@@ -112,7 +112,7 @@ class LineItemRateBuildUpsController < ApplicationController
         :delivery_included, :bolts_rate, :bolts_included, :erection_rate, :erection_included, 
         :crainage_rate, :crainage_included, :cherry_picker_rate, :cherry_picker_included, 
         :galvanizing_rate, :galvanizing_included, :subtotal, :margin_percentage, :total_before_rounding, 
-        :rounded_rate,
+        :rounded_rate, :rounding_interval,
         rate_buildup_custom_items_attributes: [:id, :description, :rate, :included, :sort_order, :_destroy]
       )
     end
