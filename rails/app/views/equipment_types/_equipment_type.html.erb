@@ -21,6 +21,9 @@
       <span class="text-gray-400">—</span>
     <% end %>
   </td>
+  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+    R<%= number_with_precision(equipment_type.monthly_rate_with_waiver, precision: 0, delimiter: ',') %>
+  </td>
   <td class="px-6 py-4 whitespace-nowrap text-sm">
     <span class="<%= equipment_type.is_active? ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %> px-2.5 py-0.5 rounded-full text-xs font-medium">
       <%= equipment_type.is_active? ? "Active" : "Inactive" %>
