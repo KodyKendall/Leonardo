@@ -19,6 +19,7 @@ class Tender < ApplicationRecord
   has_one_attached :qob_file
   
   # Callbacks
+  after_initialize :set_report_defaults, if: :new_record?
   before_save :sync_client_name, if: -> { client_id_changed? }
   before_save :set_default_contact, if: -> { client_id_changed? && contact_id.blank? }
   before_create :generate_e_number
@@ -28,6 +29,8 @@ class Tender < ApplicationRecord
   # Validations
   validates :tender_name, presence: true
   validates :status, presence: true, inclusion: { in: %w(Draft In\ Progress Submitted Awarded Not\ Awarded) }
+  validates :p_and_g_display_mode, presence: true, inclusion: { in: %w(detailed rolled_up) }
+  validates :shop_drawings_display_mode, presence: true, inclusion: { in: %w(lump_sum tonnage_rate) }
   validate :qob_file_content_type
   
   # Status enum-like constant
@@ -35,6 +38,10 @@ class Tender < ApplicationRecord
   
   # Project types enum-like constant
   PROJECT_TYPES = ['Commercial', 'Mining'].freeze
+
+  # Report display modes
+  PG_DISPLAY_MODES = [['Detailed Breakdown', 'detailed'], ['Rolled-up Lump Sum', 'rolled_up']].freeze
+  SHOP_DRAWINGS_DISPLAY_MODES = [['Lump Sum', 'lump_sum'], ['Tonnage & Rate', 'tonnage_rate']].freeze
 
   # Weight units for tonnage calculation
   WEIGHT_UNITS = ["t", "ton", "tons", "tonne", "tonnes"].freeze
@@ -101,6 +108,11 @@ class Tender < ApplicationRecord
   end
 
   private
+
+  def set_report_defaults
+    self.p_and_g_display_mode ||= 'detailed'
+    self.shop_drawings_display_mode ||= 'lump_sum'
+  end
 
   def sync_client_name
     self.client_name = client&.business_name

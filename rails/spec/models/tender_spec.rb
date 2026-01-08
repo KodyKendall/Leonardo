@@ -1,6 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe Tender, type: :model do
+  describe 'validations' do
+    it { should validate_presence_of(:p_and_g_display_mode) }
+    it { should validate_inclusion_of(:p_and_g_display_mode).in_array(%w(detailed rolled_up)) }
+    it { should validate_presence_of(:shop_drawings_display_mode) }
+    it { should validate_inclusion_of(:shop_drawings_display_mode).in_array(%w(lump_sum tonnage_rate)) }
+  end
+
   describe '#recalculate_grand_total!' do
     let(:tender) { create(:tender) }
 
