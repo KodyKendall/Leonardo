@@ -104,6 +104,27 @@ RSpec.describe "/tenders/:tender_id/p_and_g", type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
+
+    context "with Turbo Stream" do
+      it "replaces the entire container when category changes" do
+        item = create(:preliminaries_general_item, tender: tender, category: 'fixed')
+        patch tender_preliminaries_general_item_path(tender, item), 
+              params: { preliminaries_general_item: { category: 'time_based' } },
+              as: :turbo_stream
+        
+        expect(response.body).to include('turbo-stream action="replace" target="preliminaries_general_items_container"')
+      end
+
+      it "replaces only the row when category does not change" do
+        item = create(:preliminaries_general_item, tender: tender, category: 'fixed')
+        patch tender_preliminaries_general_item_path(tender, item), 
+              params: { preliminaries_general_item: { description: 'New description' } },
+              as: :turbo_stream
+        
+        expect(response.body).to include("turbo-stream action=\"replace\" target=\"preliminaries_general_item_#{item.id}\"")
+        expect(response.body).to include('turbo-stream action="replace" target="pg_totals"')
+      end
+    end
   end
 
   describe "DELETE /destroy" do

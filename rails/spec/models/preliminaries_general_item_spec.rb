@@ -42,4 +42,25 @@ RSpec.describe PreliminariesGeneralItem, type: :model do
       end
     end
   end
+
+  describe "broadcasts" do
+    include Turbo::Broadcastable::TestHelper
+    include ActionView::RecordIdentifier
+
+    it "broadcasts a full container replacement when category changes" do
+      item = create(:preliminaries_general_item, tender: tender, category: 'fixed')
+      
+      expect {
+        item.update!(category: 'time_based')
+      }.to have_broadcasted_to("tender_#{tender.id}_pg_items").exactly(:once)
+    end
+
+    it "broadcasts a row replacement and totals when category does not change" do
+      item = create(:preliminaries_general_item, tender: tender, category: 'fixed', description: "Old")
+      
+      expect {
+        item.update!(description: "New")
+      }.to have_broadcasted_to("tender_#{tender.id}_pg_items").exactly(2).times
+    end
+  end
 end
