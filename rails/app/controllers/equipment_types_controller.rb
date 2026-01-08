@@ -3,7 +3,7 @@ class EquipmentTypesController < ApplicationController
 
   # GET /equipment_types or /equipment_types.json
   def index
-    @equipment_types = EquipmentType.all
+    @equipment_types = EquipmentType.ordered_by_category_and_height
     authorize EquipmentType
   end
 

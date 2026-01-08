@@ -15,7 +15,7 @@ class CraneRatesController < ApplicationController
 
   # GET /crane_rates/new
   def new
-    @crane_rate = CraneRate.new
+    @crane_rate = CraneRate.new(ownership_type: nil)
     authorize @crane_rate
   end
 
