@@ -44,8 +44,10 @@ class TendersController < ApplicationController
           print_background: true
         )
         pdf = grover.to_pdf
+        safe_name = @tender.tender_name.gsub(/[\/\\?%*:|"<>]/, '-')
+        filename = "#{@tender.e_number} – #{safe_name}.pdf"
         send_data pdf,
-                  filename: "tender_#{@tender.e_number}.pdf",
+                  filename: filename,
                   type: 'application/pdf',
                   disposition: 'attachment'
       end

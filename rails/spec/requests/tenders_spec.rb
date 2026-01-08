@@ -47,7 +47,14 @@ RSpec.describe "/tenders", type: :request do
       get report_tender_url(tender, format: :pdf)
       expect(response).to be_successful
       expect(response.content_type).to eq('application/pdf')
-      expect(response.headers['Content-Disposition']).to include("filename=\"tender_#{tender.e_number}.pdf\"")
+      # Rails encodes the filename in Content-Disposition header according to RFC 6266
+      # It provides both a 'filename' (often with substitutions for non-ASCII) and 'filename*' (properly encoded)
+      content_disposition = response.headers['Content-Disposition']
+      expect(content_disposition).to include("filename*=")
+      expect(content_disposition).to include("E2026001")
+      expect(content_disposition).to include("Test%20Tender")
+      # %E2%80%93 is the URL-encoded en dash
+      expect(content_disposition).to include("%E2%80%93")
       expect(response.body).not_to be_empty
     end
   end
