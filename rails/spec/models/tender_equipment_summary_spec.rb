@@ -37,7 +37,7 @@ RSpec.describe TenderEquipmentSummary, type: :model do
   describe "P&G sync callback" do
     let(:tender) { create(:tender, total_tonnage: 100) }
     let!(:summary) { create(:tender_equipment_summary, tender: tender) }
-    let!(:access_item) { create(:preliminaries_general_item, tender: tender, is_access_equipment: true, category: 'fixed_based', description: 'Access Item') }
+    let!(:access_item) { create(:preliminaries_general_item, tender: tender, is_access_equipment: true, category: 'fixed', description: 'Access Item') }
 
     it "triggers a rate update on associated access P&G items when updated" do
       # Initial state

@@ -2,8 +2,8 @@ class PreliminariesGeneralItemTemplate < ApplicationRecord
   has_many :preliminaries_general_items, dependent: :nullify
 
   enum :category, {
-    fixed_based: 'fixed_based',
-    duration_based: 'duration_based',
+    fixed: 'fixed',
+    time_based: 'time_based',
     percentage_based: 'percentage_based'
   }
 

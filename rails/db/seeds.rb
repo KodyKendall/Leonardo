@@ -962,24 +962,24 @@ end
 # ===== P&G ITEM TEMPLATES =====
 pg_templates = [
   # Fixed Based
-  { description: 'Site establishment & demobilisation', category: 'fixed_based' },
-  { description: 'Site offices, containers, ablutions (initial setup)', category: 'fixed_based' },
-  { description: 'Initial insurances, guarantees', category: 'fixed_based' },
-  { description: 'Contractual documentation', category: 'fixed_based' },
-  { description: 'Health & Safety file setup', category: 'fixed_based' },
-  { description: 'Initial surveys / setting out', category: 'fixed_based' },
-  { description: 'Site signage, fencing', category: 'fixed_based' },
+  { description: 'Site establishment & demobilisation', category: 'fixed' },
+  { description: 'Site offices, containers, ablutions (initial setup)', category: 'fixed' },
+  { description: 'Initial insurances, guarantees', category: 'fixed' },
+  { description: 'Contractual documentation', category: 'fixed' },
+  { description: 'Health & Safety file setup', category: 'fixed' },
+  { description: 'Initial surveys / setting out', category: 'fixed' },
+  { description: 'Site signage, fencing', category: 'fixed' },
 
   # Duration Based
-  { description: 'Cranage', category: 'duration_based', is_crane: true },
-  { description: 'Cherry picker', category: 'duration_based', is_access_equipment: true },
-  { description: 'Site supervision (foreman, site agent allocation)', category: 'duration_based' },
-  { description: 'Temporary services (power, water, data)', category: 'duration_based' },
-  { description: 'Plant & equipment standing time (cranes if dedicated, telehandler, cherry picker)', category: 'duration_based', is_crane: true },
-  { description: 'Security', category: 'duration_based' },
-  { description: 'Site offices rental', category: 'duration_based' },
-  { description: 'H&S officer', category: 'duration_based' },
-  { description: 'Accommodation & travel', category: 'duration_based' },
+  { description: 'Cranage', category: 'time_based', is_crane: true },
+  { description: 'Cherry picker', category: 'time_based', is_access_equipment: true },
+  { description: 'Site supervision (foreman, site agent allocation)', category: 'time_based' },
+  { description: 'Temporary services (power, water, data)', category: 'time_based' },
+  { description: 'Plant & equipment standing time (cranes if dedicated, telehandler, cherry picker)', category: 'time_based', is_crane: true },
+  { description: 'Security', category: 'time_based' },
+  { description: 'Site offices rental', category: 'time_based' },
+  { description: 'H&S officer', category: 'time_based' },
+  { description: 'Accommodation & travel', category: 'time_based' },
 
   # Percentage Based
   { description: 'Head office overhead allocation', category: 'percentage_based' },
@@ -1189,7 +1189,7 @@ puts "  • Equipment Types: #{EquipmentType.count}"
   'Site signage, fencing'
 ].each_with_index do |desc, index|
   PreliminariesGeneralItemTemplate.find_or_create_by!(
-    category: 'fixed_based',
+    category: 'fixed',
     description: desc
   ) do |t|
     t.quantity = 1.0
@@ -1211,7 +1211,7 @@ end
   { desc: 'Accommodation & travel' }
 ].each_with_index do |item, index|
   PreliminariesGeneralItemTemplate.find_or_create_by!(
-    category: 'duration_based',
+    category: 'time_based',
     description: item[:desc]
   ) do |t|
     t.quantity = 1.0

@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :preliminaries_general_item_template do
-    category { "fixed_based" }
+    category { "fixed" }
     description { "Test P&G Template" }
     quantity { 1 }
     rate { 100.00 }

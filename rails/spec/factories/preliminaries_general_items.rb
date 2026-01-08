@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :preliminaries_general_item do
     association :tender
-    category { "fixed_based" }
+    category { "fixed" }
     description { "Test P&G Item" }
     quantity { 1 }
     rate { 100.00 }

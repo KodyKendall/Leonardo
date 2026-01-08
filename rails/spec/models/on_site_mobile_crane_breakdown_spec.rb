@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe OnSiteMobileCraneBreakdown, type: :model do
   let(:tender) { create(:tender, total_tonnage: 100) }
   let!(:breakdown) { create(:on_site_mobile_crane_breakdown, tender: tender) }
-  let!(:crane_item) { create(:preliminaries_general_item, tender: tender, is_crane: true, category: 'fixed_based', description: 'Crane Item') }
-  let!(:other_item) { create(:preliminaries_general_item, tender: tender, is_crane: false, category: 'fixed_based', description: 'Other Item', rate: 100) }
+  let!(:crane_item) { create(:preliminaries_general_item, tender: tender, is_crane: true, category: 'fixed', description: 'Crane Item') }
+  let!(:other_item) { create(:preliminaries_general_item, tender: tender, is_crane: false, category: 'fixed', description: 'Other Item', rate: 100) }
 
   describe "P&G sync callback" do
     it "triggers a rate update on associated crane P&G items when updated" do

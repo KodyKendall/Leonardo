@@ -140,8 +140,8 @@ RSpec.describe Tender, type: :model do
     describe "P&G sync cascade" do
       let!(:crane_breakdown) { create(:on_site_mobile_crane_breakdown, tender: tender) }
       let!(:summary) { create(:tender_equipment_summary, tender: tender) }
-      let!(:crane_pg_item) { create(:preliminaries_general_item, tender: tender, is_crane: true, category: 'fixed_based', description: 'Crane') }
-      let!(:access_pg_item) { create(:preliminaries_general_item, tender: tender, is_access_equipment: true, category: 'fixed_based', description: 'Access') }
+      let!(:crane_pg_item) { create(:preliminaries_general_item, tender: tender, is_crane: true, category: 'fixed', description: 'Crane') }
+      let!(:access_pg_item) { create(:preliminaries_general_item, tender: tender, is_access_equipment: true, category: 'fixed', description: 'Access') }
 
       it "triggers a rate update on P&G items when tonnage changes" do
         # Setup initial stubs

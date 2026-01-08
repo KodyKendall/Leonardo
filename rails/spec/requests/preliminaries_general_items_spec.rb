@@ -8,11 +8,11 @@ RSpec.describe "/tenders/:tender_id/p_and_g", type: :request do
   let(:tender) { create(:tender) }
 
   let(:valid_attributes) {
-    { category: 'fixed_based', description: 'Test P&G Item', quantity: 10, rate: 100.0 }
+    { category: 'fixed', description: 'Test P&G Item', quantity: 10, rate: 100.0 }
   }
 
   let(:invalid_attributes) {
-    { category: 'fixed_based', description: '', quantity: 0, rate: -10 }
+    { category: 'fixed', description: '', quantity: 0, rate: -10 }
   }
 
   before { sign_in user }
