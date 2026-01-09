@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_08_183339) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_09_180406) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -328,6 +328,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_08_183339) do
     t.decimal "margin_percentage", precision: 5, scale: 2, default: "0.0", null: false
     t.decimal "material_supply_included", precision: 5, scale: 2
     t.integer "rounding_interval", default: 50
+    t.decimal "mass_calc", precision: 15, scale: 4, default: "1.0"
     t.index ["tender_line_item_id"], name: "index_line_item_rate_build_ups_on_tender_line_item_id"
   end
 

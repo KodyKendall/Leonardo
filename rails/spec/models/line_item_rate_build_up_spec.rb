@@ -55,6 +55,23 @@ RSpec.describe LineItemRateBuildUp, type: :model do
       expect(rate_buildup.rounded_rate).to eq(150)
     end
 
+    it "multiplies subtotal by mass_calc before applying margin" do
+      rate_buildup.update!(
+        material_supply_rate: 100,
+        material_supply_included: 1.0,
+        mass_calc: 2.0,
+        margin_percentage: 10,
+        rounding_interval: 10
+      )
+      # Base subtotal = 100 * 1.0 = 100
+      # Effective subtotal used for calculations = 100 * 2.0 = 200
+      # Total before rounding = 200 * 1.1 = 220
+      # Rounded rate = 220
+      expect(rate_buildup.subtotal).to eq(100)
+      expect(rate_buildup.total_before_rounding).to eq(220)
+      expect(rate_buildup.rounded_rate).to eq(220)
+    end
+
     it "validates rounding_interval inclusion" do
       [10, 20, 50, 100].each do |val|
         rate_buildup.rounding_interval = val

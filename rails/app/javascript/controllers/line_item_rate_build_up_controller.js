@@ -21,7 +21,9 @@ export default class extends Controller {
     "customRate",
     "customAmount",
     "addButtonRow",
-    "destroyField"
+    "destroyField",
+    "massCalcRow",
+    "massCalcInput"
   ]
 
   connect() {
@@ -188,7 +190,13 @@ export default class extends Controller {
     this.checkDirtyState()
   }
 
-
+  toggleMassCalc(event) {
+    event.preventDefault()
+    this.massCalcRowTarget.classList.toggle('hidden')
+    if (!this.massCalcRowTarget.classList.contains('hidden')) {
+      this.massCalcInputTarget.focus()
+    }
+  }
 
   removeCustomItem(event) {
     event.preventDefault()

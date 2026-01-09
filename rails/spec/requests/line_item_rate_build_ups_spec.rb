@@ -88,31 +88,29 @@ RSpec.describe "/line_item_rate_build_ups", type: :request do
   end
 
   describe "PATCH /update" do
+    let(:tender) { create(:tender) }
+    let(:tender_line_item) { create(:tender_line_item, tender: tender) }
+    let(:line_item_rate_build_up) { tender_line_item.line_item_rate_build_up }
+
     context "with valid parameters" do
-      let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
-      }
-
-      it "updates the requested line_item_rate_build_up" do
-        line_item_rate_build_up = LineItemRateBuildUp.create! valid_attributes
-        patch line_item_rate_build_up_url(line_item_rate_build_up), params: { line_item_rate_build_up: new_attributes }
+      it "updates the mass_calc and redirects" do
+        patch line_item_rate_build_up_url(line_item_rate_build_up), 
+          params: { line_item_rate_build_up: { mass_calc: 1.5 } }
+        
         line_item_rate_build_up.reload
-        skip("Add assertions for updated state")
-      end
-
-      it "redirects to the line_item_rate_build_up" do
-        line_item_rate_build_up = LineItemRateBuildUp.create! valid_attributes
-        patch line_item_rate_build_up_url(line_item_rate_build_up), params: { line_item_rate_build_up: new_attributes }
-        line_item_rate_build_up.reload
+        expect(line_item_rate_build_up.mass_calc).to eq(1.5)
         expect(response).to redirect_to(line_item_rate_build_up_url(line_item_rate_build_up))
       end
-    end
 
-    context "with invalid parameters" do
-      it "renders a response with 422 status (i.e. to display the 'edit' template)" do
-        line_item_rate_build_up = LineItemRateBuildUp.create! valid_attributes
-        patch line_item_rate_build_up_url(line_item_rate_build_up), params: { line_item_rate_build_up: invalid_attributes }
-        expect(response).to have_http_status(:unprocessable_entity)
+      it "updates via turbo_stream" do
+        patch line_item_rate_build_up_url(line_item_rate_build_up), 
+          params: { line_item_rate_build_up: { mass_calc: 2.0 } },
+          as: :turbo_stream
+        
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("turbo-stream action=\"replace\"")
+        line_item_rate_build_up.reload
+        expect(line_item_rate_build_up.mass_calc).to eq(2.0)
       end
     end
   end
