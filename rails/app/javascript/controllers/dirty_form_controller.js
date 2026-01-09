@@ -10,18 +10,19 @@ export default class extends Controller {
     this.originalData = new FormData(this.form)
     this.isDirty = false
     this.hasValidationErrors = false
-    
-    // Intercept form submission BEFORE Turbo processes it
-    this.form.addEventListener("submit", (e) => this.handleFormSubmit(e), true)
-    // Listen for form submission to validate before submit
-    this.element.addEventListener("turbo:submit-start", (e) => this.handleSubmitStart(e))
+    this.updateIndicator()
   }
 
   change() {
     if (!this.form) return
     const currentData = new FormData(this.form)
-    this.isDirty = !this.formDataEqual(this.originalData, currentData)
-    this.updateIndicator()
+    const dirty = !this.formDataEqual(this.originalData, currentData)
+    
+    if (this.isDirty !== dirty) {
+      this.isDirty = dirty
+      this.updateIndicator()
+    }
+
     // Hide saved message when user makes new changes
     if (this.hasSavedIndicatorTarget && this.isDirty) {
       this.savedIndicatorTarget.classList.add("hidden")
@@ -30,33 +31,26 @@ export default class extends Controller {
 
   updateValidationState() {
     // Check all crane size validators on the form
-    this.hasValidationErrors = false
-    
-    console.log("🪲 dirty-form updateValidationState called")
+    let errors = false
     const allValidators = this.element.querySelectorAll('[data-controller*="crane-size-validator"]')
-    console.log("🪲 Found", allValidators.length, "validators on form")
     
-    allValidators.forEach((validatorEl, idx) => {
+    allValidators.forEach((validatorEl) => {
       const validator = this.application.getControllerForElementAndIdentifier(validatorEl, 'crane-size-validator')
-      console.log("🪲 Validator", idx, "found:", !!validator)
-      if (validator) {
-        const isValid = validator.isFormValid()
-        console.log("🪲 Validator", idx, "isFormValid():", isValid)
-        if (!isValid) {
-          this.hasValidationErrors = true
-        }
+      if (validator && !validator.isFormValid()) {
+        errors = true
       }
     })
     
-    console.log("🪲 dirty-form hasValidationErrors after check:", this.hasValidationErrors)
-    this.updateIndicator()
+    if (this.hasValidationErrors !== errors) {
+      this.hasValidationErrors = errors
+      this.updateIndicator()
+    }
+    
+    return this.hasValidationErrors
   }
 
-  handleFormSubmit(event) {
-    // Check for validation errors BEFORE Turbo processes the form
-    this.updateValidationState()
-    
-    if (this.hasValidationErrors) {
+  submit(event) {
+    if (this.updateValidationState()) {
       event.preventDefault()
       event.stopPropagation()
       return false
@@ -64,10 +58,7 @@ export default class extends Controller {
   }
 
   handleSubmitStart(event) {
-    // Double-check for validation errors before Turbo submission
-    this.updateValidationState()
-    
-    if (this.hasValidationErrors) {
+    if (this.updateValidationState()) {
       event.preventDefault()
       return false
     }
@@ -77,20 +68,16 @@ export default class extends Controller {
     if (this.hasIndicatorTarget) {
       this.indicatorTarget.classList.toggle("hidden", !this.isDirty)
     }
+
     if (this.hasSubmitTarget) {
-      // Disable submit button if there are validation errors
-      if (this.hasValidationErrors) {
-        this.submitTarget.disabled = true
-        this.submitTarget.classList.add("btn-disabled")
-        this.submitTarget.title = "Please fix validation errors before saving"
-      } else {
-        this.submitTarget.disabled = false
-        this.submitTarget.classList.remove("btn-disabled")
-        this.submitTarget.title = ""
-      }
+      // Always ensure disabled state matches validation state
+      this.submitTarget.disabled = this.hasValidationErrors
+      this.submitTarget.classList.toggle("btn-disabled", this.hasValidationErrors)
+      this.submitTarget.title = this.hasValidationErrors ? "Please fix validation errors before saving" : ""
       
-      this.submitTarget.classList.toggle("btn-warning", this.isDirty && !this.hasValidationErrors)
-      this.submitTarget.classList.toggle("btn-primary", !this.isDirty && !this.hasValidationErrors)
+      const shouldBeWarning = this.isDirty && !this.hasValidationErrors
+      this.submitTarget.classList.toggle("btn-warning", shouldBeWarning)
+      this.submitTarget.classList.toggle("btn-primary", !shouldBeWarning)
     }
   }
 
@@ -102,7 +89,6 @@ export default class extends Controller {
 
   handleSubmitEnd(event) {
     // Only show success for successful responses (200-299)
-    // Validation errors return 422 with success: false
     if (event.detail.success) {
       this.showSavedState()
     }
