@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_09_193630) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_09_195543) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -285,6 +285,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_09_193630) do
     t.integer "sort_order"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "material_supply_type"
+    t.index ["material_supply_id", "material_supply_type"], name: "index_line_item_material_templates_on_material_supply"
     t.index ["material_supply_id"], name: "index_line_item_material_templates_on_material_supply_id"
     t.index ["section_category_template_id"], name: "idx_on_section_category_template_id_ea93871d82"
   end
@@ -299,7 +301,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_09_193630) do
     t.decimal "waste_percentage", precision: 5, scale: 2, default: "0.0"
     t.decimal "rate"
     t.decimal "quantity"
+    t.string "material_supply_type"
     t.index ["line_item_material_breakdown_id"], name: "index_line_item_materials_on_line_item_material_breakdown_id"
+    t.index ["material_supply_id", "material_supply_type"], name: "index_line_item_materials_on_material_supply"
     t.index ["material_supply_id"], name: "index_line_item_materials_on_material_supply_id"
     t.index ["tender_line_item_id", "material_supply_id"], name: "idx_on_tender_line_item_id_material_supply_id_beb386dde4"
     t.index ["tender_line_item_id"], name: "index_line_item_materials_on_tender_line_item_id"
@@ -596,6 +600,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_09_193630) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "supplier_id"
+    t.string "material_supply_type"
+    t.index ["material_supply_id", "material_supply_type"], name: "index_tender_specific_material_rates_on_material_supply"
     t.index ["material_supply_id"], name: "index_tender_specific_material_rates_on_material_supply_id"
     t.index ["supplier_id"], name: "index_tender_specific_material_rates_on_supplier_id"
     t.index ["tender_id", "material_supply_id"], name: "idx_tender_material_unique", unique: true
@@ -679,10 +685,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_09_193630) do
   add_foreign_key "contacts", "clients"
   add_foreign_key "fabrication_records", "projects"
   add_foreign_key "line_item_material_breakdowns", "tender_line_items"
-  add_foreign_key "line_item_material_templates", "material_supplies"
   add_foreign_key "line_item_material_templates", "section_category_templates"
   add_foreign_key "line_item_materials", "line_item_material_breakdowns"
-  add_foreign_key "line_item_materials", "material_supplies"
   add_foreign_key "line_item_materials", "tender_line_items"
   add_foreign_key "line_item_rate_build_ups", "tender_line_items"
   add_foreign_key "material_supply_rates", "material_supplies"
@@ -705,7 +709,6 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_09_193630) do
   add_foreign_key "tender_inclusions_exclusions", "tenders"
   add_foreign_key "tender_line_items", "section_categories"
   add_foreign_key "tender_line_items", "tenders"
-  add_foreign_key "tender_specific_material_rates", "material_supplies", on_delete: :cascade
   add_foreign_key "tender_specific_material_rates", "suppliers"
   add_foreign_key "tender_specific_material_rates", "tenders", on_delete: :cascade
   add_foreign_key "tenders", "clients"

@@ -10,6 +10,19 @@ class SectionCategory < ApplicationRecord
     nuts_bolts_and_washer_supply_rates: 'nuts_bolts_and_washer_supply_rates'
   }
 
+  def supply_source_model
+    case supply_rates_type
+    when 'material_supply_rates'
+      MaterialSupply
+    when 'chemical_and_mechanical_anchor_supply_rates'
+      AnchorRate
+    when 'nuts_bolts_and_washer_supply_rates'
+      NutBoltWasherRate
+    else
+      MaterialSupply
+    end
+  end
+
   def self.seed_from_enums
     BoqItem.section_categories.each do |name, display_name|
       sc = find_or_initialize_by(name: name)

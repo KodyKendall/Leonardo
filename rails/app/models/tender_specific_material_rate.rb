@@ -1,15 +1,20 @@
 class TenderSpecificMaterialRate < ApplicationRecord
   # Associations
   belongs_to :tender
-  belongs_to :material_supply, optional: true
+  belongs_to :material_supply, polymorphic: true, optional: true
   belongs_to :supplier, optional: true
-  has_many :line_item_materials, foreign_key: :material_supply_id, primary_key: :material_supply_id
+  
+  def line_item_materials
+    LineItemMaterial.where(material_supply_id: material_supply_id, material_supply_type: material_supply_type)
+                    .joins(:tender_line_item)
+                    .where(tender_line_items: { tender_id: tender_id })
+  end
 
   # Validations
   validates :tender_id, presence: true
   validates :material_supply_id, presence: true, if: :rate_present_or_notes_present?
   validates :rate, numericality: { greater_than_or_equal_to: 0 }, if: :rate_present?
-  validates :tender_id, uniqueness: { scope: :material_supply_id, message: "and material supply combination must be unique" }, unless: :material_supply_id_blank?, if: :material_supply_id_changed?
+  validates :tender_id, uniqueness: { scope: [:material_supply_id, :material_supply_type], message: "and material supply combination must be unique" }, unless: :material_supply_id_blank?, if: -> { material_supply_id_changed? || material_supply_type_changed? }
 
   # Callbacks
   after_update :cascade_rate_updates_if_rate_changed
@@ -37,10 +42,10 @@ class TenderSpecificMaterialRate < ApplicationRecord
     Rails.logger.info("🪲 CASCADE: Starting cascade for TenderSpecificMaterialRate id=#{id}, material_supply_id=#{material_supply_id}, tender_id=#{tender_id}")
 
     # Find all LineItemMaterial records that:
-    # 1. Reference this material_supply_id
+    # 1. Reference this material_supply_id and material_supply_type
     # 2. Belong to TenderLineItems in this tender
     affected_line_item_materials = LineItemMaterial
-      .where(material_supply_id: material_supply_id)
+      .where(material_supply_id: material_supply_id, material_supply_type: material_supply_type)
       .joins(:tender_line_item)
       .where(tender_line_items: { tender_id: tender_id })
       .to_a

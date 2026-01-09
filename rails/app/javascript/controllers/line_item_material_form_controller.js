@@ -18,6 +18,7 @@ export default class extends Controller {
 
     // Extract tender ID from data attribute
     const tenderId = this.element.dataset.tenderId
+    const materialSupplyType = this.element.dataset.materialSupplyType
 
     if (!tenderId) {
       return
@@ -26,7 +27,7 @@ export default class extends Controller {
     try {
       // Fetch autofill data from server
       const response = await fetch(
-        `/tenders/${tenderId}/material_autofill?material_supply_id=${materialSupplyId}`,
+        `/tenders/${tenderId}/material_autofill?material_supply_id=${materialSupplyId}&material_supply_type=${materialSupplyType}`,
         {
           headers: {
             "Accept": "application/json"

@@ -27,13 +27,20 @@ class LineItemMaterialBreakdown < ApplicationRecord
     template = SectionCategoryTemplate.find_by(section_category_id: section_category_id)
     return unless template.present?
 
+    # Clear existing materials when switching categories
+    line_item_materials.destroy_all
+
     tender = tender_line_item.tender
     template.line_item_material_templates.each do |material_template|
       # Find rate from tender specific rates
-      material_rate = tender.tender_specific_material_rates.find_by(material_supply_id: material_template.material_supply_id)&.rate
+      material_rate = tender.tender_specific_material_rates.find_by(
+        material_supply_id: material_template.material_supply_id,
+        material_supply_type: material_template.material_supply_type
+      )&.rate
       
       line_item_materials.create!(
         material_supply_id: material_template.material_supply_id,
+        material_supply_type: material_template.material_supply_type,
         proportion_percentage: material_template.proportion_percentage,
         waste_percentage: material_template.waste_percentage || material_template.material_supply&.waste_percentage,
         rate: material_rate

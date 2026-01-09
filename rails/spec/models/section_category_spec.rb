@@ -22,4 +22,23 @@ RSpec.describe SectionCategory, type: :model do
       nuts_bolts_and_washer_supply_rates: 'nuts_bolts_and_washer_supply_rates'
     ).backed_by_column_of_type(:string) }
   end
+
+  describe '#supply_source_model' do
+    let(:category) { SectionCategory.new }
+
+    it 'returns MaterialSupply for material_supply_rates' do
+      category.supply_rates_type = :material_supply_rates
+      expect(category.supply_source_model).to eq(MaterialSupply)
+    end
+
+    it 'returns AnchorRate for chemical_and_mechanical_anchor_supply_rates' do
+      category.supply_rates_type = :chemical_and_mechanical_anchor_supply_rates
+      expect(category.supply_source_model).to eq(AnchorRate)
+    end
+
+    it 'returns NutBoltWasherRate for nuts_bolts_and_washer_supply_rates' do
+      category.supply_rates_type = :nuts_bolts_and_washer_supply_rates
+      expect(category.supply_source_model).to eq(NutBoltWasherRate)
+    end
+  end
 end

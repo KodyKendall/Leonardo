@@ -1036,6 +1036,40 @@ end
 
 puts "  • Nut, Bolt, and Washer Rates: #{NutBoltWasherRate.count}"
 
+# ===== SECTION CATEGORY TEMPLATES =====
+steel_sections = SectionCategory.find_by(display_name: 'Steel Sections')
+if steel_sections
+  template = SectionCategoryTemplate.find_or_create_by!(section_category: steel_sections)
+  LineItemMaterialTemplate.find_or_create_by!(section_category_template: template, material_supply: MaterialSupply.first) do |lmt|
+    lmt.proportion_percentage = 100.0
+    lmt.waste_percentage = 7.5
+  end
+end
+
+m16_chemical = SectionCategory.find_by(display_name: 'M16 Chemical')
+if m16_chemical
+  template = SectionCategoryTemplate.find_or_create_by!(section_category: m16_chemical)
+  anchor = AnchorRate.find_by(name: 'M16 Chemical Anchor')
+  if anchor
+    LineItemMaterialTemplate.find_or_create_by!(section_category_template: template, material_supply: anchor) do |lmt|
+      lmt.proportion_percentage = 100.0
+      lmt.waste_percentage = 7.5
+    end
+  end
+end
+
+bolts = SectionCategory.find_by(display_name: 'Bolts')
+if bolts
+  template = SectionCategoryTemplate.find_or_create_by!(section_category: bolts)
+  bolt = NutBoltWasherRate.first
+  if bolt
+    LineItemMaterialTemplate.find_or_create_by!(section_category_template: template, material_supply: bolt) do |lmt|
+      lmt.proportion_percentage = 100.0
+      lmt.waste_percentage = 7.5
+    end
+  end
+end
+
 puts "✅ Database seeded successfully!"
 
 puts ""
