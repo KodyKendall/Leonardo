@@ -72,6 +72,6 @@ class SectionCategoriesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def section_category_params
-      params.require(:section_category).permit(:name, :display_name)
+      params.require(:section_category).permit(:name, :display_name, :supply_rates_type)
     end
 end
