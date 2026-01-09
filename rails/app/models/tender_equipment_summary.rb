@@ -8,6 +8,8 @@ class TenderEquipmentSummary < ApplicationRecord
   after_update_commit :broadcast_update
   after_update_commit :sync_access_pg_items
 
+  ACCESS_EQUIPMENT_ROUNDING_FACTOR = 10
+
   # Calculate equipment costs and rate per tonne
   def calculate!
     # equipment_subtotal = sum of all tender_equipment_selections.total_cost
@@ -29,7 +31,7 @@ class TenderEquipmentSummary < ApplicationRecord
     save!
   end
 
-  # Calculate cherry picker rate per tonne using CEILING to nearest R20
+  # Calculate cherry picker rate per tonne using CEILING to nearest factor (standardized to 10)
   # Returns 0 if total_equipment_cost is not available or is zero
   def cherry_picker_rate_per_tonne
     return 0 if total_equipment_cost.blank? || total_equipment_cost.zero?
@@ -39,7 +41,7 @@ class TenderEquipmentSummary < ApplicationRecord
     return 0 if tonnage.zero?
     
     rate = total_equipment_cost / tonnage
-    (rate / 20.0).ceil * 20
+    (rate / ACCESS_EQUIPMENT_ROUNDING_FACTOR.to_f).ceil * ACCESS_EQUIPMENT_ROUNDING_FACTOR
   end
 
   # Broadcast update to equipment_cost_summary turbo frame

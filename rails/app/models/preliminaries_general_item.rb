@@ -3,8 +3,8 @@ class PreliminariesGeneralItem < ApplicationRecord
   belongs_to :preliminaries_general_item_template, optional: true
 
   enum :category, {
-    fixed_based: 'fixed_based',
-    duration_based: 'duration_based',
+    fixed: 'fixed',
+    time_based: 'time_based',
     percentage_based: 'percentage_based'
   }
 
@@ -70,18 +70,35 @@ class PreliminariesGeneralItem < ApplicationRecord
   end
 
   def broadcast_row_update
-    broadcast_replace_to(
-      "tender_#{tender.id}_pg_items",
-      target: self,
-      partial: "preliminaries_general_items/preliminaries_general_item",
-      locals: { preliminaries_general_item: self, tender: tender }
-    )
+    if saved_change_to_category?
+      broadcast_replace_to(
+        "tender_#{tender.id}_pg_items",
+        target: "preliminaries_general_items_container",
+        partial: "preliminaries_general_items/grouped_items",
+        locals: { 
+          tender: tender, 
+          grouped_items: tender.preliminaries_general_items.order(:sort_order, :created_at).group_by(&:category),
+          templates: PreliminariesGeneralItemTemplate.order(:description)
+        }
+      )
+    else
+      broadcast_replace_to(
+        "tender_#{tender.id}_pg_items",
+        target: self,
+        partial: "preliminaries_general_items/preliminaries_general_item",
+        locals: { 
+          preliminaries_general_item: self, 
+          tender: tender,
+          templates: PreliminariesGeneralItemTemplate.order(:description)
+        }
+      )
 
-    broadcast_replace_to(
-      "tender_#{tender.id}_pg_items",
-      target: "pg_totals",
-      partial: "preliminaries_general_items/totals",
-      locals: { tender: tender }
-    )
+      broadcast_replace_to(
+        "tender_#{tender.id}_pg_items",
+        target: "pg_totals",
+        partial: "preliminaries_general_items/totals",
+        locals: { tender: tender }
+      )
+    end
   end
 end

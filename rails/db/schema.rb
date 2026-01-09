@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_06_174731) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_08_183339) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -298,35 +298,36 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_06_174731) do
 
   create_table "line_item_rate_build_ups", force: :cascade do |t|
     t.bigint "tender_line_item_id", null: false
-    t.decimal "material_supply_rate", precision: 12, scale: 2, default: "0.0"
-    t.decimal "fabrication_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "material_supply_rate", precision: 15, scale: 2, default: "0.0"
+    t.decimal "fabrication_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "fabrication_included", precision: 5, scale: 2, default: "1.0"
-    t.decimal "overheads_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "overheads_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "overheads_included", precision: 5, scale: 2, default: "1.0"
-    t.decimal "shop_priming_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "shop_priming_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "shop_priming_included", precision: 5, scale: 2, default: "0.0"
-    t.decimal "onsite_painting_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "onsite_painting_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "onsite_painting_included", precision: 5, scale: 2, default: "0.0"
-    t.decimal "delivery_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "delivery_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "delivery_included", precision: 5, scale: 2, default: "1.0"
-    t.decimal "bolts_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "bolts_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "bolts_included", precision: 5, scale: 2, default: "1.0"
-    t.decimal "erection_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "erection_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "erection_included", precision: 5, scale: 2, default: "1.0"
-    t.decimal "crainage_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "crainage_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "crainage_included", precision: 5, scale: 2, default: "0.0"
-    t.decimal "cherry_picker_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "cherry_picker_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "cherry_picker_included", precision: 5, scale: 2, default: "1.0"
-    t.decimal "galvanizing_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "galvanizing_rate", precision: 15, scale: 2, default: "0.0"
     t.decimal "galvanizing_included", precision: 5, scale: 2, default: "0.0"
-    t.decimal "subtotal", precision: 12, scale: 2, default: "0.0"
-    t.decimal "margin_amount", precision: 12, scale: 2, default: "0.0"
-    t.decimal "total_before_rounding", precision: 12, scale: 2, default: "0.0"
-    t.decimal "rounded_rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "subtotal", precision: 15, scale: 2, default: "0.0"
+    t.decimal "margin_amount", precision: 15, scale: 2, default: "0.0"
+    t.decimal "total_before_rounding", precision: 15, scale: 2, default: "0.0"
+    t.decimal "rounded_rate", precision: 15, scale: 2, default: "0.0"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "margin_percentage", precision: 5, scale: 2, default: "0.0", null: false
     t.decimal "material_supply_included", precision: 5, scale: 2
+    t.integer "rounding_interval", default: 50
     t.index ["tender_line_item_id"], name: "index_line_item_rate_build_ups_on_tender_line_item_id"
   end
 
@@ -466,6 +467,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_06_174731) do
     t.bigint "section_category_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "name"
     t.index ["section_category_id"], name: "index_section_category_templates_on_section_category_id"
   end
 
@@ -513,11 +515,11 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_06_174731) do
 
   create_table "tender_equipment_summaries", force: :cascade do |t|
     t.bigint "tender_id", null: false
-    t.decimal "equipment_subtotal", precision: 14, scale: 2, default: "0.0", null: false
+    t.decimal "equipment_subtotal", precision: 15, scale: 2, default: "0.0", null: false
     t.decimal "mobilization_fee", precision: 10, scale: 2, default: "0.0", null: false
-    t.decimal "total_equipment_cost", precision: 14, scale: 2, default: "0.0", null: false
-    t.decimal "rate_per_tonne_raw", precision: 12, scale: 4
-    t.decimal "rate_per_tonne_rounded", precision: 12, scale: 2
+    t.decimal "total_equipment_cost", precision: 15, scale: 2, default: "0.0", null: false
+    t.decimal "rate_per_tonne_raw", precision: 15, scale: 4
+    t.decimal "rate_per_tonne_rounded", precision: 15, scale: 2
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "establishment_cost", default: "15000.0"
@@ -545,7 +547,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_06_174731) do
   create_table "tender_line_items", force: :cascade do |t|
     t.bigint "tender_id", null: false
     t.decimal "quantity", precision: 12, scale: 2, default: "0.0"
-    t.decimal "rate", precision: 12, scale: 2, default: "0.0"
+    t.decimal "rate", precision: 15, scale: 2, default: "0.0"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "page_number"
@@ -581,7 +583,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_06_174731) do
     t.string "e_number", null: false
     t.string "status", default: "draft", null: false
     t.string "client_name"
-    t.decimal "tender_value", precision: 12, scale: 2
+    t.decimal "tender_value", precision: 15, scale: 2
     t.string "project_type", default: "commercial"
     t.text "notes"
     t.bigint "awarded_project_id"
@@ -591,9 +593,11 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_06_174731) do
     t.string "tender_name"
     t.bigint "client_id"
     t.date "submission_deadline"
-    t.decimal "grand_total", precision: 12, scale: 2, default: "0.0"
+    t.decimal "grand_total", precision: 15, scale: 2, default: "0.0"
     t.decimal "total_tonnage", precision: 12, scale: 3, default: "0.0"
     t.bigint "contact_id"
+    t.string "p_and_g_display_mode", default: "detailed"
+    t.string "shop_drawings_display_mode", default: "lump_sum"
     t.index ["awarded_project_id"], name: "index_tenders_on_awarded_project_id"
     t.index ["client_id"], name: "index_tenders_on_client_id"
     t.index ["contact_id"], name: "index_tenders_on_contact_id"

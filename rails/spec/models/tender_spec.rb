@@ -1,6 +1,13 @@
 require 'rails_helper'
 
 RSpec.describe Tender, type: :model do
+  describe 'validations' do
+    it { should validate_presence_of(:p_and_g_display_mode) }
+    it { should validate_inclusion_of(:p_and_g_display_mode).in_array(%w(detailed rolled_up)) }
+    it { should validate_presence_of(:shop_drawings_display_mode) }
+    it { should validate_inclusion_of(:shop_drawings_display_mode).in_array(%w(lump_sum tonnage_rate)) }
+  end
+
   describe '#recalculate_grand_total!' do
     let(:tender) { create(:tender) }
 
@@ -140,8 +147,8 @@ RSpec.describe Tender, type: :model do
     describe "P&G sync cascade" do
       let!(:crane_breakdown) { create(:on_site_mobile_crane_breakdown, tender: tender) }
       let!(:summary) { create(:tender_equipment_summary, tender: tender) }
-      let!(:crane_pg_item) { create(:preliminaries_general_item, tender: tender, is_crane: true, category: 'fixed_based', description: 'Crane') }
-      let!(:access_pg_item) { create(:preliminaries_general_item, tender: tender, is_access_equipment: true, category: 'fixed_based', description: 'Access') }
+      let!(:crane_pg_item) { create(:preliminaries_general_item, tender: tender, is_crane: true, category: 'fixed', description: 'Crane') }
+      let!(:access_pg_item) { create(:preliminaries_general_item, tender: tender, is_access_equipment: true, category: 'fixed', description: 'Access') }
 
       it "triggers a rate update on P&G items when tonnage changes" do
         # Setup initial stubs

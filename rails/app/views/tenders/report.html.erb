@@ -7,6 +7,21 @@
       <i class="fa-solid fa-arrow-left"></i> Back to Tender
     <% end %>
     <h1 class="text-xl font-bold text-gray-800">Tender Report Preview: <%= @tender.e_number %></h1>
+    
+    <!-- Report Options Form -->
+    <div class="flex items-center gap-4 border-l border-gray-200 pl-4 ml-2">
+      <%= form_with model: @tender, url: tender_path(@tender), method: :patch, data: { turbo_frame: "report_preview" }, class: "flex items-center gap-3" do |f| %>
+        <%= hidden_field_tag :source, 'report' %>
+        <div class="flex items-center gap-2">
+          <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">P&G Display:</label>
+          <%= f.select :p_and_g_display_mode, Tender::PG_DISPLAY_MODES, {}, { onchange: "this.form.requestSubmit()", class: "select select-bordered select-xs" } %>
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="text-xs font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">Shop Drawings:</label>
+          <%= f.select :shop_drawings_display_mode, Tender::SHOP_DRAWINGS_DISPLAY_MODES, {}, { onchange: "this.form.requestSubmit()", class: "select select-bordered select-xs" } %>
+        </div>
+      <% end %>
+    </div>
   </div>
   <div class="flex gap-2">
     <button onclick="window.print()" class="rounded-md px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium inline-flex items-center gap-2">
@@ -18,23 +33,24 @@
   </div>
 </div>
 
-<%
-  # Calculate line total helper
-  def calculate_line_total(item)
-    rate = item.line_item_rate_build_up&.rounded_rate || item.rate || 0
-    item.quantity * rate
-  end
+<%= turbo_frame_tag "report_preview" do %>
+  <%
+    # Calculate line total helper
+    def calculate_line_total(item)
+      rate = item.line_item_rate_build_up&.rounded_rate || item.rate || 0
+      item.quantity * rate
+    end
 
-  # Calculate totals
-  p_and_g_total = @p_and_g_items.sum { |item| item.quantity * item.rate }
-  line_items_subtotal = @line_items.reject(&:is_heading).sum { |item| calculate_line_total(item) }
-  grand_total = line_items_subtotal + @shop_drawings_total + p_and_g_total
+    # Calculate totals
+    p_and_g_total = @p_and_g_items.sum { |item| item.quantity * item.rate }
+    line_items_subtotal = @line_items.reject(&:is_heading).sum { |item| calculate_line_total(item) }
+    grand_total = line_items_subtotal + @shop_drawings_total + p_and_g_total
 
-  # Expiration date
-  expiration_date = @tender.submission_deadline || (@tender.created_at + 30.days)
-%>
+    # Expiration date
+    expiration_date = @tender.submission_deadline || (@tender.created_at + 30.days)
+  %>
 
-<div class="page w-[7.7in] mx-auto bg-white p-0 shadow-lg print:shadow-none">
+  <div class="page w-[7.7in] mx-auto bg-white p-0 shadow-lg print:shadow-none">
   <table class="w-full border-collapse text-[8pt]">
     <thead>
       <!-- Main Header (Repeats on every page in PDF) -->
@@ -76,6 +92,69 @@
     </thead>
 
     <tbody>
+      <!-- 1. PRELIMINARIES & GENERALS (P&Gs) -->
+      <% if @p_and_g_items.any? %>
+        <tr>
+          <td colspan="7" class="bg-blue-100 px-2 py-1 font-bold text-[9pt] text-rsb-blue uppercase border-l-4 border-l-rsb-blue">PRELIMINARIES & GENERALS</td>
+        </tr>
+        
+        <% if @tender.p_and_g_display_mode == 'rolled_up' %>
+          <tr class="even:bg-gray-50">
+            <td class="border border-gray-200 px-1.5 py-1 text-center">-</td>
+            <td class="border border-gray-200 px-1.5 py-1 text-center">P&G</td>
+            <td class="border border-gray-200 px-1.5 py-1" colspan="4">Preliminaries & Generals (Rolled-up)</td>
+            <td class="border border-gray-200 px-1.5 py-1 text-right font-bold"><span class="currency"><%= number_with_delimiter(p_and_g_total.round(2), delimiter: ",") %></span></td>
+          </tr>
+        <% else %>
+          <% @p_and_g_items.each do |pg_item| %>
+            <tr class="even:bg-gray-50">
+              <td class="border border-gray-200 px-1.5 py-1 text-center">-</td>
+              <td class="border border-gray-200 px-1.5 py-1 text-center">P&G</td>
+              <td class="border border-gray-200 px-1.5 py-1"><%= pg_item.description %></td>
+              <td class="border border-gray-200 px-1.5 py-1 text-center"><%= pg_item.category&.humanize %></td>
+              <td class="border border-gray-200 px-1.5 py-1 text-right"><%= number_with_precision(pg_item.quantity, precision: 2, delimiter: ",") %></td>
+              <td class="border border-gray-200 px-1.5 py-1 text-right"><span class="currency"><%= number_with_delimiter(pg_item.rate.round(2), delimiter: ",") %></span></td>
+              <td class="border border-gray-200 px-1.5 py-1 text-right"><span class="currency"><%= number_with_delimiter((pg_item.quantity * pg_item.rate).round(2), delimiter: ",") %></span></td>
+            </tr>
+          <% end %>
+          <tr class="bg-gray-100">
+            <td colspan="5" class="border border-gray-300 px-1.5 py-1.5 text-right font-bold border-t-2 border-t-gray-500">P&G Sub Total:</td>
+            <td class="border border-gray-300 px-1.5 py-1.5 border-t-2 border-t-gray-500"></td>
+            <td class="border border-gray-300 px-1.5 py-1.5 text-right font-bold border-t-2 border-t-gray-500"><span class="currency"><%= number_with_delimiter(p_and_g_total.round(2), delimiter: ",") %></span></td>
+          </tr>
+        <% end %>
+      <% end %>
+
+      <!-- 2. SHOP DRAWINGS -->
+      <% if @shop_drawings_total > 0 %>
+        <tr class="bg-blue-50">
+          <td class="border border-gray-200 px-1.5 py-1.5 text-center"></td>
+          <td class="border border-gray-200 px-1.5 py-1.5 text-center"></td>
+          <td class="border border-gray-200 px-1.5 py-1.5 font-bold text-rsb-blue" colspan="5">SHOP DRAWINGS</td>
+        </tr>
+        <tr>
+          <td class="border border-gray-200 px-1.5 py-1 text-center">-</td>
+          <td class="border border-gray-200 px-1.5 py-1 text-center">SD</td>
+          <td class="border border-gray-200 px-1.5 py-1">Shop Drawings & 3D Modeling</td>
+          
+          <% if @tender.shop_drawings_display_mode == 'tonnage_rate' %>
+            <% 
+              sd_tonnes = @tender.project_rate_buildup&.shop_drawings_tonnes_for_calculation || 0
+              sd_rate = @tender.project_rate_buildup&.shop_drawings_rate || 0
+            %>
+            <td class="border border-gray-200 px-1.5 py-1 text-center">t</td>
+            <td class="border border-gray-200 px-1.5 py-1 text-right"><%= number_with_precision(sd_tonnes, precision: 2, delimiter: ",") %></td>
+            <td class="border border-gray-200 px-1.5 py-1 text-right"><span class="currency"><%= number_with_delimiter(sd_rate.round(2), delimiter: ",") %></span></td>
+          <% else %>
+            <td class="border border-gray-200 px-1.5 py-1 text-center">Sum</td>
+            <td class="border border-gray-200 px-1.5 py-1 text-right">1.00</td>
+            <td class="border border-gray-200 px-1.5 py-1 text-right"><span class="currency"><%= number_with_delimiter(@shop_drawings_total.round(2), delimiter: ",") %></span></td>
+          <% end %>
+          <td class="border border-gray-200 px-1.5 py-1 text-right"><span class="currency"><%= number_with_delimiter(@shop_drawings_total.round(2), delimiter: ",") %></span></td>
+        </tr>
+      <% end %>
+
+      <!-- 3. LINE ITEMS -->
       <% @line_items.each do |item| %>
         <% if item.is_heading %>
           <tr class="bg-blue-50">
@@ -113,36 +192,6 @@
         <td class="border border-gray-300 px-1.5 py-1.5 text-right font-bold border-t-2 border-t-gray-500"><span class="currency"><%= number_with_delimiter(line_items_subtotal.round(2), delimiter: ",") %></span></td>
       </tr>
 
-      <% if @shop_drawings_total > 0 %>
-      <tr>
-        <td colspan="5" class="border border-gray-200 px-1.5 py-1 text-right">Shop Drawings:</td>
-        <td class="border border-gray-200 px-1.5 py-1"></td>
-        <td class="border border-gray-200 px-1.5 py-1 text-right"><span class="currency"><%= number_with_delimiter(@shop_drawings_total.round(2), delimiter: ",") %></span></td>
-      </tr>
-      <% end %>
-
-      <% if @p_and_g_items.any? %>
-      <tr>
-        <td colspan="7" class="bg-blue-100 px-2 py-1 font-bold text-[9pt] text-rsb-blue uppercase border-l-4 border-l-rsb-blue">PRELIMINARIES & GENERALS</td>
-      </tr>
-      <% @p_and_g_items.each do |pg_item| %>
-      <tr class="even:bg-gray-50">
-        <td class="border border-gray-200 px-1.5 py-1 text-center">-</td>
-        <td class="border border-gray-200 px-1.5 py-1 text-center">P&G</td>
-        <td class="border border-gray-200 px-1.5 py-1"><%= pg_item.description %></td>
-        <td class="border border-gray-200 px-1.5 py-1 text-center"><%= pg_item.category&.humanize %></td>
-        <td class="border border-gray-200 px-1.5 py-1 text-right"><%= number_with_precision(pg_item.quantity, precision: 2, delimiter: ",") %></td>
-        <td class="border border-gray-200 px-1.5 py-1 text-right"><span class="currency"><%= number_with_delimiter(pg_item.rate.round(2), delimiter: ",") %></span></td>
-        <td class="border border-gray-200 px-1.5 py-1 text-right"><span class="currency"><%= number_with_delimiter((pg_item.quantity * pg_item.rate).round(2), delimiter: ",") %></span></td>
-      </tr>
-      <% end %>
-      <tr class="bg-gray-100">
-        <td colspan="5" class="border border-gray-300 px-1.5 py-1.5 text-right font-bold border-t-2 border-t-gray-500">P&G Sub Total:</td>
-        <td class="border border-gray-300 px-1.5 py-1.5 border-t-2 border-t-gray-500"></td>
-        <td class="border border-gray-300 px-1.5 py-1.5 text-right font-bold border-t-2 border-t-gray-500"><span class="currency"><%= number_with_delimiter(p_and_g_total.round(2), delimiter: ",") %></span></td>
-      </tr>
-      <% end %>
-
       <!-- Grand Total -->
       <tr class="bg-rsb-blue text-white">
         <td colspan="5" class="px-1.5 py-2 text-right font-bold text-[10pt]">Sub Total :</td>
@@ -168,3 +217,4 @@
     </tfoot>
   </table>
 </div>
+<% end %>

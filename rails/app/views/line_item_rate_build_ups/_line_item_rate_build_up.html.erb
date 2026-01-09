@@ -210,7 +210,15 @@
               </tr>
               <tr class="bg-green-50">
                 <td colspan="3" class="text-right font-bold text-lg">
-                  Final Rate:
+                  <div class="flex items-center justify-end gap-3">
+                    <div class="flex items-center gap-1.5 font-normal text-sm text-gray-500">
+                      <span>Round up to nearest:</span>
+                      <%= form.select :rounding_interval, [10, 20, 50, 100], {}, 
+                          class: "select select-bordered select-xs font-semibold text-gray-700",
+                          disabled: line_item_rate_build_up.tender_line_item&.tender&.status == 'Submitted' %>
+                    </div>
+                    <span>Final Rate:</span>
+                  </div>
                   <span class="hidden text-warning" data-line-item-rate-build-up-target="totalDirtyIndicator">*</span>
                 </td>
                 <td class="text-right font-bold text-lg text-green-600" data-line-item-rate-build-up-target="roundedRate">

@@ -5,6 +5,7 @@ class LineItemRateBuildUp < ApplicationRecord
   accepts_nested_attributes_for :rate_buildup_custom_items, allow_destroy: true
 
   validates :margin_percentage, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }
+  validates :rounding_interval, inclusion: { in: [10, 20, 50, 100] }
   
   # All inclusion fields are now decimal multipliers (0.01 to 5.0)
   # Validate only if value is present and not zero (zero gets normalized to 1.0)
@@ -90,8 +91,9 @@ class LineItemRateBuildUp < ApplicationRecord
     # Calculate total before rounding: subtotal * (1 + margin_percentage / 100)
     self.total_before_rounding = subtotal * (1 + margin_percentage / 100.0)
 
-    # Round UP to nearest R50
-    self.rounded_rate = (total_before_rounding / 50.0).ceil * 50
+    # Round UP to nearest interval (10, 20, 50, 100)
+    interval = (rounding_interval || 50).to_f
+    self.rounded_rate = (total_before_rounding / interval).ceil * interval
   end
 
   def sync_rate_to_tender_line_item

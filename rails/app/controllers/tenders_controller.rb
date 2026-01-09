@@ -44,8 +44,10 @@ class TendersController < ApplicationController
           print_background: true
         )
         pdf = grover.to_pdf
+        safe_name = @tender.tender_name.gsub(/[\/\\?%*:|"<>]/, '-')
+        filename = "#{@tender.e_number} – #{safe_name}.pdf"
         send_data pdf,
-                  filename: "tender_#{@tender.e_number}.pdf",
+                  filename: filename,
                   type: 'application/pdf',
                   disposition: 'attachment'
       end
@@ -117,7 +119,24 @@ class TendersController < ApplicationController
   def update
     respond_to do |format|
       if @tender.update(tender_params)
-        format.html { redirect_to @tender, notice: "Tender was successfully updated.", status: :see_other }
+        format.html do
+          if params[:source] == 'report'
+            @line_items = @tender.tender_line_items.includes(:line_item_rate_build_up).ordered
+            @p_and_g_items = @tender.preliminaries_general_items
+            @shop_drawings_total = @tender.project_rate_buildup&.shop_drawings_total || 0
+            render :report, layout: false
+          else
+            redirect_to @tender, notice: "Tender was successfully updated.", status: :see_other
+          end
+        end
+        format.turbo_stream do
+          if params[:source] == 'report'
+            @line_items = @tender.tender_line_items.includes(:line_item_rate_build_up).ordered
+            @p_and_g_items = @tender.preliminaries_general_items
+            @shop_drawings_total = @tender.project_rate_buildup&.shop_drawings_total || 0
+            render :report, formats: [:html], layout: false
+          end
+        end
         format.json { render :show, status: :ok, location: @tender }
       else
         @clients = Client.all
@@ -240,7 +259,7 @@ class TendersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def tender_params
-      params.require(:tender).permit(:tender_name, :status, :client_id, :contact_id, :submission_deadline, :tender_value, :project_type, :notes, :awarded_project_id, :qob_file)
+      params.require(:tender).permit(:tender_name, :status, :client_id, :contact_id, :submission_deadline, :tender_value, :project_type, :notes, :awarded_project_id, :qob_file, :p_and_g_display_mode, :shop_drawings_display_mode)
     end
 
     def inclusions_exclusions_params

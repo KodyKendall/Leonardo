@@ -47,8 +47,78 @@ RSpec.describe "/tenders", type: :request do
       get report_tender_url(tender, format: :pdf)
       expect(response).to be_successful
       expect(response.content_type).to eq('application/pdf')
-      expect(response.headers['Content-Disposition']).to include("filename=\"tender_#{tender.e_number}.pdf\"")
+      # Rails encodes the filename in Content-Disposition header according to RFC 6266
+      # It provides both a 'filename' (often with substitutions for non-ASCII) and 'filename*' (properly encoded)
+      content_disposition = response.headers['Content-Disposition']
+      expect(content_disposition).to include("filename*=")
+      expect(content_disposition).to include("E2026001")
+      expect(content_disposition).to include("Test%20Tender")
+      # %E2%80%93 is the URL-encoded en dash
+      expect(content_disposition).to include("%E2%80%93")
       expect(response.body).not_to be_empty
+    end
+
+    context "report display customization" do
+      let!(:pg_item) { create(:preliminaries_general_item, tender: tender, description: "Detailed P&G Item", quantity: 1, rate: 1000) }
+      
+      before do
+        tender.reload
+        tender.project_rate_buildup.update!(shop_drawings_rate: 500, shop_drawings_tonnes: 10)
+        tender.recalculate_grand_total!
+      end
+
+      it "renders P&G breakdown when mode is detailed" do
+        tender.update!(p_and_g_display_mode: 'detailed')
+        get report_tender_url(tender)
+        expect(response.body).to include("Detailed P&amp;G Item")
+        expect(response.body).not_to include("Preliminaries & Generals (Rolled-up)")
+      end
+
+      it "renders single P&G row when mode is rolled_up" do
+        tender.update!(p_and_g_display_mode: 'rolled_up')
+        get report_tender_url(tender)
+        expect(response.body).to include("Preliminaries & Generals (Rolled-up)")
+        expect(response.body).not_to include("Detailed P&amp;G Item")
+      end
+
+      it "renders Shop Drawings tonnage/rate when mode is tonnage_rate" do
+        tender.update!(shop_drawings_display_mode: 'tonnage_rate')
+        get report_tender_url(tender)
+        expect(response.body).to include("10.00")
+        expect(response.body).to include("500.0")
+      end
+
+      it "renders Shop Drawings as lump sum when mode is lump_sum" do
+        tender.update!(shop_drawings_display_mode: 'lump_sum')
+        get report_tender_url(tender)
+        expect(response.body).to include("Sum")
+        expect(response.body).to include("1.00")
+        expect(response.body).to include("5,000.0") # 10 * 500
+      end
+    end
+
+    context "updating display modes from report" do
+      let!(:pg_item) { create(:preliminaries_general_item, tender: tender, description: "Test P&G", quantity: 1, rate: 100) }
+      
+      it "successfully updates and renders report content for turbo_stream" do
+        patch tender_url(tender), params: { 
+          source: 'report', 
+          tender: { p_and_g_display_mode: 'rolled_up' } 
+        }, as: :turbo_stream
+        
+        expect(response).to be_successful
+        expect(response.body).to include("Preliminaries & Generals (Rolled-up)")
+      end
+
+      it "successfully updates and renders report content for html" do
+        patch tender_url(tender), params: { 
+          source: 'report', 
+          tender: { p_and_g_display_mode: 'rolled_up' } 
+        }
+        
+        expect(response).to be_successful
+        expect(response.body).to include("Preliminaries & Generals (Rolled-up)")
+      end
     end
   end
 

@@ -42,13 +42,13 @@
             Cost Per Tonne
           </p>
           <p class="text-2xl font-bold text-purple-900">
-            <% if tender_equipment_summary.rate_per_tonne_raw.present? %>
-              <%= number_to_currency(tender_equipment_summary.rate_per_tonne_raw, unit: "R ", precision: 2) %>
+            <% if tender_equipment_summary.cherry_picker_rate_per_tonne > 0 %>
+              <%= number_to_currency(tender_equipment_summary.cherry_picker_rate_per_tonne, unit: "R ", precision: 2) %>
             <% else %>
               -
             <% end %>
           </p>
-          <p class="text-xs text-gray-500 mt-2">Raw cost per tonne</p>
+          <p class="text-xs text-gray-500 mt-2">Standardized cost per tonne (rounded to 10)</p>
         </div>
       </div>
 

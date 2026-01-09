@@ -5,7 +5,7 @@ RSpec.describe "/p_and_g_templates", type: :request do
   let(:user) { create(:user) }
 
   let(:valid_attributes) {
-    { category: 'fixed_based', description: 'Test Template', quantity: 1, rate: 100.0 }
+    { category: 'fixed', description: 'Test Template', quantity: 1, rate: 100.0 }
   }
 
   let(:invalid_attributes) {
