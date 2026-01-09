@@ -1,0 +1,33 @@
+<%= form_with(model: anchor_rate, class: "contents") do |form| %>
+  <% if anchor_rate.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(anchor_rate.errors.count, "error") %> prohibited this anchor rate from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% anchor_rate.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :name, class: "label font-bold" %>
+    <%= form.text_field :name, class: ["input input-bordered w-full mt-2", {"input-error": anchor_rate.errors[:name].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :waste_percentage, "Waste %", class: "label font-bold" %>
+    <%= form.number_field :waste_percentage, step: 0.1, class: ["input input-bordered w-full mt-2", {"input-error": anchor_rate.errors[:waste_percentage].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :material_cost, "Material Cost (R)", class: "label font-bold" %>
+    <%= form.number_field :material_cost, step: 0.01, class: ["input input-bordered w-full mt-2", {"input-error": anchor_rate.errors[:material_cost].any?}] %>
+  </div>
+
+  <div class="flex gap-2">
+    <%= form.submit class: "btn btn-primary" %>
+    <%= link_to "Cancel", anchor_rates_path, class: "btn btn-ghost" %>
+  </div>
+<% end %>

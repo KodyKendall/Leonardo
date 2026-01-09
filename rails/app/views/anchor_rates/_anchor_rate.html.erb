@@ -1,0 +1,23 @@
+<%= turbo_frame_tag dom_id(anchor_rate), class: "contents" do %>
+  <tr class="hover:bg-gray-50 border-b">
+    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+      <%= anchor_rate.name %>
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+      <%= number_with_precision(anchor_rate.waste_percentage, precision: 1) %>%
+    </td>
+    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">
+      R<%= number_with_precision(anchor_rate.material_cost, precision: 2, delimiter: ',') %>
+    </td>
+    <% if policy(anchor_rate).edit? %>
+      <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2 flex justify-center items-center">
+        <%= link_to "Edit", edit_anchor_rate_path(anchor_rate), class: "text-blue-600 hover:text-blue-800 font-medium" %>
+        <% if policy(anchor_rate).destroy? %>
+          <%= button_to anchor_rate, method: :delete, class: "text-red-600 hover:text-red-800 font-medium", data: { turbo_confirm: "Are you sure?" } do %>
+            <i class="fas fa-trash"></i>
+          <% end %>
+        <% end %>
+      </td>
+    <% end %>
+  </tr>
+<% end %>

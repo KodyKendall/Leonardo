@@ -4,6 +4,9 @@
 # development, test). The code here should be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 #
 
+# ===== SECTION CATEGORIES =====
+SectionCategory.seed_from_enums
+
 # ===== USERS =====
 admin_user = User.find_or_create_by!(email: 'kody@llamapress.ai') do |user|
   user.name = 'Kody Admin'
@@ -373,11 +376,11 @@ line_item_1 = tender3.tender_line_items.find_or_create_by!(
   unit_of_measure: 'tonne',
   quantity: 45.5,
   rate: 15500.00,
-  section_category: 'Steel Sections',
+  section_category: SectionCategory.find_by(display_name: 'Steel Sections'),
   page_number: '1',
   notes: 'Supplied and erected on site'
 ) do |li|
-  li.section_category = 'Steel Sections'
+  li.section_category = SectionCategory.find_by(display_name: 'Steel Sections')
 end
 
 line_item_2 = tender3.tender_line_items.find_or_create_by!(
@@ -386,11 +389,11 @@ line_item_2 = tender3.tender_line_items.find_or_create_by!(
   unit_of_measure: 'tonne',
   quantity: 28.3,
   rate: 16800.00,
-  section_category: 'Steel Sections',
+  section_category: SectionCategory.find_by(display_name: 'Steel Sections'),
   page_number: '1',
   notes: 'Supplied and erected on site'
 ) do |li|
-  li.section_category = 'Steel Sections'
+  li.section_category = SectionCategory.find_by(display_name: 'Steel Sections')
 end
 
 line_item_3 = tender3.tender_line_items.find_or_create_by!(
@@ -399,11 +402,11 @@ line_item_3 = tender3.tender_line_items.find_or_create_by!(
   unit_of_measure: 'kg',
   quantity: 500,
   rate: 85.00,
-  section_category: 'Bolts',
+  section_category: SectionCategory.find_by(display_name: 'Bolts'),
   page_number: '2',
   notes: 'M16, M20, M24 HD Bolts'
 ) do |li|
-  li.section_category = 'Bolts'
+  li.section_category = SectionCategory.find_by(display_name: 'Bolts')
 end
 
 # ===== LINE ITEM RATE BUILD-UPS =====
@@ -1000,8 +1003,22 @@ pg_templates.each_with_index do |attrs, index|
 end
 
 puts "  • P&G Templates: #{PreliminariesGeneralItemTemplate.count}"
-# ===== SECTION CATEGORIES =====
-SectionCategory.seed_from_enums
+# ===== ANCHOR RATES =====
+anchor_rates_data = [
+  { name: 'M8 Chemical Anchor', material_cost: 60.00 },
+  { name: 'M10 Chemical Anchor', material_cost: 75.00 },
+  { name: 'M12 Chemical Anchor', material_cost: 90.00 },
+  { name: 'M16 Chemical Anchor', material_cost: 105.00 }
+]
+
+anchor_rates_data.each do |attrs|
+  AnchorRate.find_or_create_by!(name: attrs[:name]) do |ar|
+    ar.waste_percentage = 7.5
+    ar.material_cost = attrs[:material_cost]
+  end
+end
+
+puts "  • Anchor Rates: #{AnchorRate.count}"
 
 puts "✅ Database seeded successfully!"
 

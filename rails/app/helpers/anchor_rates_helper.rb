@@ -1,0 +1,2 @@
+module AnchorRatesHelper
+end

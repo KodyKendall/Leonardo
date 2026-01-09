@@ -1,5 +1,6 @@
 # LEONARDO WAS HERE
 Rails.application.routes.draw do
+  resources :anchor_rates
   resources :line_item_material_templates
   resources :section_category_templates do
     member do
