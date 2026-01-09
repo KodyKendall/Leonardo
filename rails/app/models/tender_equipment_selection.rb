@@ -4,7 +4,7 @@ class TenderEquipmentSelection < ApplicationRecord
 
   validates :equipment_type_id, :units_required, :period_months, presence: true
   validates :units_required, :period_months, numericality: { greater_than: 0 }
-  validates :calculated_monthly_cost, :total_cost, presence: true, numericality: true
+  validates :base_rate, :damage_waiver_pct, :diesel_allowance, :calculated_monthly_cost, :total_cost, presence: true, numericality: true
 
   attr_accessor :skip_broadcast
   
@@ -46,16 +46,16 @@ class TenderEquipmentSelection < ApplicationRecord
     return if equipment_type_id.blank?
 
     # Load equipment_type to get rates
-    equipment = EquipmentType.find(equipment_type_id)
+    equipment = equipment_type
 
-    # Calculate monthly cost: (base_rate * (1 + damage_waiver_pct)) + diesel_allowance_monthly
-    # OR use override if provided
-    if monthly_cost_override.present?
-      self.calculated_monthly_cost = monthly_cost_override
-    else
-      damage_multiplier = 1 + (equipment.damage_waiver_pct || 0.06)
-      self.calculated_monthly_cost = (equipment.base_rate_monthly * damage_multiplier) + equipment.diesel_allowance_monthly
-    end
+    # Set defaults from EquipmentType if components are nil
+    self.base_rate ||= equipment.base_rate_monthly
+    self.damage_waiver_pct ||= equipment.damage_waiver_pct
+    self.diesel_allowance ||= equipment.diesel_allowance_monthly
+
+    # Calculate monthly cost: (base_rate * (1 + damage_waiver_pct)) + diesel_allowance
+    damage_multiplier = 1 + (damage_waiver_pct || 0.0)
+    self.calculated_monthly_cost = (base_rate * damage_multiplier) + (diesel_allowance || 0.0)
 
     # Calculate total: (monthly_cost × units × months)
     # Set defaults if units or months are nil

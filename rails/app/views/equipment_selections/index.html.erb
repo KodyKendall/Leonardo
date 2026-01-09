@@ -22,17 +22,20 @@
   </div>
 
   <!-- Equipment Selections Table -->
-  <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
-    <table class="w-full">
+  <div class="bg-white rounded-lg border border-gray-200 overflow-x-auto">
+    <table class="w-full min-w-[1200px]">
       <thead class="bg-gray-50 border-b border-gray-200">
         <tr>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Equipment</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Units</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Months</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Purpose</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Monthly Cost</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Total Cost</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Equipment</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 w-20">Units</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 w-20">Months</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Purpose</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 w-28">Base Rate</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 w-20">DW %</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700 w-28">Diesel</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Monthly</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Total Cost</th>
+          <th class="px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
         </tr>
       </thead>
       <tbody id="equipment_selections_table" class="divide-y divide-gray-200">
@@ -47,7 +50,7 @@
 
         <!-- Add Equipment Form Row -->
         <tr>
-          <td colspan="7" class="p-0">
+          <td colspan="10" class="p-0">
             <%= render "add_form", tender: @tender, new_equipment_selection: @new_equipment_selection, equipment_types: @equipment_types %>
           </td>
         </tr>

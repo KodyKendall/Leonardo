@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_09_180406) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_09_182914) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -509,6 +509,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_09_180406) do
     t.datetime "updated_at", null: false
     t.decimal "establishment_cost"
     t.decimal "de_establishment_cost"
+    t.decimal "base_rate", precision: 12, scale: 2
+    t.decimal "damage_waiver_pct", precision: 5, scale: 4
+    t.decimal "diesel_allowance", precision: 10, scale: 2
     t.index ["equipment_type_id"], name: "index_tender_equipment_selections_on_equipment_type_id"
     t.index ["tender_id", "sort_order"], name: "index_tender_equipment_selections_on_tender_sort"
     t.index ["tender_id"], name: "index_tender_equipment_selections_on_tender_id"
