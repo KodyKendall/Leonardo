@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_09_192534) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_09_193630) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -369,6 +369,15 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_09_192534) do
     t.date "effective_to"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "nut_bolt_washer_rates", force: :cascade do |t|
+    t.string "name", null: false
+    t.decimal "waste_percentage", precision: 5, scale: 2, default: "7.5"
+    t.decimal "material_cost", precision: 15, scale: 2, default: "0.0"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_nut_bolt_washer_rates_on_name", unique: true
   end
 
   create_table "on_site_mobile_crane_breakdowns", force: :cascade do |t|

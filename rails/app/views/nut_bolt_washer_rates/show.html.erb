@@ -1,0 +1,34 @@
+<% content_for :title, "Showing Rate" %>
+
+<div class="md:w-2/3 w-full">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
+  <% end %>
+
+  <h1 class="font-bold text-4xl mb-6">Showing Rate</h1>
+
+  <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-6">
+    <div class="grid grid-cols-1 gap-4">
+      <div>
+        <span class="font-bold">Item:</span>
+        <span><%= @nut_bolt_washer_rate.name %></span>
+      </div>
+      <div>
+        <span class="font-bold">Waste %:</span>
+        <span><%= number_with_precision(@nut_bolt_washer_rate.waste_percentage, precision: 1) %>%</span>
+      </div>
+      <div>
+        <span class="font-bold">Material Cost:</span>
+        <span>R<%= number_with_precision(@nut_bolt_washer_rate.material_cost, precision: 2, delimiter: ',') %></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-2">
+    <%= link_to "Edit this rate", edit_nut_bolt_washer_rate_path(@nut_bolt_washer_rate), class: "btn btn-ghost border-gray-200" %>
+    <%= link_to "Back to rates", nut_bolt_washer_rates_path, class: "btn btn-ghost border-gray-200" %>
+    <% if policy(@nut_bolt_washer_rate).destroy? %>
+      <%= button_to "Destroy this rate", @nut_bolt_washer_rate, method: :delete, class: "btn btn-error text-white", data: { turbo_confirm: "Are you sure?" } %>
+    <% end %>
+  </div>
+</div>

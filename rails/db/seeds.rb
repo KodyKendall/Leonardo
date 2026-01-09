@@ -1020,6 +1020,22 @@ end
 
 puts "  • Anchor Rates: #{AnchorRate.count}"
 
+# ===== NUT, BOLT, AND WASHER RATES =====
+nut_bolt_washer_rates_data = [
+  { name: 'M12 nut black', material_cost: 5.00 },
+  { name: 'M12 nut EG', material_cost: 6.00 },
+  { name: 'M12 nut HDG', material_cost: 7.00 }
+]
+
+nut_bolt_washer_rates_data.each do |attrs|
+  NutBoltWasherRate.find_or_create_by!(name: attrs[:name]) do |nbw|
+    nbw.waste_percentage = 7.5
+    nbw.material_cost = attrs[:material_cost]
+  end
+end
+
+puts "  • Nut, Bolt, and Washer Rates: #{NutBoltWasherRate.count}"
+
 puts "✅ Database seeded successfully!"
 
 puts ""
