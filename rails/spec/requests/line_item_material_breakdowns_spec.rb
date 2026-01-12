@@ -88,31 +88,30 @@ RSpec.describe "/line_item_material_breakdowns", type: :request do
   end
 
   describe "PATCH /update" do
+    let(:tender) { create(:tender) }
+    let(:tender_line_item) { create(:tender_line_item, tender: tender) }
+    let(:breakdown) { create(:line_item_material_breakdown, tender_line_item: tender_line_item) }
+    let!(:rate_buildup) { create(:line_item_rate_build_up, tender_line_item: tender_line_item) }
+
     context "with valid parameters" do
-      let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
-      }
-
-      it "updates the requested line_item_material_breakdown" do
-        line_item_material_breakdown = LineItemMaterialBreakdown.create! valid_attributes
-        patch line_item_material_breakdown_url(line_item_material_breakdown), params: { line_item_material_breakdown: new_attributes }
-        line_item_material_breakdown.reload
-        skip("Add assertions for updated state")
+      it "updates the rounding_interval and syncs to rate buildup" do
+        patch line_item_material_breakdown_url(breakdown), 
+              params: { line_item_material_breakdown: { rounding_interval: 100 } },
+              as: :turbo_stream
+        
+        breakdown.reload
+        expect(breakdown.rounding_interval).to eq(100)
+        expect(rate_buildup.reload.material_supply_rate).to eq(breakdown.total)
       end
 
-      it "redirects to the line_item_material_breakdown" do
-        line_item_material_breakdown = LineItemMaterialBreakdown.create! valid_attributes
-        patch line_item_material_breakdown_url(line_item_material_breakdown), params: { line_item_material_breakdown: new_attributes }
-        line_item_material_breakdown.reload
-        expect(response).to redirect_to(line_item_material_breakdown_url(line_item_material_breakdown))
-      end
-    end
-
-    context "with invalid parameters" do
-      it "renders a response with 422 status (i.e. to display the 'edit' template)" do
-        line_item_material_breakdown = LineItemMaterialBreakdown.create! valid_attributes
-        patch line_item_material_breakdown_url(line_item_material_breakdown), params: { line_item_material_breakdown: invalid_attributes }
-        expect(response).to have_http_status(:unprocessable_entity)
+      it "updates the margin_percentage and syncs to rate buildup" do
+        patch line_item_material_breakdown_url(breakdown), 
+              params: { line_item_material_breakdown: { margin_percentage: 15 } },
+              as: :turbo_stream
+        
+        breakdown.reload
+        expect(breakdown.margin_percentage).to eq(15)
+        expect(rate_buildup.reload.material_supply_rate).to eq(breakdown.total)
       end
     end
   end

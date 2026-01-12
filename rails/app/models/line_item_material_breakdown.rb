@@ -6,6 +6,7 @@ class LineItemMaterialBreakdown < ApplicationRecord
   
   # Validate margin percentage
   validates :margin_percentage, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }
+  validates :rounding_interval, inclusion: { in: [0, 10, 20, 50, 100] }
   
   # Sync material supply rate to rate buildup after save
   after_save :sync_material_supply_rate_to_buildup
@@ -15,12 +16,18 @@ class LineItemMaterialBreakdown < ApplicationRecord
     line_item_materials.sum(&:line_total).round(2)
   end
 
-  # Calculate total with margin, rounded UP to nearest R50
-  def total
+  # Total before rounding
+  def total_before_rounding
     margin_amount = subtotal * (margin_percentage / 100)
-    total_with_margin = subtotal + margin_amount
-    # Round UP to nearest R50
-    (total_with_margin / 50.0).ceil * 50
+    subtotal + margin_amount
+  end
+
+  # Calculate total with margin, rounded UP to nearest interval
+  def total
+    return total_before_rounding if rounding_interval.blank? || rounding_interval.zero?
+    
+    # Round UP to nearest interval
+    (total_before_rounding / rounding_interval.to_f).ceil * rounding_interval
   end
 
   def populate_from_category(section_category_id)

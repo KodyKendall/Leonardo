@@ -105,9 +105,9 @@ class LineItemMaterialBreakdownsController < ApplicationController
   def update
     respond_to do |format|
       if @line_item_material_breakdown.update(line_item_material_breakdown_params)
-        # Sync material supply rate to rate buildup if margin was updated
+        # Sync material supply rate to rate buildup if margin or rounding was updated
         rate_buildup = nil
-        if params[:line_item_material_breakdown]&.key?(:margin_percentage)
+        if params[:line_item_material_breakdown]&.key?(:margin_percentage) || params[:line_item_material_breakdown]&.key?(:rounding_interval)
           rate_buildup = @line_item_material_breakdown.tender_line_item.line_item_rate_build_up
           if rate_buildup.present?
             rate_buildup.update(material_supply_rate: @line_item_material_breakdown.total)
@@ -186,6 +186,6 @@ class LineItemMaterialBreakdownsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def line_item_material_breakdown_params
-      params.require(:line_item_material_breakdown).permit(:tender_line_item_id, :margin_percentage)
+      params.require(:line_item_material_breakdown).permit(:tender_line_item_id, :margin_percentage, :rounding_interval)
     end
 end
