@@ -102,6 +102,14 @@ RSpec.describe "/line_item_rate_build_ups", type: :request do
         expect(response).to redirect_to(line_item_rate_build_up_url(line_item_rate_build_up))
       end
 
+      it "updates the rounding_interval to 0 (None)" do
+        patch line_item_rate_build_up_url(line_item_rate_build_up), 
+          params: { line_item_rate_build_up: { rounding_interval: 0 } }
+        
+        line_item_rate_build_up.reload
+        expect(line_item_rate_build_up.rounding_interval).to eq(0)
+      end
+
       it "updates via turbo_stream" do
         patch line_item_rate_build_up_url(line_item_rate_build_up), 
           params: { line_item_rate_build_up: { mass_calc: 2.0 } },
