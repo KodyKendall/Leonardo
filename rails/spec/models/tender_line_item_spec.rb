@@ -3,6 +3,13 @@ require 'rails_helper'
 RSpec.describe TenderLineItem, type: :model do
   let(:tender) { create(:tender) }
 
+  describe 'defaults' do
+    it 'sets include_in_tonnage to true by default' do
+      line_item = TenderLineItem.new
+      expect(line_item.include_in_tonnage).to be true
+    end
+  end
+
   describe 'inheritance from project rate buildup' do
     let!(:project_rate_buildup) do
       tender.reload.project_rate_buildup.update!(

@@ -60,4 +60,20 @@ RSpec.describe "TenderLineItems", type: :request do
       end
     end
   end
+
+  describe "PATCH /tenders/:tender_id/tender_line_items/:id" do
+    let!(:line_item) { create(:tender_line_item, tender: tender, quantity: 10, include_in_tonnage: true) }
+
+    it "updates include_in_tonnage and recalculates tender tonnage" do
+      expect(tender.reload.total_tonnage).to eq(10)
+
+      patch "/tenders/#{tender.id}/tender_line_items/#{line_item.id}",
+            headers: { "Accept" => "text/vnd.turbo-stream.html" },
+            params: { tender_line_item: { include_in_tonnage: false } }
+
+      expect(response).to have_http_status(:ok)
+      expect(line_item.reload.include_in_tonnage).to be false
+      expect(tender.reload.total_tonnage).to eq(0)
+    end
+  end
 end

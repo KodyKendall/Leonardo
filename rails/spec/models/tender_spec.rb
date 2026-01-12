@@ -95,13 +95,13 @@ RSpec.describe Tender, type: :model do
   describe '#recalculate_total_tonnage!' do
     let(:tender) { create(:tender) }
 
-    context 'with line items and headings in tonnage units' do
+    context 'with line items and headings' do
       it 'excludes headings from tonnage calculation' do
-        # Create a regular line item with weight unit
-        create(:tender_line_item, tender: tender, unit_of_measure: 'tonnes', quantity: 10)
+        # Create a regular line item with include_in_tonnage: true
+        create(:tender_line_item, tender: tender, include_in_tonnage: true, quantity: 10)
 
-        # Create a heading with a weight unit (should be ignored)
-        create(:tender_line_item, tender: tender, is_heading: true, unit_of_measure: 'tonnes', quantity: 999)
+        # Create a heading with include_in_tonnage: true (should be ignored)
+        create(:tender_line_item, tender: tender, is_heading: true, include_in_tonnage: true, quantity: 999)
 
         tender.recalculate_total_tonnage!
 
@@ -109,34 +109,39 @@ RSpec.describe Tender, type: :model do
         expect(tender.total_tonnage).to eq(10)
       end
 
-      it 'correctly sums multiple weight units while ignoring headings' do
-        create(:tender_line_item, tender: tender, unit_of_measure: 'tonnes', quantity: 5)
-        create(:tender_line_item, tender: tender, unit_of_measure: 'tons', quantity: 3)
-
-        # Heading with weight unit (should be ignored)
-        create(:tender_line_item, tender: tender, is_heading: true, unit_of_measure: 'tonnes', quantity: 500)
+      it 'sums items with include_in_tonnage set to true' do
+        create(:tender_line_item, tender: tender, include_in_tonnage: true, quantity: 5)
+        create(:tender_line_item, tender: tender, include_in_tonnage: true, quantity: 3)
 
         tender.recalculate_total_tonnage!
 
-        # Expected: 5 + 3 = 8 (heading ignored)
         expect(tender.total_tonnage).to eq(8)
       end
 
-      it 'ignores non-weight units regardless of heading status' do
-        create(:tender_line_item, tender: tender, unit_of_measure: 'each', quantity: 10)
-        create(:tender_line_item, tender: tender, is_heading: true, unit_of_measure: 'each', quantity: 5)
+      it 'ignores items with include_in_tonnage set to false' do
+        create(:tender_line_item, tender: tender, include_in_tonnage: true, quantity: 10)
+        create(:tender_line_item, tender: tender, include_in_tonnage: false, quantity: 5)
 
         tender.recalculate_total_tonnage!
 
-        # Expected: Non-weight units are ignored
-        expect(tender.total_tonnage).to eq(0)
+        # Expected: Only the included item contributes
+        expect(tender.total_tonnage).to eq(10)
+      end
+
+      it 'sums items regardless of unit when include_in_tonnage is true' do
+        create(:tender_line_item, tender: tender, include_in_tonnage: true, unit_of_measure: 'each', quantity: 10)
+        create(:tender_line_item, tender: tender, include_in_tonnage: true, unit_of_measure: 'kg', quantity: 5)
+
+        tender.recalculate_total_tonnage!
+
+        # Expected: Both are summed because include_in_tonnage is true
+        expect(tender.total_tonnage).to eq(15)
       end
     end
 
-    context 'with only headings in weight units' do
-      it 'returns zero when all weight items are headings' do
-        create(:tender_line_item, tender: tender, is_heading: true, unit_of_measure: 'tonnes', quantity: 100)
-        create(:tender_line_item, tender: tender, is_heading: true, unit_of_measure: 'tons', quantity: 50)
+    context 'with only headings' do
+      it 'returns zero when all items are headings' do
+        create(:tender_line_item, tender: tender, is_heading: true, include_in_tonnage: true, quantity: 100)
 
         tender.recalculate_total_tonnage!
 

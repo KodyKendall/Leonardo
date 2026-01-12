@@ -24,12 +24,12 @@ class OnSiteMobileCraneBreakdown < ApplicationRecord
   end
 
   # Calculate crane cost per tonne using CEILING to nearest R20
-  # Returns 0 if total_tonnage is not available or is zero
+  # Returns 0 if financial_tonnage is not available or is zero
   def crainage_rate_per_tonne
     return 0 if total_crane_cost.zero?
     
-    # Get total tonnage from tender (if available)
-    tonnage = tender.respond_to?(:total_tonnage) ? tender.total_tonnage.to_f : 0
+    # Get financial tonnage from tender (if available)
+    tonnage = (tender.respond_to?(:financial_tonnage) && tender.financial_tonnage.present?) ? tender.financial_tonnage.to_f : 0
     return 0 if tonnage.zero?
     
     rate = total_crane_cost / tonnage

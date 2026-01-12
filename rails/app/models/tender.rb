@@ -43,9 +43,6 @@ class Tender < ApplicationRecord
   PG_DISPLAY_MODES = [['Detailed Breakdown', 'detailed'], ['Rolled-up Lump Sum', 'rolled_up']].freeze
   SHOP_DRAWINGS_DISPLAY_MODES = [['Lump Sum', 'lump_sum'], ['Tonnage & Rate', 'tonnage_rate']].freeze
 
-  # Weight units for tonnage calculation
-  WEIGHT_UNITS = ["t", "ton", "tons", "tonne", "tonnes"].freeze
-  
   # Recalculate grand total as sum of all line item totals + shop drawings total + P&G items and broadcast update
   # Excludes heading rows (is_heading: true) from calculations
   def recalculate_grand_total!
@@ -72,19 +69,30 @@ class Tender < ApplicationRecord
     "#{display_client_name}#{contact_part}"
   end
 
-  # Recalculate total tonnage as sum of all line item quantities where unit_of_measure is a weight unit
+  # Recalculate total tonnage as sum of all line item quantities where include_in_tonnage is true
   # Excludes heading rows (is_heading: true) from calculations
-  def recalculate_total_tonnage!
-    new_tonnage = tender_line_items.where(is_heading: false, unit_of_measure: WEIGHT_UNITS).sum(:quantity)
+  # Also calculates financial_tonnage which includes ALL line items
+  def recalculate_total_tonnage!(cascade: true)
+    items = tender_line_items.where(is_heading: false)
+    
+    new_tonnage = items.where(include_in_tonnage: true).sum(:quantity)
+    new_financial_tonnage = items.sum(:quantity)
+    
     self.total_tonnage = new_tonnage
-    update_column(:total_tonnage, new_tonnage)
+    self.financial_tonnage = new_financial_tonnage
+    
+    update_columns(total_tonnage: new_tonnage, financial_tonnage: new_financial_tonnage)
+    
     broadcast_update_total_tonnage
-    # Also recalculate equipment summary since cost per tonne depends on total_tonnage
-    recalculate_equipment_summary!
-    # Recalculate project rate buildup since crainage rate depends on total_tonnage
-    recalculate_project_rate_buildup!
-    # Recalculate crane breakdown to trigger P&G sync
-    recalculate_crane_breakdown!
+    
+    if cascade
+      # Also recalculate equipment summary since cost per tonne depends on total_tonnage
+      recalculate_equipment_summary!
+      # Recalculate project rate buildup since crainage rate depends on total_tonnage
+      recalculate_project_rate_buildup!
+      # Recalculate crane breakdown to trigger P&G sync
+      recalculate_crane_breakdown!
+    end
   end
 
   # Recalculate crane breakdown to trigger P&G sync

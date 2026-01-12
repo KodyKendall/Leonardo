@@ -20,8 +20,8 @@ class TenderLineItem < ApplicationRecord
   after_create :ensure_persisted_associations
   after_create :inherit_inclusion_defaults
   after_create :populate_rates_from_project_buildup
-  after_save :update_tender_grand_total
-  after_save :update_tender_total_tonnage
+  after_save :update_tender_grand_total, if: -> { saved_change_to_quantity? || saved_change_to_rate? || saved_change_to_is_heading? }
+  after_save :update_tender_total_tonnage, if: -> { saved_change_to_quantity? || saved_change_to_include_in_tonnage? || saved_change_to_is_heading? }
   after_destroy :update_tender_grand_total
   after_destroy :update_tender_total_tonnage
 
@@ -44,7 +44,10 @@ class TenderLineItem < ApplicationRecord
   end
 
   def update_tender_total_tonnage
-    tender.recalculate_total_tonnage!
+    # Only cascade financial recalculations if quantity or heading status changed.
+    # The 'include_in_tonnage' toggle (deselecting) should not affect the grand total.
+    cascade = destroyed? || saved_change_to_quantity? || saved_change_to_is_heading?
+    tender.recalculate_total_tonnage!(cascade: cascade)
   end
 
   def build_defaults

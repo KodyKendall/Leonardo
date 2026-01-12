@@ -65,6 +65,15 @@
 
         <!-- Actions -->
         <div class="col-span-2 flex items-center justify-center gap-1">
+          <!-- Include in Tonnage Toggle -->
+          <% unless tender_line_item.is_heading %>
+            <div class="flex items-center" title="Include in Total Tonnes">
+              <%= f.check_box :include_in_tonnage, 
+                  class: "checkbox checkbox-xs checkbox-primary",
+                  data: { action: "change->dirty-form#save" } %>
+            </div>
+          <% end %>
+
           <!-- Rate Buildup Toggle (Hidden for headings) -->
           <% unless tender_line_item.is_heading %>
             <label for="toggle_<%= tender_line_item.id %>" class="btn btn-ghost btn-xs text-success hover:bg-success/10 p-0 w-8 h-8" title="Toggle Rate Buildup">

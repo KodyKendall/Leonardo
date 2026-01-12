@@ -119,4 +119,9 @@ export default class extends Controller {
   reset() {
     this.showSavedState()
   }
+
+  save() {
+    if (this.updateValidationState()) return
+    this.form.requestSubmit()
+  }
 }
