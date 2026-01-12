@@ -32,7 +32,7 @@
   </div>
 
   <div class="my-5">
-    <%= form.label :mass_per_each, "Mass Per Each (kg)", class: "label font-bold" %>
+    <%= form.label :mass_per_each, "Mass Per Each", class: "label font-bold" %>
     <%= form.number_field :mass_per_each, step: 0.001, class: ["input input-bordered w-full mt-2", {"input-error": nut_bolt_washer_rate.errors[:mass_per_each].any?}] %>
   </div>
 
