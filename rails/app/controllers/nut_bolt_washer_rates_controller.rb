@@ -72,6 +72,6 @@ class NutBoltWasherRatesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def nut_bolt_washer_rate_params
-      params.require(:nut_bolt_washer_rate).permit(:name, :waste_percentage, :material_cost)
+      params.require(:nut_bolt_washer_rate).permit(:name, :waste_percentage, :material_cost, :calculation_breakdown, :mass_per_each)
     end
 end

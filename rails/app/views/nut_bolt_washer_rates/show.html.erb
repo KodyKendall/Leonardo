@@ -21,6 +21,14 @@
         <span class="font-bold">Material Cost:</span>
         <span>R<%= number_with_precision(@nut_bolt_washer_rate.material_cost, precision: 2, delimiter: ',') %></span>
       </div>
+      <div>
+        <span class="font-bold">Calculation Breakdown:</span>
+        <div class="mt-1 p-2 bg-gray-50 rounded border border-gray-100 whitespace-pre-wrap"><%= @nut_bolt_washer_rate.calculation_breakdown %></div>
+      </div>
+      <div>
+        <span class="font-bold">Mass Per Each (kg):</span>
+        <span><%= number_with_precision(@nut_bolt_washer_rate.mass_per_each, precision: 3) %></span>
+      </div>
     </div>
   </div>
 

@@ -26,6 +26,16 @@
     <%= form.number_field :material_cost, step: 0.01, class: ["input input-bordered w-full mt-2", {"input-error": nut_bolt_washer_rate.errors[:material_cost].any?}] %>
   </div>
 
+  <div class="my-5">
+    <%= form.label :calculation_breakdown, "Calculation Breakdown", class: "label font-bold" %>
+    <%= form.text_area :calculation_breakdown, rows: 4, class: ["textarea textarea-bordered w-full mt-2", {"textarea-error": nut_bolt_washer_rate.errors[:calculation_breakdown].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :mass_per_each, "Mass Per Each (kg)", class: "label font-bold" %>
+    <%= form.number_field :mass_per_each, step: 0.001, class: ["input input-bordered w-full mt-2", {"input-error": nut_bolt_washer_rate.errors[:mass_per_each].any?}] %>
+  </div>
+
   <div class="flex gap-2">
     <%= form.submit class: "btn btn-primary" %>
     <%= link_to "Cancel", nut_bolt_washer_rates_path, class: "btn btn-ghost" %>

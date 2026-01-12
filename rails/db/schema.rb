@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_09_195543) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_12_110508) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -381,6 +381,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_09_195543) do
     t.decimal "material_cost", precision: 15, scale: 2, default: "0.0"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "calculation_breakdown"
+    t.decimal "mass_per_each", precision: 10, scale: 3
     t.index ["name"], name: "index_nut_bolt_washer_rates_on_name", unique: true
   end
 

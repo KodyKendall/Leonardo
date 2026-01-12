@@ -37,5 +37,19 @@ RSpec.describe NutBoltWasherRate, type: :model do
       subject.material_cost = -1
       expect(subject).not_to be_valid
     end
+
+    it 'allows calculation_breakdown and mass_per_each to be set' do
+      subject.calculation_breakdown = 'Testing 123'
+      subject.mass_per_each = 0.5
+      expect(subject).to be_valid
+      expect(subject.calculation_breakdown).to eq('Testing 123')
+      expect(subject.mass_per_each).to eq(0.5)
+    end
+
+    it 'is valid if calculation_breakdown and mass_per_each are blank' do
+      subject.calculation_breakdown = nil
+      subject.mass_per_each = nil
+      expect(subject).to be_valid
+    end
   end
 end

@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe "/nuts_bolts_and_washers", type: :request do
   let(:admin) { create(:user, :admin) }
   let(:user) { create(:user, :quantity_surveyor) }
-  let(:valid_attributes) { { name: 'M12 Nut', waste_percentage: 7.5, material_cost: 15.0 } }
+  let(:valid_attributes) { { name: 'M12 Nut', waste_percentage: 7.5, material_cost: 15.0, calculation_breakdown: 'Test breakdown', mass_per_each: 0.123 } }
   let(:invalid_attributes) { { name: '', waste_percentage: -1, material_cost: -1 } }
 
   describe "GET /index" do
@@ -90,12 +90,14 @@ RSpec.describe "/nuts_bolts_and_washers", type: :request do
       before { sign_in admin }
 
       context "with valid parameters" do
-        let(:new_attributes) { { name: 'Updated Name' } }
+        let(:new_attributes) { { name: 'Updated Name', calculation_breakdown: 'Updated breakdown', mass_per_each: 0.456 } }
 
         it "updates the requested nut_bolt_washer_rate" do
           patch nut_bolt_washer_rate_url(nut_bolt_washer_rate), params: { nut_bolt_washer_rate: new_attributes }
           nut_bolt_washer_rate.reload
           expect(nut_bolt_washer_rate.name).to eq('Updated Name')
+          expect(nut_bolt_washer_rate.calculation_breakdown).to eq('Updated breakdown')
+          expect(nut_bolt_washer_rate.mass_per_each).to eq(0.456)
         end
 
         it "redirects to the nut_bolt_washer_rate" do
