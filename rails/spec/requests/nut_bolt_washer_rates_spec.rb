@@ -151,4 +151,28 @@ RSpec.describe "/nuts_bolts_and_washers", type: :request do
       end
     end
   end
+
+  describe "PATCH /reorder" do
+    let!(:rate1) { create(:nut_bolt_washer_rate, position: 1) }
+    let!(:rate2) { create(:nut_bolt_washer_rate, position: 2) }
+
+    context "as admin" do
+      before { sign_in admin }
+
+      it "reorders the rates" do
+        patch reorder_nut_bolt_washer_rates_url, params: { ids: [rate2.id, rate1.id] }
+        expect(response).to have_http_status(:ok)
+        expect(rate1.reload.position).to eq(2)
+        expect(rate2.reload.position).to eq(1)
+      end
+    end
+
+    context "as non-admin" do
+      it "returns unauthorized" do
+        sign_in user
+        patch reorder_nut_bolt_washer_rates_url, params: { ids: [rate2.id, rate1.id] }
+        expect(response).to redirect_to(root_path)
+      end
+    end
+  end
 end

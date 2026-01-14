@@ -1,7 +1,9 @@
 # LEONARDO WAS HERE
 Rails.application.routes.draw do
-  resources :nut_bolt_washer_rates, path: 'nuts_bolts_and_washers'
-  resources :anchor_rates
+  resources :anchor_supplier_rates
+  resources :anchor_rates do
+    resources :anchor_supplier_rates, shallow: true
+  end
   resources :line_item_material_templates
   resources :section_category_templates do
     member do
@@ -157,4 +159,10 @@ Rails.application.routes.draw do
   get "/prototypes/*page", to: "prototypes#show"
   # Defines the root path route ("/")
   # root "posts#index"
+  
+  resources :nut_bolt_washer_rates, path: 'nuts_bolts_and_washers' do
+    collection do
+      patch :reorder
+    end
+  end
 end
