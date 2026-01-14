@@ -28,7 +28,7 @@
         <thead class="sticky top-0 z-10 bg-gray-100">
           <tr class="bg-gray-100 border-b border-gray-200">
           <th class="border-r border-gray-200 px-2 py-3 bg-gray-50 w-8"></th>
-          <th class="border-r border-gray-200 px-4 py-3 text-left font-bold bg-gray-50">Material Item</th>
+          <th class="border-r border-gray-200 px-4 py-3 text-left font-bold bg-gray-50 min-w-[300px]">Material Item</th>
           <th class="border-r border-gray-200 px-4 py-3 text-center font-bold text-xs">Waste %</th>
           <% @suppliers.each do |supplier| %>
             <th class="border-r border-gray-200 px-4 py-3 text-center font-bold text-xs">
@@ -43,7 +43,7 @@
             <td class="border-r border-gray-200 px-2 py-3 text-center cursor-move drag-handle text-gray-400 hover:text-gray-600 bg-gray-50">
               <i class="fas fa-grip-vertical"></i>
             </td>
-            <td class="border-r border-gray-200 px-4 py-3 font-medium text-gray-900 bg-gray-50 sticky left-0">
+            <td class="border-r border-gray-200 px-4 py-3 font-medium text-gray-900 bg-gray-50 sticky left-0 min-w-[300px]">
               <%= material.name %>
             </td>
             <td class="border-r border-gray-200 px-4 py-3 text-center text-gray-600 bg-gray-50">
