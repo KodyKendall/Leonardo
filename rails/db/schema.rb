@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_14_162457) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_14_164246) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -63,7 +63,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_14_162457) do
     t.decimal "material_cost", precision: 15, scale: 2, default: "0.0"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "position"
     t.index ["name"], name: "index_anchor_rates_on_name", unique: true
+    t.index ["position"], name: "index_anchor_rates_on_position"
   end
 
   create_table "anchor_supplier_rates", force: :cascade do |t|

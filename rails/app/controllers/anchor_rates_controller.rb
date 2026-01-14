@@ -3,9 +3,18 @@ class AnchorRatesController < ApplicationController
 
   # GET /anchor_rates or /anchor_rates.json
   def index
-    @anchor_rates = AnchorRate.all.order(:name)
+    @anchor_rates = AnchorRate.all
     @suppliers = Supplier.where(name: ['Hilti', 'IKA', 'Fischer']).sort_by { |s| ['Hilti', 'IKA', 'Fischer'].index(s.name) }
     @existing_rates = AnchorSupplierRate.all.index_by { |rate| [rate.anchor_rate_id, rate.supplier_id] }
+  end
+
+  def reorder
+    AnchorRate.transaction do
+      params[:ids].each_with_index do |id, index|
+        AnchorRate.find(id).update_column(:position, index + 1)
+      end
+    end
+    head :ok
   end
 
   # GET /anchor_rates/1 or /anchor_rates/1.json

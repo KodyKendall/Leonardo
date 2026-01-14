@@ -34,6 +34,7 @@
       <table class="w-full border-collapse text-sm">
         <thead class="bg-gray-50 sticky top-0 z-10">
           <tr class="border-b border-gray-200">
+            <th class="border-r border-gray-200 px-2 py-3 bg-gray-50 w-8"></th>
             <th class="px-4 py-3 text-left font-semibold text-gray-700 uppercase tracking-wider min-w-[200px]">Name</th>
             <th class="px-4 py-3 text-center font-semibold text-gray-700 uppercase tracking-wider">Waste %</th>
             <% @suppliers.each do |supplier| %>
@@ -46,7 +47,7 @@
             <% end %>
           </tr>
         </thead>
-        <tbody id="anchor_rates" class="divide-y divide-gray-200 bg-white">
+        <tbody id="anchor_rates" class="divide-y divide-gray-200 bg-white" data-controller="sortable" data-sortable-url-value="<%= reorder_anchor_rates_path %>" data-sortable-draggable-value="tr">
           <% @anchor_rates.each do |anchor_rate| %>
             <%= render partial: "anchor_rates/anchor_rate_row", locals: { 
               anchor_rate: anchor_rate, 
