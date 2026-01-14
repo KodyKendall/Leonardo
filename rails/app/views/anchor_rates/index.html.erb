@@ -1,38 +1,66 @@
 <% content_for :title, "Anchor Supply Rates" %>
 
-<div class="w-full">
+<div class="w-full" data-controller="anchor-rates">
   <% if notice.present? %>
     <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
   <% end %>
 
   <div class="flex justify-between items-center mb-6">
-    <h1 class="font-bold text-4xl">Anchor Supply Rates</h1>
-    <% if policy(AnchorRate).new? %>
-      <%= link_to "New anchor rate", new_anchor_rate_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium" %>
-    <% end %>
+    <div>
+      <h1 class="font-bold text-4xl mb-2">Anchor Supply Rates</h1>
+      <p class="text-gray-600">Start typing to auto-save prices. Select the checkbox to set the winning rate.</p>
+    </div>
+    <div class="flex items-center gap-4">
+      <div id="auto_save_status" class="text-sm text-gray-500">
+        <span id="save_indicator" data-anchor-rates-target="saveIndicator"></span>
+      </div>
+      <% if policy(AnchorRate).new? %>
+        <%= link_to "New anchor rate", new_anchor_rate_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium" %>
+      <% end %>
+      <button
+        data-anchor-rates-target="saveAllButton"
+        class="hidden rounded-md px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium text-sm transition"
+        data-action="anchor-rates#saveAll"
+      >
+        💾 Save All
+      </button>
+    </div>
   </div>
 
+  <%= turbo_stream_from "anchor_rates" %>
+
   <% if @anchor_rates.any? %>
-    <div class="overflow-x-auto border border-gray-200 rounded-lg">
-      <table class="w-full">
-        <thead class="bg-gray-50 border-b border-gray-200">
-          <tr>
-            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Name</th>
-            <th class="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">Waste %</th>
-            <th class="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">Material Cost</th>
+    <div class="overflow-x-auto border border-gray-200 rounded-lg shadow-sm">
+      <table class="w-full border-collapse text-sm">
+        <thead class="bg-gray-50 sticky top-0 z-10">
+          <tr class="border-b border-gray-200">
+            <th class="px-4 py-3 text-left font-semibold text-gray-700 uppercase tracking-wider min-w-[200px]">Name</th>
+            <th class="px-4 py-3 text-center font-semibold text-gray-700 uppercase tracking-wider">Waste %</th>
+            <% @suppliers.each do |supplier| %>
+              <th class="px-4 py-3 text-center font-semibold text-gray-700 uppercase tracking-wider border-l border-gray-200">
+                <%= supplier.name %>
+              </th>
+            <% end %>
             <% if policy(AnchorRate).edit? %>
-              <th class="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
+              <th class="px-4 py-3 text-center font-semibold text-gray-700 uppercase tracking-wider border-l border-gray-200">Actions</th>
             <% end %>
           </tr>
         </thead>
-        <tbody id="anchor_rates" class="divide-y divide-gray-200">
+        <tbody id="anchor_rates" class="divide-y divide-gray-200 bg-white">
           <% @anchor_rates.each do |anchor_rate| %>
-            <%= render anchor_rate %>
+            <%= render partial: "anchor_rates/anchor_rate_row", locals: { 
+              anchor_rate: anchor_rate, 
+              suppliers: @suppliers, 
+              existing_rates: @existing_rates.select { |key, _| key[0] == anchor_rate.id }.transform_keys { |key| key[1] } 
+            } %>
           <% end %>
         </tbody>
       </table>
     </div>
   <% else %>
-    <p class="text-center py-10 text-gray-500">No anchor rates found.</p>
+    <div class="text-center py-12 bg-white border border-gray-200 rounded-lg">
+      <p class="text-gray-500 mb-4">No anchor rates found.</p>
+      <%= link_to "Create your first anchor rate", new_anchor_rate_path, class: "text-blue-600 hover:underline" %>
+    </div>
   <% end %>
 </div>

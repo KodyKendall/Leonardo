@@ -3,7 +3,9 @@ class AnchorRatesController < ApplicationController
 
   # GET /anchor_rates or /anchor_rates.json
   def index
-    @anchor_rates = AnchorRate.all
+    @anchor_rates = AnchorRate.all.order(:name)
+    @suppliers = Supplier.where(name: ['Hilti', 'IKA', 'Fischer']).sort_by { |s| ['Hilti', 'IKA', 'Fischer'].index(s.name) }
+    @existing_rates = AnchorSupplierRate.all.index_by { |rate| [rate.anchor_rate_id, rate.supplier_id] }
   end
 
   # GET /anchor_rates/1 or /anchor_rates/1.json

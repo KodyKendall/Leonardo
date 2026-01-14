@@ -1,0 +1,58 @@
+<%= turbo_frame_tag dom_id(anchor_rate), class: "contents" do %>
+  <tr class="hover:bg-gray-50 transition-colors">
+    <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+      <%= anchor_rate.name %>
+    </td>
+    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-600 text-center">
+      <%= number_with_precision(anchor_rate.waste_percentage, precision: 1) %>%
+    </td>
+    <% suppliers.each do |supplier| %>
+      <% existing_rate = existing_rates[supplier.id] %>
+      <td class="px-4 py-4 whitespace-nowrap text-center border-l border-gray-100 rate-cell">
+        <div class="flex items-center justify-center gap-2 winner-checkbox-container">
+          <div class="flex items-center gap-1">
+            <span class="text-gray-400 text-xs">R</span>
+            <input
+              type="number"
+              class="rate-input w-24 text-center px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              value="<%= existing_rate&.rate %>"
+              placeholder="-"
+              step="0.01"
+              min="0"
+              data-anchor-rate-id="<%= anchor_rate.id %>"
+              data-supplier-id="<%= supplier.id %>"
+              data-rate-id="<%= existing_rate&.id %>"
+              <%= 'readonly' unless policy(anchor_rate).edit? %>
+            />
+          </div>
+          <% if existing_rate && existing_rate.rate.to_f > 0 %>
+            <input
+              type="checkbox"
+              class="winner-checkbox w-4 h-4 cursor-pointer accent-blue-600"
+              <%= 'checked' if existing_rate.is_winner %>
+              data-rate-id="<%= existing_rate.id %>"
+              data-anchor-rate-id="<%= anchor_rate.id %>"
+              data-supplier-id="<%= supplier.id %>"
+              title="Select as winning supplier for this anchor"
+              <%= 'disabled' unless policy(anchor_rate).edit? %>
+            />
+          <% end %>
+        </div>
+      </td>
+    <% end %>
+    <% if policy(anchor_rate).edit? %>
+      <td class="px-4 py-4 whitespace-nowrap text-sm text-center border-l border-gray-100">
+        <div class="flex justify-center items-center space-x-3">
+          <%= link_to edit_anchor_rate_path(anchor_rate), class: "text-blue-600 hover:text-blue-800 transition-colors", title: "Edit Anchor" do %>
+            <i class="fas fa-edit"></i>
+          <% end %>
+          <% if policy(anchor_rate).destroy? %>
+            <%= button_to anchor_rate, method: :delete, class: "text-red-600 hover:text-red-800 transition-colors", data: { turbo_confirm: "Are you sure? This will delete the anchor and all its supplier rates." }, title: "Delete Anchor" do %>
+              <i class="fas fa-trash"></i>
+            <% end %>
+          <% end %>
+        </div>
+      </td>
+    <% end %>
+  </tr>
+<% end %>
