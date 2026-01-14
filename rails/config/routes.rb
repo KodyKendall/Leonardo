@@ -93,7 +93,11 @@ Rails.application.routes.draw do
   end
 
   resources :suppliers
-  resources :material_supplies
+  resources :material_supplies do
+    collection do
+      patch :reorder
+    end
+  end
   resources :monthly_material_supply_rates do
     member do
       post :save_rate

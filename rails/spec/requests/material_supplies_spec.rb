@@ -19,14 +19,27 @@ RSpec.describe "/material_supplies", type: :request do
   # MaterialSupply. As you add validations to MaterialSupply, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) {
-    skip("Add a hash of attributes valid for your model")
+    { name: "Material A", waste_percentage: 5.0 }
   }
 
   let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
+    { name: "", waste_percentage: -1.0 }
   }
 
   before { sign_in(user) }
+
+  describe "PATCH /reorder" do
+    it "reorders the materials" do
+      m1 = MaterialSupply.create!(name: "M1", waste_percentage: 5, position: 1)
+      m2 = MaterialSupply.create!(name: "M2", waste_percentage: 5, position: 2)
+      
+      patch reorder_material_supplies_path, params: { ids: [m2.id, m1.id] }
+      
+      expect(response).to have_http_status(:ok)
+      expect(m2.reload.position).to eq(1)
+      expect(m1.reload.position).to eq(2)
+    end
+  end
 
   describe "GET /index" do
     it "renders a successful response" do
