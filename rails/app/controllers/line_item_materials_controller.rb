@@ -45,10 +45,11 @@ class LineItemMaterialsController < ApplicationController
           ]
         end
         format.html do
-          redirect_path = @breakdown ?
-            line_item_material_breakdown_path(@breakdown) :
-            @line_item_material
-          redirect_to redirect_path, notice: "Line item material was successfully created."
+          if @breakdown&.tender_line_item&.tender
+            redirect_to builder_tender_path(@breakdown.tender_line_item.tender, open_breakdown: @breakdown.tender_line_item_id), notice: "Line item material was successfully created."
+          else
+            redirect_to @line_item_material, notice: "Line item material was successfully created."
+          end
         end
         format.json { render :show, status: :created, location: @line_item_material }
       else
@@ -102,7 +103,13 @@ class LineItemMaterialsController < ApplicationController
           
           render turbo_stream: streams
         end
-        format.html { redirect_to @line_item_material, notice: "Line item material was successfully updated.", status: :see_other }
+        format.html do
+          if @breakdown&.tender_line_item&.tender
+            redirect_to builder_tender_path(@breakdown.tender_line_item.tender, open_breakdown: @breakdown.tender_line_item_id), notice: "Line item material was successfully updated.", status: :see_other
+          else
+            redirect_to @line_item_material, notice: "Line item material was successfully updated.", status: :see_other
+          end
+        end
         format.json { render :show, status: :ok, location: @line_item_material }
       else
         format.turbo_stream do
@@ -140,7 +147,13 @@ class LineItemMaterialsController < ApplicationController
           )
         ]
       end
-      format.html { redirect_to line_item_materials_path, notice: "Line item material was successfully destroyed.", status: :see_other }
+      format.html do
+        if @breakdown&.tender_line_item&.tender
+          redirect_to builder_tender_path(@breakdown.tender_line_item.tender, open_breakdown: @breakdown.tender_line_item_id), notice: "Line item material was successfully destroyed.", status: :see_other
+        else
+          redirect_to line_item_materials_path, notice: "Line item material was successfully destroyed.", status: :see_other
+        end
+      end
       format.json { head :no_content }
     end
   end

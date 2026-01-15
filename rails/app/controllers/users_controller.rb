@@ -1,28 +1,32 @@
 class UsersController < ApplicationController
-  before_action :authenticate_admin!, only: [:index]
   before_action :set_user, only: %i[ show edit update destroy ]
 
   # GET /users or /users.json
   def index
+    authorize User
     @users = User.all
   end
 
   # GET /users/1 or /users/1.json
   def show
+    authorize @user
   end
 
   # GET /users/new
   def new
+    authorize User
     @user = User.new
   end
 
   # GET /users/1/edit
   def edit
+    authorize @user
   end
 
   # POST /users or /users.json
   def create
     @user = User.new(user_params)
+    authorize @user
 
     respond_to do |format|
       if @user.save
@@ -37,6 +41,7 @@ class UsersController < ApplicationController
 
   # PATCH/PUT /users/1 or /users/1.json
   def update
+    authorize @user
     filtered_params = user_params.to_h
     if filtered_params[:password].blank? && filtered_params[:password_confirmation].blank?
       filtered_params.delete(:password)
@@ -56,6 +61,7 @@ class UsersController < ApplicationController
 
   # DELETE /users/1 or /users/1.json
   def destroy
+    authorize @user
     begin
       @user.destroy!
       respond_to do |format|
@@ -73,6 +79,7 @@ class UsersController < ApplicationController
   # POST /users/:id/generate_profile_pic
   def generate_profile_pic
     @user = User.find(params[:id])
+    authorize @user
     description = params[:profile_pic_description]
     if description.present?
       begin
@@ -99,16 +106,19 @@ class UsersController < ApplicationController
   # GET /users/:id/generate_profile_pic
   def generate_profile_pic_form
     @user = current_user
+    authorize @user
   end
 
-  # GET /users/:id/generate_bio_audio
+  # GET /users/:id/generate_bio_audio_form
   def generate_bio_audio_form
     @user = current_user
+    authorize @user
   end
 
   # POST /users/:id/generate_bio_audio
   def generate_bio_audio
     @user = User.find(params[:id])
+    authorize @user
     bio_text = params[:bio_text]
     if bio_text.present?
       begin
@@ -135,11 +145,7 @@ class UsersController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user
-      if current_user.admin?
-        @user = User.find(params[:id])
-      else
-        @user = current_user
-      end
+      @user = User.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.

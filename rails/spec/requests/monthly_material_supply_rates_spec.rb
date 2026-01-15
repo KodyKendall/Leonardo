@@ -34,6 +34,22 @@ RSpec.describe "/monthly_material_supply_rates", type: :request do
     end
   end
 
+  describe "Material Buyer access" do
+    let(:buyer) { create(:user, role: :material_buyer) }
+    before { sign_in(buyer) }
+
+    it "allows access to index" do
+      get monthly_material_supply_rates_url
+      expect(response).to be_successful
+    end
+
+    it "allows access to show" do
+      rate = MonthlyMaterialSupplyRate.create! valid_attributes
+      get monthly_material_supply_rate_url(rate)
+      expect(response).to be_successful
+    end
+  end
+
   describe "GET /show" do
     it "renders a successful response" do
       monthly_material_supply_rate = MonthlyMaterialSupplyRate.create! valid_attributes

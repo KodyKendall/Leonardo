@@ -1,4 +1,4 @@
-class CraneRatePolicy < ApplicationPolicy
+class BoqPolicy < ApplicationPolicy
   def index?
     !user.material_buyer_role?
   end
@@ -8,11 +8,11 @@ class CraneRatePolicy < ApplicationPolicy
   end
 
   def create?
-    user.admin_role?
+    !user.material_buyer_role?
   end
 
   def update?
-    user.admin_role?
+    !user.material_buyer_role?
   end
 
   def destroy?
