@@ -52,4 +52,13 @@ RSpec.describe NutBoltWasherRate, type: :model do
       expect(subject).to be_valid
     end
   end
+
+  describe 'default scope' do
+    it 'orders by position' do
+      rate1 = NutBoltWasherRate.create!(name: 'Rate 1', waste_percentage: 5, material_cost: 10, position: 2)
+      rate2 = NutBoltWasherRate.create!(name: 'Rate 2', waste_percentage: 5, material_cost: 10, position: 1)
+      
+      expect(NutBoltWasherRate.all).to eq([rate2, rate1])
+    end
+  end
 end

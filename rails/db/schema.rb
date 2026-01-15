@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_12_115314) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_14_164246) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -63,7 +63,21 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_12_115314) do
     t.decimal "material_cost", precision: 15, scale: 2, default: "0.0"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "position"
     t.index ["name"], name: "index_anchor_rates_on_name", unique: true
+    t.index ["position"], name: "index_anchor_rates_on_position"
+  end
+
+  create_table "anchor_supplier_rates", force: :cascade do |t|
+    t.bigint "anchor_rate_id", null: false
+    t.bigint "supplier_id", null: false
+    t.decimal "rate", precision: 15, scale: 2, default: "0.0", null: false
+    t.boolean "is_winner", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["anchor_rate_id", "supplier_id"], name: "index_anchor_supplier_rates_on_anchor_and_supplier", unique: true
+    t.index ["anchor_rate_id"], name: "index_anchor_supplier_rates_on_anchor_rate_id"
+    t.index ["supplier_id"], name: "index_anchor_supplier_rates_on_supplier_id"
   end
 
   create_table "boq_items", force: :cascade do |t|
@@ -384,6 +398,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_12_115314) do
     t.datetime "updated_at", null: false
     t.text "calculation_breakdown"
     t.decimal "mass_per_each", precision: 10, scale: 3
+    t.integer "position", default: 0, null: false
     t.index ["name"], name: "index_nut_bolt_washer_rates_on_name", unique: true
   end
 
@@ -679,6 +694,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_12_115314) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "anchor_supplier_rates", "anchor_rates"
+  add_foreign_key "anchor_supplier_rates", "suppliers"
   add_foreign_key "boq_items", "boqs"
   add_foreign_key "boqs", "tenders"
   add_foreign_key "boqs", "users", column: "uploaded_by_id"

@@ -1,5 +1,10 @@
 <%= turbo_frame_tag dom_id(nut_bolt_washer_rate), class: "contents" do %>
-  <tr class="hover:bg-gray-50 border-b">
+  <tr class="hover:bg-gray-50 border-b" data-id="<%= nut_bolt_washer_rate.id %>">
+    <% if policy(NutBoltWasherRate).reorder? %>
+      <td class="px-3 py-4 whitespace-nowrap text-sm text-gray-400 cursor-move">
+        <i class="fas fa-grip-vertical drag-handle"></i>
+      </td>
+    <% end %>
     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
       <%= nut_bolt_washer_rate.name %>
     </td>

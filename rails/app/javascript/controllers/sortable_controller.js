@@ -3,13 +3,14 @@ import Sortable from "sortablejs"
 
 export default class extends Controller {
   static values = {
-    url: String
+    url: String,
+    draggable: String
   }
 
   connect() {
     this.sortable = Sortable.create(this.element, {
       handle: ".drag-handle",
-      draggable: "turbo-frame",
+      draggable: this.draggableValue || "turbo-frame",
       animation: 150,
       ghostClass: "bg-blue-50",
       chosenClass: "shadow-lg",

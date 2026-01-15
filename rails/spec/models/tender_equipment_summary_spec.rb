@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe TenderEquipmentSummary, type: :model do
   describe "#calculate!" do
     let(:tender) { create(:tender) }
-    let(:equipment_type) { create(:equipment_type, base_rate_monthly: 1000, diesel_allowance_monthly: 0) }
+    let(:equipment_type) { create(:equipment_type, base_rate_monthly: 1000, damage_waiver_pct: 0, diesel_allowance_monthly: 0) }
     
     before do
       # Set total_tonnage if it exists on tender

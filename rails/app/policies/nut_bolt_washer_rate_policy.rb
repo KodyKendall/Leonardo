@@ -10,4 +10,8 @@ class NutBoltWasherRatePolicy < ApplicationPolicy
   def destroy?
     user.admin_role?
   end
+
+  def reorder?
+    user.admin_role?
+  end
 end

@@ -17,6 +17,9 @@
       <table class="w-full">
         <thead class="bg-gray-50 border-b border-gray-200">
           <tr>
+            <% if policy(NutBoltWasherRate).reorder? %>
+              <th class="px-3 py-3 w-10"></th>
+            <% end %>
             <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Item</th>
             <th class="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">Waste %</th>
             <th class="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">Material Cost</th>
@@ -27,7 +30,13 @@
             <% end %>
           </tr>
         </thead>
-        <tbody id="nut_bolt_washer_rates" class="divide-y divide-gray-200">
+        <tbody id="nut_bolt_washer_rates" 
+               class="divide-y divide-gray-200"
+               <% if policy(NutBoltWasherRate).reorder? %>
+                 data-controller="sortable"
+                 data-sortable-url-value="<%= reorder_nut_bolt_washer_rates_path %>"
+                 data-sortable-draggable-value="tr"
+               <% end %>>
           <% @nut_bolt_washer_rates.each do |nut_bolt_washer_rate| %>
             <%= render nut_bolt_washer_rate %>
           <% end %>

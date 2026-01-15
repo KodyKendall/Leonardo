@@ -7,6 +7,16 @@ class NutBoltWasherRatesController < ApplicationController
     authorize @nut_bolt_washer_rates
   end
 
+  def reorder
+    authorize NutBoltWasherRate
+    NutBoltWasherRate.transaction do
+      params[:ids].each_with_index do |id, index|
+        NutBoltWasherRate.find(id).update_column(:position, index + 1)
+      end
+    end
+    head :ok
+  end
+
   # GET /nut_bolt_washer_rates/1 or /nut_bolt_washer_rates/1.json
   def show
     authorize @nut_bolt_washer_rate

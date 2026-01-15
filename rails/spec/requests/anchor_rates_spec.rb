@@ -13,17 +13,33 @@ require 'rails_helper'
 # sticking to rails and rspec-rails APIs to keep things simple and stable.
 
 RSpec.describe "/anchor_rates", type: :request do
+  let(:user) { create(:user) }
   
   # This should return the minimal set of attributes required to create a valid
   # AnchorRate. As you add validations to AnchorRate, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) {
-    skip("Add a hash of attributes valid for your model")
+    { name: "Anchor A", waste_percentage: 5.0, material_cost: 100.0 }
   }
 
   let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
+    { name: "", waste_percentage: -1.0, material_cost: -1.0 }
   }
+
+  before { sign_in(user) }
+
+  describe "PATCH /reorder" do
+    it "reorders the anchors" do
+      a1 = AnchorRate.create!(name: "A1", waste_percentage: 5, material_cost: 10, position: 1)
+      a2 = AnchorRate.create!(name: "A2", waste_percentage: 5, material_cost: 10, position: 2)
+      
+      patch reorder_anchor_rates_path, params: { ids: [a2.id, a1.id] }
+      
+      expect(response).to have_http_status(:ok)
+      expect(a2.reload.position).to eq(1)
+      expect(a1.reload.position).to eq(2)
+    end
+  end
 
   describe "GET /index" do
     it "renders a successful response" do
@@ -87,14 +103,14 @@ RSpec.describe "/anchor_rates", type: :request do
   describe "PATCH /update" do
     context "with valid parameters" do
       let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
+        { name: "Updated Anchor" }
       }
 
       it "updates the requested anchor_rate" do
         anchor_rate = AnchorRate.create! valid_attributes
         patch anchor_rate_url(anchor_rate), params: { anchor_rate: new_attributes }
         anchor_rate.reload
-        skip("Add assertions for updated state")
+        expect(anchor_rate.name).to eq("Updated Anchor")
       end
 
       it "redirects to the anchor_rate" do
