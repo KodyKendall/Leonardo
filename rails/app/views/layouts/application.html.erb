@@ -51,8 +51,8 @@
     <%= yield :head %>
 
     <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%234F46E5' width='100' height='100' rx='20'/><text x='50' y='65' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='Arial'>✓</text></svg>" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%234F46E5' width='100' height='100' rx='20'/><text x='50' y='65' font-size='60' font-weight='bold' fill='white' text-anchor='middle' font-family='Arial'>✓</text></svg>"type="image/svg+xml">
+    <link rel="icon" href="<%= image_path 'RSB-Logo.png' %>" type="image/png">
+    <link rel="apple-touch-icon" href="<%= image_path 'RSB-Logo.png' %>" type="image/png">
     <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- DaisyUI -->

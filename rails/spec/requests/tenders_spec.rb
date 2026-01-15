@@ -13,7 +13,7 @@ require 'rails_helper'
 # sticking to rails and rspec-rails APIs to keep things simple and stable.
 
 RSpec.describe "/tenders", type: :request do
-  let(:user) { create(:user) }
+  let(:user) { create(:user, :admin) }
   
   # This should return the minimal set of attributes required to create a valid
   # Tender. As you add validations to Tender, be sure to
@@ -127,6 +127,22 @@ RSpec.describe "/tenders", type: :request do
       Tender.create! valid_attributes
       get tenders_url
       expect(response).to be_successful
+    end
+  end
+
+  describe "Material Buyer access" do
+    let(:buyer) { User.create!(email: 'buyer@example.com', password: 'password', role: :material_buyer) }
+    before { sign_in(buyer) }
+
+    it "redirects from index" do
+      get tenders_url
+      expect(response).to redirect_to(root_path)
+    end
+
+    it "redirects from show" do
+      tender = Tender.create! valid_attributes
+      get tender_url(tender)
+      expect(response).to redirect_to(root_path)
     end
   end
 

@@ -13,8 +13,11 @@ require 'rails_helper'
 # sticking to rails and rspec-rails APIs to keep things simple and stable.
 
 RSpec.describe "/anchor_rates", type: :request do
-  let(:user) { create(:user) }
-  
+  # AnchorRate requires admin or material_buyer role for create/update/destroy
+  let(:admin_user) { create(:user, :admin) }
+  let(:material_buyer) { create(:user, role: 'material_buyer') }
+  let(:regular_user) { create(:user) }
+
   # This should return the minimal set of attributes required to create a valid
   # AnchorRate. As you add validations to AnchorRate, be sure to
   # adjust the attributes here as well.
@@ -26,7 +29,7 @@ RSpec.describe "/anchor_rates", type: :request do
     { name: "", waste_percentage: -1.0, material_cost: -1.0 }
   }
 
-  before { sign_in(user) }
+  before { sign_in(admin_user) }
 
   describe "PATCH /reorder" do
     it "reorders the anchors" do

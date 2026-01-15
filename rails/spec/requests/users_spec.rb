@@ -34,7 +34,7 @@ RSpec.describe "/users", type: :request do
       sign_in user
       get users_url
       expect(response).to redirect_to(root_url)
-      expect(flash[:alert]).to eq("Access Denied")
+      expect(flash[:alert]).to eq("Access Denied.")
     end
 
     it "renders a successful response for admin user" do
@@ -53,10 +53,16 @@ RSpec.describe "/users", type: :request do
   end
 
   describe "GET /new" do
-    it "renders a successful response when signed in" do
-      sign_in user
+    it "renders a successful response when signed in as admin" do
+      sign_in admin_user
       get new_user_url
       expect(response).to be_successful
+    end
+
+    it "redirects non-admin users" do
+      sign_in user
+      get new_user_url
+      expect(response).to redirect_to(root_url)
     end
   end
 
@@ -103,17 +109,23 @@ RSpec.describe "/users", type: :request do
     end
 
     context "as regular user" do
-      it "updates themselves even if another id is passed" do
+      it "can update themselves" do
+        sign_in user
+        patch user_url(user), params: { user: { name: "Changed" } }
+        user.reload
+        expect(user.name).to eq("Changed")
+      end
+
+      it "cannot update another user" do
         sign_in user
         another_user = User.create!(email: "another@example.com", password: "password123", name: "Another")
         patch user_url(another_user), params: { user: { name: "Changed" } }
-        user.reload
         another_user.reload
-        expect(user.name).to eq("Changed")
         expect(another_user.name).to eq("Another")
+        expect(response).to redirect_to(root_url)
       end
 
-      it "redirects to the user" do
+      it "redirects to the user after update" do
         sign_in user
         patch user_url(user), params: { user: valid_attributes }
         expect(response).to redirect_to(user_url(user))
@@ -122,18 +134,32 @@ RSpec.describe "/users", type: :request do
   end
 
   describe "DELETE /destroy" do
-    it "destroys the requested user" do
-      sign_in user
-      user_to_delete = user
-      expect {
+    context "as admin" do
+      it "destroys the requested user" do
+        sign_in admin_user
+        user_to_delete = User.create!(email: "todelete@example.com", password: "password123", name: "Delete Me")
+        expect {
+          delete user_url(user_to_delete)
+        }.to change(User, :count).by(-1)
+      end
+
+      it "redirects to the users list" do
+        sign_in admin_user
+        user_to_delete = User.create!(email: "todelete@example.com", password: "password123", name: "Delete Me")
         delete user_url(user_to_delete)
-      }.to change(User, :count).by(-1)
+        expect(response).to redirect_to(users_url)
+      end
     end
 
-    it "redirects to the users list" do
-      sign_in user
-      delete user_url(user)
-      expect(response).to redirect_to(users_url)
+    context "as regular user" do
+      it "cannot destroy users" do
+        sign_in user
+        user_to_delete = User.create!(email: "todelete@example.com", password: "password123", name: "Delete Me")
+        expect {
+          delete user_url(user_to_delete)
+        }.not_to change(User, :count)
+        expect(response).to redirect_to(root_url)
+      end
     end
   end
 end
