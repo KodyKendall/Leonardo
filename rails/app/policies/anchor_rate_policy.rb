@@ -10,4 +10,7 @@ class AnchorRatePolicy < ApplicationPolicy
   def destroy?
     user.admin_role?
   end
+
+  # Custom actions
+  alias_method :reorder?, :update?
 end
