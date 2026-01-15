@@ -65,6 +65,7 @@ class TendersController < ApplicationController
   def material_autofill
     @tender = Tender.find(params[:id])
     material_supply_id = params[:material_supply_id]
+    material_supply_type = params[:material_supply_type] || 'MaterialSupply'
 
     unless material_supply_id.present?
       render json: { error: "material_supply_id is required" }, status: :bad_request
@@ -74,14 +75,25 @@ class TendersController < ApplicationController
     # Fetch tender-specific rate for this material
     tender_rate = TenderSpecificMaterialRate.find_by(
       tender_id: @tender.id,
-      material_supply_id: material_supply_id
+      material_supply_id: material_supply_id,
+      material_supply_type: material_supply_type
     )
 
     # Fetch material's default waste percentage
-    material = MaterialSupply.find_by(id: material_supply_id)
+    material_model = material_supply_type.safe_constantize || MaterialSupply
+    material = material_model.find_by(id: material_supply_id)
+
+    rate = tender_rate&.rate
+    if rate.blank? && material
+      if material.respond_to?(:material_cost)
+        rate = material.material_cost
+      elsif material.respond_to?(:current_market_rate)
+        rate = material.current_market_rate
+      end
+    end
 
     render json: {
-      rate: tender_rate&.rate,
+      rate: rate,
       waste_percentage: material&.waste_percentage
     }, status: :ok
   rescue => e

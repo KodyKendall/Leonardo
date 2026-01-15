@@ -20,10 +20,10 @@ class TenderEquipmentSummary < ApplicationRecord
     est_cost = establishment_cost.presence || 0
     self.total_equipment_cost = equipment_subtotal + fee + est_cost
 
-    # rate_per_tonne_raw = total_equipment_cost ÷ tender.total_tonnage (raw, no rounding)
-    # Handle edge case: if total_tonnage is zero, set to nil
-    if tender.total_tonnage.present? && tender.total_tonnage > 0
-      self.rate_per_tonne_raw = total_equipment_cost / tender.total_tonnage
+    # rate_per_tonne_raw = total_equipment_cost ÷ tender.financial_tonnage (raw, no rounding)
+    # Handle edge case: if financial_tonnage is zero, set to nil
+    if tender.financial_tonnage.present? && tender.financial_tonnage > 0
+      self.rate_per_tonne_raw = total_equipment_cost / tender.financial_tonnage
     else
       self.rate_per_tonne_raw = nil
     end
@@ -36,8 +36,8 @@ class TenderEquipmentSummary < ApplicationRecord
   def cherry_picker_rate_per_tonne
     return 0 if total_equipment_cost.blank? || total_equipment_cost.zero?
     
-    # Get total tonnage from tender (if available)
-    tonnage = tender.respond_to?(:total_tonnage) ? tender.total_tonnage.to_f : 0
+    # Get financial tonnage from tender (if available)
+    tonnage = (tender.respond_to?(:financial_tonnage) && tender.financial_tonnage.present?) ? tender.financial_tonnage.to_f : 0
     return 0 if tonnage.zero?
     
     rate = total_equipment_cost / tonnage

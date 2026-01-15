@@ -12,7 +12,7 @@ class ProjectRateBuildUp < ApplicationRecord
 
   # Shop Drawings calculation helpers
   def shop_drawings_tonnes_for_calculation
-    shop_drawings_tonnes.presence || tender&.total_tonnage || 0
+    shop_drawings_tonnes.presence || tender&.financial_tonnage || 0
   end
 
   def shop_drawings_total

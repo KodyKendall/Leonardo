@@ -1,11 +1,3 @@
 <%= turbo_stream.replace dom_id(@line_item) do %>
   <%= render @line_item %>
 <% end %>
-
-<%= turbo_stream.replace "builder_header" do %>
-  <%= render "tenders/builder_header", tender: @tender.reload %>
-<% end %>
-
-<%= turbo_stream.replace "builder_summary" do %>
-  <%= render "tenders/builder_summary", tender: @tender %>
-<% end %>

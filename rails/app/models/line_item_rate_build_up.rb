@@ -5,7 +5,7 @@ class LineItemRateBuildUp < ApplicationRecord
   accepts_nested_attributes_for :rate_buildup_custom_items, allow_destroy: true
 
   validates :margin_percentage, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }
-  validates :rounding_interval, inclusion: { in: [10, 20, 50, 100] }
+  validates :rounding_interval, inclusion: { in: [0, 10, 20, 50, 100] }
   
   # All inclusion fields are now decimal multipliers (0.01 to 5.0)
   # Validate only if value is present and not zero (zero gets normalized to 1.0)
@@ -85,15 +85,23 @@ class LineItemRateBuildUp < ApplicationRecord
       self.subtotal += (item.rate || 0).to_f * (item.included || 1.0).to_f
     end
 
+    # Apply Mass Calc multiplier (defaults to 1.0)
+    self.mass_calc ||= 1.0
+    effective_subtotal = subtotal * mass_calc.to_f
+
     # Set margin percentage (default to 0 if not set)
     self.margin_percentage ||= 0
 
-    # Calculate total before rounding: subtotal * (1 + margin_percentage / 100)
-    self.total_before_rounding = subtotal * (1 + margin_percentage / 100.0)
+    # Calculate total before rounding using the effective subtotal
+    self.total_before_rounding = effective_subtotal * (1 + margin_percentage / 100.0)
 
-    # Round UP to nearest interval (10, 20, 50, 100)
+    # Round UP to nearest interval (10, 20, 50, 100) or keep as is if interval is 0
     interval = (rounding_interval || 50).to_f
-    self.rounded_rate = (total_before_rounding / interval).ceil * interval
+    if interval > 0
+      self.rounded_rate = (total_before_rounding / interval).ceil * interval
+    else
+      self.rounded_rate = total_before_rounding
+    end
   end
 
   def sync_rate_to_tender_line_item
@@ -104,10 +112,10 @@ class LineItemRateBuildUp < ApplicationRecord
   def broadcast_to_tender_line_item
     return unless tender_line_item.present?
     
-    # Broadcast update to parent TenderLineItem frame
-    # Use ActionView::RecordIdentifier to generate dom_id in model context
-    tender_line_item.broadcast_replace_to(
-      ActionView::RecordIdentifier.dom_id(tender_line_item),
+    # Broadcast update to the tender builder stream so other users see the rate update
+    broadcast_replace_to(
+      "tender_#{tender_line_item.tender_id}_builder",
+      target: ActionView::RecordIdentifier.dom_id(tender_line_item),
       partial: "tender_line_items/tender_line_item",
       locals: { tender_line_item: tender_line_item, open_breakdown: true }
     )

@@ -136,7 +136,7 @@ class TenderLineItemsController < ApplicationController
     def tender_line_item_params
       params.require(:tender_line_item).permit(
         :page_number, :item_number, :item_description, :section_category_id, 
-        :unit_of_measure, :quantity, :rate, :notes, :is_heading,
+        :unit_of_measure, :quantity, :rate, :notes, :is_heading, :include_in_tonnage,
         line_item_rate_build_up_attributes: [
           :id, :material_supply_rate, :fabrication_rate, :fabrication_included,
           :overheads_rate, :overheads_included, :shop_priming_rate,

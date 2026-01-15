@@ -1,5 +1,7 @@
 # LEONARDO WAS HERE
 Rails.application.routes.draw do
+  resources :nut_bolt_washer_rates, path: 'nuts_bolts_and_washers'
+  resources :anchor_rates
   resources :line_item_material_templates
   resources :section_category_templates do
     member do

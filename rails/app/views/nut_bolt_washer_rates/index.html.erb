@@ -1,0 +1,40 @@
+<% content_for :title, "Nuts, Bolts, and Washers Rates" %>
+
+<div class="w-full">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
+  <% end %>
+
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="font-bold text-4xl">Nuts, Bolts, and Washers Rates</h1>
+    <% if policy(NutBoltWasherRate).new? %>
+      <%= link_to "New rate", new_nut_bolt_washer_rate_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium" %>
+    <% end %>
+  </div>
+
+  <% if @nut_bolt_washer_rates.any? %>
+    <div class="overflow-x-auto border border-gray-200 rounded-lg">
+      <table class="w-full">
+        <thead class="bg-gray-50 border-b border-gray-200">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Item</th>
+            <th class="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">Waste %</th>
+            <th class="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">Material Cost</th>
+            <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">Calculation Breakdown</th>
+            <th class="px-6 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">Mass Per Each</th>
+            <% if policy(NutBoltWasherRate).edit? %>
+              <th class="px-6 py-3 text-center text-xs font-semibold text-gray-700 uppercase tracking-wider">Actions</th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody id="nut_bolt_washer_rates" class="divide-y divide-gray-200">
+          <% @nut_bolt_washer_rates.each do |nut_bolt_washer_rate| %>
+            <%= render nut_bolt_washer_rate %>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <p class="text-center py-10 text-gray-500">No rates found.</p>
+  <% end %>
+</div>

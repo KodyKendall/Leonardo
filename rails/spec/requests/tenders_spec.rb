@@ -225,4 +225,36 @@ RSpec.describe "/tenders", type: :request do
       expect(response).to redirect_to(tenders_url)
     end
   end
+
+  describe "GET /material_autofill" do
+    let(:tender) { Tender.create!(valid_attributes) }
+    let(:material_supply) { MaterialSupply.create!(name: "Standard Steel", waste_percentage: 10) }
+    let(:anchor_rate) { AnchorRate.create!(name: "M16 Anchor", waste_percentage: 5, material_cost: 100) }
+
+    it "returns autofill data for MaterialSupply" do
+      get material_autofill_tender_url(tender, material_supply_id: material_supply.id, material_supply_type: "MaterialSupply")
+      expect(response).to be_successful
+      json = JSON.parse(response.body)
+      expect(json["waste_percentage"]).to eq("10.0")
+    end
+
+    it "returns autofill data for AnchorRate" do
+      get material_autofill_tender_url(tender, material_supply_id: anchor_rate.id, material_supply_type: "AnchorRate")
+      expect(response).to be_successful
+      json = JSON.parse(response.body)
+      expect(json["waste_percentage"]).to eq("5.0")
+    end
+
+    it "returns tender-specific rate if it exists" do
+      TenderSpecificMaterialRate.create!(
+        tender: tender,
+        material_supply_id: material_supply.id,
+        material_supply_type: "MaterialSupply",
+        rate: 15.50
+      )
+      get material_autofill_tender_url(tender, material_supply_id: material_supply.id, material_supply_type: "MaterialSupply")
+      json = JSON.parse(response.body)
+      expect(json["rate"]).to eq("15.5")
+    end
+  end
 end

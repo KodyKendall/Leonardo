@@ -5,6 +5,8 @@ export default class extends Controller {
     "materialRow",
     "subtotalDisplay",
     "marginInput",
+    "roundingIntervalInput",
+    "beforeRoundingDisplay",
     "totalDisplay",
     "saveButton"
   ]
@@ -12,6 +14,7 @@ export default class extends Controller {
   connect() {
     this.calculateTotals()
     this.savedMarginValue = this.marginInputTarget.value
+    this.savedRoundingInterval = this.roundingIntervalInputTarget.value
 
     // Ensure save button starts hidden with opacity
     this.saveButtonTarget.classList.add('opacity-0', 'pointer-events-none')
@@ -49,7 +52,10 @@ export default class extends Controller {
   markDirty() {
     const currentValue = this.marginInputTarget.value.trim()
     const savedValue = this.savedMarginValue.trim()
-    const isDirty = currentValue !== savedValue
+    const currentRounding = this.roundingIntervalInputTarget.value
+    const savedRounding = this.savedRoundingInterval
+    
+    const isDirty = (currentValue !== savedValue) || (currentRounding !== savedRounding)
     
     if (isDirty) {
       this.marginInputTarget.classList.add('border-amber-400', 'border-2')
@@ -65,6 +71,7 @@ export default class extends Controller {
   // Clear dirty state after successful save
   clearDirty() {
     this.savedMarginValue = this.marginInputTarget.value
+    this.savedRoundingInterval = this.roundingIntervalInputTarget.value
     this.marginInputTarget.classList.remove('border-amber-400', 'border-2')
     this.marginInputTarget.classList.add('border-gray-300')
     this.saveButtonTarget.classList.add('opacity-0', 'pointer-events-none')
@@ -95,8 +102,19 @@ export default class extends Controller {
     const marginAmount = subtotal * (marginPercent / 100)
     const totalBeforeRounding = subtotal + marginAmount
 
-    // Round UP to nearest R50
-    const total = Math.ceil(totalBeforeRounding / 50) * 50
+    // Update before rounding display
+    if (this.hasBeforeRoundingDisplayTarget) {
+      this.beforeRoundingDisplayTarget.textContent = `R${totalBeforeRounding.toFixed(2)}`
+    }
+
+    // Get rounding interval
+    const interval = this.hasRoundingIntervalInputTarget ? parseInt(this.roundingIntervalInputTarget.value) : 50
+
+    // Round UP to nearest interval
+    let total = totalBeforeRounding
+    if (interval > 0) {
+      total = Math.ceil(totalBeforeRounding / interval) * interval
+    }
 
     // Update total display
     if (this.hasTotalDisplayTarget) {

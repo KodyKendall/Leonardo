@@ -36,16 +36,9 @@ class EquipmentSelectionsController < ApplicationController
 
   # PATCH/PUT /tenders/:tender_id/equipment_selections/:id
   def update
-    @equipment_selection.skip_broadcast = true
     respond_to do |format|
       if @equipment_selection.update(equipment_selection_params)
-        format.turbo_stream do
-          @tender_equipment_summary = @tender.tender_equipment_summary
-          render turbo_stream: [
-            turbo_stream.replace(@equipment_selection, partial: "equipment_selections/equipment_selection", locals: { equipment_selection: @equipment_selection }),
-            turbo_stream.replace("equipment_cost_summary", partial: "tender_equipment_summaries/summary", locals: { tender_equipment_summary: @tender_equipment_summary })
-          ]
-        end
+        format.turbo_stream
         format.html { redirect_to tender_equipment_selections_path(@tender), notice: "Equipment selection was successfully updated.", status: :see_other }
       else
         format.turbo_stream do
@@ -84,6 +77,6 @@ class EquipmentSelectionsController < ApplicationController
   end
 
   def equipment_selection_params
-    params.require(:tender_equipment_selection).permit(:equipment_type_id, :units_required, :period_months, :purpose, :monthly_cost_override)
+    params.require(:tender_equipment_selection).permit(:equipment_type_id, :units_required, :period_months, :purpose, :base_rate, :damage_waiver_pct, :diesel_allowance)
   end
 end

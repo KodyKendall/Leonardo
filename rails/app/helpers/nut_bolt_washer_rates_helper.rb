@@ -1,0 +1,2 @@
+module NutBoltWasherRatesHelper
+end

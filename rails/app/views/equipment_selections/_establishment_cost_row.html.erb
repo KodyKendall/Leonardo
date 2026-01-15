@@ -1,47 +1,59 @@
-<tr id="establishment_cost_row" 
-    class="bg-blue-50 hover:bg-blue-100 border-t-2 border-blue-200" 
+<div id="establishment_cost_row" 
+    class="table-row bg-blue-50 hover:bg-blue-100 border-t-2 border-blue-200" 
     data-controller="establishment-cost"
     data-action="turbo:submit-end->establishment-cost#reset input->establishment-cost#markDirty change->establishment-cost#markDirty">
-  <%= form_with model: tender_equipment_summary,
-                method: :patch,
-                local: true,
-                data: {
-                  turbo_stream: true
-                },
-                class: "contents" do |f| %>
+  
+  <% form_id = "form_establishment_cost" %>
+  
+  <div class="hidden">
+    <%= form_with model: tender_equipment_summary,
+                  method: :patch,
+                  id: form_id,
+                  data: {
+                    turbo_stream: true
+                  } do |f| %>
+    <% end %>
+  </div>
+
+  <%= fields_for :tender_equipment_summary, tender_equipment_summary do |f| %>
     <!-- Label: Establishment and de-establishment -->
-    <td class="px-6 py-4 text-sm font-semibold text-gray-900">
+    <div class="table-cell px-4 py-4 text-sm font-semibold text-gray-900">
       Establishment and de-establishment
-    </td>
+    </div>
 
     <!-- Empty cells for Units, Months -->
-    <td class="px-6 py-4"></td>
-    <td class="px-6 py-4"></td>
+    <div class="table-cell px-4 py-4"></div>
+    <div class="table-cell px-4 py-4"></div>
 
     <!-- Notes (Purpose column) -->
-    <td class="px-6 py-4 text-sm">
-      <%= f.text_field :notes, placeholder: "Notes (e.g. 2 trucks...)", class: "input input-sm input-bordered w-full" %>
-    </td>
+    <div class="table-cell px-4 py-4 text-sm">
+      <%= f.text_field :notes, placeholder: "Notes (e.g. 2 trucks...)", form: form_id, class: "input input-sm input-bordered w-full" %>
+    </div>
 
-    <!-- Empty cell for Monthly Cost -->
-    <td class="px-6 py-4"></td>
+    <!-- Empty cells for Base Rate, DW %, Diesel, Monthly Cost -->
+    <div class="table-cell px-4 py-4"></div>
+    <div class="table-cell px-4 py-4"></div>
+    <div class="table-cell px-4 py-4"></div>
+    <div class="table-cell px-4 py-4"></div>
 
     <!-- Total Cost: Editable field for establishment cost -->
-    <td class="px-6 py-4 text-sm">
+    <div class="table-cell px-4 py-4 text-sm">
       <div class="flex items-center gap-2">
         <span class="text-sm font-medium text-gray-600">R</span>
         <%= f.number_field :establishment_cost,
                             step: 0.01,
                             min: 0,
+                            form: form_id,
                             class: "input input-sm input-bordered w-32",
                             placeholder: "0.00" %>
       </div>
-    </td>
+    </div>
 
     <!-- Actions -->
-    <td class="px-6 py-4 text-sm">
+    <div class="table-cell px-4 py-4 text-sm">
       <div class="flex items-center gap-2">
         <button type="submit"
+                form="<%= form_id %>"
                 class="btn btn-primary btn-sm"
                 data-establishment-cost-target="submit"
                 title="Save">
@@ -51,6 +63,6 @@
           <i class="fas fa-circle-exclamation"></i>
         </span>
       </div>
-    </td>
+    </div>
   <% end %>
-</tr>
+</div>

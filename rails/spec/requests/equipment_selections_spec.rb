@@ -19,14 +19,24 @@ RSpec.describe "EquipmentSelections", type: :request do
   end
 
   describe "PATCH /tenders/:tender_id/equipment_selections/:id" do
-    it "updates the monthly_cost_override and returns success" do
+    it "updates the pricing components and returns success" do
       patch tender_equipment_selection_path(tender, equipment_selection), 
-            params: { tender_equipment_selection: { monthly_cost_override: 2500.0 } },
+            params: { 
+              tender_equipment_selection: { 
+                base_rate: 2000.0,
+                damage_waiver_pct: 0.15,
+                diesel_allowance: 250.0
+              } 
+            },
             as: :turbo_stream
 
       expect(response).to have_http_status(:ok)
-      expect(equipment_selection.reload.monthly_cost_override).to eq(2500.0)
-      expect(equipment_selection.calculated_monthly_cost).to eq(2500.0)
+      equipment_selection.reload
+      expect(equipment_selection.base_rate).to eq(2000.0)
+      expect(equipment_selection.damage_waiver_pct).to eq(0.15)
+      expect(equipment_selection.diesel_allowance).to eq(250.0)
+      # (2000 * 1.15) + 250 = 2300 + 250 = 2550
+      expect(equipment_selection.calculated_monthly_cost).to eq(2550.0)
     end
   end
 

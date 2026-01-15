@@ -1,6 +1,6 @@
 class LineItemMaterial < ApplicationRecord
   belongs_to :tender_line_item, optional: true
-  belongs_to :material_supply, optional: true
+  belongs_to :material_supply, polymorphic: true, optional: true
   belongs_to :line_item_material_breakdown
 
   # Set tender_line_item from breakdown before validation

@@ -24,16 +24,27 @@ echo "🔵 Starting S3 backup for instance: ${INSTANCE_NAME}"
 echo "📦 Upload target: ${S3_BUCKET}/${BACKUP_NAME}"
 echo "⏱️  Start: $(date +%H:%M:%S)"
 
+# Get estimated DB size for progress bar
+echo "📊 Calculating database size..."
+DB_SIZE=$(docker compose exec -T db psql -U postgres -t -c \
+  "SELECT pg_database_size('llamapress_production');" | tr -d ' \n\r')
+
+echo "📊 Estimated DB size: $(numfmt --to=iec $DB_SIZE)"
+echo ""
+
 START=$(date +%s)
 
 docker compose exec -T db pg_dump -U postgres llamapress_production \
+  | pv -s "$DB_SIZE" -N "Dumping " \
   | gzip \
+  | pv -N "Uploading" \
   | aws s3 cp - "${S3_BUCKET}/${BACKUP_NAME}" \
       --storage-class STANDARD_IA
 
 END=$(date +%s)
 DURATION=$((END - START))
 
+echo ""
 echo "✅ Backup complete in ${DURATION} seconds"
 echo "📍 S3 Path: ${S3_BUCKET}/${BACKUP_NAME}"
 echo "⏱️  End: $(date +%H:%M:%S)"
