@@ -49,12 +49,7 @@ jobs:
           cd /rails
           bundle exec rails db:create db:schema:load
 
-      - name: Run model specs
+      - name: Run specs
         run: |
           cd /rails
-          bundle exec rspec spec/models --format documentation
-
-      - name: Run request specs
-        run: |
-          cd /rails
-          bundle exec rspec spec/requests --format documentation
+          bundle exec rspec spec/models spec/requests spec/features spec/services --format documentation
