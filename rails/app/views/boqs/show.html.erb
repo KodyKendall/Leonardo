@@ -173,33 +173,49 @@
         <div id="csv-container" data-show-all="false">
           <div id="csv-preview" class="bg-gray-50 rounded border border-gray-200 p-4 overflow-x-auto" style="max-height: 400px; overflow-y: auto;">
             <table class="table table-sm text-xs">
-              <% 
-                require 'csv'
+              <%
+                # Use SpreadsheetParser for robust CSV parsing (handles BOM, mixed line endings, etc.)
+                # Initialize variables outside the block so they persist
+                header_row_idx = @boq.header_row_index || 0
+                all_rows = []
+                headers = []
+                preview_rows = []
+                preview_row_indices = []
+                csv_parse_error = false
+                csv_error_message = nil
+
                 begin
-                  csv_content = @boq.csv_file.download.force_encoding('UTF-8')
-                  # Try parsing with liberal_parsing first for complex CSVs
-                  all_rows = CSV.parse(csv_content, liberal_parsing: true) rescue CSV.parse(csv_content)
-                  header_row_idx = @boq.header_row_index || 0
-                  
-                  # Get headers from the specified row
-                  headers = all_rows[header_row_idx] || [] rescue []
-                  
-                  # Get preview rows (starting after header row, max 20)
-                  preview_rows = []
-                  preview_row_indices = []
-                  all_rows.each_with_index do |row, idx|
-                    next if idx <= header_row_idx || preview_rows.length >= 20
-                    next if row.compact.empty?
-                    preview_rows << row
-                    preview_row_indices << idx
+                  # Use SpreadsheetParser to open the CSV with encoding fallback
+                  @boq.csv_file.open do |tempfile|
+                    extension = File.extname(@boq.csv_file.filename.to_s).downcase
+                    extension = '.csv' if extension.empty?
+                    spreadsheet = SpreadsheetParser.open(tempfile.path, extension: extension)
+
+                    # Get all rows using Roo (1-indexed)
+                    if spreadsheet.last_row
+                      (1..spreadsheet.last_row).each do |row_num|
+                        all_rows << spreadsheet.row(row_num)
+                      end
+                    end
+
+                    # Get headers from the specified row (0-indexed in all_rows array)
+                    headers = all_rows[header_row_idx] || []
+
+                    # Get preview rows (starting after header row, max 20)
+                    all_rows.each_with_index do |row, idx|
+                      next if idx <= header_row_idx || preview_rows.length >= 20
+                      next if row.nil? || row.compact.empty?
+                      preview_rows << row
+                      preview_row_indices << idx
+                    end
                   end
-                  csv_parse_error = false
                 rescue => e
                   csv_parse_error = true
                   csv_error_message = e.message
                   headers = []
                   preview_rows = []
                   preview_row_indices = []
+                  all_rows = []
                 end
               %>
                 <% if csv_parse_error %>
@@ -238,19 +254,17 @@
 
           <div id="csv-full" class="bg-gray-50 rounded border border-gray-200 p-4 overflow-x-auto hidden" style="max-height: 600px; overflow-y: auto;">
             <table class="table table-sm text-xs">
-              <% 
-                # Use same logic for full view
+              <%
+                # Use same logic for full view (all rows, no limit)
+                full_rows = []
+                full_row_indices = []
                 unless csv_parse_error
-                  full_rows = []
-                  full_row_indices = []
                   all_rows.each_with_index do |row, idx|
-                    next if idx <= header_row_idx || row.compact.empty?
+                    next if idx <= header_row_idx
+                    next if row.nil? || row.compact.empty?
                     full_rows << row
                     full_row_indices << idx
                   end
-                else
-                  full_rows = []
-                  full_row_indices = []
                 end
               %>
                 <% if headers.any? %>
