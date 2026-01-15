@@ -5,7 +5,9 @@
       "Bash(cat:*)",
       "Bash(docker exec:*)",
       "Bash(./bin/importmap pin:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(bundle exec rspec:*)",
+      "Bash(docker compose:*)"
     ]
   }
 }
