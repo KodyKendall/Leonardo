@@ -105,7 +105,7 @@
     <% unless tender_line_item.is_heading %>
       <div class="collapse overflow-visible" data-line-item-id="<%= tender_line_item.id %>" id="collapse_<%= tender_line_item.id %>">
         <!-- Checkbox Toggle (hidden) -->
-        <input type="checkbox" class="line-item-toggle hidden peer" id="toggle_<%= tender_line_item.id %>" <%= "checked" if local_assigns[:open_breakdown] %> />
+        <input type="checkbox" class="line-item-toggle hidden peer" id="toggle_<%= tender_line_item.id %>" <%= "checked" if local_assigns[:open_breakdown] || params[:open_breakdown] == tender_line_item.id.to_s %> />
         
         <div class="collapse-content !p-0 max-h-0 peer-checked:max-h-[2000px] transition-all duration-300 overflow-hidden bg-gray-50/50">
           <div class="p-6 border-t border-gray-200">
