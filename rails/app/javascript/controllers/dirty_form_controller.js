@@ -4,29 +4,25 @@ export default class extends Controller {
   static targets = ["indicator", "submit", "savedIndicator"]
 
   connect() {
-    this.originalData = new FormData(this.element)
+    this.form = this.element.tagName === "FORM" ? this.element : this.element.querySelector("form")
+    if (!this.form) return
+
+    this.originalData = new FormData(this.form)
     this.isDirty = false
     this.hasValidationErrors = false
-    
-    // Check if we just saved - show success message on fresh form after stream render
-    if (sessionStorage.getItem("dirty-form:show-saved")) {
-      sessionStorage.removeItem("dirty-form:show-saved")
-      // Give the DOM a moment to fully render before showing success
-      setTimeout(() => this.showSavedState(), 50)
-    }
-    
-    // Intercept form submission BEFORE Turbo processes it
-    this.element.addEventListener("submit", (e) => this.handleFormSubmit(e), true)
-    // Listen for form submission to validate before submit
-    this.element.addEventListener("turbo:submit-start", (e) => this.handleSubmitStart(e))
-    // Listen for successful form submission
-    this.element.addEventListener("turbo:submit-end", (e) => this.handleSubmitEnd(e))
+    this.updateIndicator()
   }
 
   change() {
-    const currentData = new FormData(this.element)
-    this.isDirty = !this.formDataEqual(this.originalData, currentData)
-    this.updateIndicator()
+    if (!this.form) return
+    const currentData = new FormData(this.form)
+    const dirty = !this.formDataEqual(this.originalData, currentData)
+    
+    if (this.isDirty !== dirty) {
+      this.isDirty = dirty
+      this.updateIndicator()
+    }
+
     // Hide saved message when user makes new changes
     if (this.hasSavedIndicatorTarget && this.isDirty) {
       this.savedIndicatorTarget.classList.add("hidden")
@@ -35,33 +31,26 @@ export default class extends Controller {
 
   updateValidationState() {
     // Check all crane size validators on the form
-    this.hasValidationErrors = false
-    
-    console.log("🪲 dirty-form updateValidationState called")
+    let errors = false
     const allValidators = this.element.querySelectorAll('[data-controller*="crane-size-validator"]')
-    console.log("🪲 Found", allValidators.length, "validators on form")
     
-    allValidators.forEach((validatorEl, idx) => {
+    allValidators.forEach((validatorEl) => {
       const validator = this.application.getControllerForElementAndIdentifier(validatorEl, 'crane-size-validator')
-      console.log("🪲 Validator", idx, "found:", !!validator)
-      if (validator) {
-        const isValid = validator.isFormValid()
-        console.log("🪲 Validator", idx, "isFormValid():", isValid)
-        if (!isValid) {
-          this.hasValidationErrors = true
-        }
+      if (validator && !validator.isFormValid()) {
+        errors = true
       }
     })
     
-    console.log("🪲 dirty-form hasValidationErrors after check:", this.hasValidationErrors)
-    this.updateIndicator()
+    if (this.hasValidationErrors !== errors) {
+      this.hasValidationErrors = errors
+      this.updateIndicator()
+    }
+    
+    return this.hasValidationErrors
   }
 
-  handleFormSubmit(event) {
-    // Check for validation errors BEFORE Turbo processes the form
-    this.updateValidationState()
-    
-    if (this.hasValidationErrors) {
+  submit(event) {
+    if (this.updateValidationState()) {
       event.preventDefault()
       event.stopPropagation()
       return false
@@ -69,10 +58,7 @@ export default class extends Controller {
   }
 
   handleSubmitStart(event) {
-    // Double-check for validation errors before Turbo submission
-    this.updateValidationState()
-    
-    if (this.hasValidationErrors) {
+    if (this.updateValidationState()) {
       event.preventDefault()
       return false
     }
@@ -82,20 +68,16 @@ export default class extends Controller {
     if (this.hasIndicatorTarget) {
       this.indicatorTarget.classList.toggle("hidden", !this.isDirty)
     }
+
     if (this.hasSubmitTarget) {
-      // Disable submit button if there are validation errors
-      if (this.hasValidationErrors) {
-        this.submitTarget.disabled = true
-        this.submitTarget.classList.add("btn-disabled")
-        this.submitTarget.title = "Please fix validation errors before saving"
-      } else {
-        this.submitTarget.disabled = false
-        this.submitTarget.classList.remove("btn-disabled")
-        this.submitTarget.title = ""
-      }
+      // Always ensure disabled state matches validation state
+      this.submitTarget.disabled = this.hasValidationErrors
+      this.submitTarget.classList.toggle("btn-disabled", this.hasValidationErrors)
+      this.submitTarget.title = this.hasValidationErrors ? "Please fix validation errors before saving" : ""
       
-      this.submitTarget.classList.toggle("btn-warning", this.isDirty && !this.hasValidationErrors)
-      this.submitTarget.classList.toggle("btn-primary", !this.isDirty && !this.hasValidationErrors)
+      const shouldBeWarning = this.isDirty && !this.hasValidationErrors
+      this.submitTarget.classList.toggle("btn-warning", shouldBeWarning)
+      this.submitTarget.classList.toggle("btn-primary", !shouldBeWarning)
     }
   }
 
@@ -107,17 +89,8 @@ export default class extends Controller {
 
   handleSubmitEnd(event) {
     // Only show success for successful responses (200-299)
-    // Validation errors return 422 with success: false
     if (event.detail.success) {
-      // Check if there are error messages in the form after re-render
-      const errorBox = this.element.querySelector("[id='error_explanation']")
-      if (!errorBox || errorBox.classList.contains("hidden")) {
-        // No errors, set a flag to show saved state after the Turbo Stream re-renders the form
-        sessionStorage.setItem("dirty-form:show-saved", "true")
-      } else {
-        // Errors exist - set flag to keep edit mode active
-        sessionStorage.setItem("dirty-form:keep-edit-mode", "true")
-      }
+      this.showSavedState()
     }
   }
 
@@ -126,7 +99,8 @@ export default class extends Controller {
   }
 
   showSavedState() {
-    this.originalData = new FormData(this.element)
+    if (!this.form) return
+    this.originalData = new FormData(this.form)
     this.isDirty = false
     this.updateIndicator()
     
@@ -144,5 +118,10 @@ export default class extends Controller {
 
   reset() {
     this.showSavedState()
+  }
+
+  save() {
+    if (this.updateValidationState()) return
+    this.form.requestSubmit()
   }
 }

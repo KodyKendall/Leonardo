@@ -7,6 +7,6 @@ FactoryBot.define do
     item_number { "1.1" }
     item_description { "Structural Steel Work" }
     unit_of_measure { "kg" }
-    section_category { "Steel Sections" }
+    association :section_category
   end
 end

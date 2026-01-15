@@ -1,0 +1,32 @@
+<%= form_with(model: section_category, class: "contents") do |form| %>
+  <% if section_category.errors.any? %>
+    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
+      <h2><%= pluralize(section_category.errors.count, "error") %> prohibited this section_category from being saved:</h2>
+
+      <ul class="list-disc ml-6">
+        <% section_category.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="my-5">
+    <%= form.label :name %>
+    <%= form.text_field :name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": section_category.errors[:name].none?, "border-red-400 focus:outline-red-600": section_category.errors[:name].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :display_name %>
+    <%= form.text_field :display_name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": section_category.errors[:display_name].none?, "border-red-400 focus:outline-red-600": section_category.errors[:display_name].any?}] %>
+  </div>
+
+  <div class="my-5">
+    <%= form.label :supply_rates_type %>
+    <%= form.select :supply_rates_type, SectionCategory.supply_rates_types.keys.map { |k| [k.titleize, k] }, { include_blank: true }, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": section_category.errors[:supply_rates_type].none?, "border-red-400 focus:outline-red-600": section_category.errors[:supply_rates_type].any?}] %>
+  </div>
+
+  <div class="inline">
+    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
+  </div>
+<% end %>

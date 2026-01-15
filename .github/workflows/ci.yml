@@ -26,7 +26,7 @@ jobs:
           --health-retries=5
 
     container:
-      image: kody06/llamapress-simple:0.2.6a
+      image: kody06/llamapress-simple:0.2.7
       env:
         RAILS_ENV: test
         DB_HOST: postgres
@@ -53,3 +53,8 @@ jobs:
         run: |
           cd /rails
           bundle exec rspec spec/models --format documentation
+
+      - name: Run request specs
+        run: |
+          cd /rails
+          bundle exec rspec spec/requests --format documentation

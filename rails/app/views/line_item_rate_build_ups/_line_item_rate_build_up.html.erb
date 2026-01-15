@@ -170,11 +170,18 @@
               <!-- Add Custom Item Button Row -->
               <tr data-line-item-rate-build-up-target="addButtonRow">
                 <td colspan="5" class="text-center py-2">
-                  <button type="button" 
-                          class="btn btn-sm btn-outline text-orange-600 border-orange-300 hover:bg-orange-50"
-                          data-action="click->line-item-rate-build-up#addCustomItem">
-                    <i class="fas fa-plus mr-1"></i> Add Custom Item
-                  </button>
+                  <div class="flex justify-center gap-2">
+                    <button type="button" 
+                            class="btn btn-sm btn-outline text-orange-600 border-orange-300 hover:bg-orange-50"
+                            data-action="click->line-item-rate-build-up#addCustomItem">
+                      <i class="fas fa-plus mr-1"></i> Add Custom Item
+                    </button>
+                    <button type="button" 
+                            class="btn btn-sm btn-outline text-blue-600 border-blue-300 hover:bg-blue-50"
+                            data-action="click->line-item-rate-build-up#toggleMassCalc">
+                      <i class="fas fa-calculator mr-1"></i> Calc. Rate /m or /each
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -183,6 +190,23 @@
                 <td colspan="3" class="text-right font-bold">Subtotal:</td>
                 <td class="text-right font-bold text-blue-600" data-line-item-rate-build-up-target="subtotal">
                   <%= number_to_currency(line_item_rate_build_up.subtotal, unit: "R ", precision: 2) %>
+                </td>
+              </tr>
+              <tr class="<%= 'hidden' if (line_item_rate_build_up.mass_calc || 1.0) == 1.0 %>" data-line-item-rate-build-up-target="massCalcRow">
+                <td colspan="2" class="text-right font-medium">Mass Calc:</td>
+                <td class="text-right">
+                  <%= form.number_field :mass_calc,
+                      step: 0.0001,
+                      min: 0.0001,
+                      placeholder: "1.0",
+                      class: "input input-sm input-bordered w-28 text-right",
+                      data: {
+                        line_item_rate_build_up_target: "massCalcInput"
+                      } %>
+                </td>
+                <td class="text-right font-semibold text-blue-600">
+                  <% mass_calc_total = line_item_rate_build_up.subtotal * (line_item_rate_build_up.mass_calc || 1.0).to_f %>
+                  <%= number_to_currency(mass_calc_total, unit: "R ", precision: 2) %>
                 </td>
               </tr>
               <tr>
@@ -210,7 +234,15 @@
               </tr>
               <tr class="bg-green-50">
                 <td colspan="3" class="text-right font-bold text-lg">
-                  Final Rate:
+                  <div class="flex items-center justify-end gap-3">
+                    <div class="flex items-center gap-1.5 font-normal text-sm text-gray-500">
+                      <span>Round up to nearest:</span>
+                      <%= form.select :rounding_interval, [['None', 0], 10, 20, 50, 100], {}, 
+                          class: "select select-bordered select-xs font-semibold text-gray-700",
+                          disabled: line_item_rate_build_up.tender_line_item&.tender&.status == 'Submitted' %>
+                    </div>
+                    <span>Final Rate:</span>
+                  </div>
                   <span class="hidden text-warning" data-line-item-rate-build-up-target="totalDirtyIndicator">*</span>
                 </td>
                 <td class="text-right font-bold text-lg text-green-600" data-line-item-rate-build-up-target="roundedRate">

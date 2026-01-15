@@ -3,25 +3,30 @@ class EquipmentTypesController < ApplicationController
 
   # GET /equipment_types or /equipment_types.json
   def index
-    @equipment_types = EquipmentType.all
+    @equipment_types = EquipmentType.ordered_by_category_and_height
+    authorize EquipmentType
   end
 
   # GET /equipment_types/1 or /equipment_types/1.json
   def show
+    authorize @equipment_type
   end
 
   # GET /equipment_types/new
   def new
     @equipment_type = EquipmentType.new
+    authorize @equipment_type
   end
 
   # GET /equipment_types/1/edit
   def edit
+    authorize @equipment_type
   end
 
   # POST /equipment_types or /equipment_types.json
   def create
     @equipment_type = EquipmentType.new(equipment_type_params)
+    authorize @equipment_type
 
     respond_to do |format|
       if @equipment_type.save
@@ -36,6 +41,7 @@ class EquipmentTypesController < ApplicationController
 
   # PATCH/PUT /equipment_types/1 or /equipment_types/1.json
   def update
+    authorize @equipment_type
     respond_to do |format|
       if @equipment_type.update(equipment_type_params)
         format.html { redirect_to @equipment_type, notice: "Equipment type was successfully updated.", status: :see_other }
@@ -49,6 +55,7 @@ class EquipmentTypesController < ApplicationController
 
   # DELETE /equipment_types/1 or /equipment_types/1.json
   def destroy
+    authorize @equipment_type
     @equipment_type.destroy!
 
     respond_to do |format|

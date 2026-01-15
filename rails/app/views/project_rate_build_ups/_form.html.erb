@@ -48,12 +48,12 @@
       <%= form.label :shop_drawings_tonnes, "Shop Drawings Tonnes (Override)", { class: "label" } %>
       <%= form.number_field :shop_drawings_tonnes, 
         step: :any,
-        placeholder: "#{@tender.total_tonnage} (Project Total)",
+        placeholder: "#{@tender.total_tonnage} (Total Tonnage)",
         class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:shop_drawings_tonnes].any? }],
         data: { "project-rate-buildup-form-target": "field" }
       %>
       <label class="label">
-        <span class="label-text-alt text-gray-500 italic">Leave blank to use project total tonnage.</span>
+        <span class="label-text-alt text-gray-500 italic">Leave blank to use total project tonnage.</span>
       </label>
     </div>
 

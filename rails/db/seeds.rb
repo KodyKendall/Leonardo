@@ -4,6 +4,9 @@
 # development, test). The code here should be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 #
 
+# ===== SECTION CATEGORIES =====
+SectionCategory.seed_from_enums
+
 # ===== USERS =====
 admin_user = User.find_or_create_by!(email: 'kody@llamapress.ai') do |user|
   user.name = 'Kody Admin'
@@ -373,11 +376,11 @@ line_item_1 = tender3.tender_line_items.find_or_create_by!(
   unit_of_measure: 'tonne',
   quantity: 45.5,
   rate: 15500.00,
-  section_category: 'Steel Sections',
+  section_category: SectionCategory.find_by(display_name: 'Steel Sections'),
   page_number: '1',
   notes: 'Supplied and erected on site'
 ) do |li|
-  li.section_category = 'Steel Sections'
+  li.section_category = SectionCategory.find_by(display_name: 'Steel Sections')
 end
 
 line_item_2 = tender3.tender_line_items.find_or_create_by!(
@@ -386,11 +389,11 @@ line_item_2 = tender3.tender_line_items.find_or_create_by!(
   unit_of_measure: 'tonne',
   quantity: 28.3,
   rate: 16800.00,
-  section_category: 'Steel Sections',
+  section_category: SectionCategory.find_by(display_name: 'Steel Sections'),
   page_number: '1',
   notes: 'Supplied and erected on site'
 ) do |li|
-  li.section_category = 'Steel Sections'
+  li.section_category = SectionCategory.find_by(display_name: 'Steel Sections')
 end
 
 line_item_3 = tender3.tender_line_items.find_or_create_by!(
@@ -399,11 +402,11 @@ line_item_3 = tender3.tender_line_items.find_or_create_by!(
   unit_of_measure: 'kg',
   quantity: 500,
   rate: 85.00,
-  section_category: 'Bolts',
+  section_category: SectionCategory.find_by(display_name: 'Bolts'),
   page_number: '2',
   notes: 'M16, M20, M24 HD Bolts'
 ) do |li|
-  li.section_category = 'Bolts'
+  li.section_category = SectionCategory.find_by(display_name: 'Bolts')
 end
 
 # ===== LINE ITEM RATE BUILD-UPS =====
@@ -962,24 +965,24 @@ end
 # ===== P&G ITEM TEMPLATES =====
 pg_templates = [
   # Fixed Based
-  { description: 'Site establishment & demobilisation', category: 'fixed_based' },
-  { description: 'Site offices, containers, ablutions (initial setup)', category: 'fixed_based' },
-  { description: 'Initial insurances, guarantees', category: 'fixed_based' },
-  { description: 'Contractual documentation', category: 'fixed_based' },
-  { description: 'Health & Safety file setup', category: 'fixed_based' },
-  { description: 'Initial surveys / setting out', category: 'fixed_based' },
-  { description: 'Site signage, fencing', category: 'fixed_based' },
+  { description: 'Site establishment & demobilisation', category: 'fixed' },
+  { description: 'Site offices, containers, ablutions (initial setup)', category: 'fixed' },
+  { description: 'Initial insurances, guarantees', category: 'fixed' },
+  { description: 'Contractual documentation', category: 'fixed' },
+  { description: 'Health & Safety file setup', category: 'fixed' },
+  { description: 'Initial surveys / setting out', category: 'fixed' },
+  { description: 'Site signage, fencing', category: 'fixed' },
 
   # Duration Based
-  { description: 'Cranage', category: 'duration_based', is_crane: true },
-  { description: 'Cherry picker', category: 'duration_based', is_access_equipment: true },
-  { description: 'Site supervision (foreman, site agent allocation)', category: 'duration_based' },
-  { description: 'Temporary services (power, water, data)', category: 'duration_based' },
-  { description: 'Plant & equipment standing time (cranes if dedicated, telehandler, cherry picker)', category: 'duration_based', is_crane: true },
-  { description: 'Security', category: 'duration_based' },
-  { description: 'Site offices rental', category: 'duration_based' },
-  { description: 'H&S officer', category: 'duration_based' },
-  { description: 'Accommodation & travel', category: 'duration_based' },
+  { description: 'Cranage', category: 'time_based', is_crane: true },
+  { description: 'Cherry picker', category: 'time_based', is_access_equipment: true },
+  { description: 'Site supervision (foreman, site agent allocation)', category: 'time_based' },
+  { description: 'Temporary services (power, water, data)', category: 'time_based' },
+  { description: 'Plant & equipment standing time (cranes if dedicated, telehandler, cherry picker)', category: 'time_based', is_crane: true },
+  { description: 'Security', category: 'time_based' },
+  { description: 'Site offices rental', category: 'time_based' },
+  { description: 'H&S officer', category: 'time_based' },
+  { description: 'Accommodation & travel', category: 'time_based' },
 
   # Percentage Based
   { description: 'Head office overhead allocation', category: 'percentage_based' },
@@ -1000,11 +1003,80 @@ pg_templates.each_with_index do |attrs, index|
 end
 
 puts "  • P&G Templates: #{PreliminariesGeneralItemTemplate.count}"
+# ===== ANCHOR RATES =====
+anchor_rates_data = [
+  { name: 'M8 Chemical Anchor', material_cost: 60.00 },
+  { name: 'M10 Chemical Anchor', material_cost: 75.00 },
+  { name: 'M12 Chemical Anchor', material_cost: 90.00 },
+  { name: 'M16 Chemical Anchor', material_cost: 105.00 }
+]
+
+anchor_rates_data.each do |attrs|
+  AnchorRate.find_or_create_by!(name: attrs[:name]) do |ar|
+    ar.waste_percentage = 7.5
+    ar.material_cost = attrs[:material_cost]
+  end
+end
+
+puts "  • Anchor Rates: #{AnchorRate.count}"
+
+# ===== NUT, BOLT, AND WASHER RATES =====
+nut_bolt_washer_rates_data = [
+  { name: 'M12 nut black', material_cost: 5.00 },
+  { name: 'M12 nut EG', material_cost: 6.00 },
+  { name: 'M12 nut HDG', material_cost: 7.00 }
+]
+
+nut_bolt_washer_rates_data.each do |attrs|
+  NutBoltWasherRate.find_or_create_by!(name: attrs[:name]) do |nbw|
+    nbw.waste_percentage = 7.5
+    nbw.material_cost = attrs[:material_cost]
+  end
+end
+
+puts "  • Nut, Bolt, and Washer Rates: #{NutBoltWasherRate.count}"
+
+# ===== SECTION CATEGORY TEMPLATES =====
+steel_sections = SectionCategory.find_by(display_name: 'Steel Sections')
+if steel_sections
+  template = SectionCategoryTemplate.find_or_create_by!(section_category: steel_sections)
+  LineItemMaterialTemplate.find_or_create_by!(section_category_template: template, material_supply: MaterialSupply.first) do |lmt|
+    lmt.proportion_percentage = 100.0
+    lmt.waste_percentage = 7.5
+  end
+end
+
+m16_chemical = SectionCategory.find_by(display_name: 'M16 Chemical')
+if m16_chemical
+  template = SectionCategoryTemplate.find_or_create_by!(section_category: m16_chemical)
+  anchor = AnchorRate.find_by(name: 'M16 Chemical Anchor')
+  if anchor
+    LineItemMaterialTemplate.find_or_create_by!(section_category_template: template, material_supply: anchor) do |lmt|
+      lmt.proportion_percentage = 100.0
+      lmt.waste_percentage = 7.5
+    end
+  end
+end
+
+bolts = SectionCategory.find_by(display_name: 'Bolts')
+if bolts
+  template = SectionCategoryTemplate.find_or_create_by!(section_category: bolts)
+  bolt = NutBoltWasherRate.first
+  if bolt
+    LineItemMaterialTemplate.find_or_create_by!(section_category_template: template, material_supply: bolt) do |lmt|
+      lmt.proportion_percentage = 100.0
+      lmt.waste_percentage = 7.5
+    end
+  end
+end
+
 puts "✅ Database seeded successfully!"
 
 puts ""
 puts "📊 SEEDED DATA SUMMARY:"
-puts "  • Users: #{User.count}"
+puts "  • Users: #{User.count}
+  • Section Categories: #{SectionCategory.count}
+"
 puts "  • Tenders: #{Tender.count}"
 puts "  • Projects: #{Project.count}"
 puts "  • Budget Categories: #{BudgetCategory.count}"
@@ -1184,7 +1256,7 @@ puts "  • Equipment Types: #{EquipmentType.count}"
   'Site signage, fencing'
 ].each_with_index do |desc, index|
   PreliminariesGeneralItemTemplate.find_or_create_by!(
-    category: 'fixed_based',
+    category: 'fixed',
     description: desc
   ) do |t|
     t.quantity = 1.0
@@ -1206,7 +1278,7 @@ end
   { desc: 'Accommodation & travel' }
 ].each_with_index do |item, index|
   PreliminariesGeneralItemTemplate.find_or_create_by!(
-    category: 'duration_based',
+    category: 'time_based',
     description: item[:desc]
   ) do |t|
     t.quantity = 1.0

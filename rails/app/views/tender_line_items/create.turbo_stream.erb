@@ -2,14 +2,4 @@
   <%= render @line_item %>
 <% end %>
 
-<%= turbo_stream.update "new_line_item_form", "" %>
-
-<%= turbo_stream.replace "builder_header" do %>
-  <%= render "tenders/builder_header", tender: @tender.reload %>
-<% end %>
-
-<%= turbo_stream.replace "builder_summary" do %>
-  <%= render "tenders/builder_summary", tender: @tender %>
-<% end %>
-
 <%= turbo_stream.update "line_items_count", @tender.tender_line_items.count.to_s %>

@@ -1,5 +1,5 @@
 class TendersController < ApplicationController
-  before_action :set_tender, only: %i[ show edit update destroy update_inclusions_exclusions tender_inclusions_exclusions ]
+  before_action :set_tender, only: %i[ show edit update destroy update_inclusions_exclusions tender_inclusions_exclusions sync_all_inclusions_exclusions report ]
 
   # GET /tenders or /tenders.json
   def index
@@ -15,9 +15,43 @@ class TendersController < ApplicationController
   def builder
     @tender = Tender.find(params[:id])
     @line_items = @tender.tender_line_items
-                         .includes(:line_item_rate_build_up, 
+                         .includes(:line_item_rate_build_up,
                                    line_item_material_breakdown: :line_item_materials)
-                         .order(:created_at)
+                         .ordered
+  end
+
+  # GET /tenders/1/report
+  # Print-ready report view for PDF generation via Grover
+  def report
+    @line_items = @tender.tender_line_items
+                         .includes(:line_item_rate_build_up)
+                         .ordered
+    @p_and_g_items = @tender.preliminaries_general_items
+    @shop_drawings_total = @tender.project_rate_buildup&.shop_drawings_total || 0
+
+    respond_to do |format|
+      format.html { render layout: 'print' }
+      format.pdf do
+        html = render_to_string(template: 'tenders/report', layout: 'print', formats: [:html])
+        grover = Grover.new(html,
+          format: 'Letter',
+          margin: { top: '0', bottom: '0', left: '0', right: '0' },
+          emulate_media: 'print',
+          display_header_footer: false,
+          prefer_css_page_size: true,
+          wait_until: 'networkidle0',
+          display_url: request.base_url,
+          print_background: true
+        )
+        pdf = grover.to_pdf
+        safe_name = @tender.tender_name.gsub(/[\/\\?%*:|"<>]/, '-')
+        filename = "#{@tender.e_number} – #{safe_name}.pdf"
+        send_data pdf,
+                  filename: filename,
+                  type: 'application/pdf',
+                  disposition: 'attachment'
+      end
+    end
   end
 
   # GET /tenders/1/tender_inclusions_exclusions
@@ -31,6 +65,7 @@ class TendersController < ApplicationController
   def material_autofill
     @tender = Tender.find(params[:id])
     material_supply_id = params[:material_supply_id]
+    material_supply_type = params[:material_supply_type] || 'MaterialSupply'
 
     unless material_supply_id.present?
       render json: { error: "material_supply_id is required" }, status: :bad_request
@@ -40,14 +75,25 @@ class TendersController < ApplicationController
     # Fetch tender-specific rate for this material
     tender_rate = TenderSpecificMaterialRate.find_by(
       tender_id: @tender.id,
-      material_supply_id: material_supply_id
+      material_supply_id: material_supply_id,
+      material_supply_type: material_supply_type
     )
 
     # Fetch material's default waste percentage
-    material = MaterialSupply.find_by(id: material_supply_id)
+    material_model = material_supply_type.safe_constantize || MaterialSupply
+    material = material_model.find_by(id: material_supply_id)
+
+    rate = tender_rate&.rate
+    if rate.blank? && material
+      if material.respond_to?(:material_cost)
+        rate = material.material_cost
+      elsif material.respond_to?(:current_market_rate)
+        rate = material.current_market_rate
+      end
+    end
 
     render json: {
-      rate: tender_rate&.rate,
+      rate: rate,
       waste_percentage: material&.waste_percentage
     }, status: :ok
   rescue => e
@@ -85,9 +131,27 @@ class TendersController < ApplicationController
   def update
     respond_to do |format|
       if @tender.update(tender_params)
-        format.html { redirect_to @tender, notice: "Tender was successfully updated.", status: :see_other }
+        format.html do
+          if params[:source] == 'report'
+            @line_items = @tender.tender_line_items.includes(:line_item_rate_build_up).ordered
+            @p_and_g_items = @tender.preliminaries_general_items
+            @shop_drawings_total = @tender.project_rate_buildup&.shop_drawings_total || 0
+            render :report, layout: false
+          else
+            redirect_to @tender, notice: "Tender was successfully updated.", status: :see_other
+          end
+        end
+        format.turbo_stream do
+          if params[:source] == 'report'
+            @line_items = @tender.tender_line_items.includes(:line_item_rate_build_up).ordered
+            @p_and_g_items = @tender.preliminaries_general_items
+            @shop_drawings_total = @tender.project_rate_buildup&.shop_drawings_total || 0
+            render :report, formats: [:html], layout: false
+          end
+        end
         format.json { render :show, status: :ok, location: @tender }
       else
+        @clients = Client.all
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @tender.errors, status: :unprocessable_entity }
       end
@@ -119,6 +183,18 @@ class TendersController < ApplicationController
       render json: { success: true, data: ie }, status: :ok
     else
       render json: { success: false, errors: ie.errors }, status: :unprocessable_entity
+    end
+  end
+
+  # POST /tenders/1/sync_all_inclusions_exclusions
+  def sync_all_inclusions_exclusions
+    ie = @tender.tender_inclusions_exclusion || @tender.build_tender_inclusions_exclusion
+    
+    if ie.persisted? || ie.save
+      ie.sync_all_to_line_items!
+      redirect_to tender_inclusions_exclusions_tender_path(@tender), notice: "Successfully synced all inclusions to line items."
+    else
+      redirect_to tender_inclusions_exclusions_tender_path(@tender), alert: "Unable to sync inclusions: #{ie.errors.full_messages.join(', ')}"
     end
   end
 
@@ -156,7 +232,8 @@ class TendersController < ApplicationController
     # Create Tender Line Items from BOQ items
     count = 0
     boq.boq_items.each do |boq_item|
-      category_value = boq_item.section_category.present? ? category_mapping[boq_item.section_category] : nil
+      category_name = boq_item.section_category.present? ? category_mapping[boq_item.section_category] : nil
+      section_category = SectionCategory.find_by(display_name: category_name) if category_name
       
       @tender.tender_line_items.create(
         quantity: boq_item.quantity,
@@ -164,7 +241,7 @@ class TendersController < ApplicationController
         item_number: boq_item.item_number,
         item_description: boq_item.item_description,
         unit_of_measure: boq_item.unit_of_measure,
-        section_category: category_value,
+        section_category: section_category,
         page_number: boq_item.page_number,
         notes: boq_item.notes
       )
@@ -194,7 +271,7 @@ class TendersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def tender_params
-      params.require(:tender).permit(:tender_name, :status, :client_id, :contact_id, :submission_deadline, :tender_value, :project_type, :notes, :awarded_project_id, :qob_file)
+      params.require(:tender).permit(:tender_name, :status, :client_id, :contact_id, :submission_deadline, :tender_value, :project_type, :notes, :awarded_project_id, :qob_file, :p_and_g_display_mode, :shop_drawings_display_mode)
     end
 
     def inclusions_exclusions_params

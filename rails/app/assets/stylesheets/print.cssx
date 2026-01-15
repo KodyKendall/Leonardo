@@ -1,0 +1,384 @@
+/* Print stylesheet for Tender Report - 8.5x11 (Letter) size */
+
+/* Base reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Page setup for 8.5x11 Letter */
+@page {
+  size: 8.5in 11in;
+  margin: 0.5in 0.4in;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 9pt;
+  line-height: 1.3;
+  color: #333;
+  background: white;
+}
+
+/* Page container - simulates paper for screen viewing */
+.page {
+  width: 7.7in;
+  min-height: 10in;
+  padding: 0;
+  margin: 0 auto 20px auto;
+  background: white;
+  position: relative;
+  page-break-after: always;
+  display: flex;
+  flex-direction: column;
+}
+
+.page:last-child {
+  page-break-after: auto;
+}
+
+/* Header section - RSB branding */
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #1e3a5f;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.company-logo {
+  display: flex;
+  flex-direction: column;
+}
+
+.company-logo img {
+  height: 50px;
+  width: auto;
+}
+
+.company-logo .company-name {
+  font-size: 24pt;
+  font-weight: bold;
+  color: #1e3a5f;
+  letter-spacing: 2px;
+}
+
+.company-logo .tagline {
+  font-size: 8pt;
+  color: #666;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+.tender-title {
+  text-align: right;
+  color: #7ba3c9;
+  font-size: 28pt;
+  font-weight: normal;
+  font-style: italic;
+  letter-spacing: 3px;
+}
+
+/* Tender info block */
+.tender-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.project-info {
+  flex: 1;
+}
+
+.project-info p {
+  margin: 2px 0;
+  font-size: 9pt;
+}
+
+.project-info .label {
+  font-weight: bold;
+  color: #1e3a5f;
+}
+
+.date-info {
+  text-align: right;
+  font-size: 9pt;
+}
+
+.date-info table {
+  margin-left: auto;
+}
+
+.date-info td {
+  padding: 1px 4px;
+}
+
+.date-info .label {
+  text-align: right;
+  color: #666;
+}
+
+.date-info .value {
+  text-align: left;
+  font-weight: normal;
+}
+
+/* Section headers within content */
+.section-header {
+  background-color: #d4e6f1;
+  padding: 4px 8px;
+  font-weight: bold;
+  font-size: 9pt;
+  color: #1e3a5f;
+  text-transform: uppercase;
+  margin: 8px 0 4px 0;
+  border-left: 3px solid #1e3a5f;
+}
+
+.subsection-header {
+  background-color: #eef5fa;
+  padding: 3px 8px;
+  font-weight: bold;
+  font-size: 8pt;
+  color: #333;
+  text-transform: uppercase;
+  margin: 6px 0 3px 0;
+}
+
+/* Main table styling */
+.line-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 8pt;
+  flex: 1;
+}
+
+.line-items-table thead {
+  display: table-header-group;
+}
+
+.line-items-table th {
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  padding: 4px 6px;
+  text-align: left;
+  font-weight: bold;
+  color: #333;
+  font-size: 8pt;
+}
+
+.line-items-table th.text-center {
+  text-align: center;
+}
+
+.line-items-table th.text-right {
+  text-align: right;
+}
+
+.line-items-table td {
+  border: 1px solid #ddd;
+  padding: 3px 6px;
+  vertical-align: top;
+}
+
+.line-items-table tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+/* Column widths */
+.col-page { width: 6%; text-align: center; }
+.col-item { width: 6%; text-align: center; }
+.col-description { width: 44%; }
+.col-unit { width: 6%; text-align: center; }
+.col-qty { width: 8%; text-align: right; }
+.col-rate { width: 14%; text-align: right; }
+.col-total { width: 16%; text-align: right; }
+
+/* Rate column with R prefix */
+.currency {
+  font-family: Arial, sans-serif;
+}
+
+.currency::before {
+  content: "R";
+  margin-right: 2px;
+}
+
+/* Heading row styling */
+.heading-row {
+  background-color: #e8f0f7 !important;
+}
+
+.heading-row td {
+  font-weight: bold;
+  color: #1e3a5f;
+  padding: 5px 6px;
+  border-bottom: 1px solid #1e3a5f;
+}
+
+/* Subtotal and total rows */
+.subtotal-row {
+  background-color: #f0f0f0;
+}
+
+.subtotal-row td {
+  font-weight: bold;
+  border-top: 2px solid #999;
+  padding: 5px 6px;
+}
+
+.grand-total-row {
+  background-color: #1e3a5f;
+  color: white;
+}
+
+.grand-total-row td {
+  font-weight: bold;
+  font-size: 10pt;
+  padding: 6px;
+  border: none;
+}
+
+/* Brought forward / carried forward */
+.brought-forward-row {
+  background-color: #fff8e1;
+}
+
+.brought-forward-row td {
+  font-weight: bold;
+  font-style: italic;
+  border-top: 2px solid #666;
+}
+
+.carried-forward-row {
+  background-color: #fff8e1;
+}
+
+.carried-forward-row td {
+  font-weight: bold;
+  font-style: italic;
+  border-bottom: 2px solid #666;
+}
+
+/* Footer section */
+.report-footer {
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid #ccc;
+  font-size: 7pt;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.footer-disclaimer {
+  margin-bottom: 6px;
+  font-style: italic;
+}
+
+.footer-contact {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 4px;
+  border-top: 1px solid #1e3a5f;
+}
+
+.footer-contact .directors {
+  font-weight: bold;
+}
+
+.footer-contact .contact-info {
+  text-align: center;
+  flex: 1;
+}
+
+.footer-contact .address {
+  text-align: right;
+}
+
+.page-number {
+  text-align: right;
+  font-size: 8pt;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* Empty row for spacing */
+.empty-row td {
+  height: 20px;
+  border: none;
+  background: transparent;
+}
+
+/* P&G Section */
+.p-and-g-section {
+  margin-top: 12px;
+}
+
+/* Print-specific styles */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page {
+    width: 100%;
+    min-height: auto;
+    margin: 0;
+    box-shadow: none;
+    page-break-after: always;
+  }
+
+  .page:last-child {
+    page-break-after: auto;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  /* Ensure headers repeat on each page */
+  thead {
+    display: table-header-group;
+  }
+
+  /* Prevent rows from breaking across pages */
+  tr {
+    page-break-inside: avoid;
+  }
+
+  /* Keep section headers with content */
+  .section-header,
+  .subsection-header {
+    page-break-after: avoid;
+  }
+}
+
+/* Screen preview - show page boundaries */
+@media screen {
+  body {
+    background: #e0e0e0;
+    padding: 20px;
+  }
+
+  .page {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid #ccc;
+  }
+}
+
+/* Utility classes */
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.font-bold { font-weight: bold; }
+.text-sm { font-size: 8pt; }
+.text-xs { font-size: 7pt; }
+.mt-2 { margin-top: 8px; }
+.mb-2 { margin-bottom: 8px; }
+.py-1 { padding-top: 4px; padding-bottom: 4px; }

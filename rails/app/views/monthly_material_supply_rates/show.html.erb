@@ -7,13 +7,15 @@
       <p class="text-gray-600">Start typing to auto-save prices per tonne</p>
     </div>
     <div class="flex items-center gap-4">
-      <button
-        data-material-supply-rates-target="saveAllButton"
-        class="hidden rounded-md px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium text-sm transition"
-        data-action="material-supply-rates#saveAll"
-      >
-        💾 Save All
-      </button>
+      <% if policy(@monthly_material_supply_rate).save_rate? %>
+        <button
+          data-material-supply-rates-target="saveAllButton"
+          class="hidden rounded-md px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium text-sm transition"
+          data-action="material-supply-rates#saveAll"
+        >
+          💾 Save All
+        </button>
+      <% end %>
       <div id="auto_save_status" class="text-sm text-gray-500">
         <span id="save_indicator" data-material-supply-rates-target="saveIndicator"></span>
       </div>
@@ -25,7 +27,8 @@
       <table class="w-full border-collapse text-sm">
         <thead class="sticky top-0 z-10 bg-gray-100">
           <tr class="bg-gray-100 border-b border-gray-200">
-          <th class="border-r border-gray-200 px-4 py-3 text-left font-bold bg-gray-50">Material Item</th>
+          <th class="border-r border-gray-200 px-2 py-3 bg-gray-50 w-8"></th>
+          <th class="border-r border-gray-200 px-4 py-3 text-left font-bold bg-gray-50 min-w-[300px]">Material Item</th>
           <th class="border-r border-gray-200 px-4 py-3 text-center font-bold text-xs">Waste %</th>
           <% @suppliers.each do |supplier| %>
             <th class="border-r border-gray-200 px-4 py-3 text-center font-bold text-xs">
@@ -34,10 +37,13 @@
           <% end %>
         </tr>
       </thead>
-      <tbody>
+      <tbody data-controller="sortable" data-sortable-url-value="<%= reorder_material_supplies_path %>" data-sortable-draggable-value="tr">
         <% @material_supplies.each_with_index do |material, idx| %>
-          <tr class="<%= idx.even? ? 'bg-white' : 'bg-gray-50' %> border-b border-gray-200 hover:bg-blue-50 transition">
-            <td class="border-r border-gray-200 px-4 py-3 font-medium text-gray-900 bg-gray-50 sticky left-0">
+          <tr class="<%= idx.even? ? 'bg-white' : 'bg-gray-50' %> border-b border-gray-200 hover:bg-blue-50 transition" data-id="<%= material.id %>">
+            <td class="border-r border-gray-200 px-2 py-3 text-center cursor-move drag-handle text-gray-400 hover:text-gray-600 bg-gray-50">
+              <i class="fas fa-grip-vertical"></i>
+            </td>
+            <td class="border-r border-gray-200 px-4 py-3 font-medium text-gray-900 bg-gray-50 sticky left-0 min-w-[300px]">
               <%= material.name %>
             </td>
             <td class="border-r border-gray-200 px-4 py-3 text-center text-gray-600 bg-gray-50">
@@ -61,6 +67,7 @@
                       data-supplier-id="<%= supplier.id %>"
                       data-rate-id="<%= rate_id %>"
                       data-monthly-rate-id="<%= @monthly_material_supply_rate.id %>"
+                      <%= 'readonly' unless policy(@monthly_material_supply_rate).save_rate? %>
                     />
                   </div>
                   <% if existing_rate&.rate.to_f > 0 %>
@@ -73,6 +80,7 @@
                       data-supplier-id="<%= supplier.id %>"
                       data-monthly-rate-id="<%= @monthly_material_supply_rate.id %>"
                       title="Select as winning supplier for this material"
+                      <%= 'disabled' unless policy(@monthly_material_supply_rate).save_rate? %>
                     />
                   <% end %>
                 </div>
@@ -88,22 +96,26 @@
   <div class="mt-6 flex gap-3 flex-wrap">
     <%= link_to "Back to Monthly Rates", monthly_material_supply_rates_path, class: "rounded-md px-6 py-2.5 bg-gray-100 hover:bg-gray-50 text-gray-900 font-medium" %>
     
-    <%= button_to "🤖 Set 2nd Cheapest as Winners", 
-      set_2nd_cheapest_as_winners_monthly_material_supply_rate_path(@monthly_material_supply_rate),
-      method: :post,
-      class: "rounded-md px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium transition",
-      data: { turbo_confirm: "Auto-select 2nd cheapest supplier for all materials?" }
-    %>
+    <% if policy(@monthly_material_supply_rate).set_2nd_cheapest_as_winners? %>
+      <%= button_to "🤖 Set 2nd Cheapest as Winners", 
+        set_2nd_cheapest_as_winners_monthly_material_supply_rate_path(@monthly_material_supply_rate),
+        method: :post,
+        class: "rounded-md px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium transition",
+        data: { turbo_confirm: "Auto-select 2nd cheapest supplier for all materials?" }
+      %>
+    <% end %>
     
-    <button
-      data-material-supply-rates-target="saveAllButton"
-      class="hidden rounded-md px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium transition"
-      data-action="material-supply-rates#saveAll"
-    >
-      💾 Save All
-    </button>
-    <%= link_to "Manage Materials", material_supplies_path, class: "rounded-md px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium" %>
-    <%= link_to "Manage Suppliers", suppliers_path, class: "rounded-md px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium" %>
+    <% if policy(@monthly_material_supply_rate).save_rate? %>
+      <button
+        data-material-supply-rates-target="saveAllButton"
+        class="hidden rounded-md px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium transition"
+        data-action="material-supply-rates#saveAll"
+      >
+        💾 Save All
+      </button>
+      <%= link_to "Manage Materials", material_supplies_path, class: "rounded-md px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium" %>
+      <%= link_to "Manage Suppliers", suppliers_path, class: "rounded-md px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white font-medium" %>
+    <% end %>
   </div>
 </div>
 

@@ -327,6 +327,12 @@ document.addEventListener('turbo:before-visit', (event) => {
 
 // Also track when page loads (for initial load and full page refreshes)
 document.addEventListener('turbo:load', () => {
+    // Update view_path from meta tag (server provides fresh value on each render)
+    const metaViewPath = document.querySelector('meta[name="view-path"]');
+    if (metaViewPath) {
+        window.view_path = metaViewPath.content;
+    }
+
     if (window.parent !== window) {
         window.parent.postMessage({
             source: 'llamapress-navigation',
@@ -338,6 +344,12 @@ document.addEventListener('turbo:load', () => {
 
 // Track when Turbo finishes rendering (covers Turbo Frame and Turbo Drive navigation)
 document.addEventListener('turbo:render', () => {
+    // Update view_path from meta tag (server provides fresh value on each render)
+    const metaViewPath = document.querySelector('meta[name="view-path"]');
+    if (metaViewPath) {
+        window.view_path = metaViewPath.content;
+    }
+
     if (window.parent !== window) {
         window.parent.postMessage({
             source: 'llamapress-navigation',

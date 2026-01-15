@@ -4,7 +4,7 @@ FactoryBot.define do
     sequence(:name) { |n| "User #{n}" }
     password { "password123" }
     password_confirmation { "password123" }
-    role { "project_manager" }
+    role { "quantity_surveyor" }
     admin { false }
 
     trait :admin do
@@ -12,12 +12,16 @@ FactoryBot.define do
       role { "admin" }
     end
 
-    trait :project_manager do
-      role { "project_manager" }
+    trait :quantity_surveyor do
+      role { "quantity_surveyor" }
     end
 
-    trait :estimator do
-      role { "estimator" }
+    trait :office do
+      role { "office" }
+    end
+
+    trait :material_buyer do
+      role { "material_buyer" }
     end
 
     after(:create) do |user|

@@ -4,41 +4,64 @@ class TenderEquipmentSelection < ApplicationRecord
 
   validates :equipment_type_id, :units_required, :period_months, presence: true
   validates :units_required, :period_months, numericality: { greater_than: 0 }
-  validates :calculated_monthly_cost, :total_cost, presence: true, numericality: true
+  validates :base_rate, :damage_waiver_pct, :diesel_allowance, :calculated_monthly_cost, :total_cost, presence: true, numericality: true
 
+  attr_accessor :skip_broadcast
+  
   scope :ordered, -> { order(:sort_order) }
 
   before_validation :calculate_costs
-  after_save_commit :update_tender_equipment_summary
+  after_commit :update_tender_equipment_summary, on: [:create, :update, :destroy]
+  after_create_commit :broadcast_create
+  after_update_commit :broadcast_row_update, unless: :skip_broadcast
+  after_destroy_commit :broadcast_destroy
   after_commit :trigger_rate_buildup_update, on: [:create, :update, :destroy]
 
   private
+
+  def broadcast_create
+    broadcast_append_to(
+      tender,
+      target: "equipment_selections_table",
+      partial: "equipment_selections/equipment_selection",
+      locals: { equipment_selection: self }
+    )
+  end
+
+  def broadcast_row_update
+    broadcast_replace_to(
+      tender,
+      target: self,
+      partial: "equipment_selections/equipment_selection",
+      locals: { equipment_selection: self }
+    )
+  end
+
+  def broadcast_destroy
+    broadcast_remove_to(tender, target: self)
+  end
 
   def calculate_costs
     # Ensure equipment_type_id is present
     return if equipment_type_id.blank?
 
     # Load equipment_type to get rates
-    equipment = EquipmentType.find(equipment_type_id)
+    equipment = equipment_type
 
-    # Calculate monthly cost: (base_rate + diesel_allowance) * (1 + damage_waiver_pct)
-    # OR use override if provided
-    if monthly_cost_override.present?
-      self.calculated_monthly_cost = monthly_cost_override
-    else
-      base_monthly = equipment.base_rate_monthly + equipment.diesel_allowance_monthly
-      damage_multiplier = 1 + (equipment.damage_waiver_pct || 0.06)
-      self.calculated_monthly_cost = base_monthly * damage_multiplier
-    end
+    # Set defaults from EquipmentType if components are nil
+    self.base_rate ||= equipment.base_rate_monthly
+    self.damage_waiver_pct ||= equipment.damage_waiver_pct
+    self.diesel_allowance ||= equipment.diesel_allowance_monthly
 
-    # Calculate total: (monthly_cost × units × months) + establishment_cost + de_establishment_cost
+    # Calculate monthly cost: (base_rate * (1 + damage_waiver_pct)) + diesel_allowance
+    damage_multiplier = 1 + (damage_waiver_pct || 0.0)
+    self.calculated_monthly_cost = (base_rate * damage_multiplier) + (diesel_allowance || 0.0)
+
+    # Calculate total: (monthly_cost × units × months)
     # Set defaults if units or months are nil
     units = units_required.presence || 1
     months = period_months.presence || 1
-    monthly_total = calculated_monthly_cost * units * months
-    establishment = establishment_cost.presence || 0
-    de_establishment = de_establishment_cost.presence || 0
-    self.total_cost = monthly_total + establishment + de_establishment
+    self.total_cost = calculated_monthly_cost * units * months
   end
 
   def update_tender_equipment_summary

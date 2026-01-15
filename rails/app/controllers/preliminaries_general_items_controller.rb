@@ -49,7 +49,7 @@ class PreliminariesGeneralItemsController < ApplicationController
   # POST /tenders/:tender_id/p_and_g
   def create
     # Use generic defaults if params are missing (for "Quick Add")
-    create_params = preliminaries_general_item_params rescue { description: "New P&G Item", category: "fixed_based", quantity: 1, rate: 0 }
+    create_params = preliminaries_general_item_params rescue { description: "New P&G Item", category: "fixed", quantity: 1, rate: 0 }
     @preliminaries_general_item = @tender.preliminaries_general_items.build(create_params)
     @preliminaries_general_item.set_crane_defaults
     @preliminaries_general_item.set_access_equipment_defaults
@@ -70,15 +70,8 @@ class PreliminariesGeneralItemsController < ApplicationController
             total_display: number_to_currency(@preliminaries_general_item.quantity * @preliminaries_general_item.rate)
           }
         end
-        format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.append("pg_items_table_body_#{@preliminaries_general_item.category}", 
-                                partial: "preliminaries_general_items/preliminaries_general_item", 
-                                locals: { preliminaries_general_item: @preliminaries_general_item, editing: true, tender: @tender }),
-            turbo_stream.replace("pg_totals", partial: "preliminaries_general_items/totals", locals: { tender: @tender })
-          ]
-        end
         format.html { redirect_to tender_preliminaries_general_items_path(@tender), notice: "Item added." }
+        format.turbo_stream { redirect_to tender_preliminaries_general_items_path(@tender), notice: "Item added." }
       else
         format.html { render :new, status: :unprocessable_entity }
       end
@@ -100,12 +93,20 @@ class PreliminariesGeneralItemsController < ApplicationController
           }
         end
         format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.replace(@preliminaries_general_item, 
-                                 partial: "preliminaries_general_items/preliminaries_general_item", 
-                                 locals: { preliminaries_general_item: @preliminaries_general_item, tender: @tender }),
-            turbo_stream.replace("pg_totals", partial: "preliminaries_general_items/totals", locals: { tender: @tender })
-          ]
+          if @preliminaries_general_item.saved_change_to_category?
+            @preliminaries_general_items = @tender.preliminaries_general_items.order(:sort_order, :created_at)
+            @grouped_items = @preliminaries_general_items.group_by(&:category)
+            render turbo_stream: turbo_stream.replace("preliminaries_general_items_container", 
+                                 partial: "preliminaries_general_items/grouped_items", 
+                                 locals: { grouped_items: @grouped_items, tender: @tender, templates: @templates })
+          else
+            render turbo_stream: [
+              turbo_stream.replace(@preliminaries_general_item, 
+                                   partial: "preliminaries_general_items/preliminaries_general_item", 
+                                   locals: { preliminaries_general_item: @preliminaries_general_item, tender: @tender }),
+              turbo_stream.replace("pg_totals", partial: "preliminaries_general_items/totals", locals: { tender: @tender })
+            ]
+          end
         end
         format.html { redirect_to tender_preliminaries_general_items_path(@tender), notice: "Item updated." }
       else

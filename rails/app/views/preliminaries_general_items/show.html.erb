@@ -25,11 +25,11 @@
         </div>
         <div>
           <span class="block text-sm font-medium text-gray-500">Rate</span>
-          <span class="text-lg font-mono"><%= number_to_currency(@preliminaries_general_item.rate) %></span>
+          <span class="text-lg font-mono"><%= number_to_currency(@preliminaries_general_item.rate, unit: "R ", precision: 2) %></span>
         </div>
         <div>
           <span class="block text-sm font-medium text-gray-500">Total</span>
-          <span class="text-lg font-mono font-bold"><%= number_to_currency(@preliminaries_general_item.quantity * @preliminaries_general_item.rate) %></span>
+          <span class="text-lg font-mono font-bold"><%= number_to_currency(@preliminaries_general_item.quantity * @preliminaries_general_item.rate, unit: "R ", precision: 2) %></span>
         </div>
       </div>
     </div>

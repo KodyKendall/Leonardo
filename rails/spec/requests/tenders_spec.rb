@@ -19,14 +19,108 @@ RSpec.describe "/tenders", type: :request do
   # Tender. As you add validations to Tender, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) {
-    skip("Add a hash of attributes valid for your model")
+    {
+      tender_name: "Test Tender",
+      status: "Draft"
+    }
   }
 
   let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
+    {
+      tender_name: "",
+      status: "Invalid Status"
+    }
   }
 
   before { sign_in(user) }
+
+  describe "GET /report" do
+    let(:tender) { Tender.create! valid_attributes }
+
+    it "renders a successful HTML response" do
+      get report_tender_url(tender)
+      expect(response).to be_successful
+    end
+
+    it "returns a successful PDF response" do
+      # Grover might need a running browser or mock, but let's see if it works in the test env
+      get report_tender_url(tender, format: :pdf)
+      expect(response).to be_successful
+      expect(response.content_type).to eq('application/pdf')
+      # Rails encodes the filename in Content-Disposition header according to RFC 6266
+      # It provides both a 'filename' (often with substitutions for non-ASCII) and 'filename*' (properly encoded)
+      content_disposition = response.headers['Content-Disposition']
+      expect(content_disposition).to include("filename*=")
+      expect(content_disposition).to include("E2026001")
+      expect(content_disposition).to include("Test%20Tender")
+      # %E2%80%93 is the URL-encoded en dash
+      expect(content_disposition).to include("%E2%80%93")
+      expect(response.body).not_to be_empty
+    end
+
+    context "report display customization" do
+      let!(:pg_item) { create(:preliminaries_general_item, tender: tender, description: "Detailed P&G Item", quantity: 1, rate: 1000) }
+      
+      before do
+        tender.reload
+        tender.project_rate_buildup.update!(shop_drawings_rate: 500, shop_drawings_tonnes: 10)
+        tender.recalculate_grand_total!
+      end
+
+      it "renders P&G breakdown when mode is detailed" do
+        tender.update!(p_and_g_display_mode: 'detailed')
+        get report_tender_url(tender)
+        expect(response.body).to include("Detailed P&amp;G Item")
+        expect(response.body).not_to include("Preliminaries & Generals (Rolled-up)")
+      end
+
+      it "renders single P&G row when mode is rolled_up" do
+        tender.update!(p_and_g_display_mode: 'rolled_up')
+        get report_tender_url(tender)
+        expect(response.body).to include("Preliminaries & Generals (Rolled-up)")
+        expect(response.body).not_to include("Detailed P&amp;G Item")
+      end
+
+      it "renders Shop Drawings tonnage/rate when mode is tonnage_rate" do
+        tender.update!(shop_drawings_display_mode: 'tonnage_rate')
+        get report_tender_url(tender)
+        expect(response.body).to include("10.00")
+        expect(response.body).to include("500.0")
+      end
+
+      it "renders Shop Drawings as lump sum when mode is lump_sum" do
+        tender.update!(shop_drawings_display_mode: 'lump_sum')
+        get report_tender_url(tender)
+        expect(response.body).to include("Sum")
+        expect(response.body).to include("1.00")
+        expect(response.body).to include("5,000.0") # 10 * 500
+      end
+    end
+
+    context "updating display modes from report" do
+      let!(:pg_item) { create(:preliminaries_general_item, tender: tender, description: "Test P&G", quantity: 1, rate: 100) }
+      
+      it "successfully updates and renders report content for turbo_stream" do
+        patch tender_url(tender), params: { 
+          source: 'report', 
+          tender: { p_and_g_display_mode: 'rolled_up' } 
+        }, as: :turbo_stream
+        
+        expect(response).to be_successful
+        expect(response.body).to include("Preliminaries & Generals (Rolled-up)")
+      end
+
+      it "successfully updates and renders report content for html" do
+        patch tender_url(tender), params: { 
+          source: 'report', 
+          tender: { p_and_g_display_mode: 'rolled_up' } 
+        }
+        
+        expect(response).to be_successful
+        expect(response.body).to include("Preliminaries & Generals (Rolled-up)")
+      end
+    end
+  end
 
   describe "GET /index" do
     it "renders a successful response" do
@@ -129,6 +223,38 @@ RSpec.describe "/tenders", type: :request do
       tender = Tender.create! valid_attributes
       delete tender_url(tender)
       expect(response).to redirect_to(tenders_url)
+    end
+  end
+
+  describe "GET /material_autofill" do
+    let(:tender) { Tender.create!(valid_attributes) }
+    let(:material_supply) { MaterialSupply.create!(name: "Standard Steel", waste_percentage: 10) }
+    let(:anchor_rate) { AnchorRate.create!(name: "M16 Anchor", waste_percentage: 5, material_cost: 100) }
+
+    it "returns autofill data for MaterialSupply" do
+      get material_autofill_tender_url(tender, material_supply_id: material_supply.id, material_supply_type: "MaterialSupply")
+      expect(response).to be_successful
+      json = JSON.parse(response.body)
+      expect(json["waste_percentage"]).to eq("10.0")
+    end
+
+    it "returns autofill data for AnchorRate" do
+      get material_autofill_tender_url(tender, material_supply_id: anchor_rate.id, material_supply_type: "AnchorRate")
+      expect(response).to be_successful
+      json = JSON.parse(response.body)
+      expect(json["waste_percentage"]).to eq("5.0")
+    end
+
+    it "returns tender-specific rate if it exists" do
+      TenderSpecificMaterialRate.create!(
+        tender: tender,
+        material_supply_id: material_supply.id,
+        material_supply_type: "MaterialSupply",
+        rate: 15.50
+      )
+      get material_autofill_tender_url(tender, material_supply_id: material_supply.id, material_supply_type: "MaterialSupply")
+      json = JSON.parse(response.body)
+      expect(json["rate"]).to eq("15.5")
     end
   end
 end

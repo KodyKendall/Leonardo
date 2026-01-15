@@ -11,13 +11,20 @@
 </style>
 
 <%= turbo_frame_tag "line_item_material_#{line_item_material.id}" do %>
+  <%
+    category = line_item_material.line_item_material_breakdown&.tender_line_item&.section_category
+    collection = category ? category.supply_source_model.all : MaterialSupply.all
+    material_supply_type = category ? category.supply_source_model.to_s : 'MaterialSupply'
+  %>
   <!-- Wrapper div with Stimulus controller -->
   <div data-controller="line-item-material-form"
-       data-tender-id="<%= line_item_material.tender_line_item.tender_id %>">
+       data-tender-id="<%= line_item_material.tender_line_item.tender_id %>"
+       data-material-supply-type="<%= material_supply_type %>">
     <%= form_with(model: line_item_material, method: :patch, class: "contents", data: {
       controller: "dirty-form",
       action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset"
     }, local: { tender_line_item_id: line_item_material.tender_line_item_id }) do |form| %>
+      <%= form.hidden_field :material_supply_type, value: material_supply_type %>
       <%= hidden_field_tag :tender_line_item_id, line_item_material.tender_line_item_id %>
       <!-- Material Row - Ultra Compact -->
       <div class="bg-white border-b p-1 hover:bg-gray-50">
@@ -25,7 +32,7 @@
           
           <!-- Material Supply Dropdown -->
           <div class="col-span-3">
-            <%= form.collection_select :material_supply_id, MaterialSupply.all, :id, :name,
+            <%= form.collection_select :material_supply_id, collection, :id, :name,
                 { prompt: "Select" },
                 class: "select select-bordered select-xs w-full text-xs",
                 data: { action: "change->line-item-material-form#autoFill" } %>
@@ -70,7 +77,7 @@
           <%= form.button type: :submit, class: "btn btn-ghost btn-xs text-green-600 p-1" do %>
             <i class="fa-solid fa-check text-xs"></i>
           <% end %>
-          <%= button_to line_item_material, method: :delete, form: { class: "inline" }, data: { turbo_confirm: "Delete?" }, class: "btn btn-ghost btn-xs text-red-600 p-1" do %>
+          <%= link_to line_item_material, data: { turbo_method: :delete, turbo_confirm: "Delete?" }, class: "btn btn-ghost btn-xs text-red-600 p-1" do %>
             <i class="fa-solid fa-trash text-xs"></i>
           <% end %>
         </div>

@@ -43,6 +43,10 @@
     <% end %>
   </div>
   <div>
+    <strong class="block font-medium mb-1">Total tonnage:</strong>
+    <%= number_with_precision(tender.total_tonnage || 0, precision: 2) %> t
+  </div>
+  <div>
     <strong class="block font-medium mb-1">Project type:</strong>
     <%= tender.project_type %>
   </div>

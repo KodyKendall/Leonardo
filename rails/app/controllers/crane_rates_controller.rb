@@ -4,20 +4,24 @@ class CraneRatesController < ApplicationController
 
   # GET /crane_rates or /crane_rates.json
   def index
-    @crane_rates = CraneRate.all
+    @crane_rates = CraneRate.ordered_by_size
+    authorize CraneRate
   end
 
   # GET /crane_rates/1 or /crane_rates/1.json
   def show
+    authorize @crane_rate
   end
 
   # GET /crane_rates/new
   def new
-    @crane_rate = CraneRate.new
+    @crane_rate = CraneRate.new(ownership_type: nil)
+    authorize @crane_rate
   end
 
   # GET /crane_rates/1/edit
   def edit
+    authorize @crane_rate
     respond_to do |format|
       format.html { render :edit }
       format.turbo_stream { render :edit, locals: { inline: true } }
@@ -27,6 +31,7 @@ class CraneRatesController < ApplicationController
   # POST /crane_rates or /crane_rates.json
   def create
     @crane_rate = CraneRate.new(crane_rate_params)
+    authorize @crane_rate
 
     respond_to do |format|
       if @crane_rate.save
@@ -41,6 +46,7 @@ class CraneRatesController < ApplicationController
 
   # PATCH/PUT /crane_rates/1 or /crane_rates/1.json
   def update
+    authorize @crane_rate
     respond_to do |format|
       if @crane_rate.update(crane_rate_params)
         format.html { redirect_to @crane_rate, notice: "Crane rate was successfully updated.", status: :see_other }
@@ -68,6 +74,7 @@ class CraneRatesController < ApplicationController
 
   # DELETE /crane_rates/1 or /crane_rates/1.json
   def destroy
+    authorize @crane_rate
     @crane_rate.destroy!
 
     respond_to do |format|

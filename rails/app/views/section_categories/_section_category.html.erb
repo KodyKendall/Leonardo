@@ -1,0 +1,14 @@
+<div id="<%= dom_id section_category %>" class="w-full sm:w-auto my-5 space-y-5">
+  <div>
+    <strong class="block font-medium mb-1">Name:</strong>
+    <%= section_category.name %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Display name:</strong>
+    <%= section_category.display_name %>
+  </div>
+  <div>
+    <strong class="block font-medium mb-1">Supply rates type:</strong>
+    <%= section_category.supply_rates_type&.titleize %>
+  </div>
+</div>

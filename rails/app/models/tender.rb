@@ -3,7 +3,7 @@ class Tender < ApplicationRecord
   belongs_to :client, optional: true
   belongs_to :contact, optional: true
   has_many :boqs, dependent: :destroy
-  has_many :tender_line_items, dependent: :destroy
+  has_many :tender_line_items, -> { ordered }, dependent: :destroy
   has_many :tender_crane_selections, dependent: :destroy
   has_many :tender_specific_material_rates, dependent: :destroy
   has_many :material_supplies, through: :tender_specific_material_rates
@@ -19,6 +19,7 @@ class Tender < ApplicationRecord
   has_one_attached :qob_file
   
   # Callbacks
+  after_initialize :set_report_defaults, if: :new_record?
   before_save :sync_client_name, if: -> { client_id_changed? }
   before_save :set_default_contact, if: -> { client_id_changed? && contact_id.blank? }
   before_create :generate_e_number
@@ -28,6 +29,8 @@ class Tender < ApplicationRecord
   # Validations
   validates :tender_name, presence: true
   validates :status, presence: true, inclusion: { in: %w(Draft In\ Progress Submitted Awarded Not\ Awarded) }
+  validates :p_and_g_display_mode, presence: true, inclusion: { in: %w(detailed rolled_up) }
+  validates :shop_drawings_display_mode, presence: true, inclusion: { in: %w(lump_sum tonnage_rate) }
   validate :qob_file_content_type
   
   # Status enum-like constant
@@ -36,12 +39,14 @@ class Tender < ApplicationRecord
   # Project types enum-like constant
   PROJECT_TYPES = ['Commercial', 'Mining'].freeze
 
-  # Weight units for tonnage calculation
-  WEIGHT_UNITS = ["t", "ton", "tons", "tonne", "tonnes"].freeze
-  
+  # Report display modes
+  PG_DISPLAY_MODES = [['Detailed Breakdown', 'detailed'], ['Rolled-up Lump Sum', 'rolled_up']].freeze
+  SHOP_DRAWINGS_DISPLAY_MODES = [['Lump Sum', 'lump_sum'], ['Tonnage & Rate', 'tonnage_rate']].freeze
+
   # Recalculate grand total as sum of all line item totals + shop drawings total + P&G items and broadcast update
+  # Excludes heading rows (is_heading: true) from calculations
   def recalculate_grand_total!
-    line_items_total = tender_line_items.sum { |item| (item.line_item_rate_build_up&.rounded_rate || 0) * item.quantity }
+    line_items_total = tender_line_items.where(is_heading: false).sum { |item| (item.line_item_rate_build_up&.rounded_rate || 0) * item.quantity }
     shop_drawings_total = project_rate_buildup&.shop_drawings_total || 0
     p_and_g_total = preliminaries_general_items.sum { |item| item.quantity * item.rate }
     
@@ -64,16 +69,35 @@ class Tender < ApplicationRecord
     "#{display_client_name}#{contact_part}"
   end
 
-  # Recalculate total tonnage as sum of all line item quantities where unit_of_measure is a weight unit
-  def recalculate_total_tonnage!
-    new_tonnage = tender_line_items.where(unit_of_measure: WEIGHT_UNITS).sum(:quantity)
+  # Recalculate total tonnage as sum of all line item quantities where include_in_tonnage is true
+  # Excludes heading rows (is_heading: true) from calculations
+  # Also calculates financial_tonnage which includes ALL line items
+  def recalculate_total_tonnage!(cascade: true)
+    items = tender_line_items.where(is_heading: false)
+    
+    new_tonnage = items.where(include_in_tonnage: true).sum(:quantity)
+    new_financial_tonnage = items.sum(:quantity)
+    
     self.total_tonnage = new_tonnage
-    update_column(:total_tonnage, new_tonnage)
+    self.financial_tonnage = new_financial_tonnage
+    
+    update_columns(total_tonnage: new_tonnage, financial_tonnage: new_financial_tonnage)
+    
     broadcast_update_total_tonnage
-    # Also recalculate equipment summary since cost per tonne depends on total_tonnage
-    recalculate_equipment_summary!
-    # Recalculate project rate buildup since crainage rate depends on total_tonnage
-    recalculate_project_rate_buildup!
+    
+    if cascade
+      # Also recalculate equipment summary since cost per tonne depends on total_tonnage
+      recalculate_equipment_summary!
+      # Recalculate project rate buildup since crainage rate depends on total_tonnage
+      recalculate_project_rate_buildup!
+      # Recalculate crane breakdown to trigger P&G sync
+      recalculate_crane_breakdown!
+    end
+  end
+
+  # Recalculate crane breakdown to trigger P&G sync
+  def recalculate_crane_breakdown!
+    on_site_mobile_crane_breakdown&.touch
   end
 
   # Recalculate project rate buildup when tender tonnage changes
@@ -92,6 +116,11 @@ class Tender < ApplicationRecord
   end
 
   private
+
+  def set_report_defaults
+    self.p_and_g_display_mode ||= 'detailed'
+    self.shop_drawings_display_mode ||= 'lump_sum'
+  end
 
   def sync_client_name
     self.client_name = client&.business_name

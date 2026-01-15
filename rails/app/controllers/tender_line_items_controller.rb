@@ -1,6 +1,6 @@
 class TenderLineItemsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_tender, only: %i[ index new create edit update destroy ]
+  before_action :set_tender, only: %i[ index new create edit update destroy reorder ]
   before_action :set_tender_line_item, only: %i[ show edit update destroy ]
   before_action :set_tender_from_line_item, only: %i[ show ], unless: -> { params[:tender_id].present? }
 
@@ -11,6 +11,15 @@ class TenderLineItemsController < ApplicationController
       format.html
       format.json { render json: @tender_line_items.map { |item| item.as_json.merge(line_item_rate_build_up_id: item.line_item_rate_build_up&.id) } }
     end
+  end
+
+  def reorder
+    TenderLineItem.transaction do
+      params[:ids].each_with_index do |id, index|
+        @tender.tender_line_items.find(id).update_column(:position, index + 1)
+      end
+    end
+    head :ok
   end
 
   # GET /tenders/:tender_id/tender_line_items/:id or /tender_line_items/:id
@@ -47,7 +56,8 @@ class TenderLineItemsController < ApplicationController
         item_description: "New Line Item",
         quantity: 0,
         rate: 0,
-        unit_of_measure: "each"
+        unit_of_measure: "each",
+        section_category_id: SectionCategory.find_by(name: 'blank')&.id || SectionCategory.first&.id
       )
     end
 
@@ -63,7 +73,10 @@ class TenderLineItemsController < ApplicationController
         format.html { redirect_to builder_tender_path(@tender), notice: 'Tender line item was successfully created.' }
         format.json { render json: @line_item, status: :created }
       else
-        format.turbo_stream { render :new, status: :unprocessable_entity }
+        format.turbo_stream do
+          flash.now[:error] = @line_item.errors.full_messages.to_sentence
+          render turbo_stream: turbo_stream.update("flash", partial: "shared/flash"), status: :unprocessable_entity
+        end
         format.html { render :new, status: :unprocessable_entity }
         format.json { render json: @line_item.errors, status: :unprocessable_entity }
       end
@@ -79,7 +92,13 @@ class TenderLineItemsController < ApplicationController
         format.html { redirect_to builder_tender_path(@tender), notice: 'Tender line item was successfully updated.' }
         format.json { render json: @line_item }
       else
-        format.turbo_stream { render :edit, status: :unprocessable_entity }
+        format.turbo_stream do
+          flash.now[:error] = @line_item.errors.full_messages.to_sentence
+          render turbo_stream: [
+            turbo_stream.update("flash", partial: "shared/flash"),
+            turbo_stream.replace(@line_item, partial: "tender_line_items/tender_line_item", locals: { tender_line_item: @line_item })
+          ], status: :unprocessable_entity
+        end
         format.html { render :edit, status: :unprocessable_entity }
         format.json { render json: @line_item.errors, status: :unprocessable_entity }
       end
@@ -116,8 +135,8 @@ class TenderLineItemsController < ApplicationController
 
     def tender_line_item_params
       params.require(:tender_line_item).permit(
-        :page_number, :item_number, :item_description, :section_category, 
-        :unit_of_measure, :quantity, :rate, :notes,
+        :page_number, :item_number, :item_description, :section_category_id, 
+        :unit_of_measure, :quantity, :rate, :notes, :is_heading, :include_in_tonnage,
         line_item_rate_build_up_attributes: [
           :id, :material_supply_rate, :fabrication_rate, :fabrication_included,
           :overheads_rate, :overheads_included, :shop_priming_rate,

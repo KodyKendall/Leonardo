@@ -3,6 +3,10 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["input", "submitButton"]
 
+  submit() {
+    this.element.requestSubmit()
+  }
+
   submitOnEnter(event) {
     if (event.key === 'Enter') {
       event.preventDefault()

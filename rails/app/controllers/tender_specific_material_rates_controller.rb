@@ -142,19 +142,19 @@ class TenderSpecificMaterialRatesController < ApplicationController
   end
 
   def tender_specific_material_rate_params
-    params.require(:tender_specific_material_rate).permit(:material_supply_id, :rate, :notes)
+    params.require(:tender_specific_material_rate).permit(:material_supply_id, :material_supply_type, :rate, :notes, :supplier_id)
   end
 
   def rate_being_changed?
     tender_specific_material_rate_params[:rate].present? &&
-      @tender_specific_material_rate.rate_changed?(to: tender_specific_material_rate_params[:rate].to_f)
+      @tender_specific_material_rate.rate != tender_specific_material_rate_params[:rate].to_f
   end
 
   def count_affected_line_item_materials
     return 0 unless @tender_specific_material_rate.material_supply_id.present?
 
     LineItemMaterial
-      .where(material_supply_id: @tender_specific_material_rate.material_supply_id)
+      .where(material_supply_id: @tender_specific_material_rate.material_supply_id, material_supply_type: @tender_specific_material_rate.material_supply_type)
       .joins(:tender_line_item)
       .where(tender_line_items: { tender_id: @tender.id })
       .count

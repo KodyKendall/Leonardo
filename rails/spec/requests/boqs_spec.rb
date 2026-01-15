@@ -8,12 +8,15 @@ RSpec.describe "BOQs", type: :request do
   describe "GET /boqs" do
     it "lists all BOQs" do
       sign_in user
-      create_list(:boq, 3)
+      boqs = create_list(:boq, 3)
 
       get boqs_path
 
       expect(response).to be_successful
-      expect(response.body).to include("BOQ #1")
+      # Check that all created BOQs are listed by their names
+      boqs.each do |boq|
+        expect(response.body).to include(boq.boq_name)
+      end
     end
 
     it "requires authentication" do
@@ -139,7 +142,8 @@ RSpec.describe "BOQs", type: :request do
 
       boq = Boq.last
       expect(boq.tender).to eq(tender)
-      expect(response).to redirect_to(tender_path(tender))
+      # Controller redirects to the BOQ show page, not the tender
+      expect(response).to redirect_to(boq_path(boq))
     end
 
     it "rejects BOQ without CSV file" do

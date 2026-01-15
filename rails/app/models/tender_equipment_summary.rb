@@ -5,6 +5,11 @@ class TenderEquipmentSummary < ApplicationRecord
             presence: true, numericality: { greater_than_or_equal_to: 0 }
   validates :establishment_cost, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
+  after_update_commit :broadcast_update
+  after_update_commit :sync_access_pg_items
+
+  ACCESS_EQUIPMENT_ROUNDING_FACTOR = 10
+
   # Calculate equipment costs and rate per tonne
   def calculate!
     # equipment_subtotal = sum of all tender_equipment_selections.total_cost
@@ -26,26 +31,30 @@ class TenderEquipmentSummary < ApplicationRecord
     save!
   end
 
-  # Calculate cherry picker rate per tonne using CEILING to nearest R20
+  # Calculate cherry picker rate per tonne using CEILING to nearest factor (standardized to 10)
   # Returns 0 if total_equipment_cost is not available or is zero
   def cherry_picker_rate_per_tonne
     return 0 if total_equipment_cost.blank? || total_equipment_cost.zero?
     
     # Get total tonnage from tender (if available)
-    tonnage = tender.respond_to?(:total_tonnage) ? tender.total_tonnage.to_f : 0
+    tonnage = (tender.respond_to?(:total_tonnage) && tender.total_tonnage.present?) ? tender.total_tonnage.to_f : 0
     return 0 if tonnage.zero?
     
     rate = total_equipment_cost / tonnage
-    (rate / 20.0).ceil * 20
+    (rate / ACCESS_EQUIPMENT_ROUNDING_FACTOR.to_f).ceil * ACCESS_EQUIPMENT_ROUNDING_FACTOR
   end
 
   # Broadcast update to equipment_cost_summary turbo frame
   def broadcast_update
-    broadcast_update_to(
-      "tender_#{tender.id}",
+    broadcast_replace_to(
+      tender,
       target: "equipment_cost_summary",
       partial: "tender_equipment_summaries/summary",
       locals: { tender_equipment_summary: self }
     )
+  end
+
+  def sync_access_pg_items
+    tender.preliminaries_general_items.where(is_access_equipment: true).find_each(&:save!)
   end
 end

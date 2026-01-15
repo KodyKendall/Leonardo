@@ -1,4 +1,13 @@
+# LEONARDO WAS HERE
 Rails.application.routes.draw do
+  resources :anchor_supplier_rates
+  resources :line_item_material_templates
+  resources :section_category_templates do
+    member do
+      post :bulk_create_slots
+    end
+  end
+  resources :section_categories
   resources :preliminaries_general_item_templates, path: 'p_and_g_templates'
   # resources :preliminaries_general_items
   resources :tender_equipment_summaries
@@ -13,7 +22,11 @@ Rails.application.routes.draw do
   resources :tender_crane_selections
   resources :crane_complements
   resources :crane_rates
-  resources :line_item_material_breakdowns
+  resources :line_item_material_breakdowns do
+    member do
+      patch :update_section_category
+    end
+  end
   resources :line_item_materials
   resources :line_item_rate_build_ups
   resources :boqs do
@@ -47,8 +60,10 @@ Rails.application.routes.draw do
   resources :tenders do
     member do
       get :builder
+      get :report
       get :tender_inclusions_exclusions
       patch :update_inclusions_exclusions
+      post :sync_all_inclusions_exclusions
       post :mirror_boq_items
       post :attach_boq, to: "boqs#attach_boq"
       get :material_autofill
@@ -57,7 +72,11 @@ Rails.application.routes.draw do
       post :quick_create
     end
     resources :boqs, only: [:create]
-    resources :tender_line_items
+    resources :tender_line_items do
+      collection do
+        patch :reorder
+      end
+    end
     resources :tender_specific_material_rates do
       collection do
         post :populate_from_month
@@ -72,10 +91,12 @@ Rails.application.routes.draw do
     end
   end
 
-    resources :tender_line_items
-
   resources :suppliers
-  resources :material_supplies
+  resources :material_supplies do
+    collection do
+      patch :reorder
+    end
+  end
   resources :monthly_material_supply_rates do
     member do
       post :save_rate
@@ -85,6 +106,9 @@ Rails.application.routes.draw do
   resources :material_supply_rates
   devise_for :users, controllers: { registrations: 'users/registrations' }
   resources :users do
+    collection do
+      post :create_managed, action: :create
+    end
     member do
       get :generate_profile_pic, action: :generate_profile_pic_form
       post :generate_profile_pic
@@ -93,13 +117,8 @@ Rails.application.routes.draw do
     end
   end
   mount LlamaBotRails::Engine => "/llama_bot"
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Render dynamic PWA files from app/views/pwa/*
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
@@ -108,17 +127,14 @@ Rails.application.routes.draw do
   get "old_dashboard" => "dashboards#old_dashboard"
   post "upload_tender_qob" => "dashboards#upload_tender_qob"
   get "api/dashboard_metrics" => "dashboards#metrics"
-  # root "prototypes#show", page: "home"
   get "home" => "public#home"
   get "chat" => "public#chat"
 
-  # Requirements browser
   get "requirements" => "requirements#index"
   get "requirements/*path" => "requirements#index", as: :requirements_path, constraints: { path: /.*/ }, defaults: { format: :html }
 
   namespace :admin do
     root to: "dashboard#index"
-    
     resources :users do
       member do
         post :impersonate
@@ -127,9 +143,18 @@ Rails.application.routes.draw do
   end
   
   post "/stop_impersonating", to: "application#stop_impersonating"
-
-
   get "/prototypes/*page", to: "prototypes#show"
-  # Defines the root path route ("/")
-  # root "posts#index"
+
+  resources :nut_bolt_washer_rates, path: 'nuts_bolts_and_washers' do
+    collection do
+      patch :reorder
+    end
+  end
+
+  resources :anchor_rates do
+    collection do
+      patch :reorder
+    end
+    resources :anchor_supplier_rates, shallow: true
+  end
 end

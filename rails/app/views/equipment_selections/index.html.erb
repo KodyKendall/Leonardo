@@ -22,39 +22,38 @@
   </div>
 
   <!-- Equipment Selections Table -->
-  <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
-    <table class="w-full">
-      <thead class="bg-gray-50 border-b border-gray-200">
-        <tr>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Equipment</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Units</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Months</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Purpose</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Monthly Cost</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Total Cost</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Establishment</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">De-establishment</th>
-          <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
-        </tr>
-      </thead>
-      <tbody id="equipment_selections_table" class="divide-y divide-gray-200">
+  <div class="bg-white rounded-lg border border-gray-200 overflow-x-auto">
+    <div class="table w-full min-w-[1200px]">
+      <div class="table-header-group bg-gray-50 border-b border-gray-200">
+        <div class="table-row">
+          <div class="table-cell px-4 py-3 text-left text-sm font-semibold text-gray-700">Equipment</div>
+          <div class="table-cell px-4 py-3 text-left text-sm font-semibold text-gray-700 w-20">Units</div>
+          <div class="table-cell px-4 py-3 text-left text-sm font-semibold text-gray-700 w-20">Months</div>
+          <div class="table-cell px-4 py-3 text-left text-sm font-semibold text-gray-700">Purpose</div>
+          <div class="table-cell px-4 py-3 text-left text-sm font-semibold text-gray-700 w-28">Base Rate</div>
+          <div class="table-cell px-4 py-3 text-left text-sm font-semibold text-gray-700 w-20">DW %</div>
+          <div class="table-cell px-4 py-3 text-left text-sm font-semibold text-gray-700 w-28">Diesel</div>
+          <div class="table-cell px-4 py-3 text-left text-sm font-semibold text-gray-700">Monthly</div>
+          <div class="table-cell px-4 py-3 text-left text-sm font-semibold text-gray-700">Total Cost</div>
+          <div class="table-cell px-4 py-3 text-left text-sm font-semibold text-gray-700">Actions</div>
+        </div>
+      </div>
+      <div id="equipment_selections_table" class="table-row-group divide-y divide-gray-200">
         <% @equipment_selections.each do |equipment_selection| %>
           <%= render "equipment_selection", equipment_selection: equipment_selection %>
         <% end %>
-      </tbody>
+      </div>
 
-      <tbody id="equipment_totals_table" class="divide-y divide-gray-200">
+      <div id="equipment_totals_table" class="table-row-group divide-y divide-gray-200">
         <!-- Establishment and De-establishment Cost Row -->
         <%= render "establishment_cost_row", tender_equipment_summary: @tender_equipment_summary %>
+      </div>
+    </div>
 
-        <!-- Add Equipment Form Row -->
-        <tr>
-          <td colspan="9" class="p-0">
-            <%= render "add_form", tender: @tender, new_equipment_selection: @new_equipment_selection, equipment_types: @equipment_types %>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <!-- Add Equipment Form Row -->
+    <div id="add_equipment_form_row" class="border-t-2 border-blue-200">
+      <%= render "add_form", tender: @tender, new_equipment_selection: @new_equipment_selection, equipment_types: @equipment_types %>
+    </div>
   </div>
 
   <!-- No Equipment Message -->

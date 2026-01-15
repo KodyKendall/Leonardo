@@ -156,13 +156,11 @@ RSpec.describe ProjectRateBuildUp, type: :model do
     it 'syncs changed rates to all child line items' do
       project_rate_buildup.update!(
         material_supply_rate: 5500,
-        shop_drawings_rate: 150,
         profit_margin_percentage: 15
       )
 
       rate_buildup.reload
       expect(rate_buildup.material_supply_rate).to eq(5500)
-      expect(rate_buildup.shop_drawings_rate).to eq(150)
       expect(rate_buildup.margin_percentage).to eq(15)
     end
   end

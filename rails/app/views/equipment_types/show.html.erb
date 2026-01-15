@@ -8,8 +8,14 @@
   <h1 class="font-bold text-4xl">Showing equipment type</h1>
 
   <%= render @equipment_type %>
-
-  <%= link_to "Edit this equipment type", edit_equipment_type_path(@equipment_type), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= link_to "Back to equipment types", equipment_types_path, class: "w-full sm:w-auto text-center mt-2 sm:mt-0 sm:ml-2 rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-  <%= button_to "Destroy this equipment type", @equipment_type, method: :delete, form_class: "sm:inline-block mt-2 sm:mt-0 sm:ml-2", class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+  
+  <div class="mt-4 flex flex-wrap gap-2">
+    <% if policy(@equipment_type).edit? %>
+      <%= link_to "Edit this equipment type", edit_equipment_type_path(@equipment_type), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+    <% end %>
+    <%= link_to "Back to equipment types", equipment_types_path, class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
+    <% if policy(@equipment_type).destroy? %>
+      <%= button_to "Destroy this equipment type", @equipment_type, method: :delete, form_class: "sm:inline-block", class: "w-full rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+    <% end %>
+  </div>
 </div>

@@ -1,4 +1,5 @@
 class UsersController < ApplicationController
+  before_action :authenticate_admin!, only: [:index]
   before_action :set_user, only: %i[ show edit update destroy ]
 
   # GET /users or /users.json
@@ -36,8 +37,14 @@ class UsersController < ApplicationController
 
   # PATCH/PUT /users/1 or /users/1.json
   def update
+    filtered_params = user_params.to_h
+    if filtered_params[:password].blank? && filtered_params[:password_confirmation].blank?
+      filtered_params.delete(:password)
+      filtered_params.delete(:password_confirmation)
+    end
+
     respond_to do |format|
-      if @user.update(user_params)
+      if @user.update(filtered_params)
         format.html { redirect_to @user, notice: "User was successfully updated.", status: :see_other }
         format.json { render :show, status: :ok, location: @user }
       else
@@ -128,11 +135,15 @@ class UsersController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user
-      @user = current_user
+      if current_user.admin?
+        @user = User.find(params[:id])
+      else
+        @user = current_user
+      end
     end
 
     # Only allow a list of trusted parameters through.
     def user_params
-      params.require(:user).permit(:name, :email, :password, :password_confirmation)
+      params.require(:user).permit(:name, :email, :password, :password_confirmation, :profile_pic, :role)
     end
 end

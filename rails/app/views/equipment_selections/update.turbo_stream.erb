@@ -1,1 +1,2 @@
-<%= turbo_stream.replace @equipment_selection, partial: "equipment_selection", locals: { equipment_selection: @equipment_selection } %>
+<%= turbo_stream.replace @equipment_selection, partial: "equipment_selections/equipment_selection", locals: { equipment_selection: @equipment_selection } %>
+<%= turbo_stream.replace "equipment_cost_summary", partial: "tender_equipment_summaries/summary", locals: { tender_equipment_summary: @tender.tender_equipment_summary } %>

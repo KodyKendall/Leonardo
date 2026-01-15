@@ -19,6 +19,15 @@ class MaterialSuppliesController < ApplicationController
   def edit
   end
 
+  def reorder
+    MaterialSupply.transaction do
+      params[:ids].each_with_index do |id, index|
+        MaterialSupply.find(id).update_column(:position, index + 1)
+      end
+    end
+    head :ok
+  end
+
   # POST /material_supplies or /material_supplies.json
   def create
     @material_supply = MaterialSupply.new(material_supply_params)

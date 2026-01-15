@@ -153,6 +153,6 @@ class LineItemMaterialsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def line_item_material_params
-      params.require(:line_item_material).permit(:tender_line_item_id, :material_supply_id, :proportion_percentage, :line_item_material_breakdown_id, :waste_percentage, :rate, :quantity)
+      params.require(:line_item_material).permit(:tender_line_item_id, :material_supply_id, :material_supply_type, :proportion_percentage, :line_item_material_breakdown_id, :waste_percentage, :rate, :quantity)
     end
 end

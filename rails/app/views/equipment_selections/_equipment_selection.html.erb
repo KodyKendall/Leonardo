@@ -1,15 +1,17 @@
-<tr class="hover:bg-gray-50" id="<%= dom_id(equipment_selection) %>">
+<%= turbo_frame_tag dom_id(equipment_selection), class: "table-row hover:bg-gray-50", 
+    data: {
+      controller: "dirty-form",
+      action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset turbo:submit-start->dirty-form#handleSubmitStart"
+    } do %>
     <%= form_with model: [equipment_selection.tender, equipment_selection],
                   url: tender_equipment_selection_path(equipment_selection.tender, equipment_selection),
                   method: :patch,
-                  local: true,
                   class: "contents",
                   data: {
-                    controller: "dirty-form",
-                    action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset"
+                    action: "submit->dirty-form#submit"
                   } do |f| %>
       <!-- Equipment Type (Read-only) -->
-      <td class="px-6 py-4 text-sm font-medium text-gray-900">
+      <div class="table-cell px-4 py-4 text-sm font-medium text-gray-900">
         <div class="flex flex-col">
           <span class="font-semibold"><%= equipment_selection.equipment_type.category.humanize %></span>
           <span class="text-xs text-gray-500"><%= equipment_selection.equipment_type.model %></span>
@@ -17,52 +19,58 @@
             <span class="text-xs text-gray-500">Height: <%= equipment_selection.equipment_type.working_height_m %>m</span>
           <% end %>
         </div>
-      </td>
+      </div>
 
       <!-- Units (Editable) -->
-      <td class="px-6 py-4 text-sm">
-        <%= f.number_field :units_required, min: 1, step: 1, class: "input input-sm input-bordered w-20" %>
-      </td>
+      <div class="table-cell px-4 py-4 text-sm">
+        <%= f.number_field :units_required, min: 1, step: 1, class: "input input-sm input-bordered w-16" %>
+      </div>
 
       <!-- Months (Editable) -->
-      <td class="px-6 py-4 text-sm">
-        <%= f.number_field :period_months, min: 1, step: 1, class: "input input-sm input-bordered w-20" %>
-      </td>
+      <div class="table-cell px-4 py-4 text-sm">
+        <%= f.number_field :period_months, min: 1, step: 1, class: "input input-sm input-bordered w-16" %>
+      </div>
 
       <!-- Purpose (Editable) -->
-      <td class="px-6 py-4 text-sm">
+      <div class="table-cell px-4 py-4 text-sm">
         <%= f.text_field :purpose, placeholder: "e.g., Hoisting", class: "input input-sm input-bordered w-full" %>
-      </td>
+      </div>
 
-      <!-- Monthly Cost (Editable - Override) -->
-      <td class="px-6 py-4 text-sm">
-        <div class="flex items-center gap-2">
-          <div class="text-xs text-gray-500 font-semibold">
-            Base: R<%= number_with_precision(equipment_selection.calculated_monthly_cost, precision: 2, delimiter: ",") %>
-          </div>
-          <div class="hidden">
-            <%= f.number_field :monthly_cost_override, step: 0.01, class: "input input-sm input-bordered w-24", placeholder: "Override" %>
-          </div>
+      <!-- Base Rate (Editable) -->
+      <div class="table-cell px-4 py-4 text-sm">
+        <div class="flex items-center gap-1">
+          <span class="text-xs text-gray-400">R</span>
+          <%= f.number_field :base_rate, step: 0.01, class: "input input-sm input-bordered w-24 text-xs" %>
         </div>
-      </td>
+      </div>
+
+      <!-- DW % (Editable) -->
+      <div class="table-cell px-4 py-4 text-sm">
+        <div class="flex items-center gap-1">
+          <%= f.number_field :damage_waiver_pct, step: 0.0001, class: "input input-sm input-bordered w-20 text-xs" %>
+        </div>
+      </div>
+
+      <!-- Diesel (Editable) -->
+      <div class="table-cell px-4 py-4 text-sm">
+        <div class="flex items-center gap-1">
+          <span class="text-xs text-gray-400">R</span>
+          <%= f.number_field :diesel_allowance, step: 0.01, class: "input input-sm input-bordered w-24 text-xs" %>
+        </div>
+      </div>
+
+      <!-- Monthly Cost (Calculated, Read-only) -->
+      <div class="table-cell px-4 py-4 text-sm font-semibold text-gray-700">
+        R<%= number_with_precision(equipment_selection.calculated_monthly_cost, precision: 2, delimiter: ",") %>
+      </div>
 
       <!-- Total Cost (Calculated, Read-only) -->
-      <td class="px-6 py-4 text-sm font-bold text-green-700">
+      <div class="table-cell px-4 py-4 text-sm font-bold text-green-700">
         R<%= number_with_precision(equipment_selection.total_cost, precision: 2, delimiter: ",") %>
-      </td>
-
-      <!-- Establishment (Editable) -->
-      <td class="px-6 py-4 text-sm">
-        <%= f.number_field :establishment_cost, step: 0.01, class: "input input-sm input-bordered w-24", placeholder: "0.00" %>
-      </td>
-
-      <!-- De-establishment (Editable) -->
-      <td class="px-6 py-4 text-sm">
-        <%= f.number_field :de_establishment_cost, step: 0.01, class: "input input-sm input-bordered w-24", placeholder: "0.00" %>
-      </td>
+      </div>
 
       <!-- Actions -->
-      <td class="px-6 py-4 text-sm">
+      <div class="table-cell px-4 py-4 text-sm">
         <div class="flex items-center gap-2">
           <!-- Dirty Indicator -->
           <span class="hidden text-warning text-xs font-medium" data-dirty-form-target="indicator">
@@ -71,22 +79,21 @@
 
           <!-- Save Button -->
           <button type="submit" 
-                  class="btn btn-primary btn-sm hidden" 
+                  class="btn btn-primary btn-sm" 
                   data-dirty-form-target="submit"
                   title="Save changes">
             <i class="fas fa-check"></i>
           </button>
 
           <!-- Delete Button -->
-          <%= button_to tender_equipment_selection_path(equipment_selection.tender, equipment_selection),
-              method: :delete,
-              form_class: "contents",
+          <%= link_to tender_equipment_selection_path(equipment_selection.tender, equipment_selection),
+              data: { turbo_method: :delete, turbo_confirm: "Delete this equipment selection?" },
               class: "btn btn-error btn-sm",
-              data: { turbo_confirm: "Delete this equipment selection?" },
               title: "Delete" do %>
             <i class="fas fa-trash"></i>
           <% end %>
         </div>
-      </td>
+      </div>
     <% end %>
-  </tr>
+<% end %>
+
