@@ -132,7 +132,11 @@ RSpec.describe "/line_item_material_breakdowns", type: :request do
       )
     end
     let!(:tender_rate) do
-      rate = tender.tender_specific_material_rates.find_or_initialize_by(material_supply: material_supply)
+      # Use explicit IDs to match how rates are created in the service
+      rate = tender.tender_specific_material_rates.find_or_initialize_by(
+        material_supply_id: material_supply.id,
+        material_supply_type: 'MaterialSupply'
+      )
       rate.update!(rate: 1500.0, unit: "tonne")
       rate
     end

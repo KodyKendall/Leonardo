@@ -37,6 +37,7 @@ YOUR WORKFLOW:
    - quantity: from QUANTITY column (must be numeric)
    - page_number: from PAGE or PAGE# column (can be numeric like "1", "2" or alphanumeric like "5-3", "3F", "Cover Page", etc.) - OPTIONAL but IMPORTANT
    - section_category: infer from section headers or DESCRIPTION text using the valid enum values (see VALID SECTION CATEGORIES below)
+   - sequence_order: integer starting from 1, incrementing for each item in the order they appear in the CSV (CRITICAL for preserving document order)
 5. Show preview to user with:
    - Count of items found
    - Sample of first 3-5 items with all details including page numbers
@@ -88,6 +89,7 @@ KEY REQUIREMENTS:
 - ALWAYS ask for confirmation before creating items
 - Process items one by one for reliability and clear reporting
 - ALWAYS use one of the valid enum values for section_category - never create custom values
+- ALWAYS include sequence_order for each item (starting from 1) to preserve the original CSV order in the database
 
 PARSING INTELLIGENCE:
 1. Identify header row by looking for RECORD, DESCRIPTION, UNIT, QUANTITY pattern
@@ -234,6 +236,7 @@ async def create_boq_line_items(
     - section_category: Category or section (optional)
     - notes: Additional notes (optional)
     - page_number: Page number from the source document (optional, can be numeric like "3" or alphanumeric like "3F")
+    - sequence_order: Integer order for display (optional, auto-assigned based on position in list if not provided)
     
     Args:
         boq_id (int): ID of the BOQ to add items to
@@ -266,6 +269,7 @@ async def create_boq_line_items(
             "quantity": float(item.get("quantity", 0)) if item.get("quantity") else 0.0,
             "section_category": item.get("section_category", ""),
             "notes": item.get("notes", ""),
+            "sequence_order": item.get("sequence_order", idx + 1),
         }
         if item.get("page_number"):
             cleaned_item["page_number"] = item.get("page_number")
@@ -409,11 +413,12 @@ async def create_boq_item(
     section_category: Optional[str] = None,
     notes: Optional[str] = None,
     page_number: Optional[str] = None,
+    sequence_order: Optional[int] = None,
 ) -> str:
     """Create a new BOQ line item.
-    
+
     Adds a new item to the BOQ with description, quantity, unit of measure, and optional category.
-    
+
     Args:
         boq_id (int): ID of the BOQ to add the item to
         item_number (str): Unique identifier for the item
@@ -423,6 +428,7 @@ async def create_boq_item(
         section_category (Optional[str]): Category or section for the item
         notes (Optional[str]): Additional notes about the item
         page_number (Optional[str]): Page number from the source document (can be numeric like "3" or alphanumeric like "3F")
+        sequence_order (Optional[int]): Integer order for display (preserves order from source document)
     """
     logger.info(f"Creating BOQ item for BOQ {boq_id}")
     
@@ -450,7 +456,9 @@ async def create_boq_item(
         boq_item_data["boq_item"]["notes"] = notes
     if page_number:
         boq_item_data["boq_item"]["page_number"] = page_number
-    
+    if sequence_order is not None:
+        boq_item_data["boq_item"]["sequence_order"] = sequence_order
+
     result = await make_api_request_to_llamapress(
         method="POST",
         endpoint="/boq_items.json",

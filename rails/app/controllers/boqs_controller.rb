@@ -186,38 +186,27 @@ class BoqsController < ApplicationController
 
   def csv_as_json
     # API endpoint to fetch complete CSV data as JSON array
-    require 'csv'
+    # Uses SpreadsheetParser for robust encoding handling (UTF-8 BOM, Windows-1252, etc.)
     respond_to do |format|
       if @boq.csv_file.attached?
         begin
-          csv_content = @boq.csv_file.download.force_encoding('UTF-8')
-          
-          # Get header row index from params or use stored value
+          # Get header row index from params or use stored value (0-indexed from frontend)
           header_row_idx = params[:header_row_index].to_i rescue (@boq.header_row_index || 0)
-          
-          # Parse CSV with proper quote handling
-          all_rows = CSV.parse(csv_content)
-          
-          # Extract headers from specified row
-          headers = all_rows[header_row_idx] || []
-          
-          # Convert all rows to JSON objects (starting after header row)
-          json_array = []
-          all_rows.each_with_index do |row, idx|
-            next if idx <= header_row_idx
-            next if row.compact.empty? # Skip if all cells are empty
-            
-            row_object = {}
-            headers.each_with_index do |header, index|
-              row_object[header] = row[index] || ''
-            end
-            
-            json_array << row_object
+
+          # SpreadsheetParser uses 1-indexed rows, frontend sends 0-indexed
+          header_row = header_row_idx + 1
+
+          SpreadsheetParser.with_attachment(@boq.csv_file, extension: detect_file_extension) do |spreadsheet|
+            headers = extract_headers_from_spreadsheet(spreadsheet, header_row)
+            json_array = build_json_array_from_spreadsheet(spreadsheet, headers, header_row)
+            format.json { render json: json_array, status: :ok }
           end
-          
-          format.json { render json: json_array, status: :ok }
+        rescue SpreadsheetParser::ParseError => e
+          Rails.logger.error "[BOQ CSV Parse Error] BOQ ID: #{@boq.id}, File: #{@boq.file_name}, Error: #{e.message}"
+          format.json { render json: { error: "Could not parse file: #{e.message}" }, status: :unprocessable_entity }
         rescue StandardError => e
-          format.json { render json: { error: "Failed to parse CSV: #{e.message}" }, status: :unprocessable_entity }
+          Rails.logger.error "[BOQ CSV Parse Error] BOQ ID: #{@boq.id}, Error: #{e.class.name} - #{e.message}"
+          format.json { render json: { error: "Failed to parse file: #{e.message}" }, status: :unprocessable_entity }
         end
       else
         format.json { render json: { error: "No CSV file attached" }, status: :not_found }
@@ -227,7 +216,7 @@ class BoqsController < ApplicationController
 
   def update_header_row
     # AJAX endpoint to update header_row_index and return updated CSV preview
-    require 'csv'
+    # Uses SpreadsheetParser for robust encoding handling
     header_row_idx = params[:header_row_index].to_i
 
     # Validate header row index
@@ -238,7 +227,7 @@ class BoqsController < ApplicationController
       return
     end
 
-    # Check if CSV file is attached and validate header row index before updating
+    # Check if CSV file is attached
     unless @boq.csv_file.attached?
       respond_to do |format|
         format.json { render json: { error: "No CSV file attached" }, status: :not_found }
@@ -246,39 +235,58 @@ class BoqsController < ApplicationController
       return
     end
 
-    csv_content = @boq.csv_file.download.force_encoding('UTF-8')
-    all_rows = CSV.parse(csv_content)
+    begin
+      SpreadsheetParser.with_attachment(@boq.csv_file, extension: detect_file_extension) do |spreadsheet|
+        total_rows = spreadsheet.last_row || 0
 
-    if header_row_idx >= all_rows.length
-      respond_to do |format|
-        format.json { render json: { error: "Header row index exceeds file length" }, status: :unprocessable_entity }
-      end
-      return
-    end
-
-    respond_to do |format|
-      if @boq.update(header_row_index: header_row_idx)
-        # Generate updated CSV preview with new header row
-        # Extract headers from specified row
-        headers = all_rows[header_row_idx] || []
-
-        # Build preview (first 20 rows after header)
-        preview_rows = []
-        all_rows.each_with_index do |row, idx|
-          next if idx < header_row_idx + 1 || preview_rows.length >= 20
-          next if row.compact.empty? # Skip if all cells are empty
-
-          preview_rows << { columns: row, row_index: idx }
+        # Validate header row index (convert to 1-indexed for comparison)
+        if header_row_idx + 1 > total_rows
+          respond_to do |format|
+            format.json { render json: { error: "Header row index exceeds file length" }, status: :unprocessable_entity }
+          end
+          return
         end
 
-        format.json { render json: {
-          success: true,
-          headers: headers,
-          preview_rows: preview_rows,
-          total_rows: all_rows.count
-        }, status: :ok }
-      else
-        format.json { render json: @boq.errors, status: :unprocessable_entity }
+        respond_to do |format|
+          if @boq.update(header_row_index: header_row_idx)
+            # SpreadsheetParser uses 1-indexed rows
+            header_row = header_row_idx + 1
+
+            # Extract headers from specified row
+            headers = spreadsheet.row(header_row) || []
+
+            # Build preview (first 20 rows after header)
+            preview_rows = []
+            data_start = header_row + 1
+            data_end = [spreadsheet.last_row || 0, header_row + 20].min
+
+            (data_start..data_end).each do |row_num|
+              row = spreadsheet.row(row_num)
+              next if row.nil? || row.compact.empty?
+
+              preview_rows << { columns: row, row_index: row_num - 1 } # Convert back to 0-indexed
+            end
+
+            format.json { render json: {
+              success: true,
+              headers: headers,
+              preview_rows: preview_rows,
+              total_rows: total_rows
+            }, status: :ok }
+          else
+            format.json { render json: @boq.errors, status: :unprocessable_entity }
+          end
+        end
+      end
+    rescue SpreadsheetParser::ParseError => e
+      Rails.logger.error "[BOQ CSV Parse Error] BOQ ID: #{@boq.id}, File: #{@boq.file_name}, Error: #{e.message}"
+      respond_to do |format|
+        format.json { render json: { error: "Could not parse file: #{e.message}" }, status: :unprocessable_entity }
+      end
+    rescue StandardError => e
+      Rails.logger.error "[BOQ CSV Parse Error] BOQ ID: #{@boq.id}, Error: #{e.class.name} - #{e.message}"
+      respond_to do |format|
+        format.json { render json: { error: "Failed to parse file: #{e.message}" }, status: :unprocessable_entity }
       end
     end
   end
@@ -400,5 +408,64 @@ class BoqsController < ApplicationController
 
   def boq_update_params
     params.require(:boq).permit(:boq_name, :client_name, :client_reference, :qs_name, :received_date, :notes, :header_row_index)
+  end
+
+  # Detect file extension from ActiveStorage attachment
+  def detect_file_extension
+    return '.csv' unless @boq.csv_file.attached?
+
+    filename = @boq.csv_file.filename.to_s
+    File.extname(filename).downcase.presence || '.csv'
+  end
+
+  # Extract headers from spreadsheet at given row (1-indexed)
+  def extract_headers_from_spreadsheet(spreadsheet, header_row)
+    raw_headers = spreadsheet.row(header_row) || []
+    raw_headers.map.with_index do |header, index|
+      if header.nil? || header.to_s.strip.empty?
+        "column_#{index + 1}"
+      else
+        header.to_s.strip.gsub(/[[:space:]]+/, ' ').gsub(/[\r\n]+/, ' ')
+      end
+    end
+  end
+
+  # Build JSON array from spreadsheet rows (skips empty rows, adds _sequence_order)
+  def build_json_array_from_spreadsheet(spreadsheet, headers, header_row)
+    json_array = []
+    sequence_order = 0
+    data_start = header_row + 1
+    data_end = spreadsheet.last_row || 0
+
+    (data_start..data_end).each do |row_num|
+      row = spreadsheet.row(row_num)
+      next if row.nil? || row.compact.empty?
+
+      sequence_order += 1
+      row_object = { '_sequence_order' => sequence_order }
+
+      headers.each_with_index do |header, index|
+        value = row[index]
+        row_object[header] = normalize_cell_value(value)
+      end
+
+      json_array << row_object
+    end
+
+    json_array
+  end
+
+  # Normalize cell values for JSON output
+  def normalize_cell_value(value)
+    case value
+    when nil
+      ''
+    when String
+      value.strip
+    when Float
+      value == value.to_i ? value.to_i : value
+    else
+      value
+    end
   end
 end

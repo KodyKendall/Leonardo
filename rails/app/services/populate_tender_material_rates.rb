@@ -15,8 +15,10 @@ class PopulateTenderMaterialRates
       
       begin
         # Find or initialize the TenderSpecificMaterialRate
+        # Must include material_supply_type for polymorphic association to work correctly
         tender_rate = @tender.tender_specific_material_rates.find_or_initialize_by(
-          material_supply_id: material_supply.id
+          material_supply_id: material_supply.id,
+          material_supply_type: 'MaterialSupply'
         )
 
         tender_rate.assign_attributes(
