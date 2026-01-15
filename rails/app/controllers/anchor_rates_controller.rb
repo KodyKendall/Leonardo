@@ -3,12 +3,14 @@ class AnchorRatesController < ApplicationController
 
   # GET /anchor_rates or /anchor_rates.json
   def index
+    authorize AnchorRate
     @anchor_rates = AnchorRate.all
     @suppliers = Supplier.where(name: ['Hilti', 'IKA', 'Fischer']).sort_by { |s| ['Hilti', 'IKA', 'Fischer'].index(s.name) }
     @existing_rates = AnchorSupplierRate.all.index_by { |rate| [rate.anchor_rate_id, rate.supplier_id] }
   end
 
   def reorder
+    authorize AnchorRate
     AnchorRate.transaction do
       params[:ids].each_with_index do |id, index|
         AnchorRate.find(id).update_column(:position, index + 1)
@@ -19,20 +21,24 @@ class AnchorRatesController < ApplicationController
 
   # GET /anchor_rates/1 or /anchor_rates/1.json
   def show
+    authorize @anchor_rate
   end
 
   # GET /anchor_rates/new
   def new
+    authorize AnchorRate
     @anchor_rate = AnchorRate.new
   end
 
   # GET /anchor_rates/1/edit
   def edit
+    authorize @anchor_rate
   end
 
   # POST /anchor_rates or /anchor_rates.json
   def create
     @anchor_rate = AnchorRate.new(anchor_rate_params)
+    authorize @anchor_rate
 
     respond_to do |format|
       if @anchor_rate.save
@@ -47,6 +53,7 @@ class AnchorRatesController < ApplicationController
 
   # PATCH/PUT /anchor_rates/1 or /anchor_rates/1.json
   def update
+    authorize @anchor_rate
     respond_to do |format|
       if @anchor_rate.update(anchor_rate_params)
         format.html { redirect_to @anchor_rate, notice: "Anchor rate was successfully updated.", status: :see_other }
@@ -60,6 +67,7 @@ class AnchorRatesController < ApplicationController
 
   # DELETE /anchor_rates/1 or /anchor_rates/1.json
   def destroy
+    authorize @anchor_rate
     @anchor_rate.destroy!
 
     respond_to do |format|

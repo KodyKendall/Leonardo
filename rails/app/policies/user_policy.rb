@@ -1,10 +1,10 @@
-class CraneRatePolicy < ApplicationPolicy
+class UserPolicy < ApplicationPolicy
   def index?
-    !user.material_buyer_role?
+    user.admin_role?
   end
 
   def show?
-    !user.material_buyer_role?
+    user.admin_role? || record == user
   end
 
   def create?
@@ -12,7 +12,7 @@ class CraneRatePolicy < ApplicationPolicy
   end
 
   def update?
-    user.admin_role?
+    user.admin_role? || record == user
   end
 
   def destroy?

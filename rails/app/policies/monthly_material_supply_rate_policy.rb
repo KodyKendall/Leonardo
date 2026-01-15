@@ -1,10 +1,10 @@
 class MonthlyMaterialSupplyRatePolicy < ApplicationPolicy
   def create?
-    user.admin_role?
+    user.admin_role? || user.material_buyer_role?
   end
 
   def update?
-    user.admin_role?
+    user.admin_role? || user.material_buyer_role?
   end
 
   def destroy?
@@ -12,10 +12,10 @@ class MonthlyMaterialSupplyRatePolicy < ApplicationPolicy
   end
 
   def save_rate?
-    user.admin_role?
+    user.admin_role? || user.material_buyer_role?
   end
 
   def set_2nd_cheapest_as_winners?
-    user.admin_role?
+    user.admin_role? || user.material_buyer_role?
   end
 end

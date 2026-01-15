@@ -3,6 +3,7 @@ class ClientsController < ApplicationController
 
   # GET /clients or /clients.json
   def index
+    authorize Client
     @clients = Client.all
     
     # API endpoint for searchable dropdown
@@ -15,10 +16,12 @@ class ClientsController < ApplicationController
 
   # GET /clients/1 or /clients/1.json
   def show
+    authorize @client
   end
 
   # GET /clients/1/contacts.json
   def contacts
+    authorize @client
     respond_to do |format|
       format.json do
         contacts = @client.contacts.map do |contact|
@@ -37,16 +40,19 @@ class ClientsController < ApplicationController
 
   # GET /clients/new
   def new
+    authorize Client
     @client = Client.new
   end
 
   # GET /clients/1/edit
   def edit
+    authorize @client
   end
 
   # POST /clients or /clients.json
   def create
     @client = Client.new(client_params)
+    authorize @client
 
     respond_to do |format|
       if @client.save
@@ -61,6 +67,7 @@ class ClientsController < ApplicationController
 
   # PATCH/PUT /clients/1 or /clients/1.json
   def update
+    authorize @client
     respond_to do |format|
       if @client.update(client_params)
         format.html { redirect_to @client, notice: "Client was successfully updated.", status: :see_other }
@@ -74,6 +81,7 @@ class ClientsController < ApplicationController
 
   # DELETE /clients/1 or /clients/1.json
   def destroy
+    authorize @client
     @client.destroy!
 
     respond_to do |format|

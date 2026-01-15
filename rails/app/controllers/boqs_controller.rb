@@ -10,10 +10,12 @@ class BoqsController < ApplicationController
   llama_bot_allow :show, :update_attributes, :create_line_items, :chat
 
   def index
+    authorize Boq
     @boqs = Boq.order(created_at: :desc)
   end
 
   def show
+    authorize @boq
     @boq_items = @boq.boq_items.order(:sequence_order)
     respond_to do |format|
       format.html
@@ -22,10 +24,12 @@ class BoqsController < ApplicationController
   end
 
   def new
+    authorize Boq
     @boq = Boq.new
   end
 
   def create
+    authorize Boq
     # Determine if this is a nested create under a tender
     @tender = Tender.find(params[:tender_id]) if params[:tender_id].present?
     
@@ -85,6 +89,7 @@ class BoqsController < ApplicationController
   end
 
   def parse
+    authorize @boq
     # Stub: Trigger LLM parsing process
     @boq.update(status: "parsing")
     
@@ -94,6 +99,7 @@ class BoqsController < ApplicationController
   end
 
   def csv_download
+    authorize @boq
     if File.exist?(@boq.file_path)
       send_file @boq.file_path, filename: @boq.file_name, type: "text/csv", disposition: "attachment"
     else
@@ -102,6 +108,7 @@ class BoqsController < ApplicationController
   end
 
   def update_attributes
+    authorize @boq
     # API endpoint for agent to update BOQ metadata
     respond_to do |format|
       if @boq.update(boq_update_params)
@@ -114,6 +121,7 @@ class BoqsController < ApplicationController
   end
 
   def create_line_items
+    authorize @boq
     # API endpoint for agent to create BOQ line items
     respond_to do |format|
       begin
@@ -149,6 +157,7 @@ class BoqsController < ApplicationController
   end
 
   def chat
+    authorize @boq
     # Endpoint to route chat messages to LangGraph boq_parser agent
     message = params[:message]
     raw_params = params[:raw_params] || {}
@@ -185,6 +194,7 @@ class BoqsController < ApplicationController
   end
 
   def csv_as_json
+    authorize @boq
     # API endpoint to fetch complete CSV data as JSON array
     require 'csv'
     respond_to do |format|
@@ -226,6 +236,7 @@ class BoqsController < ApplicationController
   end
 
   def update_header_row
+    authorize @boq
     # AJAX endpoint to update header_row_index and return updated CSV preview
     require 'csv'
     header_row_idx = params[:header_row_index].to_i
@@ -284,6 +295,7 @@ class BoqsController < ApplicationController
   end
 
   def export_boq_csv
+    authorize @boq
     # Export BOQ and BOQ Items as CSV
     require 'csv'
     
@@ -325,6 +337,7 @@ class BoqsController < ApplicationController
   end
 
   def search
+    authorize Boq
     # Search for BOQs by name, client, or QS (showing all results)
     query = params[:q].to_s.strip
     
@@ -358,6 +371,7 @@ class BoqsController < ApplicationController
   end
 
   def attach_boq
+    authorize Boq
     # Attach an existing BOQ to a tender
     boq_id = params[:boq_id]
     boq = Boq.find_by(id: boq_id)
@@ -372,6 +386,7 @@ class BoqsController < ApplicationController
   end
 
   def detach
+    authorize Boq
     # Detach a BOQ from its current tender
     boq = Boq.find_by(id: params[:id])
     
@@ -383,7 +398,6 @@ class BoqsController < ApplicationController
       render json: { success: false, message: "Failed to detach BOQ" }, status: :unprocessable_entity
     end
   end
-
   private
 
   def set_boq

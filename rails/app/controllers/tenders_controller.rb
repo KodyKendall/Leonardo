@@ -3,17 +3,20 @@ class TendersController < ApplicationController
 
   # GET /tenders or /tenders.json
   def index
+    authorize Tender
     @tenders = Tender.all
     @tenders = @tenders.where(status: params[:status]) if params[:status].present?
   end
 
   # GET /tenders/1 or /tenders/1.json
   def show
+    authorize @tender
   end
 
   # GET /tenders/1/builder
   def builder
     @tender = Tender.find(params[:id])
+    authorize @tender
     @line_items = @tender.tender_line_items
                          .includes(:line_item_rate_build_up,
                                    line_item_material_breakdown: :line_item_materials)
@@ -23,6 +26,7 @@ class TendersController < ApplicationController
   # GET /tenders/1/report
   # Print-ready report view for PDF generation via Grover
   def report
+    authorize @tender
     @line_items = @tender.tender_line_items
                          .includes(:line_item_rate_build_up)
                          .ordered
@@ -57,6 +61,7 @@ class TendersController < ApplicationController
   # GET /tenders/1/tender_inclusions_exclusions
   def tender_inclusions_exclusions
     @tender = Tender.find(params[:id])
+    authorize @tender
     @tender_inclusions_exclusion = @tender.tender_inclusions_exclusion || @tender.build_tender_inclusions_exclusion
   end
 
@@ -64,6 +69,7 @@ class TendersController < ApplicationController
   # Returns autofill data: tender-specific rate + material waste percentage
   def material_autofill
     @tender = Tender.find(params[:id])
+    authorize @tender
     material_supply_id = params[:material_supply_id]
     material_supply_type = params[:material_supply_type] || 'MaterialSupply'
 
@@ -102,18 +108,21 @@ class TendersController < ApplicationController
 
   # GET /tenders/new
   def new
+    authorize Tender
     @tender = Tender.new
     @clients = Client.all
   end
 
   # GET /tenders/1/edit
   def edit
+    authorize @tender
     @clients = Client.all
   end
 
   # POST /tenders or /tenders.json
   def create
     @tender = Tender.new(tender_params)
+    authorize @tender
 
     respond_to do |format|
       if @tender.save
@@ -129,6 +138,7 @@ class TendersController < ApplicationController
 
   # PATCH/PUT /tenders/1 or /tenders/1.json
   def update
+    authorize @tender
     respond_to do |format|
       if @tender.update(tender_params)
         format.html do
@@ -160,6 +170,7 @@ class TendersController < ApplicationController
 
   # POST /tenders/quick_create
   def quick_create
+    authorize Tender
     @tender = Tender.new(status: 'Draft', tender_name: 'Temp')
     @tender.save  # This triggers generate_e_number
     
@@ -175,6 +186,7 @@ class TendersController < ApplicationController
 
   # PATCH /tenders/1/update_inclusions_exclusions
   def update_inclusions_exclusions
+    authorize @tender
     # Find or create the inclusions_exclusions record
     ie = @tender.tender_inclusions_exclusion || @tender.build_tender_inclusions_exclusion
     
@@ -188,6 +200,7 @@ class TendersController < ApplicationController
 
   # POST /tenders/1/sync_all_inclusions_exclusions
   def sync_all_inclusions_exclusions
+    authorize @tender
     ie = @tender.tender_inclusions_exclusion || @tender.build_tender_inclusions_exclusion
     
     if ie.persisted? || ie.save
@@ -201,6 +214,7 @@ class TendersController < ApplicationController
   # POST /tenders/1/mirror_boq_items
   def mirror_boq_items
     @tender = Tender.find(params[:id])
+    authorize @tender
     
     # Get the first linked BOQ
     boq = @tender.boqs.first
@@ -255,6 +269,7 @@ class TendersController < ApplicationController
 
   # DELETE /tenders/1 or /tenders/1.json
   def destroy
+    authorize @tender
     @tender.destroy!
 
     respond_to do |format|
