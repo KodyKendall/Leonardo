@@ -2,6 +2,8 @@ class Client < ApplicationRecord
   has_many :contacts, dependent: :destroy
   has_many :tenders, dependent: :nullify
 
+  validates :business_name, presence: true
+
   accepts_nested_attributes_for :contacts, allow_destroy: true, reject_if: :all_blank
 
   after_update :sync_name_to_tenders, if: :saved_change_to_business_name?

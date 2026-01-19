@@ -19,14 +19,30 @@ RSpec.describe "/clients", type: :request do
   # Client. As you add validations to Client, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) {
-    skip("Add a hash of attributes valid for your model")
+    attributes_for(:client)
   }
 
   let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
+    { business_name: "" } # Client has no validations, but we can test with empty if needed
   }
 
   before { sign_in(user) }
+
+  describe "GET /contacts" do
+    it "returns a successful JSON response with contacts" do
+      client = Client.create! valid_attributes
+      contact = create(:contact, client: client)
+      
+      get contacts_client_url(client, format: :json)
+      
+      expect(response).to be_successful
+      expect(response.content_type).to match(/application\/json/)
+      
+      json_response = JSON.parse(response.body)
+      expect(json_response.first["id"]).to eq(contact.id)
+      expect(json_response.first["name"]).to eq(contact.name)
+    end
+  end
 
   describe "GET /index" do
     it "renders a successful response" do
@@ -90,14 +106,14 @@ RSpec.describe "/clients", type: :request do
   describe "PATCH /update" do
     context "with valid parameters" do
       let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
+        { business_name: "Updated Name" }
       }
 
       it "updates the requested client" do
         client = Client.create! valid_attributes
         patch client_url(client), params: { client: new_attributes }
         client.reload
-        skip("Add assertions for updated state")
+        expect(client.business_name).to eq("Updated Name")
       end
 
       it "redirects to the client" do
@@ -118,6 +134,9 @@ RSpec.describe "/clients", type: :request do
   end
 
   describe "DELETE /destroy" do
+    let(:admin) { create(:user, :admin) }
+    before { sign_in(admin) }
+
     it "destroys the requested client" do
       client = Client.create! valid_attributes
       expect {

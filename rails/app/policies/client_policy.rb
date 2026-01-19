@@ -1,21 +1,31 @@
 class ClientPolicy < ApplicationPolicy
   def index?
-    !user.material_buyer_role?
+    not_material_buyer?
   end
 
   def show?
-    !user.material_buyer_role?
+    not_material_buyer?
+  end
+
+  def contacts?
+    show?
   end
 
   def create?
-    !user.material_buyer_role?
+    not_material_buyer?
   end
 
   def update?
-    !user.material_buyer_role?
+    not_material_buyer?
   end
 
   def destroy?
     user.admin_role?
+  end
+
+  private
+
+  def not_material_buyer?
+    !user.material_buyer_role?
   end
 end
