@@ -47,7 +47,7 @@
     grand_total = line_items_subtotal + @shop_drawings_total + p_and_g_total
 
     # Expiration date
-    expiration_date = @tender.submission_deadline || (@tender.created_at + 30.days)
+    expiration_date = @tender.report_expiration_date
   %>
 
   <div class="page w-[7.7in] mx-auto bg-white p-0 shadow-lg print:shadow-none">

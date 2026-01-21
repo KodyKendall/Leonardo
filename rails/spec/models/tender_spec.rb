@@ -92,6 +92,49 @@ RSpec.describe Tender, type: :model do
     end
   end
 
+  describe '#report_expiration_date' do
+    let(:tender) { create(:tender) }
+
+    context 'without submission_deadline' do
+      it 'returns 30 days from today' do
+        expected_date = Date.current + 30.days
+        expect(tender.report_expiration_date).to eq(expected_date)
+      end
+
+      it 'updates daily as time passes' do
+        first_date = Date.current + 30.days
+        
+        travel_to 5.days.from_now do
+          second_date = Date.current + 30.days
+          future_expiration = tender.report_expiration_date
+          # Both should be different (5 days apart)
+          expect(second_date).not_to eq(first_date)
+          expect(future_expiration).to eq(second_date)
+        end
+      end
+    end
+
+    context 'with submission_deadline set' do
+      it 'returns submission_deadline instead of 30-day calculation' do
+        deadline = Date.current + 15.days
+        tender.update!(submission_deadline: deadline)
+        
+        expect(tender.report_expiration_date).to eq(deadline)
+      end
+
+      it 'remains constant even when time passes' do
+        deadline = Date.current + 15.days
+        tender.update!(submission_deadline: deadline)
+        
+        expect(tender.report_expiration_date).to eq(deadline)
+        
+        travel_to 5.days.from_now do
+          expect(tender.report_expiration_date).to eq(deadline)
+        end
+      end
+    end
+  end
+
   describe '#recalculate_total_tonnage!' do
     let(:tender) { create(:tender) }
 

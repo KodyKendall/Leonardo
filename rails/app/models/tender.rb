@@ -69,6 +69,11 @@ class Tender < ApplicationRecord
     "#{display_client_name}#{contact_part}"
   end
 
+  # Returns the expiration date: submission_deadline if set, otherwise 30 days from today
+  def report_expiration_date
+    submission_deadline || (Date.current + 30.days)
+  end
+
   # Recalculate total tonnage as sum of all line item quantities where include_in_tonnage is true
   # Excludes heading rows (is_heading: true) from calculations
   # Also calculates financial_tonnage which includes ALL line items

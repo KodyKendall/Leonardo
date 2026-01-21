@@ -120,6 +120,58 @@ RSpec.describe "/tenders", type: :request do
         expect(response.body).to include("Preliminaries & Generals (Rolled-up)")
       end
     end
+
+    context "dynamic expiration date calculation" do
+      it "displays expiration date as 30 days from today" do
+        get report_tender_url(tender)
+        expected_date = (Date.current + 30.days).strftime("%B %d, %Y")
+        expect(response.body).to include(expected_date)
+      end
+
+      it "updates expiration date on different view dates" do
+        # First view
+        get report_tender_url(tender)
+        today_expiration = (Date.current + 30.days).strftime("%B %d, %Y")
+        expect(response.body).to include(today_expiration)
+
+        # Travel to 5 days in the future
+        travel_to 5.days.from_now do
+          get report_tender_url(tender)
+          future_expiration = (Date.current + 30.days).strftime("%B %d, %Y")
+          expect(response.body).to include(future_expiration)
+          # Verify it's NOT the original expiration date
+          expect(future_expiration).not_to eq(today_expiration)
+        end
+      end
+
+      it "respects submission_deadline priority over 30-day calculation" do
+        deadline = Date.current + 15.days
+        tender.update!(submission_deadline: deadline)
+        
+        get report_tender_url(tender)
+        expected_date = deadline.strftime("%B %d, %Y")
+        expect(response.body).to include(expected_date)
+        
+        # Verify it does NOT show the 30-day calculation
+        thirty_days_from_now = (Date.current + 30.days).strftime("%B %d, %Y")
+        expect(response.body).not_to include(thirty_days_from_now)
+      end
+
+      it "shows submission_deadline even when viewed on different dates" do
+        deadline = Date.current + 15.days
+        tender.update!(submission_deadline: deadline)
+        expected_date = deadline.strftime("%B %d, %Y")
+        
+        get report_tender_url(tender)
+        expect(response.body).to include(expected_date)
+        
+        # Travel to 5 days in the future
+        travel_to 5.days.from_now do
+          get report_tender_url(tender)
+          expect(response.body).to include(expected_date)
+        end
+      end
+    end
   end
 
   describe "GET /index" do

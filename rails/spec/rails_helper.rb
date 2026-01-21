@@ -56,6 +56,7 @@ RSpec.configure do |config|
   config.include Devise::Test::ControllerHelpers, type: :view
   config.include ActionDispatch::TestProcess::FixtureFile
   config.include Warden::Test::Helpers, type: :feature
+  config.include ActiveSupport::Testing::TimeHelpers
 
 
   config.before(:suite) do
