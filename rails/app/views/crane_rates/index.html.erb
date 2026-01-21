@@ -7,9 +7,16 @@
 
   <div class="flex justify-between items-center mb-8">
     <h1 class="font-bold text-4xl">Crane rates</h1>
-    <% if policy(CraneRate).new? %>
-      <%= link_to "Add Crane Rate", new_crane_rate_path, class: "btn btn-primary" %>
-    <% end %>
+    <div class="flex gap-2">
+      <% if params[:on_site_mobile_crane_breakdown_id].present? %>
+        <%= link_to builder_on_site_mobile_crane_breakdown_path(params[:on_site_mobile_crane_breakdown_id]), class: "btn btn-outline" do %>
+          <i class="fas fa-arrow-left mr-2"></i> Back to Builder
+        <% end %>
+      <% end %>
+      <% if policy(CraneRate).new? %>
+        <%= link_to "Add Crane Rate", new_crane_rate_path, class: "btn btn-primary" %>
+      <% end %>
+    </div>
   </div>
 
   <% if @crane_rates.any? %>

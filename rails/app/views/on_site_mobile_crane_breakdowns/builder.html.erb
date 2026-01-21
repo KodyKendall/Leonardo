@@ -77,7 +77,7 @@
         <i class="fas fa-dollar-sign text-lg text-purple-900"></i>
         <h2 class="text-lg font-bold text-purple-900">Crane Rates</h2>
       </div>
-      <%= link_to "Manage Rates →", crane_rates_path, class: "btn btn-sm btn-primary", data: { turbo: false } %>
+      <%= link_to "Manage Rates →", crane_rates_path(on_site_mobile_crane_breakdown_id: @on_site_mobile_crane_breakdown.id), class: "btn btn-sm btn-primary", data: { turbo: false } %>
     </div>
     
     <div class="collapse bg-purple-50 border border-purple-200 rounded-lg">

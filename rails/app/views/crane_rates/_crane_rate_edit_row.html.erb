@@ -45,7 +45,13 @@
 
           <div class="flex gap-2 mt-4">
             <%= form.submit "Save", class: "btn btn-sm btn-primary" %>
-            <%= link_to "Cancel", crane_rate, class: "btn btn-sm btn-ghost" %>
+            <% if params[:on_site_mobile_crane_breakdown_id].present? %>
+              <%= link_to builder_on_site_mobile_crane_breakdown_path(params[:on_site_mobile_crane_breakdown_id]), class: "btn btn-sm btn-outline" do %>
+                <i class="fas fa-arrow-left mr-1"></i> Back to Builder
+              <% end %>
+            <% else %>
+              <%= link_to "Cancel", crane_rate, class: "btn btn-sm btn-ghost" %>
+            <% end %>
           </div>
         <% end %>
       </div>
