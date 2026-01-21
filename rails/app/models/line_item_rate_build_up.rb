@@ -7,12 +7,12 @@ class LineItemRateBuildUp < ApplicationRecord
   validates :margin_percentage, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }
   validates :rounding_interval, inclusion: { in: [0, 10, 20, 50, 100] }
   
-  # All inclusion fields are now decimal multipliers (0.01 to 5.0)
+  # All inclusion fields are now decimal multipliers (0.01 and above)
   # Validate only if value is present and not zero (zero gets normalized to 1.0)
   %i[material_supply_included fabrication_included overheads_included shop_priming_included 
      onsite_painting_included delivery_included bolts_included erection_included 
      crainage_included cherry_picker_included galvanizing_included].each do |field|
-    validates field, numericality: { greater_than_or_equal_to: 0.01, less_than_or_equal_to: 5.0 }, 
+    validates field, numericality: { greater_than_or_equal_to: 0.01 }, 
                     if: -> { send(field).present? && send(field) != 0 }
   end
 

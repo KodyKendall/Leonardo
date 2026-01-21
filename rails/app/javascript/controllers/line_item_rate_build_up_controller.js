@@ -144,7 +144,6 @@ export default class extends Controller {
                  name="line_item_rate_build_up[rate_buildup_custom_items_attributes][${timestamp}][included]"
                  step="0.01"
                  min="0.01"
-                 max="5.0"
                  value="1.0"
                  placeholder="1.0"
                  class="input input-sm input-bordered w-20 text-center"
