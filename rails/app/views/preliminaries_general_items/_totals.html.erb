@@ -2,7 +2,7 @@
   <% grand_total = tender.preliminaries_general_items.sum { |i| i.quantity * i.rate } %>
   <div class="mt-8 p-6 bg-blue-50 rounded-lg border border-blue-100 flex justify-between items-center">
     <span class="text-xl font-bold text-blue-900">Grand Total P&Gs:</span>
-    <span class="text-2xl font-black text-blue-900">
+    <span class="text-2xl font-black text-blue-900 whitespace-nowrap">
       <%= number_to_currency(grand_total, unit: "R ", precision: 2) %>
     </span>
   </div>
