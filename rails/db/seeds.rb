@@ -1041,8 +1041,24 @@ steel_sections = SectionCategory.find_by(display_name: 'Steel Sections')
 if steel_sections
   template = SectionCategoryTemplate.find_or_create_by!(section_category: steel_sections)
   LineItemMaterialTemplate.find_or_create_by!(section_category_template: template, material_supply: MaterialSupply.first) do |lmt|
-    lmt.proportion_percentage = 100.0
+    lmt.proportion_percentage = 0.0
     lmt.waste_percentage = 7.5
+  end
+  # Ensure proportion is 0.0 even if record already exists
+  LineItemMaterialTemplate.find_by(section_category_template: template, material_supply: MaterialSupply.first)&.update!(proportion_percentage: 0.0)
+
+  # Additional templates for faster structure setup
+  [
+    'Local UB & UC Sections',
+    'Sheets of Plate Decoil up to 12mm'
+  ].each do |name|
+    ms = MaterialSupply.find_by(name: name)
+    next unless ms
+
+    LineItemMaterialTemplate.find_or_create_by!(section_category_template: template, material_supply: ms) do |lmt|
+      lmt.proportion_percentage = 0.0
+      lmt.waste_percentage = ms.waste_percentage
+    end
   end
 end
 
