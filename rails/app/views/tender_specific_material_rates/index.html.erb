@@ -39,7 +39,10 @@
   <div id="cascade_messages" class="mb-4"></div>
 
   <div id="<%= dom_id(@tender, :tender_specific_material_rates) %>">
-    <%= render "tender_specific_material_rates/rates_list", tender: @tender, tender_specific_material_rates: @tender_specific_material_rates %>
+    <%= render "tender_specific_material_rates/rates_list", 
+               tender: @tender, 
+               tender_specific_material_rates: @tender_specific_material_rates,
+               monthly_rate_id: @default_month_id %>
   </div>
 
   <div class="mt-6 mb-6">

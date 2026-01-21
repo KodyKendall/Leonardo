@@ -19,6 +19,7 @@ class TenderSpecificMaterialRatesController < ApplicationController
       rate: nil,
       notes: nil
     )
+    @default_month_id = params[:monthly_rate_id] || current_active_monthly_rate_id
 
     Rails.logger.info("🪲 DEBUG: Creating tender_specific_material_rate, id=#{@tender_specific_material_rate.id}, tender_id=#{@tender.id}")
     
@@ -31,7 +32,7 @@ class TenderSpecificMaterialRatesController < ApplicationController
       end
     else
       respond_to do |format|
-        format.turbo_stream { render turbo_stream: turbo_stream.replace(@tender_specific_material_rate, partial: "tender_specific_material_rates/tender_specific_material_rate", locals: { tender_specific_material_rate: @tender_specific_material_rate }) }
+        format.turbo_stream
         format.html { render :index, status: :unprocessable_entity }
       end
     end
@@ -40,6 +41,8 @@ class TenderSpecificMaterialRatesController < ApplicationController
   # PATCH/PUT /tenders/:tender_id/tender_specific_material_rates/:id
   # Updates an existing rate and responds with Turbo Stream replace
   def update
+    @default_month_id = params[:monthly_rate_id] || current_active_monthly_rate_id
+
     # Check if rate is being changed and if we need confirmation
     if rate_being_changed? && params[:confirm_cascade].nil?
       # Preview affected count and show confirmation dialog
@@ -54,7 +57,8 @@ class TenderSpecificMaterialRatesController < ApplicationController
               locals: { 
                 tender_specific_material_rate: @tender_specific_material_rate,
                 affected_material_count: affected_count,
-                new_rate: tender_specific_material_rate_params[:rate]
+                new_rate: tender_specific_material_rate_params[:rate],
+                monthly_rate_id: @default_month_id
               }
             )
           end
@@ -67,24 +71,12 @@ class TenderSpecificMaterialRatesController < ApplicationController
     # Either no rate change, or cascade confirmed, or no affected materials - proceed with update
     if @tender_specific_material_rate.update(tender_specific_material_rate_params)
       respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
-            @tender_specific_material_rate,
-            partial: "tender_specific_material_rates/tender_specific_material_rate",
-            locals: { tender_specific_material_rate: @tender_specific_material_rate }
-          )
-        end
+        format.turbo_stream
         format.html { redirect_to tender_tender_specific_material_rates_path(@tender), notice: 'Material rate was successfully updated.' }
       end
     else
       respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: turbo_stream.replace(
-            @tender_specific_material_rate,
-            partial: "tender_specific_material_rates/tender_specific_material_rate",
-            locals: { tender_specific_material_rate: @tender_specific_material_rate }
-          ), status: :unprocessable_entity
-        end
+        format.turbo_stream
         format.html { render :index, status: :unprocessable_entity }
       end
     end
@@ -119,7 +111,11 @@ class TenderSpecificMaterialRatesController < ApplicationController
           turbo_stream.replace(
             ActionView::RecordIdentifier.dom_id(@tender, :tender_specific_material_rates),
             partial: "tender_specific_material_rates/rates_list",
-            locals: { tender: @tender, tender_specific_material_rates: @tender_specific_material_rates }
+            locals: { 
+              tender: @tender, 
+              tender_specific_material_rates: @tender_specific_material_rates,
+              monthly_rate_id: params[:monthly_material_supply_rate_id]
+            }
           ),
           turbo_stream.append("cascade_messages", 
             partial: "tender_specific_material_rates/population_success", 
@@ -129,6 +125,17 @@ class TenderSpecificMaterialRatesController < ApplicationController
       end
       format.html { redirect_to tender_tender_specific_material_rates_path(@tender), notice: "Rates populated from #{@monthly_material_supply_rate.effective_from.strftime('%B %Y')}." }
     end
+  end
+
+  # GET /tenders/:tender_id/tender_specific_material_rates/lookup
+  def lookup
+    rate = MaterialSupplyRate.where(
+      monthly_material_supply_rate_id: params[:monthly_rate_id],
+      material_supply_id: params[:material_supply_id],
+      supplier_id: params[:supplier_id]
+    ).pick(:rate)
+
+    render json: { rate: rate }
   end
 
   private

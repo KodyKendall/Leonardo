@@ -1,1 +1,1 @@
-<%= turbo_stream.replace @tender_specific_material_rate, partial: "tender_specific_material_rates/tender_specific_material_rate", locals: { tender_specific_material_rate: @tender_specific_material_rate } %>
+<%= turbo_stream.replace @tender_specific_material_rate, partial: "tender_specific_material_rates/tender_specific_material_rate", locals: { tender_specific_material_rate: @tender_specific_material_rate, monthly_rate_id: @default_month_id } %>

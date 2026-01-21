@@ -80,6 +80,7 @@ Rails.application.routes.draw do
     resources :tender_specific_material_rates do
       collection do
         post :populate_from_month
+        get :lookup
       end
     end
     resources :project_rate_build_ups, only: [:edit, :update, :show]

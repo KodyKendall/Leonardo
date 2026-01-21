@@ -3,10 +3,13 @@
     <%= form_with model: [tender_specific_material_rate.tender, tender_specific_material_rate],
                   local: true,
                   data: {
-                    controller: "dirty-form",
-                    action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset"
+                    controller: "dirty-form material-rate-lookup",
+                    action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset",
+                    material_rate_lookup_url_value: lookup_tender_tender_specific_material_rates_path(tender_specific_material_rate.tender),
+                    material_rate_lookup_monthly_rate_id_value: local_assigns[:monthly_rate_id]
                   },
                   class: "material-rate-form" do |f| %>
+      <%= hidden_field_tag :monthly_rate_id, local_assigns[:monthly_rate_id] %>
       
       <div class="row-field material-name">
         <%= f.label :material_supply_id, "Material" %>
@@ -15,7 +18,11 @@
                                 :id, 
                                 :name,
                                 { prompt: "Select material..." },
-                                class: "material-select" %>
+                                class: "material-select",
+                                data: { 
+                                  material_rate_lookup_target: "materialSelect",
+                                  action: "change->material-rate-lookup#updateRate"
+                                } %>
       </div>
 
       <div class="row-field supplier-name">
@@ -25,7 +32,11 @@
                                 :id, 
                                 :name, 
                                 { include_blank: true },
-                                class: "supplier-select" %>
+                                class: "supplier-select",
+                                data: { 
+                                  material_rate_lookup_target: "supplierSelect",
+                                  action: "change->material-rate-lookup#updateRate"
+                                } %>
       </div>
       
       <div class="row-field rate-value">
@@ -34,7 +45,8 @@
                            step: 0.01, 
                            min: 0,
                            placeholder: "0.00",
-                           class: "rate-input" %>
+                           class: "rate-input",
+                           data: { material_rate_lookup_target: "rateInput" } %>
       </div>
       
       <div class="row-field notes">
