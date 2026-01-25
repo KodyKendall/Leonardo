@@ -40,10 +40,9 @@
           <%= f.hidden_field :notes, value: tender_specific_material_rate.notes %>
           <%= f.hidden_field :confirm_cascade, value: "true" %>
           
-          <%= button_to "Cancel", 
-                        [tender_specific_material_rate.tender, tender_specific_material_rate],
-                        method: :get,
-                        class: "btn btn-outline btn-sm" %>
+          <%= link_to "Cancel", 
+                      tender_tender_specific_material_rate_path(tender_specific_material_rate.tender, tender_specific_material_rate, monthly_rate_id: local_assigns[:monthly_rate_id]), 
+                      class: "btn btn-outline btn-sm" %>
           
           <%= f.submit "Confirm Update", class: "btn btn-warning btn-sm" %>
         <% end %>

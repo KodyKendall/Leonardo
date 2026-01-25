@@ -1,6 +1,6 @@
 class TenderSpecificMaterialRatesController < ApplicationController
   before_action :set_tender
-  before_action :set_tender_specific_material_rate, only: [:update, :destroy]
+  before_action :set_tender_specific_material_rate, only: [:show, :update, :destroy]
 
   # GET /tenders/:tender_id/tender_specific_material_rates
   def index
@@ -9,6 +9,15 @@ class TenderSpecificMaterialRatesController < ApplicationController
                                              .sort_by { |rate| rate.material_supply&.position || Float::INFINITY }
     @months = MonthlyMaterialSupplyRate.all.order(effective_from: :desc)
     @default_month_id = current_active_monthly_rate_id
+  end
+
+  # GET /tenders/:tender_id/tender_specific_material_rates/:id
+  def show
+    @default_month_id = params[:monthly_rate_id] || current_active_monthly_rate_id
+    render partial: "tender_specific_material_rate", locals: { 
+      tender_specific_material_rate: @tender_specific_material_rate,
+      monthly_rate_id: @default_month_id
+    }
   end
 
   # POST /tenders/:tender_id/tender_specific_material_rates

@@ -70,12 +70,14 @@
                        disable_with: "Saving..."
                      } %>
         
-        <%= button_to "Delete", 
-                      [tender_specific_material_rate.tender, tender_specific_material_rate],
-                      method: :delete,
-                      form: { data: { turbo_confirm: "Remove this rate override?" } },
-                      form_class: "contents",
-                      class: "btn btn-sm btn-danger" %>
+        <%= link_to [tender_specific_material_rate.tender, tender_specific_material_rate],
+                      data: { 
+                        turbo_method: :delete,
+                        turbo_confirm: "Remove this rate override?"
+                      },
+                      class: "btn btn-sm btn-danger" do %>
+          <i class="fa-solid fa-trash"></i> Delete
+        <% end %>
       </div>
     <% end %>
   </div>

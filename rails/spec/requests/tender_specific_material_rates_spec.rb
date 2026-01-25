@@ -43,4 +43,39 @@ RSpec.describe "TenderSpecificMaterialRates", type: :request do
       expect(json['rate']).to be_nil
     end
   end
+
+  describe "GET /tenders/:tender_id/tender_specific_material_rates/:id" do
+    let!(:rate) { create(:tender_specific_material_rate, tender: tender) }
+
+    it "returns success and renders the partial" do
+      get tender_tender_specific_material_rate_path(tender, rate)
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("turbo-frame id=\"tender_specific_material_rate_#{rate.id}\"")
+    end
+  end
+
+  describe "PATCH /tenders/:tender_id/tender_specific_material_rates/:id" do
+    let!(:rate) { create(:tender_specific_material_rate, tender: tender, rate: 100.0) }
+
+    it "updates the record successfully" do
+      patch tender_tender_specific_material_rate_path(tender, rate), params: {
+        tender_specific_material_rate: { rate: 150.0 }
+      }, as: :turbo_stream
+
+      expect(response).to have_http_status(:success)
+      expect(rate.reload.rate).to eq(150.0)
+    end
+  end
+
+  describe "DELETE /tenders/:tender_id/tender_specific_material_rates/:id" do
+    let!(:rate) { create(:tender_specific_material_rate, tender: tender) }
+
+    it "removes the record" do
+      expect {
+        delete tender_tender_specific_material_rate_path(tender, rate), as: :turbo_stream
+      }.to change(TenderSpecificMaterialRate, :count).by(-1)
+      
+      expect(response).to have_http_status(:success)
+    end
+  end
 end
