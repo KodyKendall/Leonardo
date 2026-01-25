@@ -4,12 +4,16 @@ class ClientsController < ApplicationController
   # GET /clients or /clients.json
   def index
     authorize Client
-    @clients = Client.all
+    @clients = Client.order(:business_name)
     
     # API endpoint for searchable dropdown
     if request.xhr? || params[:format] == 'json'
       query = params[:q].to_s.strip.downcase
-      clients = query.present? ? Client.where("LOWER(business_name) LIKE ?", "%#{query}%").limit(10) : Client.limit(10)
+      clients = if query.present?
+        Client.where("LOWER(business_name) LIKE ?", "%#{query}%").order(:business_name).limit(10)
+      else
+        Client.order(:business_name).limit(10)
+      end
       render json: clients.map { |c| { id: c.id, text: c.business_name } }
     end
   end

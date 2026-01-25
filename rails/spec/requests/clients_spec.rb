@@ -50,6 +50,29 @@ RSpec.describe "/clients", type: :request do
       get clients_url
       expect(response).to be_successful
     end
+
+    it "orders clients alphabetically by business_name" do
+      Client.delete_all
+      create(:client, business_name: "Zebra Corp")
+      create(:client, business_name: "Apple Inc")
+      create(:client, business_name: "Middle Co")
+
+      get clients_url
+      
+      # We check the order of the clients assigned to the view
+      expect(controller.view_assigns["clients"].map(&:business_name)).to eq(["Apple Inc", "Middle Co", "Zebra Corp"])
+    end
+
+    it "orders JSON results alphabetically by business_name" do
+      Client.delete_all
+      create(:client, business_name: "Zebra Corp")
+      create(:client, business_name: "Apple Inc")
+
+      get clients_url(format: :json)
+      
+      json_response = JSON.parse(response.body)
+      expect(json_response.map { |c| c["text"] }).to eq(["Apple Inc", "Zebra Corp"])
+    end
   end
 
   describe "GET /show" do
