@@ -42,6 +42,6 @@ class ProjectRateBuildUpsController < ApplicationController
   end
 
   def project_rate_build_up_params
-    params.require(:project_rate_build_up).permit(:profit_margin_percentage, :fabrication_rate, :overheads_rate, :shop_priming_rate, :onsite_painting_rate, :delivery_rate, :bolts_rate, :erection_rate, :cherry_picker_rate, :galvanizing_rate, :shop_drawings_rate, :shop_drawings_tonnes)
+    params.require(:project_rate_build_up).permit(:profit_margin_percentage, :fabrication_rate, :overheads_rate, :shop_priming_rate, :onsite_painting_rate, :delivery_rate, :delivery_rate_note, :bolts_rate, :erection_rate, :cherry_picker_rate, :galvanizing_rate, :shop_drawings_rate, :shop_drawings_tonnes)
   end
 end

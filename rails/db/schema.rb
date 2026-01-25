@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_25_202506) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_25_205547) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -466,6 +466,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_25_202506) do
     t.decimal "shop_drawings_rate", precision: 12, scale: 2, default: "0.0"
     t.decimal "profit_margin_percentage", precision: 10, scale: 2
     t.decimal "shop_drawings_tonnes", precision: 12, scale: 3
+    t.string "delivery_rate_note"
     t.index ["tender_id"], name: "index_project_rate_build_ups_on_tender_id", unique: true
   end
 

@@ -29,7 +29,7 @@ RSpec.describe "/tenders/:tender_id/project_rate_build_ups", type: :request do
   describe "PATCH /update" do
     context "with valid parameters" do
       let(:new_attributes) {
-        { profit_margin_percentage: 15.0, fabrication_rate: 100.0 }
+        { profit_margin_percentage: 15.0, fabrication_rate: 100.0, delivery_rate_note: "Bulk delivery discount" }
       }
 
       it "updates the requested project_rate_build_up" do
@@ -37,6 +37,7 @@ RSpec.describe "/tenders/:tender_id/project_rate_build_ups", type: :request do
         project_rate_build_up.reload
         expect(project_rate_build_up.profit_margin_percentage).to eq(15.0)
         expect(project_rate_build_up.fabrication_rate).to eq(100.0)
+        expect(project_rate_build_up.delivery_rate_note).to eq("Bulk delivery discount")
       end
 
       it "redirects to the tender" do

@@ -76,7 +76,14 @@
                 </td>
               </tr>
               <tr class="border-b hover:bg-base-200">
-                <td class="font-medium">Delivery</td>
+                <td class="font-medium">
+                  <div>Delivery</div>
+                  <% if project_rate_build_up.delivery_rate_note.present? %>
+                    <div class="text-xs text-base-content/60 font-normal italic mt-0.5">
+                      <%= project_rate_build_up.delivery_rate_note %>
+                    </div>
+                  <% end %>
+                </td>
                 <td class="text-right">
                   <code class="text-lg font-semibold">
                     <%= number_with_precision(project_rate_build_up.delivery_rate || 0, precision: 2) %> R/t

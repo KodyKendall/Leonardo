@@ -10,6 +10,16 @@ RSpec.describe ProjectRateBuildUp, type: :model do
     it { should validate_numericality_of(:crainage_rate).is_greater_than_or_equal_to(0).allow_nil }
   end
 
+  describe 'persistence' do
+    let(:tender) { create(:tender) }
+    let(:project_rate_build_up) { tender.reload.project_rate_buildup }
+
+    it 'can save and retrieve delivery_rate_note' do
+      project_rate_build_up.update!(delivery_rate_note: "Bulk discount")
+      expect(project_rate_build_up.reload.delivery_rate_note).to eq("Bulk discount")
+    end
+  end
+
   describe '#calculate_crainage_rate' do
     let(:tender) { create(:tender, total_tonnage: 100) }
     let(:project_rate_build_up) { tender.reload.project_rate_buildup }
