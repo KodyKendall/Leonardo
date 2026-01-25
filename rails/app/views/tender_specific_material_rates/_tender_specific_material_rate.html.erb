@@ -4,12 +4,13 @@
                   local: true,
                   data: {
                     controller: "dirty-form material-rate-lookup",
-                    action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset",
+                    action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#handleSubmitEnd",
                     material_rate_lookup_url_value: lookup_tender_tender_specific_material_rates_path(tender_specific_material_rate.tender),
                     material_rate_lookup_monthly_rate_id_value: local_assigns[:monthly_rate_id]
                   },
                   class: "material-rate-form" do |f| %>
       <%= hidden_field_tag :monthly_rate_id, local_assigns[:monthly_rate_id] %>
+      <%= f.hidden_field :material_supply_type, value: 'MaterialSupply' %>
       
       <div class="row-field material-name">
         <%= f.label :material_supply_id, "Material" %>
@@ -61,6 +62,11 @@
               data-dirty-form-target="indicator" 
               style="display: none;">
           <i class="fa-solid fa-triangle-exclamation"></i> Unsaved
+        </span>
+
+        <span class="badge badge-success hidden" 
+              data-dirty-form-target="savedIndicator">
+          <i class="fa-solid fa-check"></i> Saved
         </span>
         
         <%= f.submit "Save", 

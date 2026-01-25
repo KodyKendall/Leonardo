@@ -17,6 +17,7 @@ class TenderSpecificMaterialRate < ApplicationRecord
   validates :tender_id, uniqueness: { scope: [:material_supply_id, :material_supply_type], message: "and material supply combination must be unique" }, unless: :material_supply_id_blank?, if: -> { material_supply_id_changed? || material_supply_type_changed? }
 
   # Callbacks
+  before_validation :ensure_material_supply_type
   after_update :cascade_rate_updates_if_rate_changed
   
   # Virtual attribute to skip broadcasts during bulk operations
@@ -26,6 +27,10 @@ class TenderSpecificMaterialRate < ApplicationRecord
   before_save :log_rate_change
 
   private
+
+  def ensure_material_supply_type
+    self.material_supply_type ||= 'MaterialSupply'
+  end
 
   def log_rate_change
     if rate_changed?
@@ -54,7 +59,7 @@ class TenderSpecificMaterialRate < ApplicationRecord
     return if material_count.zero?
 
     # Batch update all affected LineItemMaterial records with new rate
-    old_rate = rate_previously_was(:rate)
+    old_rate = rate_before_last_save
     new_rate = rate
     LineItemMaterial.where(id: affected_line_item_materials.map(&:id)).update_all(rate: new_rate)
 

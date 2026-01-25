@@ -65,6 +65,48 @@ RSpec.describe "TenderSpecificMaterialRates", type: :request do
       expect(response).to have_http_status(:success)
       expect(rate.reload.rate).to eq(150.0)
     end
+
+    it "fails with validation error if rate is negative" do
+      patch tender_tender_specific_material_rate_path(tender, rate), params: {
+        tender_specific_material_rate: { rate: -1.0 }
+      }, as: :turbo_stream
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(rate.reload.rate).to eq(100.0)
+    end
+
+    context "when cascade confirmation is required" do
+      let!(:line_item) { create(:tender_line_item, tender: tender) }
+      let!(:breakdown) { create(:line_item_material_breakdown, tender_line_item: line_item) }
+      let!(:line_item_material) do
+        create(:line_item_material, 
+               tender_line_item: line_item, 
+               line_item_material_breakdown: breakdown,
+               material_supply_id: rate.material_supply_id, 
+               material_supply_type: rate.material_supply_type)
+      end
+
+      it "renders the confirmation partial if confirm_cascade is missing" do
+        patch tender_tender_specific_material_rate_path(tender, rate), params: {
+          tender_specific_material_rate: { rate: 200.0 }
+        }, as: :turbo_stream
+
+        expect(response).to have_http_status(:success)
+        expect(response.body).to include("Confirm Rate Update")
+        expect(rate.reload.rate).to eq(100.0)
+      end
+
+      it "updates the rate if confirm_cascade is present" do
+        patch tender_tender_specific_material_rate_path(tender, rate), params: {
+          tender_specific_material_rate: { rate: 200.0 },
+          confirm_cascade: "true"
+        }, as: :turbo_stream
+
+        expect(response).to have_http_status(:success)
+        expect(response.body).not_to include("Confirm Rate Update")
+        expect(rate.reload.rate).to eq(200.0)
+      end
+    end
   end
 
   describe "DELETE /tenders/:tender_id/tender_specific_material_rates/:id" do

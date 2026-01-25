@@ -11,7 +11,9 @@ class PopulateTenderMaterialRates
     # Create or update a TenderSpecificMaterialRate for each
     MaterialSupply.find_each do |material_supply|
       # Try to find the best rate from the selected or current monthly rate
-      rate_value = find_best_rate_for_material(material_supply)
+      best_rate_record = find_best_rate_record_for_material(material_supply)
+      rate_value = best_rate_record&.rate
+      supplier_id = best_rate_record&.supplier_id
       
       begin
         # Find or initialize the TenderSpecificMaterialRate
@@ -23,6 +25,7 @@ class PopulateTenderMaterialRates
 
         tender_rate.assign_attributes(
           rate: rate_value,
+          supplier_id: supplier_id,
           unit: "tonne", # Default to tonne as per MaterialSupplyRate validation
           skip_broadcast: true
         )
@@ -48,10 +51,10 @@ class PopulateTenderMaterialRates
 
   private
 
-  # Find the best rate for a given material
+  # Find the best rate record for a given material
   # Priority 1: Winner rate (is_winner = true)
   # Priority 2: Cheapest rate (lowest rate value)
-  def find_best_rate_for_material(material_supply)
+  def find_best_rate_record_for_material(material_supply)
     target_monthly_rate = @monthly_material_supply_rate || current_active_monthly_rate
 
     # If no active window, return nil
@@ -62,7 +65,7 @@ class PopulateTenderMaterialRates
       .where(monthly_material_supply_rate_id: target_monthly_rate.id, material_supply_id: material_supply.id, is_winner: true)
       .first
 
-    return winner_rate.rate if winner_rate
+    return winner_rate if winner_rate
 
     # Priority 2: Find cheapest rate
     cheapest_rate = MaterialSupplyRate
@@ -70,7 +73,7 @@ class PopulateTenderMaterialRates
       .order(rate: :asc)
       .first
 
-    return cheapest_rate.rate if cheapest_rate
+    return cheapest_rate if cheapest_rate
 
     nil
   end

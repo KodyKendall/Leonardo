@@ -3,6 +3,6 @@ FactoryBot.define do
     line_item_material_breakdown
     tender_line_item
     material_supply
-    proportion { "9.99" }
+    proportion_percentage { "9.99" }
   end
 end

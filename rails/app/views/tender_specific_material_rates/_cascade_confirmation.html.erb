@@ -23,7 +23,7 @@
           <strong>Current Rate:</strong> <%= number_to_currency(tender_specific_material_rate.rate || 0) %>
         </p>
         <p class="text-sm mt-2">
-          <strong>New Rate:</strong> <%= number_to_currency(new_rate.to_f) %>
+          <strong>New Rate:</strong> <%= number_to_currency(local_assigns.dig(:new_params, :rate).to_f) %>
         </p>
         <p class="text-sm mt-2 text-gray-600">
           <strong>Affected Line Items:</strong> All line items using this material will be updated
@@ -35,10 +35,15 @@
                       method: :patch,
                       local: true,
                       class: "contents" do |f| %>
-          <%= f.hidden_field :material_supply_id, value: tender_specific_material_rate.material_supply_id %>
-          <%= f.hidden_field :rate, value: new_rate %>
-          <%= f.hidden_field :notes, value: tender_specific_material_rate.notes %>
-          <%= f.hidden_field :confirm_cascade, value: "true" %>
+          <%# Pass through ALL new values so they aren't lost after confirmation %>
+          <%= f.hidden_field :material_supply_id, value: local_assigns.dig(:new_params, :material_supply_id) || tender_specific_material_rate.material_supply_id %>
+          <%= f.hidden_field :material_supply_type, value: local_assigns.dig(:new_params, :material_supply_type) || tender_specific_material_rate.material_supply_type || 'MaterialSupply' %>
+          <%= f.hidden_field :supplier_id, value: local_assigns.dig(:new_params, :supplier_id) || tender_specific_material_rate.supplier_id %>
+          <%= f.hidden_field :rate, value: local_assigns.dig(:new_params, :rate) || tender_specific_material_rate.rate %>
+          <%= f.hidden_field :notes, value: local_assigns.dig(:new_params, :notes) || tender_specific_material_rate.notes %>
+          
+          <%= hidden_field_tag :confirm_cascade, "true" %>
+          <%= hidden_field_tag :monthly_rate_id, local_assigns[:monthly_rate_id] %>
           
           <%= link_to "Cancel", 
                       tender_tender_specific_material_rate_path(tender_specific_material_rate.tender, tender_specific_material_rate, monthly_rate_id: local_assigns[:monthly_rate_id]), 

@@ -116,7 +116,10 @@ export default class extends Controller {
     }
   }
 
-  reset() {
+  reset(event) {
+    if (event && event.detail && !event.detail.success) {
+      return
+    }
     this.showSavedState()
   }
 

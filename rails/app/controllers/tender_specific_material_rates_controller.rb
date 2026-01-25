@@ -5,15 +5,25 @@ class TenderSpecificMaterialRatesController < ApplicationController
   # GET /tenders/:tender_id/tender_specific_material_rates
   def index
     @tender_specific_material_rates = @tender.tender_specific_material_rates
-                                             .includes(:material_supply)
+                                             .includes(:material_supply, :supplier)
                                              .sort_by { |rate| rate.material_supply&.position || Float::INFINITY }
     @months = MonthlyMaterialSupplyRate.all.order(effective_from: :desc)
-    @default_month_id = current_active_monthly_rate_id
+    
+    # Persist the monthly_rate_id selection in the session
+    if params[:monthly_rate_id].present?
+      session["tender_#{@tender.id}_monthly_rate_id"] = params[:monthly_rate_id]
+    end
+    
+    @default_month_id = params[:monthly_rate_id] || 
+                        session["tender_#{@tender.id}_monthly_rate_id"] || 
+                        current_active_monthly_rate_id
   end
 
   # GET /tenders/:tender_id/tender_specific_material_rates/:id
   def show
-    @default_month_id = params[:monthly_rate_id] || current_active_monthly_rate_id
+    @default_month_id = params[:monthly_rate_id] || 
+                        session["tender_#{@tender.id}_monthly_rate_id"] || 
+                        current_active_monthly_rate_id
     render partial: "tender_specific_material_rate", locals: { 
       tender_specific_material_rate: @tender_specific_material_rate,
       monthly_rate_id: @default_month_id
@@ -28,7 +38,9 @@ class TenderSpecificMaterialRatesController < ApplicationController
       rate: nil,
       notes: nil
     )
-    @default_month_id = params[:monthly_rate_id] || current_active_monthly_rate_id
+    @default_month_id = params[:monthly_rate_id] || 
+                        session["tender_#{@tender.id}_monthly_rate_id"] || 
+                        current_active_monthly_rate_id
 
     Rails.logger.info("🪲 DEBUG: Creating tender_specific_material_rate, id=#{@tender_specific_material_rate.id}, tender_id=#{@tender.id}")
     
@@ -41,7 +53,7 @@ class TenderSpecificMaterialRatesController < ApplicationController
       end
     else
       respond_to do |format|
-        format.turbo_stream
+        format.turbo_stream { render :create, status: :unprocessable_entity }
         format.html { render :index, status: :unprocessable_entity }
       end
     end
@@ -50,7 +62,9 @@ class TenderSpecificMaterialRatesController < ApplicationController
   # PATCH/PUT /tenders/:tender_id/tender_specific_material_rates/:id
   # Updates an existing rate and responds with Turbo Stream replace
   def update
-    @default_month_id = params[:monthly_rate_id] || current_active_monthly_rate_id
+    @default_month_id = params[:monthly_rate_id] || 
+                        session["tender_#{@tender.id}_monthly_rate_id"] || 
+                        current_active_monthly_rate_id
 
     # Check if rate is being changed and if we need confirmation
     if rate_being_changed? && params[:confirm_cascade].nil?
@@ -66,7 +80,7 @@ class TenderSpecificMaterialRatesController < ApplicationController
               locals: { 
                 tender_specific_material_rate: @tender_specific_material_rate,
                 affected_material_count: affected_count,
-                new_rate: tender_specific_material_rate_params[:rate],
+                new_params: tender_specific_material_rate_params,
                 monthly_rate_id: @default_month_id
               }
             )
@@ -85,7 +99,7 @@ class TenderSpecificMaterialRatesController < ApplicationController
       end
     else
       respond_to do |format|
-        format.turbo_stream
+        format.turbo_stream { render :update, status: :unprocessable_entity }
         format.html { render :index, status: :unprocessable_entity }
       end
     end
@@ -108,10 +122,13 @@ class TenderSpecificMaterialRatesController < ApplicationController
   def populate_from_month
     @monthly_material_supply_rate = MonthlyMaterialSupplyRate.find(params[:monthly_material_supply_rate_id])
     
+    # Store the selected month in the session for persistence across refreshes
+    session["tender_#{@tender.id}_monthly_rate_id"] = params[:monthly_material_supply_rate_id]
+    
     PopulateTenderMaterialRates.new(@tender, monthly_material_supply_rate: @monthly_material_supply_rate).execute
     
     @tender_specific_material_rates = @tender.tender_specific_material_rates
-                                             .includes(:material_supply)
+                                             .includes(:material_supply, :supplier)
                                              .sort_by { |rate| rate.material_supply&.position || Float::INFINITY }
 
     respond_to do |format|

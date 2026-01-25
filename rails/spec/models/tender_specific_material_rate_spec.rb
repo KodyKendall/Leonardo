@@ -34,5 +34,31 @@ RSpec.describe TenderSpecificMaterialRate, type: :model do
       
       expect(rate.reload.supplier_id).to be_nil
     end
+
+    it 'auto-sets material_supply_type to MaterialSupply' do
+      rate = TenderSpecificMaterialRate.new(
+        tender: tender,
+        material_supply_id: material_supply.id
+      )
+      rate.valid?
+      expect(rate.material_supply_type).to eq('MaterialSupply')
+    end
+
+    it 'prevents duplicates for the same tender and material_supply' do
+      TenderSpecificMaterialRate.create!(
+        tender: tender,
+        material_supply: material_supply,
+        rate: 100.0
+      )
+      
+      duplicate = TenderSpecificMaterialRate.new(
+        tender: tender,
+        material_supply: material_supply,
+        rate: 200.0
+      )
+      
+      expect(duplicate).not_to be_valid
+      expect(duplicate.errors[:tender_id]).to include("and material supply combination must be unique")
+    end
   end
 end
