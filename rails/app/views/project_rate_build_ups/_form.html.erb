@@ -28,7 +28,11 @@
         step: :any,
         placeholder: "0.00",
         class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:profit_margin_percentage].any? }],
-        data: { "project-rate-buildup-form-target": "field" }
+        data: { 
+          controller: "autoselect", 
+          action: "focus->autoselect#select", 
+          "project-rate-buildup-form-target": "field" 
+        }
       %>
     </div>
 
@@ -39,7 +43,11 @@
         step: :any,
         placeholder: "0.00",
         class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:shop_drawings_rate].any? }],
-        data: { "project-rate-buildup-form-target": "field" }
+        data: { 
+          controller: "autoselect", 
+          action: "focus->autoselect#select", 
+          "project-rate-buildup-form-target": "field" 
+        }
       %>
     </div>
 
@@ -50,7 +58,11 @@
         step: :any,
         placeholder: "#{@tender.total_tonnage} (Total Tonnage)",
         class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:shop_drawings_tonnes].any? }],
-        data: { "project-rate-buildup-form-target": "field" }
+        data: { 
+          controller: "autoselect", 
+          action: "focus->autoselect#select", 
+          "project-rate-buildup-form-target": "field" 
+        }
       %>
       <label class="label">
         <span class="label-text-alt text-gray-500 italic">Leave blank to use total project tonnage.</span>
@@ -64,7 +76,11 @@
         step: :any,
         placeholder: "0.00",
         class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:fabrication_rate].any? }],
-        data: { "project-rate-buildup-form-target": "field" }
+        data: { 
+          controller: "autoselect", 
+          action: "focus->autoselect#select", 
+          "project-rate-buildup-form-target": "field" 
+        }
       %>
     </div>
 
@@ -75,7 +91,11 @@
         step: :any,
         placeholder: "0.00",
         class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:overheads_rate].any? }],
-        data: { "project-rate-buildup-form-target": "field" }
+        data: { 
+          controller: "autoselect", 
+          action: "focus->autoselect#select", 
+          "project-rate-buildup-form-target": "field" 
+        }
       %>
     </div>
 
@@ -86,7 +106,11 @@
         step: :any,
         placeholder: "0.00",
         class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:shop_priming_rate].any? }],
-        data: { "project-rate-buildup-form-target": "field" }
+        data: { 
+          controller: "autoselect", 
+          action: "focus->autoselect#select", 
+          "project-rate-buildup-form-target": "field" 
+        }
       %>
     </div>
 
@@ -97,7 +121,11 @@
         step: :any,
         placeholder: "0.00",
         class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:onsite_painting_rate].any? }],
-        data: { "project-rate-buildup-form-target": "field" }
+        data: { 
+          controller: "autoselect", 
+          action: "focus->autoselect#select", 
+          "project-rate-buildup-form-target": "field" 
+        }
       %>
     </div>
 
@@ -108,7 +136,11 @@
         step: :any,
         placeholder: "0.00",
         class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:delivery_rate].any? }],
-        data: { "project-rate-buildup-form-target": "field" }
+        data: { 
+          controller: "autoselect", 
+          action: "focus->autoselect#select", 
+          "project-rate-buildup-form-target": "field" 
+        }
       %>
     </div>
 
@@ -119,7 +151,11 @@
         step: :any,
         placeholder: "0.00",
         class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:bolts_rate].any? }],
-        data: { "project-rate-buildup-form-target": "field" }
+        data: { 
+          controller: "autoselect", 
+          action: "focus->autoselect#select", 
+          "project-rate-buildup-form-target": "field" 
+        }
       %>
     </div>
 
@@ -130,7 +166,11 @@
         step: :any,
         placeholder: "0.00",
         class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:erection_rate].any? }],
-        data: { "project-rate-buildup-form-target": "field" }
+        data: { 
+          controller: "autoselect", 
+          action: "focus->autoselect#select", 
+          "project-rate-buildup-form-target": "field" 
+        }
       %>
     </div>
 
@@ -147,7 +187,11 @@
         step: :any,
         placeholder: "0.00",
         class: ["input input-bordered w-full", { "input-error": project_rate_build_up.errors[:galvanizing_rate].any? }],
-        data: { "project-rate-buildup-form-target": "field" }
+        data: { 
+          controller: "autoselect", 
+          action: "focus->autoselect#select", 
+          "project-rate-buildup-form-target": "field" 
+        }
       %>
     </div>
   </div>

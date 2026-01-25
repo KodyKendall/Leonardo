@@ -137,6 +137,8 @@ export default class extends Controller {
                  name="line_item_rate_build_up[rate_buildup_custom_items_attributes][${timestamp}][description]"
                  placeholder="e.g., Special Coating"
                  class="input input-sm input-bordered w-full"
+                 data-controller="autoselect"
+                 data-action="focus->autoselect#select"
                  data-line-item-rate-build-up-target="customDescription" />
         </td>
         <td class="text-center">
@@ -147,6 +149,8 @@ export default class extends Controller {
                  value="1.0"
                  placeholder="1.0"
                  class="input input-sm input-bordered w-20 text-center"
+                 data-controller="autoselect"
+                 data-action="focus->autoselect#select"
                  data-line-item-rate-build-up-target="customIncluded" />
         </td>
         <td class="text-right">
@@ -156,7 +160,9 @@ export default class extends Controller {
                  min="0"
                  placeholder="0.00"
                  class="input input-sm input-bordered w-28 text-right"
-                 data-line-item-rate-build_up-target="customRate" />
+                 data-controller="autoselect"
+                 data-action="focus->autoselect#select"
+                 data-line-item-rate-build-up-target="customRate" />
         </td>
         <td class="text-right font-semibold" data-line-item-rate-build-up-target="customAmount">—</td>
         <td class="text-center">

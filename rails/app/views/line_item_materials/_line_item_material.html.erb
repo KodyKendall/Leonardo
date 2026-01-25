@@ -46,7 +46,9 @@
                 step: 0.01,
                 class: "input input-bordered input-xs w-full text-right text-xs",
                 data: { 
-                  "line-item-material-form-target": "wastePercentageInput"
+                  "line-item-material-form-target": "wastePercentageInput",
+                  controller: "autoselect",
+                  action: "focus->autoselect#select"
                 } %>
           </div>
 
@@ -57,7 +59,9 @@
                 step: 0.01,
                 class: "input input-bordered input-xs w-full text-right text-xs",
                 data: { 
-                  "line-item-material-form-target": "rateInput"
+                  "line-item-material-form-target": "rateInput",
+                  controller: "autoselect",
+                  action: "focus->autoselect#select"
                 } %>
           </div>
 
@@ -68,7 +72,11 @@
               step: 0.01,
               min: 0,
               max: 100,
-              class: "input input-bordered input-xs w-full text-right text-xs" %>
+              class: "input input-bordered input-xs w-full text-right text-xs",
+              data: {
+                controller: "autoselect",
+                action: "focus->autoselect#select"
+              } %>
         </div>
 
         <!-- Line Total -->

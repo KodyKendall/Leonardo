@@ -75,6 +75,8 @@
                           placeholder: "1.0",
                           class: "input input-sm input-bordered w-20 text-center",
                           data: {
+                            controller: "autoselect",
+                            action: "focus->autoselect#select",
                             line_item_rate_build_up_target: "multiplierInput"
                           } %>
                     <% end %>
@@ -88,6 +90,8 @@
                           min: 0,
                           class: "input input-sm input-bordered w-28 text-right",
                           data: {
+                            controller: "autoselect",
+                            action: "focus->autoselect#select",
                             line_item_rate_build_up_target: "rateInput"
                           } %>
                     <% end %>
@@ -115,6 +119,8 @@
                             placeholder: "e.g., Special Coating",
                             class: "input input-sm input-bordered w-full",
                             data: {
+                              controller: "autoselect",
+                              action: "focus->autoselect#select",
                               line_item_rate_build_up_target: "customDescription"
                             } %>
                       <% end %>
@@ -127,6 +133,8 @@
                             placeholder: "1.0",
                             class: "input input-sm input-bordered w-20 text-center",
                             data: {
+                              controller: "autoselect",
+                              action: "focus->autoselect#select",
                               line_item_rate_build_up_target: "customIncluded"
                             } %>
                       <% end %>
@@ -139,6 +147,8 @@
                             placeholder: "0.00",
                             class: "input input-sm input-bordered w-28 text-right",
                             data: {
+                              controller: "autoselect",
+                              action: "focus->autoselect#select",
                               line_item_rate_build_up_target: "customRate"
                             } %>
                       <% end %>
@@ -199,6 +209,8 @@
                       placeholder: "1.0",
                       class: "input input-sm input-bordered w-28 text-right",
                       data: {
+                        controller: "autoselect",
+                        action: "focus->autoselect#select",
                         line_item_rate_build_up_target: "massCalcInput"
                       } %>
                 </td>
@@ -217,6 +229,8 @@
                       placeholder: "e.g., 10.5 for 10.5%",
                       class: "input input-sm input-bordered w-28 text-right",
                       data: {
+                        controller: "autoselect",
+                        action: "focus->autoselect#select",
                         line_item_rate_build_up_target: "marginInput"
                       } %>
                 </td>

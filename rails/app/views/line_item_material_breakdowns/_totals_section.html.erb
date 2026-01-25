@@ -25,7 +25,8 @@
               data: {
                 line_item_material_breakdown_target: "marginInput",
                 margin_form_target: "input",
-                action: "input->line-item-material-breakdown#markDirty input->line-item-material-breakdown#recalculate keydown->margin-form#submitOnEnter input->margin-form#save"
+                controller: "autoselect",
+                action: "focus->autoselect#select input->line-item-material-breakdown#markDirty input->line-item-material-breakdown#recalculate keydown->margin-form#submitOnEnter input->margin-form#save"
               } %>
           <span class="btn btn-xs no-animation join-item text-xs">%</span>
         </div>
