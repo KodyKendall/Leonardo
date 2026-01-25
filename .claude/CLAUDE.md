@@ -23,6 +23,26 @@ docker compose -f docker-compose-dev.yml build llamapress
 docker compose -f docker-compose-dev.yml up -d llamapress
 ```
 
+### Hot-reloading the `llama_bot_rails` gem (dev only)
+
+For faster iteration on the gem without rebuilding, `docker-compose-dev.yml` mounts the gem directly:
+```yaml
+- ../LlamaPress-Simple/vendor/llama_bot_rails:/rails/vendor/llama_bot_rails
+```
+
+This means changes to `../LlamaPress-Simple/vendor/llama_bot_rails` are reflected immediately:
+- **Views/Controllers**: Rails auto-reloads in development
+- **Assets (CSS/JS)**: Restart the server: `docker compose restart llamapress`
+- **Migrations**: Run inside the container:
+  ```bash
+  docker compose exec llamapress bash -c "rails llama_bot_rails:install:migrations && rails db:migrate"
+  ```
+
+**Note:** If adding new assets from the gem, you may need to update `rails/app/assets/config/manifest.js`:
+```js
+//= link llama_bot_rails/application.css
+```
+
 ---
 
 ## Quick Start for Devs:
