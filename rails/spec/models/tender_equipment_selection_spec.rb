@@ -29,6 +29,14 @@ RSpec.describe TenderEquipmentSelection, type: :model do
         # 1300 * 2 units * 3 months = 7800
         expect(selection.total_cost).to eq(7800.0)
       end
+
+      it "correctly handles decimal period_months" do
+        selection.period_months = 1.5
+        selection.save!
+        # 1300 * 2 units * 1.5 months = 3900
+        expect(selection.total_cost).to eq(3900.0)
+        expect(selection.reload.period_months).to eq(1.5)
+      end
     end
 
     context "when components are updated" do

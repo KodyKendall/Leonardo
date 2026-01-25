@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_25_195512) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_25_195917) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -541,7 +541,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_25_195512) do
     t.bigint "tender_id", null: false
     t.bigint "equipment_type_id", null: false
     t.integer "units_required", default: 1, null: false
-    t.integer "period_months", default: 1, null: false
+    t.decimal "period_months", precision: 10, scale: 2, default: "1.0", null: false
     t.string "purpose", limit: 100
     t.decimal "monthly_cost_override", precision: 12, scale: 2
     t.decimal "calculated_monthly_cost", precision: 12, scale: 2, null: false

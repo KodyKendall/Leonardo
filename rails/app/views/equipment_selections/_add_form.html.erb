@@ -41,8 +41,8 @@
           <label class="label label-text text-xs font-semibold">Months</label>
           <%= f.number_field :period_months, 
                             value: 1, 
-                            min: 1, 
-                            step: 1,
+                            min: 0, 
+                            step: 0.01,
                             class: "input input-bordered input-sm w-full",
                             required: true %>
         </div>

@@ -46,6 +46,14 @@ RSpec.describe "/tenders/:tender_id/equipment_selections", type: :request do
         post tender_equipment_selections_path(tender), params: { tender_equipment_selection: valid_attributes }
         expect(response).to redirect_to(tender_equipment_selections_path(tender))
       end
+
+      it "creates a selection with decimal period_months" do
+        decimal_attributes = valid_attributes.merge(period_months: 1.5)
+        expect {
+          post tender_equipment_selections_path(tender), params: { tender_equipment_selection: decimal_attributes }
+        }.to change(TenderEquipmentSelection, :count).by(1)
+        expect(TenderEquipmentSelection.last.period_months).to eq(1.5)
+      end
     end
 
     context "with invalid parameters" do
