@@ -46,9 +46,11 @@ class Tender < ApplicationRecord
   # Recalculate grand total as sum of all line item totals + shop drawings total + P&G items and broadcast update
   # Excludes heading rows (is_heading: true) from calculations
   def recalculate_grand_total!
-    line_items_total = tender_line_items.where(is_heading: false).sum { |item| (item.line_item_rate_build_up&.rounded_rate || 0) * item.quantity }
+    # Use SQL sum to avoid N+1 queries for line item rate build ups
+    line_items_total = tender_line_items.where(is_heading: false).sum('quantity * rate')
+    
     shop_drawings_total = project_rate_buildup&.shop_drawings_total || 0
-    p_and_g_total = preliminaries_general_items.sum { |item| item.quantity * item.rate }
+    p_and_g_total = preliminaries_general_items.sum('quantity * rate')
     
     new_total = line_items_total + shop_drawings_total + p_and_g_total
     update_columns(grand_total: new_total, tender_value: new_total)
@@ -78,10 +80,15 @@ class Tender < ApplicationRecord
   # Excludes heading rows (is_heading: true) from calculations
   # Also calculates financial_tonnage which includes ALL line items
   def recalculate_total_tonnage!(cascade: true)
-    items = tender_line_items.where(is_heading: false)
+    # Calculate both tonnages in a single query to improve performance
+    stats = tender_line_items.where(is_heading: false)
+                             .pick(
+                               Arel.sql("SUM(CASE WHEN include_in_tonnage = true THEN quantity ELSE 0 END)"),
+                               Arel.sql("SUM(quantity)")
+                             )
     
-    new_tonnage = items.where(include_in_tonnage: true).sum(:quantity)
-    new_financial_tonnage = items.sum(:quantity)
+    new_tonnage = (stats[0] || 0).to_f
+    new_financial_tonnage = (stats[1] || 0).to_f
     
     self.total_tonnage = new_tonnage
     self.financial_tonnage = new_financial_tonnage

@@ -23,4 +23,29 @@ RSpec.describe LineItemMaterial, type: :model do
       expect(line_item_material.material_supply_type).to eq("NutBoltWasherRate")
     end
   end
+
+  describe "callbacks" do
+    let(:section_category) { SectionCategory.create!(name: "Test Category", display_name: "Test Category") }
+    let(:tender) { Tender.create!(tender_name: "Test Tender", status: "Draft") }
+    let(:tender_line_item) { TenderLineItem.create!(tender: tender, quantity: 1, rate: 0, section_category: section_category) }
+    let(:line_item_material_breakdown) { tender_line_item.line_item_material_breakdown }
+    let(:rate_buildup) { tender_line_item.line_item_rate_build_up }
+
+    it "syncs material supply rate to buildup after save" do
+      # Ensure associations are loaded
+      line_item_material_breakdown
+      rate_buildup
+      
+      line_item_material = LineItemMaterial.new(
+        line_item_material_breakdown: line_item_material_breakdown,
+        rate: 100,
+        proportion_percentage: 100,
+        waste_percentage: 0
+      )
+      
+      expect {
+        line_item_material.save!
+      }.to change { rate_buildup.reload.material_supply_rate.to_f }.from(0.0).to(100.0)
+    end
+  end
 end

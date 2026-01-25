@@ -23,7 +23,7 @@
       <div class="stat bg-success text-white rounded-lg p-3">
         <div class="stat-title text-sm">Grand Total (R)</div>
         <div class="stat-value text-2xl font-bold" id="summary_grand_total">
-          <%= number_with_delimiter(@tender.tender_line_items.sum { |li| li.total_amount }, precision: 2) %>
+          <%= number_with_delimiter(@tender.tender_line_items.sum('quantity * rate'), precision: 2) %>
         </div>
       </div>
     </div>

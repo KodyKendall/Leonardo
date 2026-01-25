@@ -70,18 +70,24 @@ class LineItemMaterialsController < ApplicationController
     respond_to do |format|
       if @line_item_material.update(line_item_material_params)
         format.turbo_stream do
-          flash.now[:notice] = "Material saved successfully."
-          # Update the individual material row, breakdown totals, and rate buildup.
-          # We explicitly refresh the RateBuildUp frame here because its after_commit
-          # broadcasts may be delayed by nested transaction timing. The breakdown totals
-          # also update via callback, but we include it here for safety.
+          # flash.now[:notice] = "Material saved successfully." # Removed to reduce noise
+          
+          # Prefetch collection for the partial to avoid N+1
+          category = @breakdown&.tender_line_item&.section_category
+          collection = category ? category.supply_source_model.all : MaterialSupply.all
+          material_supply_type = category ? category.supply_source_model.to_s : 'MaterialSupply'
+
           streams = [
             turbo_stream.replace(
               "line_item_material_#{@line_item_material.id}",
               partial: 'line_item_materials/line_item_material',
-              locals: { line_item_material: @line_item_material }
+              locals: { 
+                line_item_material: @line_item_material,
+                collection: collection,
+                material_supply_type: material_supply_type
+              }
             ),
-            turbo_stream.update("flash", partial: "shared/flash"),
+            # turbo_stream.update("flash", partial: "shared/flash"), # Removed to reduce noise
             turbo_stream.update(
               "material_breakdown_totals_#{@breakdown&.id}",
               partial: 'line_item_material_breakdowns/totals_section',

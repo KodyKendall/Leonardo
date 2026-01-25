@@ -14,121 +14,36 @@ require 'rails_helper'
 
 RSpec.describe "/line_item_materials", type: :request do
   let(:user) { create(:user) }
+  let(:section_category) { SectionCategory.create!(name: "Test Category", display_name: "Test Category") }
+  let(:tender) { Tender.create!(tender_name: "Test Tender", status: "Draft") }
+  let(:tender_line_item) { TenderLineItem.create!(tender: tender, quantity: 1, rate: 0, section_category: section_category) }
+  let(:line_item_material_breakdown) { tender_line_item.line_item_material_breakdown }
+  let(:line_item_material) { LineItemMaterial.create!(line_item_material_breakdown: line_item_material_breakdown, rate: 100, proportion_percentage: 100) }
   
-  # This should return the minimal set of attributes required to create a valid
-  # LineItemMaterial. As you add validations to LineItemMaterial, be sure to
-  # adjust the attributes here as well.
   let(:valid_attributes) {
-    skip("Add a hash of attributes valid for your model")
+    { rate: 150 }
   }
 
   let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
+    { rate: -10 }
   }
 
   before { sign_in(user) }
 
-  describe "GET /index" do
-    it "renders a successful response" do
-      LineItemMaterial.create! valid_attributes
-      get line_item_materials_url
-      expect(response).to be_successful
-    end
-  end
-
-  describe "GET /show" do
-    it "renders a successful response" do
-      line_item_material = LineItemMaterial.create! valid_attributes
-      get line_item_material_url(line_item_material)
-      expect(response).to be_successful
-    end
-  end
-
-  describe "GET /new" do
-    it "renders a successful response" do
-      get new_line_item_material_url
-      expect(response).to be_successful
-    end
-  end
-
-  describe "GET /edit" do
-    it "renders a successful response" do
-      line_item_material = LineItemMaterial.create! valid_attributes
-      get edit_line_item_material_url(line_item_material)
-      expect(response).to be_successful
-    end
-  end
-
-  describe "POST /create" do
-    context "with valid parameters" do
-      it "creates a new LineItemMaterial" do
-        expect {
-          post line_item_materials_url, params: { line_item_material: valid_attributes }
-        }.to change(LineItemMaterial, :count).by(1)
-      end
-
-      it "redirects to the created line_item_material" do
-        post line_item_materials_url, params: { line_item_material: valid_attributes }
-        expect(response).to redirect_to(line_item_material_url(LineItemMaterial.last))
-      end
-    end
-
-    context "with invalid parameters" do
-      it "does not create a new LineItemMaterial" do
-        expect {
-          post line_item_materials_url, params: { line_item_material: invalid_attributes }
-        }.to change(LineItemMaterial, :count).by(0)
-      end
-
-      it "renders a response with 422 status (i.e. to display the 'new' template)" do
-        post line_item_materials_url, params: { line_item_material: invalid_attributes }
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-    end
-  end
-
   describe "PATCH /update" do
     context "with valid parameters" do
-      let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
-      }
-
-      it "updates the requested line_item_material" do
-        line_item_material = LineItemMaterial.create! valid_attributes
-        patch line_item_material_url(line_item_material), params: { line_item_material: new_attributes }
+      it "updates the requested line_item_material and returns turbo streams" do
+        patch line_item_material_url(line_item_material), params: { line_item_material: valid_attributes }, as: :turbo_stream
+        
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("turbo-stream")
+        expect(response.body).to include("target=\"line_item_material_#{line_item_material.id}\"")
+        expect(response.body).to include("target=\"material_breakdown_totals_#{line_item_material_breakdown.id}\"")
+        expect(response.body).to include("target=\"line_item_rate_build_up_#{tender_line_item.line_item_rate_build_up.id}\"")
+        
         line_item_material.reload
-        skip("Add assertions for updated state")
+        expect(line_item_material.rate).to eq(150)
       end
-
-      it "redirects to the line_item_material" do
-        line_item_material = LineItemMaterial.create! valid_attributes
-        patch line_item_material_url(line_item_material), params: { line_item_material: new_attributes }
-        line_item_material.reload
-        expect(response).to redirect_to(line_item_material_url(line_item_material))
-      end
-    end
-
-    context "with invalid parameters" do
-      it "renders a response with 422 status (i.e. to display the 'edit' template)" do
-        line_item_material = LineItemMaterial.create! valid_attributes
-        patch line_item_material_url(line_item_material), params: { line_item_material: invalid_attributes }
-        expect(response).to have_http_status(:unprocessable_entity)
-      end
-    end
-  end
-
-  describe "DELETE /destroy" do
-    it "destroys the requested line_item_material" do
-      line_item_material = LineItemMaterial.create! valid_attributes
-      expect {
-        delete line_item_material_url(line_item_material)
-      }.to change(LineItemMaterial, :count).by(-1)
-    end
-
-    it "redirects to the line_item_materials list" do
-      line_item_material = LineItemMaterial.create! valid_attributes
-      delete line_item_material_url(line_item_material)
-      expect(response).to redirect_to(line_item_materials_url)
     end
   end
 end

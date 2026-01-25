@@ -7,18 +7,13 @@ export default class extends Controller {
     "marginInput",
     "roundingIntervalInput",
     "beforeRoundingDisplay",
-    "totalDisplay",
-    "saveButton"
+    "totalDisplay"
   ]
 
   connect() {
     this.calculateTotals()
     this.savedMarginValue = this.marginInputTarget.value
     this.savedRoundingInterval = this.roundingIntervalInputTarget.value
-
-    // Ensure save button starts hidden with opacity
-    this.saveButtonTarget.classList.add('opacity-0', 'pointer-events-none')
-    this.saveButtonTarget.classList.remove('hidden')
 
     // Listen for custom events from Turbo Stream
     this.element.addEventListener("material:added", () => this.calculateTotals())
@@ -60,11 +55,9 @@ export default class extends Controller {
     if (isDirty) {
       this.marginInputTarget.classList.add('border-amber-400', 'border-2')
       this.marginInputTarget.classList.remove('border-gray-300')
-      this.saveButtonTarget.classList.remove('opacity-0', 'pointer-events-none')
     } else {
       this.marginInputTarget.classList.remove('border-amber-400', 'border-2')
       this.marginInputTarget.classList.add('border-gray-300')
-      this.saveButtonTarget.classList.add('opacity-0', 'pointer-events-none')
     }
   }
 
@@ -74,7 +67,6 @@ export default class extends Controller {
     this.savedRoundingInterval = this.roundingIntervalInputTarget.value
     this.marginInputTarget.classList.remove('border-amber-400', 'border-2')
     this.marginInputTarget.classList.add('border-gray-300')
-    this.saveButtonTarget.classList.add('opacity-0', 'pointer-events-none')
   }
 
   calculateTotals() {

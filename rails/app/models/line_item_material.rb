@@ -41,6 +41,7 @@ class LineItemMaterial < ApplicationRecord
     return unless rate_buildup.present?
 
     # Calculate the total from all materials in the breakdown (including margin)
+    # No reload needed as LineItemMaterialBreakdown#subtotal now uses SQL sum
     total_material_cost = line_item_material_breakdown.total
 
     # Set the material supply rate and save to trigger before_save :calculate_totals callback

@@ -1,13 +1,5 @@
 <%= turbo_frame_tag dom_id(line_item_material_breakdown) do %>
   <div class="card bg-base-100 shadow-md mb-4" data-controller="line-item-material-breakdown">
-    <% if local_assigns[:show_success] %>
-      <div class="alert alert-success shadow-lg" role="alert">
-        <div class="flex items-center gap-2">
-          <i class="fas fa-check-circle text-lg"></i>
-          <span>Changes saved successfully</span>
-        </div>
-      </div>
-    <% end %>
     <!-- Header -->
     <div class="card-body pb-3">
       <div class="flex items-center justify-between gap-4">
@@ -42,9 +34,25 @@
     <!-- Material Rows -->
     <div class="border-t" id="line_item_materials_container_<%= line_item_material_breakdown.id %>">
       <% if line_item_material_breakdown.line_item_materials.any? %>
+        <% 
+          category = line_item_material_breakdown.tender_line_item&.section_category
+          material_supply_type = category ? category.supply_source_model.to_s : 'MaterialSupply'
+          
+          # Use cached collections if available (from TendersController#builder)
+          # Otherwise fetch it once for this breakdown
+          collection = if @material_collections && @material_collections[material_supply_type]
+            @material_collections[material_supply_type]
+          else
+            category ? category.supply_source_model.all : MaterialSupply.all
+          end
+        %>
         <% line_item_material_breakdown.line_item_materials.each do |material| %>
           <div data-line-item-material-breakdown-target="materialRow">
-            <%= render partial: 'line_item_materials/line_item_material', locals: { line_item_material: material } %>
+            <%= render partial: 'line_item_materials/line_item_material', locals: { 
+              line_item_material: material,
+              collection: collection,
+              material_supply_type: material_supply_type
+            } %>
           </div>
         <% end %>
       <% else %>

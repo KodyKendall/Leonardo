@@ -1,10 +1,17 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "submitButton"]
+  static targets = ["input"]
 
   submit() {
     this.element.requestSubmit()
+  }
+
+  save() {
+    if (this.timeout) clearTimeout(this.timeout)
+    this.timeout = setTimeout(() => {
+      this.element.requestSubmit()
+    }, 500)
   }
 
   submitOnEnter(event) {

@@ -3,7 +3,7 @@
     <%= form_with model: [tender_line_item.tender, tender_line_item],
                   data: {
                     controller: "dirty-form",
-                    action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset"
+                    action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset input->dirty-form#save change->dirty-form#save"
                   },
                   class: "px-4 py-2" do |f| %>
       
@@ -69,8 +69,7 @@
           <% unless tender_line_item.is_heading %>
             <div class="flex items-center" title="Include in Total Tonnes">
               <%= f.check_box :include_in_tonnage, 
-                  class: "checkbox checkbox-xs checkbox-primary",
-                  data: { action: "change->dirty-form#save" } %>
+                  class: "checkbox checkbox-xs checkbox-primary" %>
             </div>
           <% end %>
 

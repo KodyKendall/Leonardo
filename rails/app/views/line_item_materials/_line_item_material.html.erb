@@ -12,9 +12,10 @@
 
 <%= turbo_frame_tag "line_item_material_#{line_item_material.id}" do %>
   <%
-    category = line_item_material.line_item_material_breakdown&.tender_line_item&.section_category
-    collection = category ? category.supply_source_model.all : MaterialSupply.all
-    material_supply_type = category ? category.supply_source_model.to_s : 'MaterialSupply'
+    # Use passed locals or fallback to existing logic (for direct partial rendering)
+    category = local_assigns[:category] || line_item_material.line_item_material_breakdown&.tender_line_item&.section_category
+    collection = local_assigns[:collection] || (category ? category.supply_source_model.all : MaterialSupply.all)
+    material_supply_type = local_assigns[:material_supply_type] || (category ? category.supply_source_model.to_s : 'MaterialSupply')
   %>
   <!-- Wrapper div with Stimulus controller -->
   <div data-controller="line-item-material-form"
@@ -22,7 +23,7 @@
        data-material-supply-type="<%= material_supply_type %>">
     <%= form_with(model: line_item_material, method: :patch, class: "contents", data: {
       controller: "dirty-form",
-      action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset"
+      action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset input->dirty-form#save change->dirty-form#save"
     }, local: { tender_line_item_id: line_item_material.tender_line_item_id }) do |form| %>
       <%= form.hidden_field :material_supply_type, value: material_supply_type %>
       <%= hidden_field_tag :tender_line_item_id, line_item_material.tender_line_item_id %>
@@ -44,7 +45,9 @@
                 placeholder: "Waste %",
                 step: 0.01,
                 class: "input input-bordered input-xs w-full text-right text-xs",
-                data: { "line-item-material-form-target": "wastePercentageInput" } %>
+                data: { 
+                  "line-item-material-form-target": "wastePercentageInput"
+                } %>
           </div>
 
           <!-- Rate Field -->
@@ -53,7 +56,9 @@
                 placeholder: "Rate",
                 step: 0.01,
                 class: "input input-bordered input-xs w-full text-right text-xs",
-                data: { "line-item-material-form-target": "rateInput" } %>
+                data: { 
+                  "line-item-material-form-target": "rateInput"
+                } %>
           </div>
 
         <!-- Proportion Field -->
@@ -72,11 +77,10 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="col-span-2 flex items-center justify-end gap-0.5">
-          <span class="hidden w-2 h-2 rounded-full bg-red-500" data-dirty-form-target="indicator"></span>
-          <%= form.button type: :submit, class: "btn btn-ghost btn-xs text-green-600 p-1" do %>
-            <i class="fa-solid fa-check text-xs"></i>
-          <% end %>
+        <div class="col-span-2 flex items-center justify-end gap-1">
+          <div class="w-4 flex justify-center">
+            <span class="hidden loading loading-spinner loading-xs text-primary" data-dirty-form-target="indicator"></span>
+          </div>
           <%= link_to line_item_material, data: { turbo_method: :delete, turbo_confirm: "Delete?" }, class: "btn btn-ghost btn-xs text-red-600 p-1" do %>
             <i class="fa-solid fa-trash text-xs"></i>
           <% end %>

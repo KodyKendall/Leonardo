@@ -122,6 +122,10 @@ export default class extends Controller {
 
   save() {
     if (this.updateValidationState()) return
-    this.form.requestSubmit()
+    
+    if (this.timeout) clearTimeout(this.timeout)
+    this.timeout = setTimeout(() => {
+      this.form.requestSubmit()
+    }, 500)
   }
 }

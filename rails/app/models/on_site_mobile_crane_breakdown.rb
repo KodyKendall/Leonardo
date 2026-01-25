@@ -20,7 +20,7 @@ class OnSiteMobileCraneBreakdown < ApplicationRecord
 
   # Calculate total daily crane rate for MAIN cranes only (sum of wet_rate_per_day × quantity)
   def total_daily_crane_rate
-    tender_crane_selections.where(purpose: 'main').sum { |selection| selection.wet_rate_per_day * selection.quantity }
+    tender_crane_selections.where(purpose: 'main').sum('wet_rate_per_day * quantity')
   end
 
   # Calculate crane cost per tonne using CEILING to nearest R20
@@ -61,6 +61,35 @@ class OnSiteMobileCraneBreakdown < ApplicationRecord
   end
 
   def sync_crane_pg_items
-    tender.preliminaries_general_items.where(is_crane: true).find_each(&:save!)
+    items = tender.preliminaries_general_items.where(is_crane: true)
+    return if items.empty?
+
+    new_rate = crainage_rate_per_tonne
+    
+    # Update all items without triggering individual callbacks/broadcasts
+    items.update_all(rate: new_rate, updated_at: Time.current)
+    
+    # Trigger a single grand total recalculation and broadcast
+    tender.recalculate_grand_total!
+    
+    # Broadcast the P&G summary update
+    broadcast_update_to(
+      "tender_#{tender.id}_builder",
+      target: "tender_#{tender.id}_p_and_g_summary",
+      partial: "tenders/p_and_g_summary",
+      locals: { tender: tender }
+    )
+    
+    # Force a refresh of the P&G items container to show updated rates
+    broadcast_replace_to(
+      "tender_#{tender.id}_pg_items",
+      target: "preliminaries_general_items_container",
+      partial: "preliminaries_general_items/grouped_items",
+      locals: { 
+        tender: tender, 
+        grouped_items: tender.preliminaries_general_items.order(:sort_order, :created_at).group_by(&:category),
+        templates: PreliminariesGeneralItemTemplate.order(:description)
+      }
+    )
   end
 end

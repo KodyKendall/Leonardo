@@ -116,11 +116,11 @@ class LineItemMaterialBreakdownsController < ApplicationController
 
         format.turbo_stream do
           turbo_updates = []
-          # Always refresh the material breakdown to show success
+          # Always refresh the material breakdown
           turbo_updates << turbo_stream.replace(
             @line_item_material_breakdown,
             partial: 'line_item_material_breakdowns/line_item_material_breakdown',
-            locals: { line_item_material_breakdown: @line_item_material_breakdown, show_success: true }
+            locals: { line_item_material_breakdown: @line_item_material_breakdown }
           )
           
           # If margin was updated, update rate buildup and tender line item frames

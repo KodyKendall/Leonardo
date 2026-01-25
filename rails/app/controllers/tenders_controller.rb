@@ -19,8 +19,17 @@ class TendersController < ApplicationController
     authorize @tender
     @line_items = @tender.tender_line_items
                          .includes(:line_item_rate_build_up,
-                                   line_item_material_breakdown: :line_item_materials)
+                                   :section_category,
+                                   line_item_material_breakdown: [:line_item_materials])
                          .ordered
+
+    # Cache material collections to avoid N+1 in breakdown rendering
+    # These are used in _line_item_material_breakdown.html.erb
+    @material_collections = {
+      'MaterialSupply' => MaterialSupply.all.to_a,
+      'AnchorRate' => (Object.const_defined?(:AnchorRate) ? AnchorRate.all.to_a : []),
+      'NutBoltWasherRate' => (Object.const_defined?(:NutBoltWasherRate) ? NutBoltWasherRate.all.to_a : [])
+    }
   end
 
   # GET /tenders/1/report

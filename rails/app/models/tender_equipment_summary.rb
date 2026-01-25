@@ -55,6 +55,35 @@ class TenderEquipmentSummary < ApplicationRecord
   end
 
   def sync_access_pg_items
-    tender.preliminaries_general_items.where(is_access_equipment: true).find_each(&:save!)
+    items = tender.preliminaries_general_items.where(is_access_equipment: true)
+    return if items.empty?
+
+    new_rate = cherry_picker_rate_per_tonne
+    
+    # Update all items without triggering individual callbacks/broadcasts
+    items.update_all(rate: new_rate, updated_at: Time.current)
+    
+    # Trigger a single grand total recalculation and broadcast
+    tender.recalculate_grand_total!
+    
+    # Broadcast the P&G summary update
+    broadcast_update_to(
+      "tender_#{tender.id}_builder",
+      target: "tender_#{tender.id}_p_and_g_summary",
+      partial: "tenders/p_and_g_summary",
+      locals: { tender: tender }
+    )
+    
+    # Force a refresh of the P&G items container to show updated rates
+    broadcast_replace_to(
+      "tender_#{tender.id}_pg_items",
+      target: "preliminaries_general_items_container",
+      partial: "preliminaries_general_items/grouped_items",
+      locals: { 
+        tender: tender, 
+        grouped_items: tender.preliminaries_general_items.order(:sort_order, :created_at).group_by(&:category),
+        templates: PreliminariesGeneralItemTemplate.order(:description)
+      }
+    )
   end
 end

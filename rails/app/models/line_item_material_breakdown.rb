@@ -13,7 +13,8 @@ class LineItemMaterialBreakdown < ApplicationRecord
 
   # Calculate subtotal from all materials
   def subtotal
-    line_item_materials.sum(&:line_total).round(2)
+    # Use SQL for performance on large breakdowns. COALESCE ensures nil values are treated as 0.
+    line_item_materials.sum("ROUND(CAST(COALESCE(rate, 0) * (1 + COALESCE(waste_percentage, 0) / 100.0) * (COALESCE(proportion_percentage, 0) / 100.0) AS NUMERIC), 2)").to_f
   end
 
   # Total before rounding
