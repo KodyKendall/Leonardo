@@ -10,7 +10,22 @@ See the starting rails project and base image here: https://github.com/kodykenda
 
 ---
 
-## Quick Start for Devs:  
+## Two Docker Compose Files
+
+| File | Purpose | Rails Source |
+|------|---------|--------------|
+| `docker-compose.yml` | Production/deployment | Pre-built image `kody06/llamapress-simple:X.X.X` |
+| `docker-compose-dev.yml` | Local development | Builds from `../LlamaPress-Simple` |
+
+**Important:** When using `docker-compose-dev.yml`, changes to `LlamaPress-Simple` (like updating `llama_bot_rails`) require rebuilding:
+```bash
+docker compose -f docker-compose-dev.yml build llamapress
+docker compose -f docker-compose-dev.yml up -d llamapress
+```
+
+---
+
+## Quick Start for Devs:
 ```
 curl -fsSL "https://raw.githubusercontent.com/KodyKendall/Leonardo/refs/heads/main/bin/install/dev" -o install_leonardo_local.sh && bash install_leonardo_local.sh
 ```
