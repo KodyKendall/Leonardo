@@ -28,7 +28,8 @@ RSpec.describe "/on_site_mobile_crane_breakdowns", type: :request do
       program_duration_days: 20,
       ownership_type: "rental",
       splicing_crane_required: false,
-      misc_crane_required: false
+      misc_crane_required: false,
+      notes: "Initial notes"
     }
   }
 
@@ -102,7 +103,8 @@ RSpec.describe "/on_site_mobile_crane_breakdowns", type: :request do
       let(:new_attributes) {
         {
           total_roof_area_sqm: 2000.0,
-          erection_rate_sqm_per_day: 80.0
+          erection_rate_sqm_per_day: 80.0,
+          notes: "Updated notes content"
         }
       }
 
@@ -112,6 +114,7 @@ RSpec.describe "/on_site_mobile_crane_breakdowns", type: :request do
         on_site_mobile_crane_breakdown.reload
         expect(on_site_mobile_crane_breakdown.total_roof_area_sqm).to eq(2000.0)
         expect(on_site_mobile_crane_breakdown.erection_rate_sqm_per_day).to eq(80.0)
+        expect(on_site_mobile_crane_breakdown.notes).to eq("Updated notes content")
       end
 
       it "redirects to the on_site_mobile_crane_breakdown" do

@@ -23,4 +23,11 @@ RSpec.describe OnSiteMobileCraneBreakdown, type: :model do
       expect(other_item.reload.rate).to eq(100.0)
     end
   end
+
+  describe "persistence" do
+    it "can save and retrieve notes" do
+      breakdown.update!(notes: "These are some test notes")
+      expect(breakdown.reload.notes).to eq("These are some test notes")
+    end
+  end
 end

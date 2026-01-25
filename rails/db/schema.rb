@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_14_164246) do
+ActiveRecord::Schema[7.2].define(version: 2026_01_25_195512) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -416,6 +416,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_14_164246) do
     t.integer "misc_crane_days", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "notes"
     t.index ["tender_id"], name: "index_on_site_mobile_crane_breakdowns_on_tender_id", unique: true
   end
 

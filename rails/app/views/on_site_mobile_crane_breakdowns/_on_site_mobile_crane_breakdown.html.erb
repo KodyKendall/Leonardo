@@ -49,6 +49,18 @@
         </div>
       </div>
 
+      <!-- Mobile Crane Breakdown Notes -->
+      <div class="form-control">
+        <label class="label" for="on_site_mobile_crane_breakdown_notes">
+          <span class="label-text font-medium">Mobile crane breakdown notes</span>
+        </label>
+        <%= f.text_area :notes,
+            class: "textarea textarea-bordered read-only-field w-full",
+            placeholder: "Enter assumptions or notes here...",
+            readonly: true,
+            data: { "on-site-mobile-crane-breakdown-target": "field", testid: "notes-field" } %>
+      </div>
+
       <!-- Total Roof Area -->
       <div class="form-control">
         <label class="label" for="on_site_mobile_crane_breakdown_total_roof_area_sqm">

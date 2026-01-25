@@ -242,6 +242,6 @@ class OnSiteMobileCraneBreakdownsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def on_site_mobile_crane_breakdown_params
-      params.require(:on_site_mobile_crane_breakdown).permit(:tender_id, :total_roof_area_sqm, :erection_rate_sqm_per_day, :ownership_type, :splicing_crane_required, :splicing_crane_size, :splicing_crane_days, :misc_crane_required, :misc_crane_size, :misc_crane_days)
+      params.require(:on_site_mobile_crane_breakdown).permit(:tender_id, :total_roof_area_sqm, :erection_rate_sqm_per_day, :ownership_type, :splicing_crane_required, :splicing_crane_size, :splicing_crane_days, :misc_crane_required, :misc_crane_size, :misc_crane_days, :notes)
     end
 end
