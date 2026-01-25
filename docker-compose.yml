@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   llamapress:
-    image: kody06/llamapress-simple:0.3.1          # <— pre-built tag
+    image: kody06/llamapress-simple:0.3.2         # <— pre-built tag
     env_file: .env                           # read secrets from this file
     environment:
       - RAILS_ENV=development
