@@ -8,6 +8,8 @@ class LineItemMaterial < ApplicationRecord
   # Sync material supply rate to rate buildup after save
   after_save :sync_material_supply_rate_to_buildup
 
+  delegate :quantity_based?, to: :line_item_material_breakdown, allow_nil: true
+
   def set_tender_line_item_from_breakdown
     if tender_line_item_id.blank? && line_item_material_breakdown.present?
       self.tender_line_item_id = line_item_material_breakdown.tender_line_item_id
@@ -15,16 +17,18 @@ class LineItemMaterial < ApplicationRecord
   end
   validates :waste_percentage, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :proportion_percentage, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
+  validates :proportion_percentage, numericality: { less_than_or_equal_to: 100 }, allow_nil: true, unless: :quantity_based?
   validates :rate, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validates :quantity, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
 
   # Calculate line total: Rate * (1 + Waste%) * Proportion%
   def line_total
     return 0 unless rate.present? && proportion_percentage.present?
-    waste_percent = waste_percentage.to_f / 100
-    proportion_percent = proportion_percentage.to_f / 100
-    rate_with_waste = rate.to_f * (1 + waste_percent)
-    (rate_with_waste * proportion_percent).round(2)
+    
+    waste_multiplier = 1 + (waste_percentage.to_f / 100)
+    multiplier = quantity_based? ? proportion_percentage.to_f : (proportion_percentage.to_f / 100)
+    
+    (rate.to_f * waste_multiplier * multiplier).round(2)
   end
 
   private

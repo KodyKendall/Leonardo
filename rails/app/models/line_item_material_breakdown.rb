@@ -4,6 +4,9 @@ class LineItemMaterialBreakdown < ApplicationRecord
 
   accepts_nested_attributes_for :line_item_materials, allow_destroy: true, reject_if: :all_blank
   
+  delegate :section_category, to: :tender_line_item, allow_nil: true
+  delegate :quantity_based?, to: :section_category, allow_nil: true
+  
   # Validate margin percentage
   validates :margin_percentage, numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 100 }
   validates :rounding_interval, inclusion: { in: [0, 10, 20, 50, 100] }
@@ -14,7 +17,14 @@ class LineItemMaterialBreakdown < ApplicationRecord
   # Calculate subtotal from all materials
   def subtotal
     # Use SQL for performance on large breakdowns. COALESCE ensures nil values are treated as 0.
-    line_item_materials.sum("ROUND(CAST(COALESCE(rate, 0) * (1 + COALESCE(waste_percentage, 0) / 100.0) * (COALESCE(proportion_percentage, 0) / 100.0) AS NUMERIC), 2)").to_f
+    # Quantity-based categories (bolts/anchors) use proportion_percentage as a whole number multiplier.
+    line_item_materials.joins(line_item_material_breakdown: { tender_line_item: :section_category })
+      .sum("ROUND(CAST(COALESCE(line_item_materials.rate, 0) * (1 + COALESCE(line_item_materials.waste_percentage, 0) / 100.0) * 
+        (CASE 
+          WHEN section_categories.supply_rates_type IN ('nuts_bolts_and_washer_supply_rates', 'chemical_and_mechanical_anchor_supply_rates') 
+          THEN COALESCE(line_item_materials.proportion_percentage, 0) 
+          ELSE COALESCE(line_item_materials.proportion_percentage, 0) / 100.0 
+        END) AS NUMERIC), 2)").to_f
   end
 
   # Total before rounding

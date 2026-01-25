@@ -41,4 +41,23 @@ RSpec.describe SectionCategory, type: :model do
       expect(category.supply_source_model).to eq(NutBoltWasherRate)
     end
   end
+
+  describe '#quantity_based?' do
+    let(:category) { SectionCategory.new }
+
+    it 'returns true for nuts_bolts_and_washer_supply_rates' do
+      category.supply_rates_type = :nuts_bolts_and_washer_supply_rates
+      expect(category.quantity_based?).to be true
+    end
+
+    it 'returns true for chemical_and_mechanical_anchor_supply_rates' do
+      category.supply_rates_type = :chemical_and_mechanical_anchor_supply_rates
+      expect(category.quantity_based?).to be true
+    end
+
+    it 'returns false for material_supply_rates' do
+      category.supply_rates_type = :material_supply_rates
+      expect(category.quantity_based?).to be false
+    end
+  end
 end

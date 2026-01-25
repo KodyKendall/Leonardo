@@ -68,10 +68,10 @@
         <!-- Proportion Field -->
         <div class="col-span-2">
           <%= form.number_field :proportion_percentage,
-              placeholder: "PROPORTION (%)",
+              placeholder: line_item_material.quantity_based? ? "QUANTITY" : "PROPORTION (%)",
               step: 0.01,
               min: 0,
-              max: 100,
+              max: (line_item_material.quantity_based? ? nil : 100),
               class: "input input-bordered input-xs w-full text-right text-xs",
               data: {
                 controller: "autoselect",

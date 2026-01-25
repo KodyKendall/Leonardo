@@ -25,7 +25,7 @@
         <div class="col-span-1 lg:col-span-2">Material</div>
         <div>Waste</div>
         <div>Rate (R)</div>
-        <div>Proportion (%)</div>
+        <div><%= line_item_material_breakdown.quantity_based? ? "Quantity" : "Proportion (%)" %></div>
         <div class="text-right">Total</div>
         <div></div>
       </div>

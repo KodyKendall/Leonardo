@@ -10,6 +10,10 @@ class SectionCategory < ApplicationRecord
     nuts_bolts_and_washer_supply_rates: 'nuts_bolts_and_washer_supply_rates'
   }
 
+  def quantity_based?
+    nuts_bolts_and_washer_supply_rates? || chemical_and_mechanical_anchor_supply_rates?
+  end
+
   def supply_source_model
     case supply_rates_type
     when 'material_supply_rates'
