@@ -50,6 +50,9 @@
           <div id="tender_<%= @tender.id %>_total_tonnes">
             <%= render "tenders/total_tonnes", tender: @tender %>
           </div>
+          <div id="tender_<%= @tender.id %>_rate_per_tonne">
+            <%= render "tenders/rate_per_tonne", tender: @tender %>
+          </div>
           <div id="tender_<%= @tender.id %>_grand_total">
             <%= render "tenders/grand_total", tender: @tender %>
           </div>

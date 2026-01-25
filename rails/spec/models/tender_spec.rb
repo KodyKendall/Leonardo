@@ -223,4 +223,38 @@ RSpec.describe Tender, type: :model do
       end
     end
   end
+
+  describe '#rate_per_tonne' do
+    let(:tender) { create(:tender, grand_total: 1000, total_tonnage: 2) }
+
+    it 'calculates rate per tonne correctly' do
+      tender.update_columns(grand_total: 1000, total_tonnage: 2)
+      expect(tender.rate_per_tonne).to eq(500)
+    end
+
+    it 'returns 0 if total_tonnage is 0' do
+      tender.total_tonnage = 0
+      expect(tender.rate_per_tonne).to eq(0)
+    end
+
+    it 'handles nil values gracefully' do
+      tender.grand_total = nil
+      tender.total_tonnage = nil
+      expect(tender.rate_per_tonne).to eq(0)
+    end
+  end
+
+  describe 'broadcasting' do
+    let(:tender) { create(:tender) }
+
+    it 'broadcasts rate per tonne update when grand total is recalculated' do
+      expect(tender).to receive(:broadcast_update_rate_per_tonne)
+      tender.recalculate_grand_total!
+    end
+
+    it 'broadcasts rate per tonne update when total tonnage is recalculated' do
+      expect(tender).to receive(:broadcast_update_rate_per_tonne)
+      tender.recalculate_total_tonnage!
+    end
+  end
 end

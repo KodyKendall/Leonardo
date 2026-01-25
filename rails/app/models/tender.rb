@@ -55,6 +55,7 @@ class Tender < ApplicationRecord
     new_total = line_items_total + shop_drawings_total + p_and_g_total
     update_columns(grand_total: new_total, tender_value: new_total)
     broadcast_update_grand_total
+    broadcast_update_rate_per_tonne
   end
 
   # Returns the client name with fallbacks
@@ -81,7 +82,9 @@ class Tender < ApplicationRecord
   # Also calculates financial_tonnage which includes ALL line items
   def recalculate_total_tonnage!(cascade: true)
     # Calculate both tonnages in a single query to improve performance
-    stats = tender_line_items.where(is_heading: false)
+    # Use unscope(:order) to avoid PG::GroupingError when default scope includes ordering
+    stats = tender_line_items.unscope(:order)
+                             .where(is_heading: false)
                              .pick(
                                Arel.sql("SUM(CASE WHEN include_in_tonnage = true THEN quantity ELSE 0 END)"),
                                Arel.sql("SUM(quantity)")
@@ -96,6 +99,7 @@ class Tender < ApplicationRecord
     update_columns(total_tonnage: new_tonnage, financial_tonnage: new_financial_tonnage)
     
     broadcast_update_total_tonnage
+    broadcast_update_rate_per_tonne
     
     if cascade
       # Also recalculate equipment summary since cost per tonne depends on total_tonnage
@@ -105,6 +109,11 @@ class Tender < ApplicationRecord
       # Recalculate crane breakdown to trigger P&G sync
       recalculate_crane_breakdown!
     end
+  end
+
+  def rate_per_tonne
+    return 0 if total_tonnage.to_f == 0
+    grand_total.to_f / total_tonnage.to_f
   end
 
   # Recalculate crane breakdown to trigger P&G sync
@@ -166,6 +175,15 @@ class Tender < ApplicationRecord
       "tender_#{id}_builder",
       target: "tender_#{id}_total_tonnes",
       partial: "tenders/total_tonnes",
+      locals: { tender: self }
+    )
+  end
+
+  def broadcast_update_rate_per_tonne
+    broadcast_update_to(
+      "tender_#{id}_builder",
+      target: "tender_#{id}_rate_per_tonne",
+      partial: "tenders/rate_per_tonne",
       locals: { tender: self }
     )
   end

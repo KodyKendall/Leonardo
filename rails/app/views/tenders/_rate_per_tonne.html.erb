@@ -1,0 +1,6 @@
+<div class="text-right">
+  <div class="text-sm text-gray-600 mb-1">RATE PER TONNE</div>
+  <div class="text-3xl font-bold text-gray-900">
+    R<%= number_with_precision(tender.rate_per_tonne || 0, precision: 2, delimiter: ',') %>
+  </div>
+</div>
