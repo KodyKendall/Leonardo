@@ -8,6 +8,13 @@ RSpec.describe Tender, type: :model do
     it { should validate_inclusion_of(:shop_drawings_display_mode).in_array(%w(lump_sum tonnage_rate)) }
   end
 
+  describe 'boq_mirrored' do
+    it 'defaults to false' do
+      tender = Tender.new
+      expect(tender.boq_mirrored).to be false
+    end
+  end
+
   describe '#recalculate_grand_total!' do
     let(:tender) { create(:tender) }
 

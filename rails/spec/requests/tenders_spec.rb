@@ -325,4 +325,41 @@ RSpec.describe "/tenders", type: :request do
       expect(json["rate"]).to eq("15.5")
     end
   end
+
+  describe "POST /mirror_boq_items" do
+    let(:tender) { Tender.create! valid_attributes }
+    let(:boq) { create(:boq, tender: tender) }
+    let!(:section_category) { create(:section_category, display_name: "Steel Sections", name: "steel_sections") }
+    let!(:boq_item) { create(:boq_item, boq: boq, quantity: 10, item_description: "Test Item", section_category: :steel_sections) }
+
+    context "when not mirrored yet" do
+      it "creates tender line items and sets boq_mirrored to true" do
+        expect {
+          post mirror_boq_items_tender_url(tender)
+        }.to change(TenderLineItem, :count).by(1)
+        
+        expect(tender.reload.boq_mirrored).to be true
+        expect(response).to redirect_to(builder_tender_url(tender))
+      end
+
+      it "returns success JSON when requested as json" do
+        post mirror_boq_items_tender_url(tender), as: :json
+        expect(response).to have_http_status(:created)
+        expect(JSON.parse(response.body)["success"]).to be true
+      end
+    end
+
+    context "when already mirrored" do
+      before { tender.update!(boq_mirrored: true) }
+
+      it "returns unprocessable_entity and does not create duplicates" do
+        expect {
+          post mirror_boq_items_tender_url(tender)
+        }.not_to change(TenderLineItem, :count)
+        
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(JSON.parse(response.body)["error"]).to eq("BOQ has already been mirrored for this tender")
+      end
+    end
+  end
 end

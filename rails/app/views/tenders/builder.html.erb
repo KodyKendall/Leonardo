@@ -106,7 +106,7 @@
           <%= render @line_items %>
         <% else %>
           <div class="p-8 text-center">
-            <% if @tender.boqs.any? && @tender.boqs.first.boq_items.any? %>
+            <% if @tender.boqs.any? && @tender.boqs.first.boq_items.any? && !@tender.boq_mirrored? %>
               <!-- Aggressive CTA when BOQ exists but no line items -->
               <div class="alert alert-warning border-2 border-warning bg-warning/10 p-6 mx-auto max-w-2xl">
                 <div class="flex items-center justify-between">
@@ -117,11 +117,19 @@
                       <p class="text-sm mt-1">This tender has no line items yet, but your BOQ has <%= @tender.boqs.first.boq_items.count %> items ready to copy.</p>
                     </div>
                   </div>
-                  <%= button_to "Copy from BOQ Now",
-                      mirror_boq_items_tender_path(@tender),
-                      method: :post,
-                      class: "btn btn-warning btn-md flex-shrink-0",
-                      data: { turbo: false } %>
+                  <%= form_with url: mirror_boq_items_tender_path(@tender), 
+                                method: :post, 
+                                class: "flex-shrink-0",
+                                data: { 
+                                  controller: "boq-mirror", 
+                                  action: "submit->boq-mirror#submit" 
+                                } do |f| %>
+                    <%= f.button type: "submit", 
+                                 class: "btn btn-warning btn-md", 
+                                 data: { boq_mirror_target: "button" } do %>
+                      Copy from BOQ Now
+                    <% end %>
+                  <% end %>
                 </div>
               </div>
             <% else %>
@@ -156,41 +164,4 @@
   </div>
 </div>
 
-<script>
-  // Refresh page after Copy from BOQ completes
-  document.addEventListener('submit', function(e) {
-    const form = e.target;
-    
-    // Check if this is the "Copy from BOQ Now" form
-    if (form.action.includes('mirror_boq_items')) {
-      e.preventDefault();
-      
-      const formData = new FormData(form);
-      const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-      
-      fetch(form.action, {
-        method: 'POST',
-        headers: {
-          'X-CSRF-Token': csrfToken
-        },
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          // Refresh the page after a brief delay to ensure DB is updated
-          setTimeout(() => {
-            window.location.reload();
-          }, 500);
-        } else {
-          console.error('Error:', data.error);
-          alert('Error: ' + (data.error || 'Failed to copy BOQ items'));
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('Error copying BOQ items');
-      });
-    }
-  });
-</script>
+

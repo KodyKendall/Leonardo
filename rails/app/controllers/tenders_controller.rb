@@ -1,5 +1,5 @@
 class TendersController < ApplicationController
-  before_action :set_tender, only: %i[ show edit update destroy update_inclusions_exclusions tender_inclusions_exclusions sync_all_inclusions_exclusions report ]
+  before_action :set_tender, only: %i[ show edit update destroy update_inclusions_exclusions tender_inclusions_exclusions sync_all_inclusions_exclusions report mirror_boq_items ]
 
   # GET /tenders or /tenders.json
   def index
@@ -222,9 +222,13 @@ class TendersController < ApplicationController
 
   # POST /tenders/1/mirror_boq_items
   def mirror_boq_items
-    @tender = Tender.find(params[:id])
     authorize @tender
     
+    if @tender.boq_mirrored?
+      render json: { error: "BOQ has already been mirrored for this tender" }, status: :unprocessable_entity
+      return
+    end
+
     # Get the first linked BOQ
     boq = @tender.boqs.first
     
@@ -252,26 +256,33 @@ class TendersController < ApplicationController
       "m42_hd_bolt" => "M42 HD Bolt"
     }
     
-    # Create Tender Line Items from BOQ items
-    count = 0
-    boq.boq_items.each do |boq_item|
-      category_name = boq_item.section_category.present? ? category_mapping[boq_item.section_category] : nil
-      section_category = SectionCategory.find_by(display_name: category_name) if category_name
+    Tender.transaction do
+      # Create Tender Line Items from BOQ items
+      count = 0
+      boq.boq_items.each do |boq_item|
+        category_name = boq_item.section_category.present? ? category_mapping[boq_item.section_category] : nil
+        section_category = SectionCategory.find_by(display_name: category_name) if category_name
+        
+        @tender.tender_line_items.create!(
+          quantity: boq_item.quantity,
+          rate: 0,
+          item_number: boq_item.item_number,
+          item_description: boq_item.item_description,
+          unit_of_measure: boq_item.unit_of_measure,
+          section_category: section_category,
+          page_number: boq_item.page_number,
+          notes: boq_item.notes
+        )
+        count += 1
+      end
       
-      @tender.tender_line_items.create(
-        quantity: boq_item.quantity,
-        rate: 0,
-        item_number: boq_item.item_number,
-        item_description: boq_item.item_description,
-        unit_of_measure: boq_item.unit_of_measure,
-        section_category: section_category,
-        page_number: boq_item.page_number,
-        notes: boq_item.notes
-      )
-      count += 1
+      @tender.update!(boq_mirrored: true)
+      
+      respond_to do |format|
+        format.html { redirect_to builder_tender_path(@tender), notice: "BOQ items mirrored successfully." }
+        format.json { render json: { success: true, count: count }, status: :created }
+      end
     end
-    
-    render json: { success: true, count: count }, status: :created
   rescue => e
     render json: { error: e.message }, status: :unprocessable_entity
   end
