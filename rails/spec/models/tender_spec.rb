@@ -251,6 +251,21 @@ RSpec.describe Tender, type: :model do
     end
   end
 
+  describe 'notes' do
+    let(:tender) { create(:tender) }
+
+    it 'can save notes' do
+      tender.update!(notes: 'Test note')
+      expect(tender.reload.notes).to eq('Test note')
+    end
+
+    it 'can clear notes' do
+      tender.update!(notes: 'Test note')
+      tender.update!(notes: '')
+      expect(tender.reload.notes).to eq('')
+    end
+  end
+
   describe 'broadcasting' do
     let(:tender) { create(:tender) }
 

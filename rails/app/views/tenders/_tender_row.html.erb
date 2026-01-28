@@ -1,0 +1,46 @@
+<tr id="<%= dom_id(tender) %>" class="hover">
+    <td class="font-bold text-primary text-sm">
+      <%= link_to tender.e_number, tender_path(tender), class: "link link-hover", data: { turbo: false } %>
+    </td>
+    <td class="text-sm"><%= tender.tender_name %></td>
+    <td class="italic text-gray-600 text-sm"><%= tender.display_client_name %></td>
+    <td class="text-sm"><%= number_to_currency(tender.tender_value, unit: "R ") if tender.tender_value %></td>
+    <td class="text-sm"><%= tender.project_type %></td>
+    <td>
+      <% if tender.status.present? %>
+        <div class="badge <%= case tender.status when 'Awarded' then 'badge-success' when 'Not Awarded' then 'badge-error' when 'Submitted' then 'badge-info' when 'In Progress' then 'badge-warning' else 'badge-ghost' end %> badge-sm font-medium">
+          <%= tender.status %>
+        </div>
+      <% end %>
+    </td>
+    <td>
+      <div class="relative">
+        <%= form_with model: tender, data: { 
+          controller: 'dirty-form', 
+          action: 'input->dirty-form#save turbo:submit-end->dirty-form#handleSubmitEnd' 
+        } do |f| %>
+          <%= f.text_field :notes, 
+              id: dom_id(tender, :notes),
+              class: "input input-ghost input-sm w-full focus:bg-white focus:border-base-300 border-transparent bg-transparent pr-8", 
+              placeholder: "Add note..." %>
+          <div data-dirty-form-target="savedIndicator" class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-success opacity-70">
+            <i class="fas fa-check-circle text-xs"></i>
+          </div>
+        <% end %>
+      </div>
+    </td>
+    <td class="text-sm opacity-70"><%= tender.created_at.strftime('%b %d, %Y') %></td>
+    <td class="text-center">
+      <div class="flex gap-2 justify-center">
+        <%= link_to tender_path(tender), class: "btn btn-ghost btn-xs text-primary", title: "View", data: { turbo: false } do %>
+          <i class="fas fa-eye"></i>
+        <% end %>
+        <%= link_to edit_tender_path(tender), class: "btn btn-ghost btn-xs text-info", title: "Edit", data: { turbo: false } do %>
+          <i class="fas fa-edit"></i>
+        <% end %>
+        <%= button_to tender_path(tender), method: :delete, class: "btn btn-ghost btn-xs text-error", title: "Delete", data: { turbo_confirm: "Are you sure?" } do %>
+          <i class="fas fa-trash"></i>
+        <% end %>
+      </div>
+    </td>
+  </tr>

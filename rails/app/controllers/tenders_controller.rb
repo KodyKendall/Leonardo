@@ -166,6 +166,11 @@ class TendersController < ApplicationController
             @p_and_g_items = @tender.preliminaries_general_items
             @shop_drawings_total = @tender.project_rate_buildup&.shop_drawings_total || 0
             render :report, formats: [:html], layout: false
+          elsif tender_params.keys.map(&:to_s) == ["notes"]
+            # If only notes are being updated (autosave from index), don't replace the row to preserve focus
+            head :no_content
+          else
+            render turbo_stream: turbo_stream.replace(@tender, partial: "tenders/tender_row", locals: { tender: @tender })
           end
         end
         format.json { render :show, status: :ok, location: @tender }

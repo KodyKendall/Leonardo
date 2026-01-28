@@ -277,6 +277,26 @@ RSpec.describe "/tenders", type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
+
+    context "with notes and turbo_stream" do
+      it "updates the notes and responds with no_content for background saves" do
+        tender = Tender.create! valid_attributes
+        patch tender_url(tender), params: { tender: { notes: "Updated note" } }, as: :turbo_stream
+        
+        expect(response).to have_http_status(:no_content)
+        expect(tender.reload.notes).to eq("Updated note")
+      end
+
+      it "responds with turbo_stream replacement when updating more than just notes" do
+        tender = Tender.create! valid_attributes
+        patch tender_url(tender), params: { tender: { notes: "Updated note", status: "Awarded" } }, as: :turbo_stream
+        
+        expect(response).to be_successful
+        expect(response.body).to include("turbo-stream")
+        expect(response.body).to include("replace")
+        expect(tender.reload.status).to eq("Awarded")
+      end
+    end
   end
 
   describe "DELETE /destroy" do
