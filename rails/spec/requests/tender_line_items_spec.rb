@@ -75,5 +75,21 @@ RSpec.describe "TenderLineItems", type: :request do
       expect(line_item.reload.include_in_tonnage).to be false
       expect(tender.reload.total_tonnage).to eq(0)
     end
+
+    it "updates section_category_id and preserves open_breakdown state" do
+      category2 = create(:section_category)
+      
+      patch "/tenders/#{tender.id}/tender_line_items/#{line_item.id}",
+            headers: { "Accept" => "text/vnd.turbo-stream.html" },
+            params: { 
+              tender_line_item: { section_category_id: category2.id },
+              open_breakdown: "true"
+            }
+
+      expect(response).to have_http_status(:ok)
+      expect(line_item.reload.section_category_id).to eq(category2.id)
+      # Check that the checkbox in the response is checked
+      expect(response.body).to include('checked="checked"')
+    end
   end
 end

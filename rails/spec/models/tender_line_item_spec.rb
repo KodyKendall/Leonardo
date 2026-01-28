@@ -95,4 +95,59 @@ RSpec.describe TenderLineItem, type: :model do
       expect(tender.tender_line_items.ordered.map(&:item_description)).to eq(["Item 3", "Item 1", "Item 2"])
     end
   end
+
+  describe "category synchronization" do
+    let(:tender) { create(:tender) }
+    let(:category1) { create(:section_category) }
+    let(:category2) { create(:section_category) }
+    let(:line_item) { create(:tender_line_item, tender: tender, section_category: category1) }
+    
+    it "repopulates materials when category changes" do
+      # Create template for category2
+      template = create(:section_category_template, section_category: category2)
+      material_supply = create(:material_supply, waste_percentage: 0)
+      # Ensure tender specific rate exists and has the right rate
+      rate = tender.tender_specific_material_rates.find_or_initialize_by(
+        material_supply_id: material_supply.id,
+        material_supply_type: 'MaterialSupply'
+      )
+      rate.update!(rate: 100)
+      
+      create(:line_item_material_template, section_category_template: template, material_supply: material_supply, proportion_percentage: 100, waste_percentage: 0)
+      
+      # Ensure breakdown exists and has 0 rounding/margin
+      breakdown = line_item.line_item_material_breakdown || line_item.create_line_item_material_breakdown
+      breakdown.update!(rounding_interval: 0, margin_percentage: 0)
+      
+      # Change category
+      line_item.update!(section_category: category2)
+      
+      # Check that materials were created
+      expect(line_item.line_item_materials.count).to eq(1)
+      expect(line_item.line_item_rate_build_up.material_supply_rate).to eq(100)
+    end
+    
+    it "clears materials when changing to category without template" do
+      # Start with category that has materials
+      template = create(:section_category_template, section_category: category1)
+      material_supply = create(:material_supply)
+      # Ensure tender specific rate exists and has the right rate
+      rate = tender.tender_specific_material_rates.find_or_initialize_by(
+        material_supply_id: material_supply.id,
+        material_supply_type: 'MaterialSupply'
+      )
+      rate.update!(rate: 100)
+      
+      create(:line_item_material_template, section_category_template: template, material_supply: material_supply, proportion_percentage: 100)
+      
+      line_item.line_item_material_breakdown.populate_from_category(category1.id)
+      expect(line_item.line_item_materials.count).to eq(1)
+      
+      # Change to category without template
+      line_item.update!(section_category: category2)
+      
+      expect(line_item.line_item_materials.count).to eq(0)
+      expect(line_item.line_item_rate_build_up.material_supply_rate).to eq(0)
+    end
+  end
 end

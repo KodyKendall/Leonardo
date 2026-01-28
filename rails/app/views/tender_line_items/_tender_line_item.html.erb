@@ -1,4 +1,5 @@
 <%= turbo_frame_tag dom_id(tender_line_item), data: { id: tender_line_item.id } do %>
+  <% is_open = local_assigns[:open_breakdown] || params[:open_breakdown] == tender_line_item.id.to_s %>
   <div class="group border-b last:border-b-0 transition-colors <%= 'bg-gray-100 hover:bg-gray-100' if tender_line_item.is_heading %> <%= 'hover:bg-gray-50' unless tender_line_item.is_heading %>">
     <%= form_with model: [tender_line_item.tender, tender_line_item],
                   data: {
@@ -6,6 +7,7 @@
                     action: "input->dirty-form#change change->dirty-form#change turbo:submit-end->dirty-form#reset input->dirty-form#save change->dirty-form#save"
                   },
                   class: "px-4 py-2" do |f| %>
+      <%= hidden_field_tag :open_breakdown, is_open ? "true" : "false", id: "open_breakdown_hidden_#{tender_line_item.id}" %>
       
       <div class="grid grid-cols-12 gap-2 items-center">
         <!-- Drag Handle -->
@@ -34,6 +36,13 @@
           <%= f.text_field :item_description, class: "input input-xs input-bordered w-full #{ tender_line_item.is_heading ? 'font-bold text-center' : '' }", placeholder: "Description" %>
         </div>
 
+        <!-- Category -->
+        <% unless tender_line_item.is_heading %>
+          <div class="col-span-1">
+            <%= f.collection_select :section_category_id, SectionCategory.all, :id, :display_name, { prompt: "Category" }, { class: "select select-xs select-bordered w-full px-1" } %>
+          </div>
+        <% end %>
+
         <!-- Unit (Hidden for headings) -->
         <% unless tender_line_item.is_heading %>
           <div class="col-span-1">
@@ -54,7 +63,7 @@
           </div>
 
           <!-- Line Total (Hidden for headings) -->
-          <div class="col-span-2 text-right">
+          <div class="col-span-1 text-right">
             <% final_rate = tender_line_item.line_item_rate_build_up&.rounded_rate || 0 %>
             <% line_total = final_rate * (tender_line_item.quantity || 0) %>
             <div class="text-sm font-bold text-green-700 tabular-nums">
@@ -104,7 +113,7 @@
     <% unless tender_line_item.is_heading %>
       <div class="collapse overflow-visible" data-line-item-id="<%= tender_line_item.id %>" id="collapse_<%= tender_line_item.id %>">
         <!-- Checkbox Toggle (hidden) -->
-        <input type="checkbox" class="line-item-toggle hidden peer" id="toggle_<%= tender_line_item.id %>" <%= "checked" if local_assigns[:open_breakdown] || params[:open_breakdown] == tender_line_item.id.to_s %> />
+        <input type="checkbox" class="line-item-toggle hidden peer" id="toggle_<%= tender_line_item.id %>" <%= "checked" if is_open %> onchange="document.getElementById('open_breakdown_hidden_<%= tender_line_item.id %>').value = this.checked" />
         
         <div class="collapse-content !p-0 max-h-0 peer-checked:max-h-[2000px] transition-all duration-300 overflow-hidden bg-gray-50/50">
           <div class="p-6 border-t border-gray-200">

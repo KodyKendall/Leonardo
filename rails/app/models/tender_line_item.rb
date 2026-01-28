@@ -19,7 +19,8 @@ class TenderLineItem < ApplicationRecord
   after_initialize :build_defaults, if: :new_record?
   after_create :ensure_persisted_associations
   after_create :inherit_inclusion_defaults
-  after_create :populate_rates_from_project_buildup
+  after_save :sync_material_breakdown_category, if: :saved_change_to_section_category_id?
+  after_save :populate_rates_from_project_buildup, if: :previously_new_record?
   after_save :update_tender_grand_total, if: -> { saved_change_to_quantity? || saved_change_to_rate? || saved_change_to_is_heading? }
   after_save :update_tender_total_tonnage, if: -> { saved_change_to_quantity? || saved_change_to_include_in_tonnage? || saved_change_to_is_heading? }
   after_destroy :update_tender_grand_total
@@ -48,6 +49,16 @@ class TenderLineItem < ApplicationRecord
     # The 'include_in_tonnage' toggle (deselecting) should not affect the grand total.
     cascade = destroyed? || saved_change_to_quantity? || saved_change_to_is_heading?
     tender.recalculate_total_tonnage!(cascade: cascade)
+  end
+
+  def sync_material_breakdown_category
+    return if section_category_id.blank?
+    
+    # Ensure breakdown exists
+    breakdown = line_item_material_breakdown || create_line_item_material_breakdown
+    breakdown ||= line_item_material_breakdown
+    breakdown.populate_from_category(section_category_id)
+    breakdown.save! # Trigger sync to rate buildup
   end
 
   def build_defaults

@@ -42,11 +42,11 @@ class LineItemMaterialBreakdown < ApplicationRecord
   end
 
   def populate_from_category(section_category_id)
-    template = SectionCategoryTemplate.find_by(section_category_id: section_category_id)
-    return unless template.present?
-
     # Clear existing materials when switching categories
     line_item_materials.destroy_all
+
+    template = SectionCategoryTemplate.find_by(section_category_id: section_category_id)
+    return unless template.present?
 
     tender = tender_line_item.tender
     template.line_item_material_templates.each do |material_template|
