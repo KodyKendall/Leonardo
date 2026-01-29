@@ -186,4 +186,20 @@ RSpec.describe LineItemRateBuildUp, type: :model do
       expect(rate_buildup).to be_valid
     end
   end
+
+  describe "broadcasts" do
+    let(:tender) { create(:tender) }
+    let(:line_item) { create(:tender_line_item, tender: tender) }
+    let(:rate_buildup) { line_item.line_item_rate_build_up }
+
+    it "broadcasts to tender line item without forcing breakdown open" do
+      expect(rate_buildup).to receive(:broadcast_replace_to).with(
+        "tender_#{tender.id}_builder",
+        target: ActionView::RecordIdentifier.dom_id(line_item),
+        partial: "tender_line_items/tender_line_item",
+        locals: { tender_line_item: line_item }
+      )
+      rate_buildup.send(:broadcast_to_tender_line_item)
+    end
+  end
 end

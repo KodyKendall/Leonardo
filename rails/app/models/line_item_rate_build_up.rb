@@ -117,7 +117,7 @@ class LineItemRateBuildUp < ApplicationRecord
       "tender_#{tender_line_item.tender_id}_builder",
       target: ActionView::RecordIdentifier.dom_id(tender_line_item),
       partial: "tender_line_items/tender_line_item",
-      locals: { tender_line_item: tender_line_item, open_breakdown: true }
+      locals: { tender_line_item: tender_line_item }
     )
   end
 end

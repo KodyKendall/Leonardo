@@ -117,6 +117,8 @@ RSpec.describe "/line_item_rate_build_ups", type: :request do
         
         expect(response).to have_http_status(:ok)
         expect(response.body).to include("turbo-stream action=\"replace\"")
+        expect(response.body).to include("open_breakdown_hidden_#{tender_line_item.id}")
+        expect(response.body).to include("value=\"true\"")
         line_item_rate_build_up.reload
         expect(line_item_rate_build_up.mass_calc).to eq(2.0)
       end
