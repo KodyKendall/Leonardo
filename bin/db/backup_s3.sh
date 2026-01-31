@@ -34,17 +34,60 @@ echo ""
 
 START=$(date +%s)
 
-docker compose exec -T db pg_dump -U postgres llamapress_production \
-  | pv -s "$DB_SIZE" -N "Dumping " \
-  | gzip \
-  | pv -N "Uploading" \
-  | aws s3 cp - "${S3_BUCKET}/${BACKUP_NAME}" \
-      --storage-class STANDARD_IA
+# Simple spinner function for progress indication
+spin() {
+  local pid=$1
+  local delay=0.5
+  local elapsed=0
+  local spinchars='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+
+  while kill -0 "$pid" 2>/dev/null; do
+    for ((i=0; i<${#spinchars}; i++)); do
+      if ! kill -0 "$pid" 2>/dev/null; then
+        break 2
+      fi
+      printf "\r🔄 Backing up... %s  [%ds elapsed]" "${spinchars:$i:1}" "$elapsed"
+      sleep "$delay"
+      elapsed=$(( $(date +%s) - START ))
+    done
+  done
+  printf "\r✅ Backup stream complete!              \n"
+}
+
+# Check if pv is available for progress visualization
+if command -v pv &> /dev/null; then
+  docker compose exec -T db pg_dump -U postgres llamapress_production \
+    | pv -s "$DB_SIZE" -N "Dumping " \
+    | gzip \
+    | pv -N "Uploading" \
+    | aws s3 cp - "${S3_BUCKET}/${BACKUP_NAME}" \
+        --storage-class STANDARD_IA
+else
+  echo "ℹ️  Note: Install 'pv' for progress bars (apt install pv)"
+
+  # Run backup in background and show spinner
+  docker compose exec -T db pg_dump -U postgres llamapress_production \
+    | gzip \
+    | aws s3 cp - "${S3_BUCKET}/${BACKUP_NAME}" \
+        --storage-class STANDARD_IA &
+
+  BACKUP_PID=$!
+  spin $BACKUP_PID
+  wait $BACKUP_PID
+fi
 
 END=$(date +%s)
 DURATION=$((END - START))
 
+# Create a timestamped copy for archival
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+TIMESTAMPED_NAME="llamapress_${TIMESTAMP}.sql.gz"
+echo ""
+echo "📋 Creating timestamped copy: ${TIMESTAMPED_NAME}"
+aws s3 cp "${S3_BUCKET}/${BACKUP_NAME}" "${S3_BUCKET}/${TIMESTAMPED_NAME}" --quiet
+
 echo ""
 echo "✅ Backup complete in ${DURATION} seconds"
-echo "📍 S3 Path: ${S3_BUCKET}/${BACKUP_NAME}"
+echo "📍 Latest:      ${S3_BUCKET}/${BACKUP_NAME}"
+echo "📍 Timestamped: ${S3_BUCKET}/${TIMESTAMPED_NAME}"
 echo "⏱️  End: $(date +%H:%M:%S)"

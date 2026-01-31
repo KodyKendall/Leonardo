@@ -10,6 +10,12 @@ See the starting rails project and base image here: https://github.com/kodykenda
 
 ---
 
+## ../LlamaBot implementation (Agent Orchestration) repository & code. 
+
+You can also look in to see how the agent orchestration works for the actual left-hand chat interface implementation, or view the Github Repo at https://github.com/KodyKendall/LlamaBot
+
+The file might exist in `../LlamaBot` `cd ../LlamaBot` (if the user has cloned LlamaBot locally it will be on the filesystem). It's worth checking. It might just be accessed through the docker image in docker-compose.yml though.
+
 ## Two Docker Compose Files
 
 | File | Purpose | Rails Source |

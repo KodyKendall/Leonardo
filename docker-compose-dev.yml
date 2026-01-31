@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   llamapress:
-    # image: kody06/llamapress-simple:0.3.1        # <— pre-built tag
+    # image: kody06/llamapress-simple:0.3.2        # <— pre-built tag
     build: ../LlamaPress-Simple
     env_file: .env                           # read secrets from this file
     environment:
@@ -33,7 +33,7 @@ services:
       - llama-network
 
   llamabot:
-    image: kody06/llamabot:0.3.3u
+    image: kody06/llamabot:0.3.4a
     # build: ../LlamaBot
     env_file:
       - .env

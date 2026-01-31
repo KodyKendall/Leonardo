@@ -1,329 +1,466 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100">
-  <!-- Hero Section -->
-  <section class="relative py-20 px-4 text-center">
-    <div class="absolute top-10 left-10 w-24 h-24 bg-yellow-300 rounded-full opacity-20 animate-pulse"></div>
-    <div class="absolute bottom-10 right-10 w-32 h-32 bg-purple-300 rounded-full opacity-20 animate-pulse delay-1000"></div>
-    
-    <div class="relative z-10 max-w-4xl mx-auto">
-      <h1 class="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-        Creative Playground
-      </h1>
-      <p class="text-xl text-gray-700 mb-10 max-w-2xl mx-auto">
-        Welcome to our interactive Rails app! Explore games, tools, and creative prototypes built with Daisy UI, Tailwind CSS, and Font Awesome.
-      </p>
-      
-      <div class="flex flex-wrap justify-center gap-4 mb-16" data-controller="prototypes--global">
-        <button class="btn btn-primary btn-lg gap-2" data-action="click->prototypes--global#confetti">
-          <i class="fas fa-party-horn"></i>
-          Launch Confetti
+<% content_for :full_width, true %>
+<% content_for :hide_header, true %>
+
+<!-- Leonardo Launchpad - Active Skeleton -->
+<div id="launchpad" class="min-h-screen bg-white relative">
+
+  <!-- Truth Anchor (Status Bar) -->
+  <div class="launchpad-affordance fixed top-4 left-4 z-50">
+    <div class="launchpad-status-bar flex items-center gap-3 px-4 py-2 rounded-full text-sm">
+      <!-- Rails Status -->
+      <span class="flex items-center gap-1.5">
+        <img src="https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/qq3q8lerp699muegrzs9k82cxjez" alt="Ruby" class="w-3 h-3 opacity-70" />
+        <span class="font-bold text-white">Rails 7</span>
+      </span>
+
+      <!-- Separator -->
+      <span class="text-gray-500">|</span>
+
+      <!-- File Path -->
+      <span class="font-mono text-gray-400 text-xs"><%= @view_path %></span>
+
+      <!-- Separator -->
+      <span class="text-gray-500">|</span>
+
+      <!-- Write Access -->
+      <span class="launchpad-write-access text-xs font-medium"><i class="fa-solid fa-circle-check launchpad-checkmark"></i> Ready to edit</span>
+    </div>
+  </div>
+
+  <!-- Live Skeleton Structure -->
+  <div class="flex flex-col min-h-screen">
+
+    <!-- Spacer for Truth Anchor -->
+    <div class="h-16"></div>
+
+    <!-- Navbar Placeholder Zone -->
+    <nav class="launchpad-zone launchpad-affordance h-16 border-b-2 border-dashed border-gray-300 flex items-center justify-between px-8"
+         data-zone-name="Navbar"
+         data-zone-command="Replace this navbar with a modern navbar with a text logo on the left and navigation links on the right">
+      <div class="flex items-center gap-2">
+        <span class="launchpad-zone-label font-mono text-sm">&lt;Navbar&gt;</span>
+      </div>
+      <div class="launchpad-zone-label font-mono text-sm">Logo + Navigation</div>
+    </nav>
+
+    <!-- Hero Section (Main Content Area) -->
+    <section class="launchpad-zone flex-1 flex flex-col items-center justify-center py-20 px-4"
+             data-zone-name="Hero"
+             data-zone-command="Replace this hero section with a compelling hero section with headline, subtext, and call-to-action buttons">
+
+      <!-- Zone Label - Top Left -->
+      <div class="launchpad-zone-label absolute top-4 left-4 font-mono text-sm">&lt;Hero&gt;</div>
+
+      <!-- Hero label - Top Right -->
+      <div class="launchpad-zone-label absolute top-4 right-4 font-mono text-sm">Headline + CTA</div>
+
+      <!-- Central Status Message -->
+      <div class="text-center mb-16">
+        <h1 class="launchpad-title launchpad-dormant-pulse text-5xl md:text-6xl font-light tracking-tight mb-3">
+          Hi, I'm Leonardo.
+        </h1>
+        <p class="launchpad-subtitle text-xl text-gray-400 font-light">
+          What do you want to build?
+        </p>
+      </div>
+
+      <!-- Micro-Win Commands -->
+      <div class="launchpad-affordance w-full max-w-md space-y-3">
+        <button class="launchpad-command" data-command="Add a welcome message that says Hello World">
+          Add a welcome message that says Hello World
         </button>
-        <button class="btn btn-secondary btn-lg gap-2" id="theme-toggle">
-          <i class="fas fa-palette"></i>
-          <span>Toggle Theme</span>
+        <button class="launchpad-command" data-command="Change the background to dark mode">
+          Change the background to dark mode
         </button>
-        <button class="btn btn-accent btn-lg gap-2" id="random-color">
-          <i class="fas fa-random"></i>
-          Random Color
+        <button class="launchpad-command" data-command="Create a simple contact form">
+          Create a simple contact form
         </button>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Interactive Cards Grid -->
-  <section class="py-12 px-4 max-w-7xl mx-auto">
-    <h2 class="text-3xl font-bold text-center mb-12 text-gray-800">Explore Our Features</h2>
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <!-- Game Cards -->
-      <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300">
-        <figure class="px-10 pt-10">
-          <div class="w-24 h-24 rounded-full bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center">
-            <i class="fas fa-gamepad text-4xl text-white"></i>
-          </div>
-        </figure>
-        <div class="card-body items-center text-center">
-          <h3 class="card-title text-2xl">Games</h3>
-          <p class="text-gray-600">Play Snake and Asteroids games with score tracking</p>
-          <div class="card-actions mt-4">
-            <a href="/prototypes/snake" class="btn btn-outline btn-success">Play Snake</a>
-            <a href="/asteroids_scores" class="btn btn-outline btn-info">Asteroids Scores</a>
-          </div>
+    <!-- Rails Heritage Section - Subtle nod to Rails 7 welcome page -->
+    <button class="launchpad-rails-heritage relative mt-auto w-full" data-command="What is Ruby on Rails, and why is it relevant to Leonardo and AI Coding?">
+      <!-- Pink swoosh background -->
+      <div class="launchpad-rails-swoosh"></div>
+
+      <!-- Rails logo and version info -->
+      <div class="relative z-10 flex items-center justify-center py-6">
+        <div class="text-center">
+          <img
+            src="https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/a5z9wvahumewirijf2d8om1s9sp4"
+            alt="Rails"
+            class="w-14 h-14 mx-auto mb-3 opacity-40 launchpad-rails-logo"
+          />
+          <p class="text-xs text-gray-400">Rails version: <span class="text-gray-500">7.2.2</span></p>
+          <p class="text-xs text-gray-400">Ruby version: <span class="text-gray-500">ruby 3.3.4</span></p>
         </div>
       </div>
+    </button>
 
-      <!-- Productivity Cards -->
-      <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300">
-        <figure class="px-10 pt-10">
-          <div class="w-24 h-24 rounded-full bg-gradient-to-r from-orange-400 to-red-500 flex items-center justify-center">
-            <i class="fas fa-tasks text-4xl text-white"></i>
-          </div>
-        </figure>
-        <div class="card-body items-center text-center">
-          <h3 class="card-title text-2xl">Productivity</h3>
-          <p class="text-gray-600">Task management, Pomodoro timer, and chat builders</p>
-          <div class="card-actions mt-4">
-            <a href="/tasks" class="btn btn-outline btn-primary">Tasks</a>
-            <a href="/pomodoros" class="btn btn-outline btn-secondary">Pomodoros</a>
-          </div>
-        </div>
-      </div>
+    <!-- Footer Placeholder Zone -->
+    <footer class="launchpad-zone launchpad-affordance h-16 border-t-2 border-dashed border-gray-300 flex items-center justify-between px-8 bg-white relative z-20"
+            data-zone-name="Footer"
+            data-zone-command="Replace this footer with a footer containing copyright, links, and social media icons">
+      <div class="launchpad-zone-label font-mono text-sm">&lt;Footer&gt;</div>
+      <div class="launchpad-zone-label font-mono text-sm">Links + Copyright</div>
+    </footer>
+  </div>
 
-      <!-- Creative Tools -->
-      <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow duration-300">
-        <figure class="px-10 pt-10">
-          <div class="w-24 h-24 rounded-full bg-gradient-to-r from-purple-400 to-pink-500 flex items-center justify-center">
-            <i class="fas fa-paint-brush text-4xl text-white"></i>
-          </div>
-        </figure>
-        <div class="card-body items-center text-center">
-          <h3 class="card-title text-2xl">Creative Tools</h3>
-          <p class="text-gray-600">Prototypes and creative builders for experimentation</p>
-          <div class="card-actions mt-4">
-            <a href="/prototypes" class="btn btn-outline btn-accent">Prototypes</a>
-            <a href="/chat_builders" class="btn btn-outline btn-warning">Chat Builders</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Interactive Demo Section -->
-  <section class="py-16 px-4 max-w-4xl mx-auto">
-    <div class="bg-white rounded-3xl p-8 shadow-2xl border border-gray-200">
-      <h2 class="text-3xl font-bold text-center mb-8">Interactive Color Mixer</h2>
-      <p class="text-center text-gray-600 mb-8">Adjust the sliders to mix colors and see the result in real-time</p>
-      
-      <div class="flex flex-col md:flex-row gap-8 items-center">
-        <div class="flex-1 space-y-6">
-          <div>
-            <label class="label">
-              <span class="label-text font-semibold">Red: <span id="red-value">128</span></span>
-            </label>
-            <input type="range" min="0" max="255" value="128" class="range range-error" id="red-slider" />
-          </div>
-          <div>
-            <label class="label">
-              <span class="label-text font-semibold">Green: <span id="green-value">128</span></span>
-            </label>
-            <input type="range" min="0" max="255" value="128" class="range range-success" id="green-slider" />
-          </div>
-          <div>
-            <label class="label">
-              <span class="label-text font-semibold">Blue: <span id="blue-value">128</span></span>
-            </label>
-            <input type="range" min="0" max="255" value="128" class="range range-info" id="blue-slider" />
-          </div>
-          <button class="btn btn-block btn-outline mt-4" id="copy-color">
-            <i class="fas fa-copy mr-2"></i>Copy Color Code
-          </button>
-        </div>
-        
-        <div class="flex-1">
-          <div class="flex flex-col items-center">
-            <div class="w-48 h-48 rounded-2xl shadow-lg mb-6 border border-gray-300" id="color-display"></div>
-            <div class="text-center">
-              <p class="text-xl font-mono font-bold mb-2" id="color-hex">#808080</p>
-              <p class="text-gray-600" id="color-rgb">RGB(128, 128, 128)</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="py-8 text-center text-gray-600 border-t border-gray-300 mt-12">
-    <div class="max-w-4xl mx-auto px-4">
-      <p class="mb-4">Built with <i class="fas fa-heart text-red-500"></i> using Ruby on Rails 7, Daisy UI, and Tailwind CSS</p>
-      <div class="flex justify-center gap-6 text-2xl">
-        <a href="#" class="text-blue-600 hover:text-blue-800"><i class="fab fa-github"></i></a>
-        <a href="#" class="text-blue-400 hover:text-blue-600"><i class="fab fa-twitter"></i></a>
-        <a href="#" class="text-purple-600 hover:text-purple-800"><i class="fab fa-discord"></i></a>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Confetti Canvas (hidden by default) -->
-  <canvas id="confettiCanvas" class="absolute top-0 left-0 pointer-events-none w-full h-full" style="display:none; z-index: 50;"></canvas>
+  <!-- Leonardo Profile - Peeking from right side (positioned within page, not fixed) -->
+  <div class="launchpad-affordance absolute right-0 z-40 pointer-events-none" style="top: 35%;">
+    <img
+      src="https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/p8nl6bjjy6rarhkaz35p8qwreaa0"
+      alt="Leonardo"
+      class="launchpad-leonardo-peek"
+    />
+  </div>
 </div>
 
-<!-- JavaScript for interactive features -->
+<style>
+  /* Prevent horizontal scroll from Leonardo peeking */
+  html, body {
+    overflow-x: hidden;
+  }
+
+  /* Brand Colors */
+  :root {
+    --launchpad-purple: #4C3F6D;
+    --launchpad-blue: #489DF9;
+    --launchpad-dark: #2D2442;
+    --launchpad-rails-red: #CC0000;
+  }
+
+  /* Truth Anchor / Status Bar */
+  .launchpad-status-bar {
+    background: rgba(45, 36, 66, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(72, 157, 249, 0.25);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .launchpad-write-access {
+    color: #4ADE80;
+  }
+
+  .launchpad-checkmark {
+    color: #4ADE80;
+    margin-right: 4px;
+    font-size: 0.7rem;
+  }
+
+  /* Central Title */
+  .launchpad-title {
+    color: var(--launchpad-purple);
+  }
+
+  /* Dormant Pulse - Slow shimmer with glow following */
+  .launchpad-dormant-pulse {
+    position: relative;
+    background: linear-gradient(
+      90deg,
+      var(--launchpad-purple) 0%,
+      var(--launchpad-purple) 35%,
+      rgba(139, 92, 246, 1) 50%,
+      var(--launchpad-purple) 65%,
+      var(--launchpad-purple) 100%
+    );
+    background-size: 300% 100%;
+    background-position: 100% 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation:
+      dormant-shimmer 8s ease-in-out infinite,
+      dormant-glow 8s ease-in-out infinite;
+  }
+
+  @keyframes dormant-shimmer {
+    0%, 60% {
+      background-position: 100% 0;
+    }
+    80% {
+      background-position: -100% 0;
+    }
+    100% {
+      background-position: -100% 0;
+    }
+  }
+
+  @keyframes dormant-glow {
+    0%, 60% {
+      filter: drop-shadow(0 0 0 transparent);
+    }
+    70% {
+      filter: drop-shadow(0 4px 20px rgba(139, 92, 246, 0.4));
+    }
+    80% {
+      filter: drop-shadow(0 4px 20px rgba(139, 92, 246, 0.3));
+    }
+    90%, 100% {
+      filter: drop-shadow(0 0 0 transparent);
+    }
+  }
+
+  /* Leonardo Peeking from Right Side */
+  .launchpad-leonardo-peek {
+    width: 200px;
+    height: auto;
+    opacity: 0.5;
+    /* Flip horizontally (scaleX) + rotate 34 degrees + push further off-screen to the right */
+    transform: scaleX(-1) rotate(34deg) translateX(-30%);
+    transition: all 0.4s ease;
+    filter: drop-shadow(-4px 4px 12px rgba(76, 63, 109, 0.2));
+  }
+
+  .launchpad-leonardo-peek:hover {
+    opacity: 0.7;
+    transform: scaleX(-1) rotate(34deg) translateX(-40%);
+  }
+
+  .launchpad-subtitle {
+    letter-spacing: 0.02em;
+  }
+
+  /* Rails Heritage - Pink swoosh like Rails 7 welcome page */
+  .launchpad-rails-heritage {
+    position: relative;
+    overflow: hidden;
+    display: block;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .launchpad-rails-swoosh {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #F0E6E9;
+    clip-path: ellipse(80% 100% at 50% 100%);
+    opacity: 0.7;
+    transition: all 0.2s ease;
+  }
+
+  .launchpad-rails-heritage:hover .launchpad-rails-swoosh {
+    opacity: 0.9;
+    background: #EBD9DE;
+  }
+
+  .launchpad-rails-logo {
+    transition: all 0.2s ease;
+  }
+
+  .launchpad-rails-heritage:hover .launchpad-rails-logo {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+
+  .launchpad-rails-heritage:hover p {
+    color: #64748B;
+  }
+
+  /* Micro-Win Commands */
+  .launchpad-command {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.875rem 1.25rem;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.875rem;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 0.5rem;
+    color: #64748B;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .launchpad-command:hover {
+    background: #F1F5F9;
+    border-color: var(--launchpad-blue);
+    color: var(--launchpad-purple);
+    box-shadow: 0 2px 8px rgba(72, 157, 249, 0.15);
+  }
+
+  .launchpad-command:active {
+    transform: scale(0.995);
+  }
+
+  .launchpad-command-arg {
+    color: #475569;
+  }
+
+  .launchpad-command:hover .launchpad-command-arg {
+    color: var(--launchpad-purple);
+  }
+
+  /* Interactive Zones */
+  .launchpad-zone {
+    position: relative;
+    transition: all 0.15s ease;
+    cursor: pointer;
+  }
+
+  .launchpad-zone-label {
+    color: #94A3B8;
+    opacity: 0.7;
+    transition: all 0.15s ease;
+  }
+
+  .launchpad-zone:hover {
+    border-color: var(--launchpad-blue) !important;
+    background: rgba(72, 157, 249, 0.03);
+  }
+
+  .launchpad-zone:hover .launchpad-zone-label {
+    opacity: 1;
+    color: var(--launchpad-blue);
+    font-weight: 500;
+  }
+
+  /* Click Feedback Animation */
+  .launchpad-zone.clicked,
+  .launchpad-command.clicked {
+    animation: launchpad-pulse 0.35s ease;
+  }
+
+  @keyframes launchpad-pulse {
+    0% { background-color: transparent; }
+    50% { background-color: rgba(76, 63, 109, 0.12); }
+    100% { background-color: transparent; }
+  }
+
+  /* Self-Destruct: Hide affordances when dismissed */
+  .launchpad-dismissed .launchpad-affordance {
+    display: none !important;
+  }
+
+  .launchpad-dismissed .launchpad-zone {
+    border-color: transparent !important;
+    cursor: default;
+  }
+
+  .launchpad-dismissed .launchpad-zone:hover {
+    background: transparent;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .launchpad-status-bar {
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      border-radius: 1rem;
+    }
+
+    .launchpad-status-bar > span:nth-child(2),
+    .launchpad-status-bar > span:nth-child(4) {
+      display: none;
+    }
+
+    .launchpad-title {
+      font-size: 2.5rem;
+    }
+
+    .launchpad-command {
+      padding: 0.75rem 1rem;
+      font-size: 0.8rem;
+    }
+  }
+</style>
+
 <script>
-  // Theme Toggle
-  document.getElementById('theme-toggle')?.addEventListener('click', function() {
-    const html = document.documentElement;
-    const currentTheme = html.getAttribute('data-theme');
-    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    html.setAttribute('data-theme', newTheme);
-    
-    // Update button text
-    const icon = this.querySelector('i');
-    if (newTheme === 'dark') {
-      icon.className = 'fas fa-sun';
-      this.querySelector('span').textContent = ' Light Mode';
-    } else {
-      icon.className = 'fas fa-moon';
-      this.querySelector('span').textContent = ' Dark Mode';
+  (function() {
+    'use strict';
+
+    const launchpad = document.getElementById('launchpad');
+    if (!launchpad) return;
+
+    // Check if launchpad should be dismissed
+    if (localStorage.getItem('launchpad_dismissed') === 'true') {
+      launchpad.classList.add('launchpad-dismissed');
     }
-  });
 
-  // Random Color Generator
-  document.getElementById('random-color')?.addEventListener('click', function() {
-    const red = Math.floor(Math.random() * 256);
-    const green = Math.floor(Math.random() * 256);
-    const blue = Math.floor(Math.random() * 256);
-    
-    document.getElementById('red-slider').value = red;
-    document.getElementById('green-slider').value = green;
-    document.getElementById('blue-slider').value = blue;
-    
-    updateColorDisplay(red, green, blue);
-    updateSliderValues(red, green, blue);
-  });
-
-  // Color Mixer
-  const redSlider = document.getElementById('red-slider');
-  const greenSlider = document.getElementById('green-slider');
-  const blueSlider = document.getElementById('blue-slider');
-  const colorDisplay = document.getElementById('color-display');
-  const colorHex = document.getElementById('color-hex');
-  const colorRgb = document.getElementById('color-rgb');
-  const redValue = document.getElementById('red-value');
-  const greenValue = document.getElementById('green-value');
-  const blueValue = document.getElementById('blue-value');
-  const copyButton = document.getElementById('copy-color');
-
-  function updateSliderValues(r, g, b) {
-    redValue.textContent = r;
-    greenValue.textContent = g;
-    blueValue.textContent = b;
-  }
-
-  function rgbToHex(r, g, b) {
-    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
-  }
-
-  function updateColorDisplay(r, g, b) {
-    const hex = rgbToHex(r, g, b);
-    colorDisplay.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
-    colorHex.textContent = hex;
-    colorRgb.textContent = `RGB(${r}, ${g}, ${b})`;
-  }
-
-  function handleSliderChange() {
-    const r = parseInt(redSlider.value);
-    const g = parseInt(greenSlider.value);
-    const b = parseInt(blueSlider.value);
-    
-    updateColorDisplay(r, g, b);
-    updateSliderValues(r, g, b);
-  }
-
-  redSlider.addEventListener('input', handleSliderChange);
-  greenSlider.addEventListener('input', handleSliderChange);
-  blueSlider.addEventListener('input', handleSliderChange);
-
-  // Copy Color Code
-  copyButton.addEventListener('click', function() {
-    const hexCode = colorHex.textContent;
-    navigator.clipboard.writeText(hexCode).then(() => {
-      const originalText = this.innerHTML;
-      this.innerHTML = '<i class="fas fa-check mr-2"></i>Copied!';
-      setTimeout(() => {
-        this.innerHTML = originalText;
-      }, 2000);
+    // Handle command button clicks
+    document.querySelectorAll('.launchpad-command').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const command = this.dataset.command;
+        sendToChat(command);
+        showClickFeedback(this);
+      });
     });
-  });
 
-  // Initialize color display
-  updateColorDisplay(128, 128, 128);
-
-  // Confetti - reuse existing confetti logic from prototypes
-  // We'll need to check if the controller is available or implement our own
-  document.addEventListener('DOMContentLoaded', function() {
-    // If confetti button exists but no controller, add basic confetti
-    const confettiBtn = document.querySelector('[data-action*="confetti"]');
-    if (confettiBtn && !window.confetti) {
-      confettiBtn.addEventListener('click', function() {
-        // Simple confetti fallback
-        createSimpleConfetti();
+    // Handle Rails heritage section click
+    const railsHeritage = document.querySelector('.launchpad-rails-heritage');
+    if (railsHeritage) {
+      railsHeritage.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const command = this.dataset.command;
+        sendToChat(command);
+        showClickFeedback(this);
       });
     }
-  });
 
-  function createSimpleConfetti() {
-    const canvas = document.getElementById('confettiCanvas');
-    if (!canvas) return;
-    
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    canvas.style.display = "block";
-    const ctx = canvas.getContext("2d");
-    
-    const confettiCount = 100;
-    const confettis = [];
-    const colors = ["#FFC700","#FF0000","#2E3191","#41BBC7","#7DF57B","#FF62C6"];
-    
-    for (let i = 0; i < confettiCount; i++) {
-      confettis.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * -canvas.height,
-        r: 5 + Math.random() * 7,
-        d: Math.random() * confettiCount + 10,
-        color: colors[Math.floor(Math.random() * colors.length)],
-        tilt: Math.floor(Math.random() * 10) - 10,
-        tiltAngleIncremental: (Math.random() * 0.07) + .05,
-        tiltAngle: 0
-      });
-    }
-    
-    let angle = 0;
-    let frame = 0;
-    
-    function drawConfetti() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      confettis.forEach(c => {
-        ctx.beginPath();
-        ctx.lineWidth = c.r;
-        ctx.strokeStyle = c.color;
-        ctx.moveTo(c.x + c.tilt + (c.r/3), c.y);
-        ctx.lineTo(c.x + c.tilt, c.y + c.tilt + (c.r/5));
-        ctx.stroke();
-      });
-      updateConfetti();
-    }
-    
-    function updateConfetti() {
-      angle += 0.01;
-      for(let i = 0; i < confettis.length; i++) {
-        let c = confettis[i];
-        c.y += (Math.cos(angle + c.d) + 3 + c.r/2) / 2;
-        c.x += Math.sin(angle);
-        c.tiltAngle += c.tiltAngleIncremental;
-        c.tilt = Math.sin(c.tiltAngle) * 15;
-        
-        if (c.y > canvas.height) {
-          confettis[i] = {
-            ...c,
-            x: Math.random() * canvas.width,
-            y: -10,
-            tilt: Math.floor(Math.random() * 10) - 10
-          };
+    // Handle zone clicks (but not when clicking commands inside)
+    document.querySelectorAll('.launchpad-zone').forEach(zone => {
+      zone.addEventListener('click', function(e) {
+        // Don't trigger if clicking on a child button or already handled
+        if (e.target.closest('.launchpad-command')) return;
+
+        const command = this.dataset.zoneCommand;
+        if (command) {
+          sendToChat(command);
+          showClickFeedback(this);
         }
-      }
-    }
-    
-    function animate() {
-      drawConfetti();
-      frame++;
-      if(frame < 85) {
-        requestAnimationFrame(animate);
+      });
+    });
+
+    // Send command to Leonardo chat via postMessage
+    function sendToChat(command) {
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          source: 'launchpad',
+          type: 'prefill-chat',
+          command: command
+        }, '*');
+        console.log('Launchpad: Sent command to chat:', command);
       } else {
-        canvas.style.display = "none";
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Not in iframe - log for debugging
+        console.log('Launchpad: Command (not in iframe):', command);
       }
     }
-    
-    animate();
-  }
+
+    // Visual feedback on click
+    function showClickFeedback(element) {
+      element.classList.add('clicked');
+      setTimeout(() => element.classList.remove('clicked'), 350);
+    }
+
+    // Listen for dismissal signal from parent Leonardo
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.source === 'leonardo' && event.data.type === 'dismiss-launchpad') {
+        dismissLaunchpad();
+      }
+    });
+
+    // Dismiss function (can be called externally or via message)
+    function dismissLaunchpad() {
+      localStorage.setItem('launchpad_dismissed', 'true');
+      launchpad.classList.add('launchpad-dismissed');
+      console.log('Launchpad: Dismissed');
+    }
+
+    // Expose dismiss function globally for debugging/testing
+    window.dismissLaunchpad = dismissLaunchpad;
+    window.resetLaunchpad = function() {
+      localStorage.removeItem('launchpad_dismissed');
+      launchpad.classList.remove('launchpad-dismissed');
+      console.log('Launchpad: Reset');
+    };
+  })();
 </script>

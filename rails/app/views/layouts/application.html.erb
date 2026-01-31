@@ -53,9 +53,22 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="https://service-jobs-images.s3.us-east-2.amazonaws.com/7rl98t1weu387r43il97h6ipk1l7" type="image/png">
     <link rel="apple-touch-icon" href="https://service-jobs-images.s3.us-east-2.amazonaws.com/7rl98t1weu387r43il97h6ipk1l7">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
-    <!-- DaisyUI -->
+    <!-- Tailwind CSS v3 + DaisyUI v4 (compatible versions) -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'llama-purple': '#4C3F6D',
+              'llama-blue': '#489DF9',
+              'llama-dark': '#2D2442',
+            }
+          }
+        }
+      }
+    </script>
 
     <!-- Font Awesome (public CDN) -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" data-llama-id="6" data-llama-editable="true">
@@ -66,23 +79,29 @@
   </head>
 
   <body class="h-full">
-    <div class="py-10">
-      <header>
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">
-            <%= content_for(:header) %>
-          </h1>
-          <% flash.each do |key, value| %>
-            <div class="flash <%= key %>"><%= value %></div>
-          <% end %>
-        </div>
-      </header>
-      <main>
-        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-          <div class="px-4 py-8 sm:px-0">
-            <%= yield %>
+    <div class="<%= content_for?(:full_width) ? '' : 'py-10' %>">
+      <% unless content_for?(:hide_header) %>
+        <header>
+          <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">
+              <%= content_for(:header) %>
+            </h1>
+            <% flash.each do |key, value| %>
+              <div class="flash <%= key %>"><%= value %></div>
+            <% end %>
           </div>
-        </div>
+        </header>
+      <% end %>
+      <main>
+        <% if content_for?(:full_width) %>
+          <%= yield %>
+        <% else %>
+          <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="px-4 py-8 sm:px-0">
+              <%= yield %>
+            </div>
+          </div>
+        <% end %>
       </main>
     </div>
   </body>
