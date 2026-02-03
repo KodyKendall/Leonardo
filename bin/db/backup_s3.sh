@@ -1,6 +1,20 @@
 #!/bin/bash
 set -e
 
+# Log to file AND terminal for both manual and cron runs (best effort)
+LOG_DIR="/home/ubuntu/Leonardo/logs/backups"
+LOG_FILE="$LOG_DIR/backup.log"
+
+# Create log directory if it doesn't exist
+mkdir -p "$LOG_DIR" 2>/dev/null || true
+
+# Try to enable logging, but don't fail the backup if it doesn't work
+if touch "$LOG_FILE" 2>/dev/null && [ -w "$LOG_FILE" ]; then
+  exec > >(tee -a "$LOG_FILE") 2>&1
+else
+  echo "⚠️  Warning: Cannot write to $LOG_FILE - proceeding without file logging"
+fi
+
 META_FILE=".leonardo/instance.json"
 
 if [ ! -f "$META_FILE" ]; then
