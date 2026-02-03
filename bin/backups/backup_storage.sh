@@ -12,21 +12,31 @@ if [ -z "$INSTANCE_NAME" ] || [ "$INSTANCE_NAME" = "null" ]; then
     exit 1
 fi
 
-# Create timestamp and filename
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-BACKUP_FILE="storage_backup_${TIMESTAMP}.zip"
-S3_PATH="s3://llampress-ai-backups/backups/leonardos/${INSTANCE_NAME}/${BACKUP_FILE}"
+# S3 base path
+S3_BASE="s3://llampress-ai-backups/backups/leonardos/${INSTANCE_NAME}"
+
+# Local backup filename
+BACKUP_FILE="storage_backup.zip"
 
 # Zip storage folder
 echo "Zipping storage folder..."
 cd "$PROJECT_ROOT/rails"
 zip -r "$BACKUP_FILE" storage/
 
-# Upload to S3
-echo "Uploading to $S3_PATH..."
-aws s3 cp "$BACKUP_FILE" "$S3_PATH"
+# Always upload to _latest (overwrites previous)
+S3_LATEST="${S3_BASE}/storage_latest.zip"
+echo "Uploading to $S3_LATEST..."
+aws s3 cp "$BACKUP_FILE" "$S3_LATEST"
+
+# On Mondays, also save a weekly versioned backup
+DAY_OF_WEEK=$(date +%u)
+if [ "$DAY_OF_WEEK" = "1" ]; then
+    S3_WEEKLY="${S3_BASE}/storage_weekly_$(date +%Y%m%d).zip"
+    echo "Monday - also uploading weekly backup to $S3_WEEKLY..."
+    aws s3 cp "$BACKUP_FILE" "$S3_WEEKLY"
+fi
 
 # Clean up local zip file
 rm "$BACKUP_FILE"
 
-echo "Done! Backup uploaded to $S3_PATH"
+echo "Done! Storage backup complete."
