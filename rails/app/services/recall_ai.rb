@@ -147,6 +147,82 @@ class RecallAi
     status == "done" && video_url.present?
   end
 
+  # === Save Conversation ===
+  # Saves the transcript and meeting metadata to a text file in the conversations folder.
+  #
+  # Example:
+  #   RecallAi.new.save_conversation("bot-id-uuid")
+  #   # => "/path/to/rails/conversations/2026-02-04_bot-id-uuid.txt"
+  #
+  # Returns the file path of the saved conversation
+  def save_conversation(bot_id)
+    bot = get_bot(bot_id)
+
+    # Get meeting info
+    meeting_url = bot.dig("meeting_url", "meeting_id") || "unknown"
+    platform = bot.dig("meeting_url", "platform") || "unknown"
+    bot_name = bot["bot_name"] || "unknown"
+    join_at = bot["join_at"]
+
+    # Get transcript if available
+    transcript_text = ""
+    begin
+      transcript = get_transcript(bot_id)
+      if transcript.is_a?(Array)
+        transcript_text = format_transcript(transcript)
+      elsif transcript.is_a?(Hash) && transcript["results"]
+        transcript_text = format_transcript(transcript["results"])
+      else
+        transcript_text = "[Transcript format unknown]\n#{transcript.to_json}"
+      end
+    rescue => e
+      transcript_text = "[Transcript not available: #{e.message}]"
+    end
+
+    # Get video URL
+    video_url = get_recording_url(bot_id) rescue "[Video URL not available]"
+
+    # Build the conversation file content
+    timestamp = Time.parse(join_at).strftime("%Y-%m-%d_%H-%M-%S") rescue Time.now.strftime("%Y-%m-%d_%H-%M-%S")
+    filename = "#{timestamp}_#{bot_id}.txt"
+
+    content = <<~CONVERSATION
+      ================================================================================
+      MEETING TRANSCRIPT
+      ================================================================================
+
+      Bot ID:       #{bot_id}
+      Platform:     #{platform}
+      Meeting ID:   #{meeting_url}
+      Bot Name:     #{bot_name}
+      Started At:   #{join_at}
+      Saved At:     #{Time.now.iso8601}
+
+      Video URL:
+      #{video_url}
+
+      ================================================================================
+      TRANSCRIPT
+      ================================================================================
+
+      #{transcript_text}
+
+      ================================================================================
+      END OF TRANSCRIPT
+      ================================================================================
+    CONVERSATION
+
+    # Save to conversations folder
+    conversations_dir = Rails.root.join("conversations")
+    FileUtils.mkdir_p(conversations_dir)
+
+    file_path = conversations_dir.join(filename)
+    File.write(file_path, content)
+
+    Rails.logger.info("Saved conversation to #{file_path}")
+    file_path.to_s
+  end
+
   # === Verify Incoming Webhook ===
   # Call this in your controller when Recall sends you data.
   #
@@ -187,6 +263,39 @@ class RecallAi
       "Content-Type" => "application/json",
       "Accept" => "application/json"
     }
+  end
+
+  # Format transcript array into readable text
+  def format_transcript(transcript_items)
+    return "[Empty transcript]" if transcript_items.nil? || transcript_items.empty?
+
+    transcript_items.map do |item|
+      speaker = item["speaker"] || item["participant_name"] || "Unknown"
+      text = item["text"] || item["words"]&.map { |w| w["text"] }&.join(" ") || ""
+      timestamp = item["start_time"] || item["timestamp"] || ""
+
+      if timestamp.present?
+        "[#{format_time(timestamp)}] #{speaker}: #{text}"
+      else
+        "#{speaker}: #{text}"
+      end
+    end.join("\n\n")
+  end
+
+  # Convert seconds to readable time format
+  def format_time(seconds)
+    return seconds.to_s unless seconds.is_a?(Numeric)
+
+    total_seconds = seconds.to_i
+    hours = total_seconds / 3600
+    minutes = (total_seconds % 3600) / 60
+    secs = total_seconds % 60
+
+    if hours > 0
+      format("%02d:%02d:%02d", hours, minutes, secs)
+    else
+      format("%02d:%02d", minutes, secs)
+    end
   end
 end
 

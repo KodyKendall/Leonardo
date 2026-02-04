@@ -29,8 +29,23 @@ class WebhooksController < ApplicationController
   private
 
   def handle_status_change(data)
-    if data["status"]["code"] == "done"
-      Rails.logger.info("Meeting Finished! Video URL: #{data['video_url']}")
+    bot_id = data["bot_id"] || data.dig("bot", "id")
+    status_code = data.dig("status", "code") || data["status_code"]
+
+    Rails.logger.info("Bot #{bot_id} status changed to: #{status_code}")
+
+    if status_code == "done" && bot_id.present?
+      Rails.logger.info("Meeting Finished! Saving conversation...")
+
+      # Save the transcript in the background to avoid blocking the webhook response
+      Thread.new do
+        begin
+          file_path = RecallAi.new.save_conversation(bot_id)
+          Rails.logger.info("Conversation saved to: #{file_path}")
+        rescue => e
+          Rails.logger.error("Failed to save conversation: #{e.message}")
+        end
+      end
     end
   end
 end
