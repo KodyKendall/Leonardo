@@ -36,6 +36,8 @@ Rails.application.routes.draw do
   
   post "/stop_impersonating", to: "application#stop_impersonating"
 
+  # Recall.ai webhook
+  post "/webhooks/recall", to: "webhooks#recall"
 
   get "/prototypes/*page", to: "prototypes#show"
   # Defines the root path route ("/")
