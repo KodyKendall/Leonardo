@@ -88,25 +88,25 @@ class RecallAi
 
   # === Get Transcript ===
   # Fetches the transcript for a completed bot session.
-  # Uses the new v2 endpoint: /bot/{bot_id}/recording/{recording_id}/transcript
+  # Downloads from the transcript URL in media_shortcuts.
   #
   # Example:
   #   RecallAi.new.get_transcript("bot-id-uuid")
   #
-  # Returns array of transcript segments with speaker, text, timestamps
+  # Returns array of transcript segments with participant info and words
   def get_transcript(bot_id)
     bot = get_bot(bot_id)
-    recording_id = bot.dig("recordings", 0, "id")
+    transcript_url = bot.dig("recordings", 0, "media_shortcuts", "transcript", "data", "download_url")
 
-    raise "No recording found for bot #{bot_id}" unless recording_id
+    raise "No transcript URL found for bot #{bot_id}" unless transcript_url
 
-    uri = URI("#{RECALL_API_URL}/bot/#{bot_id}/recording/#{recording_id}/transcript")
-    req = Net::HTTP::Get.new(uri, headers)
-
-    res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(req) }
+    uri = URI(transcript_url)
+    res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) do |http|
+      http.request(Net::HTTP::Get.new(uri))
+    end
 
     unless res.is_a?(Net::HTTPSuccess)
-      raise "Recall.ai Transcript Fetch Failed: #{res.code} #{res.body}"
+      raise "Recall.ai Transcript Download Failed: #{res.code} #{res.body}"
     end
 
     JSON.parse(res.body)
@@ -266,13 +266,23 @@ class RecallAi
   end
 
   # Format transcript array into readable text
+  # Handles Recall.ai format: { participant: { name: "..." }, words: [{ text: "...", start_timestamp: { relative: ... } }] }
   def format_transcript(transcript_items)
     return "[Empty transcript]" if transcript_items.nil? || transcript_items.empty?
 
     transcript_items.map do |item|
-      speaker = item["speaker"] || item["participant_name"] || "Unknown"
-      text = item["text"] || item["words"]&.map { |w| w["text"] }&.join(" ") || ""
-      timestamp = item["start_time"] || item["timestamp"] || ""
+      # Handle Recall.ai format with participant object
+      if item["participant"]
+        speaker = item.dig("participant", "name") || "Unknown"
+        words = item["words"] || []
+        text = words.map { |w| w["text"] }.join(" ")
+        timestamp = words.first&.dig("start_timestamp", "relative")
+      else
+        # Fallback for other formats
+        speaker = item["speaker"] || item["participant_name"] || "Unknown"
+        text = item["text"] || item["words"]&.map { |w| w["text"] }&.join(" ") || ""
+        timestamp = item["start_time"] || item["timestamp"]
+      end
 
       if timestamp.present?
         "[#{format_time(timestamp)}] #{speaker}: #{text}"
@@ -301,6 +311,16 @@ end
 
 
 # client = RecallAi.new
-# response = client.join_meeting("https://us02web.zoom.us/j/2674940883", bot_name: "Leonardo")
+# response = client.join_meeting("https://us02web.zoom.us/j/2674940883", bot_name: "🦙 Leo NoteTaker")
 # bot_id = response["id"]
 # puts "Bot ID: #{bot_id}"
+
+#client = RecallAi.new
+#bod_id = #
+#bot = client.get_bot("")
+#transcript_url = bot.dig("recordings", 0, "media_shortcuts", "transcript", "data", "download_url")
+#
+#require 'open-uri'
+#transcript_json = URI.open(transcript_url).read
+#transcript = JSON.parse(transcript_json)
+#puts JSON.pretty_generate(transcript)
