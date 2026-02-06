@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+#
+# Leonardo Instance Registration Script
+# ---------------------------------------------------------------------
+# Creates .leonardo/instance.json with instance metadata.
+#
+# Usage:
+#   bash bin/install/setup-instance-json
+#   # or with arguments:
+#   bash bin/install/setup-instance-json --name "My Project" --env production
+# ---------------------------------------------------------------------
+
+set -e
+
+# Default values
+INSTANCE_NAME=""
+ENVIRONMENT="development"
+S3_BUCKET=""
+REGION=""
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --name)
+      INSTANCE_NAME="$2"
+      shift 2
+      ;;
+    --env)
+      ENVIRONMENT="$2"
+      shift 2
+      ;;
+    --bucket)
+      S3_BUCKET="$2"
+      shift 2
+      ;;
+    --region)
+      REGION="$2"
+      shift 2
+      ;;
+    -h|--help)
+      echo "Usage: setup-instance-json [OPTIONS]"
+      echo ""
+      echo "Options:"
+      echo "  --name NAME       Instance name (will prompt if not provided)"
+      echo "  --env ENV         Environment: development|staging|production (default: development)"
+      echo "  --bucket BUCKET   S3 bucket name (optional)"
+      echo "  --region REGION   AWS region (optional)"
+      echo "  -h, --help        Show this help message"
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1"
+      exit 1
+      ;;
+  esac
+done
+
+# Determine project root (script is in bin/install/)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+LEONARDO_DIR="$PROJECT_ROOT/.leonardo"
+INSTANCE_FILE="$LEONARDO_DIR/instance.json"
+
+# Check if instance.json already exists
+if [ -f "$INSTANCE_FILE" ]; then
+  echo "⚠️  Instance file already exists at $INSTANCE_FILE"
+  read -p "Overwrite? (y/N): " OVERWRITE
+  if [[ ! "$OVERWRITE" =~ ^[Yy]$ ]]; then
+    echo "Aborted."
+    exit 0
+  fi
+fi
+
+# Prompt for instance name if not provided
+if [ -z "$INSTANCE_NAME" ]; then
+  # Try to get a default from git remote or directory name
+  DEFAULT_NAME=$(basename "$PROJECT_ROOT")
+  read -p "🦙 Instance name [$DEFAULT_NAME]: " INSTANCE_NAME
+  INSTANCE_NAME="${INSTANCE_NAME:-$DEFAULT_NAME}"
+fi
+
+# Generate a unique GUID
+if command -v uuidgen >/dev/null 2>&1; then
+  INSTANCE_GUID=$(uuidgen | tr '[:upper:]' '[:lower:]')
+elif [ -f /proc/sys/kernel/random/uuid ]; then
+  INSTANCE_GUID=$(cat /proc/sys/kernel/random/uuid)
+else
+  # Fallback: generate a pseudo-UUID using date and random
+  INSTANCE_GUID=$(printf '%04x%04x-%04x-%04x-%04x-%04x%04x%04x' \
+    $RANDOM $RANDOM $RANDOM $((RANDOM & 0x0fff | 0x4000)) \
+    $((RANDOM & 0x3fff | 0x8000)) $RANDOM $RANDOM $RANDOM)
+fi
+
+# Get current date in ISO format
+CREATED_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+# Get platform version from .env if available
+PLATFORM_VERSION="0.0.1"
+if [ -f "$PROJECT_ROOT/.env" ]; then
+  ENV_VERSION=$(grep -E "^LLAMABOT_VERSION=" "$PROJECT_ROOT/.env" | cut -d'=' -f2 | tr -d '"' | tr -d "'")
+  if [ -n "$ENV_VERSION" ]; then
+    PLATFORM_VERSION="$ENV_VERSION"
+  fi
+fi
+
+# Prompt for optional S3 settings if not provided
+if [ -z "$S3_BUCKET" ]; then
+  read -p "📦 S3 bucket (optional, press Enter to skip): " S3_BUCKET
+fi
+
+if [ -z "$REGION" ] && [ -n "$S3_BUCKET" ]; then
+  read -p "🌍 AWS region (e.g., us-west-2): " REGION
+fi
+
+# Create .leonardo directory
+mkdir -p "$LEONARDO_DIR"
+
+# Write instance.json
+cat > "$INSTANCE_FILE" <<EOF
+{
+  "instance_name": "$INSTANCE_NAME",
+  "instance_guid": "$INSTANCE_GUID",
+  "environment": "$ENVIRONMENT",
+  "s3_bucket": "${S3_BUCKET:-}",
+  "region": "${REGION:-}",
+  "created_at": "$CREATED_AT",
+  "platform_version": "$PLATFORM_VERSION"
+}
+EOF
+
+echo ""
+echo "✅ Created $INSTANCE_FILE"
+echo ""
+cat "$INSTANCE_FILE"
+echo ""
+echo "🦙 Leonardo instance registered successfully!"

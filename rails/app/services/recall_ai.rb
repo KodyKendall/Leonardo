@@ -212,8 +212,8 @@ class RecallAi
       ================================================================================
     CONVERSATION
 
-    # Save to conversations folder
-    conversations_dir = Rails.root.join("conversations")
+    # Save to requirements/conversations folder
+    conversations_dir = Rails.root.join("requirements", "conversations")
     FileUtils.mkdir_p(conversations_dir)
 
     file_path = conversations_dir.join(filename)
