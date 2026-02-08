@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_01_25_190610) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_08_210545) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -52,6 +52,39 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_25_190610) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "llama_bot_rails_projects", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_llama_bot_rails_projects_on_name"
+  end
+
+  create_table "llama_bot_rails_ticket_comments", force: :cascade do |t|
+    t.bigint "ticket_id", null: false
+    t.text "body", null: false
+    t.integer "user_id"
+    t.string "author_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["ticket_id"], name: "index_llama_bot_rails_ticket_comments_on_ticket_id"
+    t.index ["user_id"], name: "index_llama_bot_rails_ticket_comments_on_user_id"
+  end
+
+  create_table "llama_bot_rails_ticket_traces", force: :cascade do |t|
+    t.bigint "ticket_id", null: false
+    t.string "langsmith_url"
+    t.string "langsmith_run_id"
+    t.integer "trace_type", default: 0
+    t.integer "tokens_used"
+    t.string "model"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["langsmith_run_id"], name: "index_llama_bot_rails_ticket_traces_on_langsmith_run_id"
+    t.index ["ticket_id"], name: "index_llama_bot_rails_ticket_traces_on_ticket_id"
+    t.index ["trace_type"], name: "index_llama_bot_rails_ticket_traces_on_trace_type"
+  end
+
   create_table "llama_bot_rails_tickets", force: :cascade do |t|
     t.string "title", null: false
     t.text "description"
@@ -65,8 +98,20 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_25_190610) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.text "research_notes"
+    t.integer "tokens_to_create_ticket"
+    t.integer "tokens_to_implement_ticket"
+    t.string "llm_model"
+    t.datetime "work_started_at"
+    t.datetime "work_completed_at"
+    t.integer "points_estimate"
+    t.decimal "points_actual", precision: 10, scale: 2
+    t.bigint "project_id"
+    t.index ["llm_model"], name: "index_llama_bot_rails_tickets_on_llm_model"
     t.index ["position"], name: "index_llama_bot_rails_tickets_on_position"
+    t.index ["project_id"], name: "index_llama_bot_rails_tickets_on_project_id"
     t.index ["status"], name: "index_llama_bot_rails_tickets_on_status"
+    t.index ["work_completed_at"], name: "index_llama_bot_rails_tickets_on_work_completed_at"
+    t.index ["work_started_at"], name: "index_llama_bot_rails_tickets_on_work_started_at"
   end
 
   create_table "users", force: :cascade do |t|
@@ -88,4 +133,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_25_190610) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "llama_bot_rails_ticket_comments", "llama_bot_rails_tickets", column: "ticket_id"
+  add_foreign_key "llama_bot_rails_ticket_traces", "llama_bot_rails_tickets", column: "ticket_id"
+  add_foreign_key "llama_bot_rails_tickets", "llama_bot_rails_projects", column: "project_id"
 end

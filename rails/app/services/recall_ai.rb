@@ -200,7 +200,6 @@ class RecallAi
 
       Video URL:
       #{video_url}
-
       ================================================================================
       TRANSCRIPT
       ================================================================================
@@ -213,7 +212,9 @@ class RecallAi
     CONVERSATION
 
     # Save to requirements/conversations folder
-    conversations_dir = Rails.root.join("requirements", "conversations")
+    # conversations_dir = Rails.root.join("requirements", "conversations")
+    conversations_dir = Rails.root.join("conversations")
+
     FileUtils.mkdir_p(conversations_dir)
 
     file_path = conversations_dir.join(filename)
@@ -309,6 +310,7 @@ class RecallAi
   end
 end
 
+# ./bin/rails_console
 
 # client = RecallAi.new
 # response = client.join_meeting("https://us02web.zoom.us/j/2674940883", bot_name: "🦙 Leo NoteTaker")
