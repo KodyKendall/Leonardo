@@ -1,1 +1,9 @@
-docker compose down llamapress && docker compose down llamabot && docker compose up -d 
+#!/bin/bash
+# Restart LlamaPress and LlamaBot containers
+set -e
+
+cd "$(dirname "$0")/.."
+
+echo "Restarting LlamaPress and LlamaBot containers..."
+docker compose restart llamapress llamabot
+echo "Containers restarted successfully!"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_08_210545) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_12_000011) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -52,12 +52,49 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_08_210545) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "llama_bot_rails_feedback_comments", force: :cascade do |t|
+    t.string "commentable_type", null: false
+    t.bigint "commentable_id", null: false
+    t.text "body", null: false
+    t.integer "user_id"
+    t.string "author_name"
+    t.boolean "is_admin_response", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "parent_id"
+    t.index ["commentable_type", "commentable_id"], name: "index_feedback_comments_on_commentable"
+    t.index ["commentable_type", "commentable_id"], name: "index_llama_bot_rails_feedback_comments_on_commentable"
+    t.index ["parent_id"], name: "index_llama_bot_rails_feedback_comments_on_parent_id"
+    t.index ["user_id"], name: "index_llama_bot_rails_feedback_comments_on_user_id"
+  end
+
   create_table "llama_bot_rails_projects", force: :cascade do |t|
     t.string "name", null: false
     t.text "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_llama_bot_rails_projects_on_name"
+  end
+
+  create_table "llama_bot_rails_taggings", force: :cascade do |t|
+    t.bigint "tag_id", null: false
+    t.string "taggable_type", null: false
+    t.bigint "taggable_id", null: false
+    t.integer "tagged_by_user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tag_id"], name: "index_llama_bot_rails_taggings_on_tag_id"
+    t.index ["taggable_type", "taggable_id", "tag_id"], name: "index_taggings_on_taggable_and_tag", unique: true
+    t.index ["taggable_type", "taggable_id"], name: "index_llama_bot_rails_taggings_on_taggable"
+  end
+
+  create_table "llama_bot_rails_tags", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "color", default: "#6366f1"
+    t.text "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_llama_bot_rails_tags_on_name", unique: true
   end
 
   create_table "llama_bot_rails_ticket_comments", force: :cascade do |t|
@@ -114,6 +151,47 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_08_210545) do
     t.index ["work_started_at"], name: "index_llama_bot_rails_tickets_on_work_started_at"
   end
 
+  create_table "llama_bot_rails_user_feedbacks", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "description"
+    t.string "feedback_type", default: "general", null: false
+    t.string "status", default: "open", null: false
+    t.integer "priority", default: 0
+    t.integer "user_id", null: false
+    t.string "user_email"
+    t.text "admin_notes"
+    t.string "resolution"
+    t.datetime "resolved_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_llama_bot_rails_user_feedbacks_on_created_at"
+    t.index ["feedback_type"], name: "index_llama_bot_rails_user_feedbacks_on_feedback_type"
+    t.index ["priority"], name: "index_llama_bot_rails_user_feedbacks_on_priority"
+    t.index ["status"], name: "index_llama_bot_rails_user_feedbacks_on_status"
+    t.index ["user_id"], name: "index_llama_bot_rails_user_feedbacks_on_user_id"
+  end
+
+  create_table "llama_bot_rails_user_requests", force: :cascade do |t|
+    t.string "title", null: false
+    t.text "description"
+    t.string "request_type", default: "feature", null: false
+    t.string "status", default: "submitted", null: false
+    t.integer "priority", default: 0
+    t.integer "user_id", null: false
+    t.string "user_email"
+    t.text "admin_notes"
+    t.text "response"
+    t.datetime "responded_at"
+    t.integer "votes_count", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["priority"], name: "index_llama_bot_rails_user_requests_on_priority"
+    t.index ["request_type"], name: "index_llama_bot_rails_user_requests_on_request_type"
+    t.index ["status"], name: "index_llama_bot_rails_user_requests_on_status"
+    t.index ["user_id"], name: "index_llama_bot_rails_user_requests_on_user_id"
+    t.index ["votes_count"], name: "index_llama_bot_rails_user_requests_on_votes_count"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.datetime "created_at", null: false
@@ -133,6 +211,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_08_210545) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "llama_bot_rails_feedback_comments", "llama_bot_rails_feedback_comments", column: "parent_id", on_delete: :cascade
+  add_foreign_key "llama_bot_rails_taggings", "llama_bot_rails_tags", column: "tag_id"
   add_foreign_key "llama_bot_rails_ticket_comments", "llama_bot_rails_tickets", column: "ticket_id"
   add_foreign_key "llama_bot_rails_ticket_traces", "llama_bot_rails_tickets", column: "ticket_id"
   add_foreign_key "llama_bot_rails_tickets", "llama_bot_rails_projects", column: "project_id"
