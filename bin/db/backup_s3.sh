@@ -32,18 +32,26 @@ fi
 # Your real S3 root prefix
 S3_BUCKET="s3://llampress-ai-backups/backups/leonardos/${INSTANCE_NAME}"
 
-BACKUP_NAME="llamapress_manual_latest.sql.gz"
+# Database configurations
+DATABASES=("llamapress_production" "llamabot_production")
 
 echo "🔵 Starting S3 backup for instance: ${INSTANCE_NAME}"
-echo "📦 Upload target: ${S3_BUCKET}/${BACKUP_NAME}"
+echo "📦 Upload target: ${S3_BUCKET}/"
 echo "⏱️  Start: $(date +%H:%M:%S)"
 
-# Get estimated DB size for progress bar
-echo "📊 Calculating database size..."
-DB_SIZE=$(docker compose exec -T db psql -U postgres -t -c \
-  "SELECT pg_database_size('llamapress_production');" | tr -d ' \n\r')
-
-echo "📊 Estimated DB size: $(numfmt --to=iec $DB_SIZE)"
+# Get estimated DB sizes for progress bar
+echo "📊 Calculating database sizes..."
+declare -A DB_SIZES
+for DB_NAME in "${DATABASES[@]}"; do
+  SIZE=$(docker compose exec -T db psql -U postgres -t -c \
+    "SELECT pg_database_size('${DB_NAME}');" 2>/dev/null | tr -d ' \n\r')
+  if [ -n "$SIZE" ] && [ "$SIZE" != "" ]; then
+    DB_SIZES[$DB_NAME]=$SIZE
+    echo "   📊 ${DB_NAME}: $(numfmt --to=iec $SIZE)"
+  else
+    echo "   ⚠️  ${DB_NAME}: database not found or empty, skipping"
+  fi
+done
 echo ""
 
 START=$(date +%s)
@@ -68,40 +76,66 @@ spin() {
   printf "\r✅ Backup stream complete!              \n"
 }
 
-# Check if pv is available for progress visualization
-if command -v pv &> /dev/null; then
-  docker compose exec -T db pg_dump -U postgres llamapress_production \
-    | pv -s "$DB_SIZE" -N "Dumping " \
-    | gzip \
-    | pv -N "Uploading" \
-    | aws s3 cp - "${S3_BUCKET}/${BACKUP_NAME}" \
-        --storage-class STANDARD_IA
-else
-  echo "ℹ️  Note: Install 'pv' for progress bars (apt install pv)"
+# Timestamp for this backup run
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
-  # Run backup in background and show spinner
-  docker compose exec -T db pg_dump -U postgres llamapress_production \
-    | gzip \
-    | aws s3 cp - "${S3_BUCKET}/${BACKUP_NAME}" \
-        --storage-class STANDARD_IA &
+# Backup each database
+for DB_NAME in "${DATABASES[@]}"; do
+  # Skip if database wasn't found
+  if [ -z "${DB_SIZES[$DB_NAME]}" ]; then
+    continue
+  fi
 
-  BACKUP_PID=$!
-  spin $BACKUP_PID
-  wait $BACKUP_PID
-fi
+  DB_SIZE=${DB_SIZES[$DB_NAME]}
+  BACKUP_NAME="${DB_NAME}_latest.sql.gz"
+  TIMESTAMPED_NAME="${DB_NAME}_${TIMESTAMP}.sql.gz"
+
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo "🗄️  Backing up: ${DB_NAME}"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+  DB_START=$(date +%s)
+
+  # Check if pv is available for progress visualization
+  if command -v pv &> /dev/null; then
+    docker compose exec -T db pg_dump -U postgres "$DB_NAME" \
+      | pv -s "$DB_SIZE" -N "Dumping " \
+      | gzip \
+      | pv -N "Uploading" \
+      | aws s3 cp - "${S3_BUCKET}/${BACKUP_NAME}" \
+          --storage-class STANDARD_IA
+  else
+    if [ "$DB_NAME" = "${DATABASES[0]}" ]; then
+      echo "ℹ️  Note: Install 'pv' for progress bars (apt install pv)"
+    fi
+
+    # Run backup in background and show spinner
+    docker compose exec -T db pg_dump -U postgres "$DB_NAME" \
+      | gzip \
+      | aws s3 cp - "${S3_BUCKET}/${BACKUP_NAME}" \
+          --storage-class STANDARD_IA &
+
+    BACKUP_PID=$!
+    spin $BACKUP_PID
+    wait $BACKUP_PID
+  fi
+
+  DB_END=$(date +%s)
+  DB_DURATION=$((DB_END - DB_START))
+
+  # Create a timestamped copy for archival
+  echo "📋 Creating timestamped copy: ${TIMESTAMPED_NAME}"
+  aws s3 cp "${S3_BUCKET}/${BACKUP_NAME}" "${S3_BUCKET}/${TIMESTAMPED_NAME}" --quiet
+
+  echo "✅ ${DB_NAME} backed up in ${DB_DURATION}s"
+  echo "   📍 Latest:      ${S3_BUCKET}/${BACKUP_NAME}"
+  echo "   📍 Timestamped: ${S3_BUCKET}/${TIMESTAMPED_NAME}"
+  echo ""
+done
 
 END=$(date +%s)
 DURATION=$((END - START))
 
-# Create a timestamped copy for archival
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-TIMESTAMPED_NAME="llamapress_${TIMESTAMP}.sql.gz"
-echo ""
-echo "📋 Creating timestamped copy: ${TIMESTAMPED_NAME}"
-aws s3 cp "${S3_BUCKET}/${BACKUP_NAME}" "${S3_BUCKET}/${TIMESTAMPED_NAME}" --quiet
-
-echo ""
-echo "✅ Backup complete in ${DURATION} seconds"
-echo "📍 Latest:      ${S3_BUCKET}/${BACKUP_NAME}"
-echo "📍 Timestamped: ${S3_BUCKET}/${TIMESTAMPED_NAME}"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "✅ All backups complete in ${DURATION} seconds"
 echo "⏱️  End: $(date +%H:%M:%S)"

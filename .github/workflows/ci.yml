@@ -1,0 +1,80 @@
+# CI Workflow for Leonardo
+# Runs linting and tests on every push and pull request
+#
+# HTML Linting Policy: Invalid HTML is a build-breaking defect.
+# If the DOM is wrong, everything above it (Stimulus/SortableJS/etc.) is operating on a lie.
+
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  lint:
+    name: ERB Lint (HTML Validity)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          docker compose -f docker-compose.yml build llamapress
+
+      - name: Start services
+        run: |
+          docker compose -f docker-compose.yml up -d db
+          docker compose -f docker-compose.yml up -d llamapress
+          # Wait for services to be ready
+          sleep 10
+
+      - name: Run ERB Lint
+        run: |
+          docker compose -f docker-compose.yml exec -T llamapress bundle exec erb_lint --lint-all
+
+      - name: Stop services
+        if: always()
+        run: |
+          docker compose -f docker-compose.yml down
+
+  test:
+    name: RSpec Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        run: |
+          docker compose -f docker-compose.yml build llamapress
+
+      - name: Start services
+        run: |
+          docker compose -f docker-compose.yml up -d db
+          docker compose -f docker-compose.yml up -d llamapress
+          # Wait for database to be ready
+          sleep 15
+
+      - name: Setup database
+        run: |
+          docker compose -f docker-compose.yml exec -T llamapress bundle exec rails db:prepare RAILS_ENV=test
+
+      - name: Run RSpec
+        run: |
+          docker compose -f docker-compose.yml exec -T llamapress bundle exec rspec
+
+      - name: Stop services
+        if: always()
+        run: |
+          docker compose -f docker-compose.yml down

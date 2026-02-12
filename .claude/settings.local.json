@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose exec llamapress bundle exec rails runner \"\nclient = RecallAi.new\nbot = client.get_bot\\(''acfaac82-001b-48ea-8e36-a6dbfd897eb2''\\)\nputs ''Keys: '' + bot.keys.join\\('', ''\\)\nputs ''Full response:''\nputs JSON.pretty_generate\\(bot\\)\n\")",
+      "Bash(docker compose exec llamapress bundle exec rails runner:*)",
+      "Bash(docker compose exec:*)",
+      "Bash(docker logs:*)",
+      "Bash(docker system:*)",
+      "Bash(docker images:*)",
+      "Bash(sort:*)",
+      "Bash(docker compose:*)"
+    ]
+  }
+}

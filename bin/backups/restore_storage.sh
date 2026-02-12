@@ -14,9 +14,9 @@ fi
 
 S3_BUCKET="s3://llampress-ai-backups/backups/leonardos/${INSTANCE_NAME}"
 
-# Find the latest backup
+# Find the latest backup (matches storage_latest.zip and storage_weekly_*.zip)
 echo "Finding latest backup for ${INSTANCE_NAME}..."
-LATEST_BACKUP=$(aws s3 ls "$S3_BUCKET/" | grep storage_backup | sort | tail -n 1 | awk '{print $4}')
+LATEST_BACKUP=$(aws s3 ls "$S3_BUCKET/" | grep storage_ | sort | tail -n 1 | awk '{print $4}')
 
 if [ -z "$LATEST_BACKUP" ]; then
     echo "Error: No storage backups found in $S3_BUCKET"
@@ -25,29 +25,36 @@ fi
 
 echo "Latest backup: $LATEST_BACKUP"
 
-# Check if storage folder already exists
-STORAGE_PATH="$PROJECT_ROOT/rails/storage"
-if [ -d "$STORAGE_PATH" ] && [ "$(ls -A "$STORAGE_PATH" 2>/dev/null)" ]; then
-    echo ""
-    echo "WARNING: $STORAGE_PATH already exists and contains files."
-    echo "Restoring will overwrite existing files."
-    read -p "Do you want to continue? (y/N): " confirm
-    if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
-        echo "Restore cancelled."
-        exit 0
-    fi
+# Check if container is running
+if ! docker compose -f "$PROJECT_ROOT/docker-compose.yml" ps llamapress --status running -q 2>/dev/null | grep -q .; then
+    echo "Error: llamapress container is not running. Start it first with docker compose up -d"
+    exit 1
+fi
+
+# Warn before overwriting
+echo ""
+echo "WARNING: This will overwrite storage files in the llamapress container's named volume."
+read -p "Do you want to continue? (y/N): " confirm
+if [ "$confirm" != "y" ] && [ "$confirm" != "Y" ]; then
+    echo "Restore cancelled."
+    exit 0
 fi
 
 # Download the backup
-TEMP_FILE="/tmp/storage_backup_restore.zip"
+TEMP_DIR=$(mktemp -d)
+TEMP_FILE="$TEMP_DIR/storage_backup_restore.zip"
 echo "Downloading $LATEST_BACKUP..."
 aws s3 cp "$S3_BUCKET/$LATEST_BACKUP" "$TEMP_FILE"
 
-# Unzip to rails directory
-echo "Extracting to $STORAGE_PATH..."
-unzip -o "$TEMP_FILE" -d "$PROJECT_ROOT/rails/"
+# Unzip to temp directory
+echo "Extracting backup..."
+unzip -o "$TEMP_FILE" -d "$TEMP_DIR/"
+
+# Copy into the container's named volume
+echo "Copying storage into container..."
+docker compose -f "$PROJECT_ROOT/docker-compose.yml" cp "$TEMP_DIR/storage/." llamapress:/rails/storage/
 
 # Clean up
-rm "$TEMP_FILE"
+rm -rf "$TEMP_DIR"
 
 echo "Done! Storage restored from $LATEST_BACKUP"

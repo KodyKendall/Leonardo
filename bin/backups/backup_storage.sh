@@ -15,13 +15,24 @@ fi
 # S3 base path
 S3_BASE="s3://llampress-ai-backups/backups/leonardos/${INSTANCE_NAME}"
 
-# Local backup filename
-BACKUP_FILE="storage_backup.zip"
+# Temp directory for staging the backup
+TEMP_DIR=$(mktemp -d)
+BACKUP_FILE="$TEMP_DIR/storage_backup.zip"
 
-# Zip storage folder
+# Copy storage from the Docker named volume to a temp directory on the host
+echo "Copying storage from container..."
+docker compose -f "$PROJECT_ROOT/docker-compose.yml" cp llamapress:/rails/storage "$TEMP_DIR/storage"
+
+# Zip the copied storage folder
 echo "Zipping storage folder..."
-cd "$PROJECT_ROOT/rails"
+cd "$TEMP_DIR"
 zip -r "$BACKUP_FILE" storage/
+
+# Sanity check: warn if backup is suspiciously small (< 1KB)
+BACKUP_SIZE=$(stat -f%z "$BACKUP_FILE" 2>/dev/null || stat -c%s "$BACKUP_FILE" 2>/dev/null)
+if [ "$BACKUP_SIZE" -lt 1024 ]; then
+    echo "⚠️  WARNING: Backup file is only ${BACKUP_SIZE} bytes - this may indicate empty storage!"
+fi
 
 # Always upload to _latest (overwrites previous)
 S3_LATEST="${S3_BASE}/storage_latest.zip"
@@ -36,7 +47,7 @@ if [ "$DAY_OF_WEEK" = "1" ]; then
     aws s3 cp "$BACKUP_FILE" "$S3_WEEKLY"
 fi
 
-# Clean up local zip file
-rm "$BACKUP_FILE"
+# Clean up temp directory
+rm -rf "$TEMP_DIR"
 
 echo "Done! Storage backup complete."
