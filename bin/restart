@@ -5,5 +5,5 @@ set -e
 cd "$(dirname "$0")/.."
 
 echo "Restarting LlamaPress and LlamaBot containers..."
-docker compose restart llamapress llamabot
+docker compose down llamapress && docker compose down llamabot && docker compose up -d 
 echo "Containers restarted successfully!"

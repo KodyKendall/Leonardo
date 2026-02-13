@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   llamapress:
-    image: kody06/llamapress-simple:0.3.5        # <— pre-built tag
+    image: kody06/llamapress-simple:0.3.5a        # <— pre-built tag
     # build: ../LlamaPress-Simple
     env_file: .env                           # read secrets from this file
     environment:
@@ -17,7 +17,7 @@ services:
       - ./rails/config/environments/development.rb:/rails/config/environments/development.rb
       - ./rails/config/database.yml:/rails/config/database.yml
       - ./rails/requirements:/rails/requirements:delegated
-      - ../LlamaPress-Simple/vendor/llama_bot_rails:/rails/vendor/llama_bot_rails  # Dev: hot reload gem changes
+      # - ../LlamaPress-Simple/vendor/llama_bot_rails:/rails/vendor/llama_bot_rails  # Dev: hot reload gem changes
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:prepare && bundle exec rails s -b 0.0.0.0"
     # command: tail -f /dev/null
     # docker compose exec -it llamapress bundle exec rails s -b 0.0.0.0
