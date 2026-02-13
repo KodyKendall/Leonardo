@@ -132,6 +132,58 @@ Leonardo, the AI coding agent, runs in its own container and commits changes via
 
 ---
 
+## Rails Engine Migrations (llama_bot_rails)
+
+The `llama_bot_rails` gem contains its own migrations. Following [Rails best practices](https://guides.rubyonrails.org/engines.html), we use `install:migrations` to copy them to the app rather than auto-loading from the engine.
+
+**Why this matters:** Auto-loading engine migrations causes `PG::DuplicateTable` errors on downstream forks because migrations get different timestamps and Rails tries to run both versions.
+
+### Workflow for Upstream/Downstream Migration Sync
+
+**In Upstream Leonardo (once per new migration):**
+```bash
+rails llama_bot_rails:install:migrations
+rails db:migrate
+git add db/migrate/
+git commit -m "Install llama_bot_rails migrations"
+```
+
+**In Downstream Forks:**
+```bash
+git fetch upstream
+git merge upstream/main
+rails db:migrate
+```
+
+That's it. The migrations are already in `db/migrate/` with the correct timestamps, so downstream just runs them like any other migration.
+
+### Why This Works
+
+* **Single source of truth** - Migrations live in Leonardo's `db/migrate/`, not auto-loaded from the engine
+* **Consistent timestamps** - Everyone uses the same migration timestamps from upstream
+* **schema_migrations stays in sync** - All environments track the same version numbers
+* **No duplicates** - The engine does not append its own migration paths
+
+### When You Add New Migrations to llama_bot_rails
+
+1. Add the migration in `vendor/llama_bot_rails/db/migrate/`
+2. In Leonardo: `rails llama_bot_rails:install:migrations` (copies new ones only)
+3. Commit and push upstream
+4. Downstream forks merge and run `rails db:migrate`
+
+**Key insight:** Rails' `install:migrations` only copies migrations that don't already exist in the app, so re-running it is safe and idempotent.
+
+### DO NOT on Downstream Forks
+
+🚫 **DO NOT run `rails llama_bot_rails:install:migrations` on downstream forks.**
+
+This generates new timestamps for engine migrations. If migrations were already installed upstream, running this command locally will:
+- Create duplicate migration files with different timestamps
+- Cause `PG::DuplicateTable` errors
+- Pollute `schema_migrations` with redundant entries
+
+---
+
 ## Adding Gems
 
 * Gemfile, Gemfile.lock, bin/, and vendor/ are **not in this repo**.
