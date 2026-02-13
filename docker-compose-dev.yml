@@ -2,8 +2,8 @@ version: "3.8"
 
 services:
   llamapress:
-    # image: kody06/llamapress-simple:0.3.3        # <— pre-built tag
-    build: ../LlamaPress-Simple
+    image: kody06/llamapress-simple:0.3.5        # <— pre-built tag
+    # build: ../LlamaPress-Simple
     env_file: .env                           # read secrets from this file
     environment:
       - RAILS_ENV=development
@@ -33,8 +33,8 @@ services:
       - llama-network
 
   llamabot:
-    # image: kody06/llamabot:0.3.5c
-    build: ../LlamaBot
+    image: kody06/llamabot:0.3.5e
+    # build: ../LlamaBot
     env_file:
       - .env
     command: bash -c "python init_pg_checkpointer.py && uvicorn main:app --host 0.0.0.0 --port 8000"
