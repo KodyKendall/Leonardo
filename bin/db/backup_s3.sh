@@ -1,5 +1,6 @@
 #!/bin/bash
-set -e
+# Note: We intentionally do NOT use set -e here to ensure all databases
+# are attempted even if one fails. Errors are tracked and reported at the end.
 
 # Log to file AND terminal for both manual and cron runs (best effort)
 LOG_DIR="/home/ubuntu/Leonardo/logs/backups"
@@ -79,6 +80,10 @@ spin() {
 # Timestamp for this backup run
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
+# Track failures
+FAILED_DBS=()
+SUCCESSFUL_DBS=()
+
 # Backup each database
 for DB_NAME in "${DATABASES[@]}"; do
   # Skip if database wasn't found
@@ -95,15 +100,18 @@ for DB_NAME in "${DATABASES[@]}"; do
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
   DB_START=$(date +%s)
+  BACKUP_SUCCESS=false
 
   # Check if pv is available for progress visualization
   if command -v pv &> /dev/null; then
-    docker compose exec -T db pg_dump -U postgres "$DB_NAME" \
+    if docker compose exec -T db pg_dump -U postgres "$DB_NAME" \
       | pv -s "$DB_SIZE" -N "Dumping " \
       | gzip \
       | pv -N "Uploading" \
       | aws s3 cp - "${S3_BUCKET}/${BACKUP_NAME}" \
-          --storage-class STANDARD_IA
+          --storage-class STANDARD_IA; then
+      BACKUP_SUCCESS=true
+    fi
   else
     if [ "$DB_NAME" = "${DATABASES[0]}" ]; then
       echo "ℹ️  Note: Install 'pv' for progress bars (apt install pv)"
@@ -117,19 +125,30 @@ for DB_NAME in "${DATABASES[@]}"; do
 
     BACKUP_PID=$!
     spin $BACKUP_PID
-    wait $BACKUP_PID
+    if wait $BACKUP_PID; then
+      BACKUP_SUCCESS=true
+    fi
   fi
 
   DB_END=$(date +%s)
   DB_DURATION=$((DB_END - DB_START))
 
-  # Create a timestamped copy for archival
-  echo "📋 Creating timestamped copy: ${TIMESTAMPED_NAME}"
-  aws s3 cp "${S3_BUCKET}/${BACKUP_NAME}" "${S3_BUCKET}/${TIMESTAMPED_NAME}" --quiet
-
-  echo "✅ ${DB_NAME} backed up in ${DB_DURATION}s"
-  echo "   📍 Latest:      ${S3_BUCKET}/${BACKUP_NAME}"
-  echo "   📍 Timestamped: ${S3_BUCKET}/${TIMESTAMPED_NAME}"
+  if [ "$BACKUP_SUCCESS" = true ]; then
+    # Create a timestamped copy for archival
+    echo "📋 Creating timestamped copy: ${TIMESTAMPED_NAME}"
+    if aws s3 cp "${S3_BUCKET}/${BACKUP_NAME}" "${S3_BUCKET}/${TIMESTAMPED_NAME}" --quiet; then
+      echo "✅ ${DB_NAME} backed up in ${DB_DURATION}s"
+      echo "   📍 Latest:      ${S3_BUCKET}/${BACKUP_NAME}"
+      echo "   📍 Timestamped: ${S3_BUCKET}/${TIMESTAMPED_NAME}"
+      SUCCESSFUL_DBS+=("$DB_NAME")
+    else
+      echo "⚠️  ${DB_NAME} uploaded but timestamped copy failed"
+      SUCCESSFUL_DBS+=("$DB_NAME")  # Main backup still succeeded
+    fi
+  else
+    echo "❌ ${DB_NAME} backup FAILED after ${DB_DURATION}s"
+    FAILED_DBS+=("$DB_NAME")
+  fi
   echo ""
 done
 
@@ -137,5 +156,16 @@ END=$(date +%s)
 DURATION=$((END - START))
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ All backups complete in ${DURATION} seconds"
+if [ ${#FAILED_DBS[@]} -eq 0 ]; then
+  echo "✅ All database backups complete in ${DURATION} seconds"
+else
+  echo "⚠️  Database backups completed with errors in ${DURATION} seconds"
+  echo "   ✅ Succeeded: ${SUCCESSFUL_DBS[*]:-none}"
+  echo "   ❌ Failed: ${FAILED_DBS[*]}"
+fi
 echo "⏱️  End: $(date +%H:%M:%S)"
+
+# Exit with error code if any backups failed (for monitoring), but script completes
+if [ ${#FAILED_DBS[@]} -gt 0 ]; then
+  exit 1
+fi

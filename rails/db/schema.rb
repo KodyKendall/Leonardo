@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_02_13_031533) do
+ActiveRecord::Schema[7.2].define(version: 2026_02_13_184800) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -74,6 +74,18 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_13_031533) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_llama_bot_rails_projects_on_name"
+  end
+
+  create_table "llama_bot_rails_shared_links", force: :cascade do |t|
+    t.string "token", null: false
+    t.bigint "attachment_id", null: false
+    t.integer "view_count", default: 0
+    t.datetime "expires_at"
+    t.integer "created_by_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["attachment_id"], name: "index_llama_bot_rails_shared_links_on_attachment_id"
+    t.index ["token"], name: "index_llama_bot_rails_shared_links_on_token", unique: true
   end
 
   create_table "llama_bot_rails_taggings", force: :cascade do |t|
@@ -212,6 +224,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_02_13_031533) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "llama_bot_rails_feedback_comments", "llama_bot_rails_feedback_comments", column: "parent_id", on_delete: :cascade
+  add_foreign_key "llama_bot_rails_shared_links", "active_storage_attachments", column: "attachment_id", on_delete: :cascade
   add_foreign_key "llama_bot_rails_taggings", "llama_bot_rails_tags", column: "tag_id"
   add_foreign_key "llama_bot_rails_ticket_comments", "llama_bot_rails_tickets", column: "ticket_id"
   add_foreign_key "llama_bot_rails_ticket_traces", "llama_bot_rails_tickets", column: "ticket_id"
