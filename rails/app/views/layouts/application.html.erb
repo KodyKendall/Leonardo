@@ -13,40 +13,7 @@
     <!-- For taking screenshots to feed to Leonardo AI -->
     <%# <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script> %>
 
-    <script>
-      // Force fresh data on every page load - cache busting with timestamp
-      window.page_loaded_at = <%= Time.current.to_f %>;
-      window.request_path = "<%= @request_path %>";
-      window.view_path = "<%= @view_path %>";
-      
-      // Function to update context variables
-      function updatePageContext() {
-        // These are set fresh on each page load from server-side variables
-        console.log('Page context updated:', {
-          request_path: window.request_path,
-          view_path: window.view_path,
-          loaded_at: window.page_loaded_at
-        });
-      }
-      
-      // Wait for entire page to load before calling this
-      document.addEventListener('DOMContentLoaded', function() {
-        window.full_html = document.documentElement.outerHTML;
-        updatePageContext();
-      });
-      
-      // Handle Turbo navigation to ensure fresh context on SPA-style navigation
-      document.addEventListener('turbo:load', function() {
-        // Force refresh of page context on Turbo navigation
-        window.full_html = document.documentElement.outerHTML;
-        updatePageContext();
-      });
-      
-      // Additional event for when Turbo renders new content
-      document.addEventListener('turbo:render', function() {
-        updatePageContext();
-      });
-    </script>
+    <%= render 'layouts/llamapress_page_context' %>
 
     <%= yield :head %>
 

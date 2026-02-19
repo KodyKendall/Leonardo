@@ -1,9 +1,17 @@
 #!/bin/bash
 # Restart LlamaPress and LlamaBot containers
-set -e
+# Note: This script runs on the HOST (via nsenter or docker socket), not inside llamabot
 
-cd "$(dirname "$0")/.."
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+
+cd "$PROJECT_DIR"
 
 echo "Restarting LlamaPress and LlamaBot containers..."
-docker compose down llamapress && docker compose down llamabot && docker compose up -d 
-echo "Containers restarted successfully!"
+
+# Run via systemd-run as a system service with inline bash command
+# --no-block returns immediately without waiting for the service to complete
+sudo systemd-run --no-block --unit=leonardo-restart \
+    /bin/bash -c "cd /home/ubuntu/Leonardo && docker compose down llamapress llamabot && docker compose up -d"
+
+echo "Restart scheduled via systemd (check: journalctl -u leonardo-restart)"

@@ -25,3 +25,6 @@ rails/storage/*
 
 # Backup logs
 logs/
+
+# Private prompts (version controlled separately)
+prompts/

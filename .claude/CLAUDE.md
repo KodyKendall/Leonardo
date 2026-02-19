@@ -74,13 +74,23 @@ leonardo/
 
   rails/
     app/                    # Application code (models, controllers, views, jobs)
+      javascript/
+        application.js      # Main entry point (imports llamapress helpers)
+        llamapress/         # LlamaPress-specific helpers (overridable by downstream)
+          console_capture.js
+          element_selector.js
+          message_handler.js
+          navigation_tracking.js
+      views/layouts/
+        application.html.erb
+        _llamapress_page_context.html.erb  # Page context script (overridable partial)
     db/                     # Migrations, schema
     config/                 # Safe subset of configs (see below)
     test/ or spec/          # User tests (optional, recommended)
 
   langgraph/
     agents/                    # User-editable AI agent code
-      - leo/                   # Default agent embedded in Rails application 
+      - leo/                   # Default agent embedded in Rails application
         - nodes.py             # LangGraph agent logic
 
   scripts/
@@ -197,6 +207,41 @@ This generates new timestamps for engine migrations. If migrations were already 
   5. Commit and redeploy.
 
 Leonardo cannot add gems — only humans can, via the image pipeline.
+
+---
+
+## JavaScript Helpers (llamapress/)
+
+LlamaPress-specific JavaScript is extracted into modular helpers in `rails/app/javascript/llamapress/`. This allows downstream repos to override individual helpers without modifying the main `application.js`.
+
+### Helper Files
+
+| File | Purpose |
+|------|---------|
+| `console_capture.js` | Captures console.log/error/warn for debugging, persists to sessionStorage |
+| `element_selector.js` | Visual element picker for AI to reference specific DOM elements |
+| `message_handler.js` | postMessage handling for iframe communication with LlamaBot |
+| `navigation_tracking.js` | Turbo navigation events sent to parent iframe |
+
+### How It Works
+
+1. The skeleton (`llamapress-simple`) has `pin_all_from "app/javascript/llamapress", under: "llamapress"` in `config/importmap.rb`
+2. Leonardo's `application.js` imports from `llamapress/*`
+3. At runtime, Docker mounts overlay Leonardo's JS files onto the skeleton
+4. The browser resolves imports to the overlaid files
+
+### Overriding in Downstream Repos
+
+To override a helper, create your own file at the same path:
+```
+rails/app/javascript/llamapress/console_capture.js
+```
+
+Your version will be used instead of upstream's. You can also extend the original by copying and modifying it.
+
+### HTML Partial
+
+The page context script (setting `window.request_path`, `window.view_path`, etc.) is extracted to `_llamapress_page_context.html.erb`. Downstream repos can override this partial to customize page context behavior.
 
 ---
 
