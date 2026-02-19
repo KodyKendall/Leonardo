@@ -8,7 +8,9 @@
       "Bash(docker system:*)",
       "Bash(docker images:*)",
       "Bash(sort:*)",
-      "Bash(docker compose:*)"
+      "Bash(docker compose:*)",
+      "Bash(cat:*)",
+      "Bash(chmod:*)"
     ]
   }
 }

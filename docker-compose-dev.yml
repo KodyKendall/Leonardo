@@ -1,11 +1,11 @@
-version: "3.8"
 
+version: "3.8"
 # docker compose -f docker-compose-dev.yml build
 
 services:
   llamapress:
-    image: kody06/llamapress-simple:0.3.5b        # <— pre-built tag
-    # build: ../LlamaPress-Simple
+    # image: kody06/llamapress-simple:0.3.5b        # <— pre-built tag
+    build: ../LlamaPress-Simple
     env_file: .env                           # read secrets from this file
     environment:
       - RAILS_ENV=development
@@ -35,8 +35,8 @@ services:
       - llama-network
 
   llamabot:
-    image: kody06/llamabot:0.3.5g
-    # build: ../LlamaBot
+    # image: kody06/llamabot:0.3.5ma
+    build: ../LlamaBot
     env_file:
       - .env
     command: bash -c "python init_pg_checkpointer.py && uvicorn main:app --host 0.0.0.0 --port 8000 --ws-max-size 157286400"
@@ -53,6 +53,7 @@ services:
       - ./langgraph/agents:/app/app/user_agents  # Add: custom agents
       - /var/run/docker.sock:/var/run/docker.sock
       - ./:/app/leonardo  # Full Leonardo repo for git access
+      - ./.leonardo:/app/app/.leonardo  # Project context (LEONARDO.md, instance.json)
     ports:
       - "8000:8000"
     depends_on:
