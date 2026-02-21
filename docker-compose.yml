@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   llamapress:
-    image: kody06/llamapress-simple:0.3.5b        # <— pre-built tag (includes erb_lint)
+    image: kody06/llamapress-simple:0.3.5c        # <— pre-built tag (includes erb_lint)
     env_file: .env                           # read secrets from this file
     environment:
       - RAILS_ENV=development
