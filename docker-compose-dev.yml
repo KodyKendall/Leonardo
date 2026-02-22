@@ -6,6 +6,7 @@ services:
   llamapress:
     # image: kody06/llamapress-simple:0.3.5b        # <— pre-built tag
     build: ../LlamaPress-Simple
+    # user: "1000:1000"  # DISABLED for macOS - Docker Desktop handles permissions differently
     env_file: .env                           # read secrets from this file
     environment:
       - RAILS_ENV=development
@@ -37,9 +38,10 @@ services:
   llamabot:
     # image: kody06/llamabot:0.3.5ma
     build: ../LlamaBot
+    # user: "1000:1000"  # DISABLED for macOS - Docker Desktop handles permissions differently
     env_file:
       - .env
-    command: bash -c "python init_pg_checkpointer.py && uvicorn main:app --host 0.0.0.0 --port 8000 --ws-max-size 157286400"
+    command: bash -c "git config --global --add safe.directory /app/leonardo && python init_pg_checkpointer.py && uvicorn main:app --host 0.0.0.0 --port 8000 --ws-max-size 157286400"
     # command: bash -c "python init_pg_checkpointer.py && tail -f /dev/null"
     # docker compose exec -it llamabot uvicorn main:app --host 0.0.0.0 --port 8000
     # docker compose exec -it llamabot langgraph dev --host 0.0.0.0

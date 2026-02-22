@@ -3,6 +3,7 @@ version: "3.8"
 services:
   llamapress:
     image: kody06/llamapress-simple:0.3.5c        # <— pre-built tag (includes erb_lint)
+    user: "1000:1000"  # Run as UID 1000 to prevent root-owned file creation
     env_file: .env                           # read secrets from this file
     environment:
       - RAILS_ENV=development
@@ -33,9 +34,10 @@ services:
 
   llamabot:
     image: kody06/llamabot:0.3.5ma
+    user: "1000:1000"  # Run as UID 1000 to prevent root-owned file creation
     env_file:
       - .env
-    command: bash -c "python init_pg_checkpointer.py && uvicorn main:app --host 0.0.0.0 --port 8000 --ws-max-size 157286400"
+    command: bash -c "git config --global --add safe.directory /app/leonardo && python init_pg_checkpointer.py && uvicorn main:app --host 0.0.0.0 --port 8000 --ws-max-size 157286400"
     pid: host  # Required for nsenter to execute commands on host
     privileged: true  # Required for nsenter capabilities
     volumes:
@@ -85,6 +87,10 @@ services:
       - PASSWORD=password
       - PUID=1000
       - PGID=1000
+      - GIT_AUTHOR_NAME=Leonardo
+      - GIT_AUTHOR_EMAIL=leonardo@llamapress.ai
+      - GIT_COMMITTER_NAME=Leonardo
+      - GIT_COMMITTER_EMAIL=leonardo@llamapress.ai
     volumes:
       - code_config:/config
       - ./:/config/workspace
