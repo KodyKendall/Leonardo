@@ -9,9 +9,12 @@ cd "$PROJECT_DIR"
 
 echo "Restarting LlamaPress and LlamaBot containers..."
 
+# Generate unique unit name with timestamp to avoid conflicts
+UNIT_NAME="leonardo-restart-$(date +%s)"
+
 # Run via systemd-run as a system service with inline bash command
 # --no-block returns immediately without waiting for the service to complete
-sudo systemd-run --no-block --unit=leonardo-restart \
+sudo systemd-run --no-block --unit="$UNIT_NAME" \
     /bin/bash -c "cd /home/ubuntu/Leonardo && docker compose down llamapress llamabot && docker compose up -d"
 
-echo "Restart scheduled via systemd (check: journalctl -u leonardo-restart)"
+echo "Restart scheduled via systemd (check: journalctl -u $UNIT_NAME)"
