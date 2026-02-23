@@ -93,13 +93,6 @@ services:
     ports:
       - "8443:8443"
     restart: unless-stopped
-    command: >
-      bash -c "
-        cd /config/workspace &&
-        git config user.name 'Leonardo' &&
-        git config user.email 'leonardo@llamapress.ai' &&
-        exec /init
-      "
 
 volumes:
   redis_data:
