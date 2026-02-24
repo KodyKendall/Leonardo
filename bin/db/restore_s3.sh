@@ -21,6 +21,59 @@ S3_BUCKET="s3://llampress-ai-backups/backups/leonardos/${INSTANCE_NAME}"
 DATABASES=("llamapress_production" "llamabot_production")
 DB_USER="postgres"
 
+# Check for --pick flag to select a specific backup
+PICK_BACKUP=false
+if [ "$1" = "--pick" ] || [ "$1" = "-p" ]; then
+  PICK_BACKUP=true
+fi
+
+SELECTED_SUFFIX="_latest"
+
+if [ "$PICK_BACKUP" = true ]; then
+  echo ""
+  echo "🔍 Fetching available backups for instance: ${INSTANCE_NAME}"
+  echo ""
+
+  # List all backups for the first database to get available timestamps
+  SAMPLE_DB="${DATABASES[0]}"
+  BACKUPS=$(aws s3 ls "${S3_BUCKET}/${SAMPLE_DB}_" 2>/dev/null | grep -E '\.sql\.gz$' | awk '{print $4}' | sed "s/${SAMPLE_DB}_//" | sed 's/\.sql\.gz$//' | sort -r)
+
+  if [ -z "$BACKUPS" ]; then
+    echo "❌ No backups found in S3 for this instance."
+    exit 1
+  fi
+
+  echo "Available backups:"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+  # Create array and display options
+  BACKUP_ARRAY=()
+  INDEX=1
+  while IFS= read -r backup; do
+    BACKUP_ARRAY+=("$backup")
+    if [ "$backup" = "latest" ]; then
+      echo "  $INDEX) latest (most recent backup)"
+    else
+      # Format timestamp for readability (assumes format like 20240115_143022)
+      FORMATTED=$(echo "$backup" | sed 's/_/ /' | sed 's/\([0-9]\{4\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)/\1-\2-\3/' | sed 's/ \([0-9]\{2\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)/ \1:\2:\3/')
+      echo "  $INDEX) $backup ($FORMATTED)"
+    fi
+    INDEX=$((INDEX + 1))
+  done <<< "$BACKUPS"
+
+  echo ""
+  read -p "Select backup number (1-${#BACKUP_ARRAY[@]}): " SELECTION
+
+  if ! [[ "$SELECTION" =~ ^[0-9]+$ ]] || [ "$SELECTION" -lt 1 ] || [ "$SELECTION" -gt "${#BACKUP_ARRAY[@]}" ]; then
+    echo "❌ Invalid selection."
+    exit 1
+  fi
+
+  SELECTED_SUFFIX="_${BACKUP_ARRAY[$((SELECTION - 1))]}"
+  echo ""
+  echo "📦 Selected backup: ${BACKUP_ARRAY[$((SELECTION - 1))]}"
+fi
+
 echo ""
 echo "⚠️  WARNING: This will DESTROY all existing data in the following databases!"
 echo "   Instance: ${INSTANCE_NAME}"
@@ -49,7 +102,7 @@ sleep 2
 
 # Restore each database
 for DB_NAME in "${DATABASES[@]}"; do
-  S3_PATH="${S3_BUCKET}/${DB_NAME}_latest.sql.gz"
+  S3_PATH="${S3_BUCKET}/${DB_NAME}${SELECTED_SUFFIX}.sql.gz"
 
   # Check if backup exists in S3
   if ! aws s3 ls "$S3_PATH" > /dev/null 2>&1; then
