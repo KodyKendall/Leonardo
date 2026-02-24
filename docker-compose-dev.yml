@@ -6,6 +6,7 @@ services:
   llamapress:
     # image: kody06/llamapress-simple:0.3.5b        # <— pre-built tag
     build: ../LlamaPress-Simple
+    # docker compose -f docker-compose-dev.yml up -d --build llamapress #if you need to rebuild.
     # user: "1000:1000"  # DISABLED for macOS - Docker Desktop handles permissions differently
     env_file: .env                           # read secrets from this file
     environment:
@@ -19,6 +20,7 @@ services:
       - ./rails/spec:/rails/spec:delegated
       - ./rails/config/environments/development.rb:/rails/config/environments/development.rb
       - ./rails/config/database.yml:/rails/config/database.yml
+      - ./rails/config/importmap.rb:/rails/config/importmap.rb
       - ./rails/requirements:/rails/requirements:delegated
       # - ../LlamaPress-Simple/vendor/llama_bot_rails:/rails/vendor/llama_bot_rails  # Dev: hot reload gem changes
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:prepare && bundle exec rails s -b 0.0.0.0"
@@ -95,12 +97,15 @@ services:
     environment:
       - TZ=America/Denver
       - PASSWORD=password
+      - AUTO_SSH_LEONARDO=1
     volumes:
       - code_config:/config
       - ./:/config/workspace
+      - ~/.ssh/vscode_container_key:/config/.ssh/id_ed25519:ro
+      - ~/.ssh/vscode_container_key.pub:/config/.ssh/id_ed25519.pub:ro
     ports:
       - "8443:8443"
-    restart: unless-stopped  
+    restart: unless-stopped
 
   # pgweb:
   #   image: sosedoff/pgweb

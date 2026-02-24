@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   llamapress:
-    image: kody06/llamapress-simple:0.3.5c        # <— pre-built tag (includes erb_lint)
+    image: kody06/llamapress-simple:0.3.6d        # <— pre-built tag (includes erb_lint)
     # user: "1000:1000"  # Run as UID 1000 to prevent root-owned file creation
     env_file: .env                           # read secrets from this file
     environment:
@@ -16,6 +16,7 @@ services:
       - ./rails/spec:/rails/spec:delegated
       - ./rails/config/environments/development.rb:/rails/config/environments/development.rb
       - ./rails/config/database.yml:/rails/config/database.yml
+      - ./rails/config/importmap.rb:/rails/config/importmap.rb:delegated
       - ./rails/requirements:/rails/requirements:delegated
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:prepare && bundle exec rails s -b 0.0.0.0"
     #TO DEBUG, comment the above command, uncomment the below command, restart the container, then run the docker compose exec command below.
@@ -33,7 +34,7 @@ services:
       - llama-network
 
   llamabot:
-    image: kody06/llamabot:0.3.6c
+    image: kody06/llamabot:0.3.6d
     # user: "1000:1000"  # Run as UID 1000 to prevent root-owned file creation
     env_file:
       - .env
@@ -87,9 +88,12 @@ services:
       - PASSWORD=password
       - PUID=1000
       - PGID=1000
+      - AUTO_SSH_LEONARDO=1
     volumes:
       - code_config:/config
       - ./:/config/workspace
+      - ~/.ssh/vscode_container_key:/config/.ssh/id_ed25519:ro
+      - ~/.ssh/vscode_container_key.pub:/config/.ssh/id_ed25519.pub:ro
     ports:
       - "8443:8443"
     restart: unless-stopped
