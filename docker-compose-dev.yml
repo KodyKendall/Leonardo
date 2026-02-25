@@ -97,28 +97,15 @@ services:
     environment:
       - TZ=America/Denver
       - PASSWORD=password
-      - AUTO_SSH_LEONARDO=1
+      # - AUTO_SSH_LEONARDO=1
     volumes:
       - code_config:/config
       - ./:/config/workspace
-      - ~/.ssh/vscode_container_key:/config/.ssh/id_ed25519:ro
-      - ~/.ssh/vscode_container_key.pub:/config/.ssh/id_ed25519.pub:ro
+      # - ~/.ssh/vscode_container_key:/config/.ssh/id_ed25519:ro
+      # - ~/.ssh/vscode_container_key.pub:/config/.ssh/id_ed25519.pub:ro
     ports:
       - "8443:8443"
     restart: unless-stopped
-
-  # pgweb:
-  #   image: sosedoff/pgweb
-  #   ports:
-  #     - "8082:8081"
-  #   environment:
-  #     DATABASE_URL: postgres://postgres:password@db:5432/llamapress_development?sslmode=disable
-  #     AUTH_USER: admin
-  #     AUTH_PASS: changeme
-  #   depends_on:
-  #     - db
-  #   networks:
-  #     - llama-network
       
 volumes:
   redis_data:
