@@ -17,4 +17,4 @@ UNIT_NAME="leonardo-restart-$(date +%s)"
 sudo systemd-run --no-block --unit="$UNIT_NAME" \
     /bin/bash -c "cd /home/ubuntu/Leonardo && docker compose down llamapress llamabot && docker compose up -d"
 
-echo "Restart scheduled via systemd (check: journalctl -u $UNIT_NAME)"
+echo "Restart scheduled via systemd (check: journalctl -u $UNIT_NAME --follow)"
