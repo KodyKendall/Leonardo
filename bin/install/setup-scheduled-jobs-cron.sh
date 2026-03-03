@@ -10,7 +10,7 @@
 #
 # Environment variables:
 #   SCHEDULER_TOKEN - Optional. If not set, will be auto-generated and appended to .env
-#   LLAMABOT_URL - Optional. Defaults to http://localhost:8000
+#   LLAMABOT_URL - Optional. Defaults to http://localhost:8080
 
 set -e
 
@@ -19,8 +19,8 @@ set -e
 LEONARDO_ROOT="${LEONARDO_ROOT:-$(pwd)}"
 ENV_FILE="${LEONARDO_ROOT}/.env"
 
-# Always use localhost:8000 for cron (runs on host, calls into container)
-LLAMABOT_URL="http://localhost:8000"
+# Always use localhost:8080 for cron (runs on host, calls into container on mapped port)
+LLAMABOT_URL="http://localhost:8080"
 SCHEDULER_TOKEN="${SCHEDULER_TOKEN}"
 LOG_FILE="${LOG_FILE:-/var/log/llamabot-scheduler.log}"
 
