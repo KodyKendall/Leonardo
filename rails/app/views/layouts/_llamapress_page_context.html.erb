@@ -4,6 +4,12 @@
   window.request_path = "<%= @request_path %>";
   window.view_path = "<%= @view_path %>";
 
+  // LlamaPress configuration for JS modules
+  window.llamapressConfig = {
+    feedbackBubbleEnabled: <%= defined?(LlamapressConfig) ? LlamapressConfig.feedback_bubble_enabled : true %>,
+    userLoggedIn: <%= user_signed_in? rescue false %>
+  };
+
   // Function to update context variables
   function updatePageContext() {
     // These are set fresh on each page load from server-side variables

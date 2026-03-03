@@ -13,5 +13,7 @@ import "llamapress/console_capture"
 import "llamapress/element_selector"
 import "llamapress/message_handler"
 import "llamapress/navigation_tracking"
+import "llamapress/screenshot_annotator"
+import "llamapress/feedback_bubble"
 
 console.log("application.js loaded!!");

@@ -10,8 +10,9 @@
     <meta http-equiv="Expires" content="0">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <!-- For taking screenshots to feed to Leonardo AI -->
-    <%# <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script> %>
+    <!-- html2canvas for screenshot capture + Fabric.js for annotation -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
 
     <%= render 'layouts/llamapress_page_context' %>
 
