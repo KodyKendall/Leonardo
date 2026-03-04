@@ -1,0 +1,4 @@
+Leonardo 0.4.0:
+- [x] Add feedback bubble
+- [x] Cleaned up and consolidated LlamaPress specific code that the user is not likely to change in their Rails application.
+- [x] Additional default functionality like pagination, impersonation, etc.
