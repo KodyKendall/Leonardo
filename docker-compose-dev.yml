@@ -13,6 +13,7 @@ services:
       - RAILS_ENV=development
       - BOOTSNAP_CACHE_DIR=/rails/tmp/cache/bootsnap
     volumes:
+      - ../LlamaPress-Simple/vendor/llama_bot_rails:/rails/vendor/llama_bot_rails  # Dev: hot reload gem changes
       - rails_storage:/rails/storage         # ActiveStorage local files
       - ./rails/app:/rails/app
       - ./rails/config/routes.rb:/rails/config/routes.rb
@@ -22,7 +23,6 @@ services:
       - ./rails/config/database.yml:/rails/config/database.yml
       - ./rails/config/importmap.rb:/rails/config/importmap.rb
       - ./rails/requirements:/rails/requirements:delegated
-      # - ../LlamaPress-Simple/vendor/llama_bot_rails:/rails/vendor/llama_bot_rails  # Dev: hot reload gem changes
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:prepare && bundle exec rails s -b 0.0.0.0"
     # command: tail -f /dev/null
     # docker compose exec -it llamapress bundle exec rails s -b 0.0.0.0
