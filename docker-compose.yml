@@ -34,7 +34,7 @@ services:
       - llama-network
 
   llamabot:
-    image: kody06/llamabot:0.4.0c
+    image: kody06/llamabot:0.4.0d
     # user: "1000:1000"  # Run as UID 1000 to prevent root-owned file creation
     env_file:
       - .env
