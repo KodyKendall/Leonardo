@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Run RSpec tests inside the llamapress container
+# Usage: bin/test/run_tests [optional: specific spec files or directories]
+#
+# Examples:
+#   bin/test/run_tests                          # Run all tests
+#   bin/test/run_tests spec/models              # Run only model specs
+#   bin/test/run_tests spec/models/user_spec.rb # Run a specific spec file
+
+set -e
+
+if [ $# -eq 0 ]; then
+  # Run all test directories
+  docker compose exec -it llamapress bundle exec rspec \
+    spec/models \
+    spec/requests \
+    spec/features \
+    spec/system \
+    --format documentation
+else
+  # Run specified specs
+  docker compose exec -it llamapress bundle exec rspec "$@" --format documentation
+fi
