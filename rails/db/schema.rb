@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_06_122643) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_16_224453) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -52,6 +52,42 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_06_122643) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "llama_bot_rails_conversation_participants", force: :cascade do |t|
+    t.bigint "conversation_id", null: false
+    t.integer "user_id", null: false
+    t.datetime "last_read_at"
+    t.boolean "muted", default: false
+    t.datetime "joined_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["conversation_id", "user_id"], name: "idx_conv_participants_unique", unique: true
+    t.index ["conversation_id"], name: "idx_on_conversation_id_2fa0ba1b29"
+    t.index ["last_read_at"], name: "idx_on_last_read_at_4f0fd5067a"
+    t.index ["user_id"], name: "index_llama_bot_rails_conversation_participants_on_user_id"
+  end
+
+  create_table "llama_bot_rails_conversations", force: :cascade do |t|
+    t.string "title"
+    t.string "conversation_type", default: "direct", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["conversation_type"], name: "index_llama_bot_rails_conversations_on_conversation_type"
+    t.index ["updated_at"], name: "index_llama_bot_rails_conversations_on_updated_at"
+  end
+
+  create_table "llama_bot_rails_direct_messages", force: :cascade do |t|
+    t.bigint "conversation_id", null: false
+    t.integer "sender_id", null: false
+    t.text "body", null: false
+    t.datetime "edited_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["conversation_id", "created_at"], name: "idx_dm_conversation_timeline"
+    t.index ["conversation_id"], name: "index_llama_bot_rails_direct_messages_on_conversation_id"
+    t.index ["created_at"], name: "index_llama_bot_rails_direct_messages_on_created_at"
+    t.index ["sender_id"], name: "index_llama_bot_rails_direct_messages_on_sender_id"
+  end
+
   create_table "llama_bot_rails_feedback_comments", force: :cascade do |t|
     t.string "commentable_type", null: false
     t.bigint "commentable_id", null: false
@@ -66,6 +102,26 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_06_122643) do
     t.index ["commentable_type", "commentable_id"], name: "index_llama_bot_rails_feedback_comments_on_commentable"
     t.index ["parent_id"], name: "index_llama_bot_rails_feedback_comments_on_parent_id"
     t.index ["user_id"], name: "index_llama_bot_rails_feedback_comments_on_user_id"
+  end
+
+  create_table "llama_bot_rails_notifications", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "actor_id"
+    t.string "notifiable_type", null: false
+    t.bigint "notifiable_id", null: false
+    t.string "notification_type", null: false
+    t.text "message"
+    t.datetime "read_at"
+    t.json "metadata"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["actor_id"], name: "index_llama_bot_rails_notifications_on_actor_id"
+    t.index ["notifiable_type", "notifiable_id"], name: "idx_notifications_notifiable"
+    t.index ["notifiable_type", "notifiable_id"], name: "index_llama_bot_rails_notifications_on_notifiable"
+    t.index ["notification_type"], name: "index_llama_bot_rails_notifications_on_notification_type"
+    t.index ["read_at"], name: "index_llama_bot_rails_notifications_on_read_at"
+    t.index ["user_id", "read_at"], name: "idx_notifications_user_unread"
+    t.index ["user_id"], name: "index_llama_bot_rails_notifications_on_user_id"
   end
 
   create_table "llama_bot_rails_projects", force: :cascade do |t|
@@ -235,6 +291,8 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_06_122643) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "llama_bot_rails_conversation_participants", "llama_bot_rails_conversations", column: "conversation_id"
+  add_foreign_key "llama_bot_rails_direct_messages", "llama_bot_rails_conversations", column: "conversation_id"
   add_foreign_key "llama_bot_rails_feedback_comments", "llama_bot_rails_feedback_comments", column: "parent_id", on_delete: :cascade
   add_foreign_key "llama_bot_rails_shared_links", "active_storage_attachments", column: "attachment_id", on_delete: :cascade
   add_foreign_key "llama_bot_rails_taggings", "llama_bot_rails_tags", column: "tag_id"
