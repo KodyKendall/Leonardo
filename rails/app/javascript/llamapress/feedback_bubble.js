@@ -5,6 +5,8 @@
 let bubbleInitialized = false;
 let isFormOpen = false;
 let screenshotAttachment = null;
+let videoAttachment = null;
+let isRecordingVideo = false;
 let notificationSubscription = null;
 let unreadCount = 0;
 let currentTab = 'feedback';
@@ -21,11 +23,11 @@ function getCSRFToken() {
 
 function createBubbleHTML() {
   return `
-    <div id="llamapress-feedback-bubble" class="fixed bottom-5 right-5 z-50">
+    <div id="llamapress-feedback-bubble" class="fixed bottom-5 right-5 z-50 overflow-visible">
       <!-- Trigger Button with Badge -->
       <button id="feedback-trigger"
               class="relative w-12 h-12 rounded-full bg-gray-400 opacity-60 hover:opacity-100 hover:bg-purple-600 hover:scale-110
-                     transition-all duration-200 shadow-lg flex items-center justify-center text-white"
+                     transition-all duration-200 shadow-lg flex items-center justify-center text-white overflow-visible"
               title="Feedback & Messages">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -39,10 +41,10 @@ function createBubbleHTML() {
 
       <!-- Expanded Panel -->
       <div id="feedback-panel"
-           class="hidden absolute bottom-16 right-0 w-80 bg-white rounded-xl shadow-2xl border border-gray-200 overflow-hidden">
+           class="hidden absolute bottom-16 right-0 w-80 bg-white rounded-xl shadow-2xl border border-gray-200">
 
         <!-- Tab Navigation - Icon only, cleaner -->
-        <div class="flex border-b border-gray-200">
+        <div class="flex border-b border-gray-200 rounded-t-xl overflow-hidden">
           <button id="tab-feedback" class="tab-btn flex-1 py-3 flex justify-center items-center text-purple-600 border-b-2 border-purple-600 bg-white" data-tab="feedback" title="Feedback">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
@@ -53,11 +55,11 @@ function createBubbleHTML() {
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </button>
-          <button id="tab-notifications" class="tab-btn flex-1 py-3 flex justify-center items-center text-gray-400 hover:text-gray-600 border-b-2 border-transparent bg-gray-50 hover:bg-white relative" data-tab="notifications" title="Notifications">
+          <button id="tab-notifications" class="tab-btn flex-1 py-3 flex justify-center items-center text-gray-400 hover:text-gray-600 border-b-2 border-transparent bg-gray-50 hover:bg-white relative overflow-visible" data-tab="notifications" title="Notifications">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
-            <span id="notifications-tab-badge" class="hidden absolute -top-1 right-2 w-2 h-2 bg-red-500 rounded-full"></span>
+            <span id="notifications-tab-badge" class="hidden absolute top-1.5 right-3 min-w-4 h-4 px-1 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center"></span>
           </button>
         </div>
 
@@ -77,6 +79,20 @@ function createBubbleHTML() {
               </button>
             </div>
 
+            <!-- Video preview -->
+            <div id="feedback-video-preview" class="hidden mb-2">
+              <div class="flex items-center gap-2 p-2 bg-purple-50 rounded border border-purple-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                <span id="feedback-video-filename" class="text-xs text-purple-700 truncate flex-1"></span>
+                <button type="button" id="feedback-video-remove"
+                        class="w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600">
+                  &times;
+                </button>
+              </div>
+            </div>
+
             <div class="flex items-center justify-between mt-2">
               <div class="flex items-center gap-2">
                 <button type="button" id="feedback-screenshot-btn" title="Take screenshot"
@@ -84,6 +100,12 @@ function createBubbleHTML() {
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </button>
+                <button type="button" id="feedback-video-btn" title="Record video"
+                        class="text-gray-400 hover:text-purple-600 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                   </svg>
                 </button>
                 <label class="cursor-pointer text-gray-400 hover:text-purple-600 transition-colors flex items-center gap-1">
@@ -166,6 +188,7 @@ function createBubbleHTML() {
         </div>
       </div>
     </div>
+
   `;
 }
 
@@ -187,12 +210,15 @@ function updateBadge(count) {
     }
   }
 
-  // Tab badge (simple dot)
+  // Tab badge (shows count)
   if (tabBadge) {
     if (count > 0) {
+      tabBadge.textContent = count > 9 ? '9+' : count;
       tabBadge.classList.remove('hidden');
+      tabBadge.classList.add('flex');
     } else {
       tabBadge.classList.add('hidden');
+      tabBadge.classList.remove('flex');
     }
   }
 }
@@ -487,6 +513,63 @@ function hideStatus() {
   if (status) status.classList.add('hidden');
 }
 
+// Recording indicator - created as separate DOM element
+function showRecordingIndicator(onStop) {
+  // Remove existing indicator if any
+  hideRecordingIndicator();
+
+  const indicator = document.createElement('div');
+  indicator.id = 'feedback-recording-indicator';
+  indicator.innerHTML = `
+    <div style="position: fixed; bottom: 80px; right: 20px; z-index: 100000;">
+      <div style="background: white; border-radius: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid #e5e7eb; overflow: hidden; display: flex; align-items: center;">
+        <div style="display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: #dc2626; color: white;">
+          <span style="width: 6px; height: 6px; background: white; border-radius: 50%; animation: pulse 1.5s infinite;"></span>
+          <span id="feedback-recording-timer" style="font-size: 13px; font-family: monospace;">00:00</span>
+        </div>
+        <button id="feedback-stop-recording"
+                style="padding: 8px 14px; display: flex; align-items: center; gap: 6px; background: white; border: none; cursor: pointer; font-size: 13px; font-weight: 500; color: #374151;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="#dc2626" viewBox="0 0 24 24">
+            <rect x="6" y="6" width="12" height="12" rx="2" />
+          </svg>
+          Stop
+        </button>
+      </div>
+    </div>
+    <style>
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+      }
+      #feedback-stop-recording:hover {
+        background: #f3f4f6 !important;
+      }
+    </style>
+  `;
+
+  document.body.appendChild(indicator);
+
+  // Attach stop handler
+  const stopBtn = document.getElementById('feedback-stop-recording');
+  if (stopBtn && onStop) {
+    stopBtn.addEventListener('click', onStop);
+  }
+}
+
+function hideRecordingIndicator() {
+  const indicator = document.getElementById('feedback-recording-indicator');
+  if (indicator) {
+    indicator.remove();
+  }
+}
+
+function updateRecordingTimer(timeStr) {
+  const timer = document.getElementById('feedback-recording-timer');
+  if (timer) {
+    timer.textContent = timeStr;
+  }
+}
+
 function togglePanel(show) {
   const panel = document.getElementById('feedback-panel');
   const trigger = document.getElementById('feedback-trigger');
@@ -523,12 +606,15 @@ function resetForm() {
   const form = document.getElementById('feedback-form');
   const filename = document.getElementById('feedback-filename');
   const screenshotPreview = document.getElementById('feedback-screenshot-preview');
+  const videoPreview = document.getElementById('feedback-video-preview');
 
   if (form) form.reset();
   if (filename) filename.textContent = '';
   if (screenshotPreview) screenshotPreview.classList.add('hidden');
+  if (videoPreview) videoPreview.classList.add('hidden');
 
   screenshotAttachment = null;
+  videoAttachment = null;
   hideStatus();
 }
 
@@ -547,6 +633,10 @@ async function submitFeedback(description, file, screenshot) {
   if (screenshot && screenshot.blob) {
     const screenshotFile = new File([screenshot.blob], screenshot.filename, { type: 'image/png' });
     formData.append('user_feedback[attachments][]', screenshotFile);
+  }
+  if (videoAttachment && videoAttachment.blob) {
+    const videoFile = new File([videoAttachment.blob], videoAttachment.filename, { type: 'video/webm' });
+    formData.append('user_feedback[attachments][]', videoFile);
   }
 
   const response = await fetch('/llama_bot/feedback', {
@@ -649,6 +739,78 @@ function attachEventListeners() {
     removeScreenshotBtn.addEventListener('click', () => {
       screenshotAttachment = null;
       document.getElementById('feedback-screenshot-preview')?.classList.add('hidden');
+    });
+  }
+
+  // Video record button
+  const videoBtn = document.getElementById('feedback-video-btn');
+  if (videoBtn) {
+    videoBtn.addEventListener('click', async () => {
+      if (isRecordingVideo) return;
+
+      togglePanel(false);
+
+      try {
+        isRecordingVideo = true;
+
+        // Show recording indicator with stop handler
+        showRecordingIndicator(async () => {
+          if (!isRecordingVideo) return;
+          await window.videoRecorder?.stopRecording();
+        });
+
+        await window.videoRecorder?.startRecording(
+          // Timer update callback
+          (timeStr) => {
+            updateRecordingTimer(timeStr);
+          },
+          // On stop callback
+          (blob) => {
+            isRecordingVideo = false;
+            hideRecordingIndicator();
+
+            if (blob) {
+              window.videoRecorder?.showPreviewModal(
+                blob,
+                // onAttach callback
+                (attachment) => {
+                  videoAttachment = attachment;
+                  const preview = document.getElementById('feedback-video-preview');
+                  const filename = document.getElementById('feedback-video-filename');
+                  if (preview && filename) {
+                    filename.textContent = attachment.filename;
+                    preview.classList.remove('hidden');
+                  }
+                  // Small delay to ensure modal is fully removed before opening panel
+                  setTimeout(() => togglePanel(true), 50);
+                },
+                // onCancel callback - reopen bubble without attachment
+                () => {
+                  setTimeout(() => togglePanel(true), 50);
+                }
+              );
+            } else {
+              // No blob (user cancelled before recording started)
+              togglePanel(true);
+            }
+          }
+        );
+
+      } catch (err) {
+        console.error('[FeedbackBubble] Failed to start recording:', err);
+        isRecordingVideo = false;
+        hideRecordingIndicator();
+        togglePanel(true);
+      }
+    });
+  }
+
+  // Remove video
+  const removeVideoBtn = document.getElementById('feedback-video-remove');
+  if (removeVideoBtn) {
+    removeVideoBtn.addEventListener('click', () => {
+      videoAttachment = null;
+      document.getElementById('feedback-video-preview')?.classList.add('hidden');
     });
   }
 
