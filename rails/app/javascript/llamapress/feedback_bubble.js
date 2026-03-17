@@ -497,6 +497,9 @@ function togglePanel(show) {
       trigger.classList.add('bg-purple-600', 'opacity-100');
       trigger.classList.remove('bg-gray-400', 'opacity-60');
 
+      // Always default to feedback tab when opening
+      switchTab('feedback');
+
       // Fetch unread count
       fetchUnreadCount();
     } else {
