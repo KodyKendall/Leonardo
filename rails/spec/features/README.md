@@ -1,0 +1,1 @@
+This is a placeholder for browser based tests, similar to "system" tests.
