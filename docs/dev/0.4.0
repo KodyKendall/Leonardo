@@ -4,5 +4,5 @@ Leonardo 0.4.0:
 - [x] Additional default functionality like pagination, impersonation, etc.
 
 0.4.0b: 
-- [] Add paper_trail and rack_attack
-- [] Add bin script to run all rails_tests at once. `bin/rails_tests`
+- [x] Add paper_trail and rack_attack
+- [x] Add bin script to run all rails_tests at once. `bin/rails_tests`
