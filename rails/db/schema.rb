@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_16_224453) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_20_134720) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -98,6 +98,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_16_224453) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "parent_id"
+    t.json "mentioned_user_ids", default: []
     t.index ["commentable_type", "commentable_id"], name: "index_feedback_comments_on_commentable"
     t.index ["commentable_type", "commentable_id"], name: "index_llama_bot_rails_feedback_comments_on_commentable"
     t.index ["parent_id"], name: "index_llama_bot_rails_feedback_comments_on_parent_id"

@@ -105,4 +105,15 @@ Rails.application.configure do
   if ENV["ENABLE_GOOGLE_CLOUD_LOGGING"] == "true"
     config.logger = ActiveSupport::TaggedLogging.new(GCPLogger.logger)
   end
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address:              "email-smtp.us-west-2.amazonaws.com",
+    port:                 587,
+    user_name:            ENV["SES_SMTP_USERNAME"],
+    password:             ENV["SES_SMTP_PASSWORD"],
+    authentication:       :login,
+    enable_starttls_auto: true
+  }
+
+  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
 end
