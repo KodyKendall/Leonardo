@@ -36,7 +36,6 @@ PROJECT_FOLDER=$(basename "$PROJECT_DIR")
 cd "$(dirname "$PROJECT_DIR")"
 
 tar czf - \
-    --exclude="${PROJECT_FOLDER}/backups" \
     --exclude="${PROJECT_FOLDER}/.claude" \
     --exclude="${PROJECT_FOLDER}/tmp" \
     --exclude="${PROJECT_FOLDER}/log" \

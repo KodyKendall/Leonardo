@@ -2,10 +2,15 @@
 set -e
 
 # Bootstrap script to download proprietary backup/restore scripts from S3
-# This is the ONLY script you need to manually put on a fresh EC2
+# Then execute the master restore script
+# This is the ONLY script that needs to be baked into the AMI
 
 SCRIPTS_BUCKET="s3://llampress-ai-backups/proprietary-scripts"
-INSTALL_DIR="${1:-$HOME/Leonardo/bin/backups/cloud}"
+INSTALL_DIR="/home/ubuntu/bin/backups/cloud"
+
+# Arguments passed through to master_restore_all.sh
+INSTANCE_NAME="$1"
+S3_BACKUP_PATH="$2"
 
 echo "🔵 Bootstrapping LlamaPress backup/restore scripts..."
 echo "📁 Installing to: ${INSTALL_DIR}"
@@ -13,9 +18,9 @@ echo "📁 Installing to: ${INSTALL_DIR}"
 # Create directory structure
 mkdir -p "$INSTALL_DIR"
 
-# Download all scripts from S3
-echo "📥 Downloading scripts from S3..."
-aws s3 sync "${SCRIPTS_BUCKET}/" "${INSTALL_DIR}/" --exclude "*" --include "*.sh"
+# Download all scripts from S3 (including master_restore_all.sh)
+echo "📥 Downloading latest scripts from S3..."
+aws s3 sync "${SCRIPTS_BUCKET}/" "${INSTALL_DIR}/" --exclude "*" --include "*.sh" --quiet
 
 # Make executable
 chmod +x "${INSTALL_DIR}"/*.sh
@@ -23,13 +28,9 @@ chmod +x "${INSTALL_DIR}"/*.sh
 # Verify
 SCRIPT_COUNT=$(ls -1 "${INSTALL_DIR}"/*.sh 2>/dev/null | wc -l)
 
-echo "✅ Bootstrap complete!"
-echo "📊 Installed ${SCRIPT_COUNT} scripts"
-echo ""
-echo "Available scripts:"
-ls -1 "${INSTALL_DIR}"/*.sh
+echo "✅ Bootstrap complete! Downloaded ${SCRIPT_COUNT} scripts"
 
+# Execute the master restore script with all arguments
 echo ""
-echo "🚀 Ready to restore! Example:"
-echo "  cd ~/Leonardo"
-echo "  ./bin/backups/cloud/30_restore-project-files-from-s3.sh LP-Test5 s3://bucket/path"
+echo "🚀 Executing master restore script..."
+exec "${INSTALL_DIR}/master_restore_all.sh" "$INSTANCE_NAME" "$S3_BACKUP_PATH"

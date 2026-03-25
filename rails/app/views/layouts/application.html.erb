@@ -46,31 +46,49 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="h-full">
-    <div class="<%= content_for?(:full_width) ? '' : 'py-10' %>">
+  <body class="h-full min-h-screen flex flex-col">
+    <% unless content_for?(:hide_navbar) %>
+      <%= render 'shared/navbar' %>
+    <% end %>
+
+    <div class="flex-grow <%= content_for?(:full_width) ? '' : 'py-10' %>">
+      <%# Flash Messages (DaisyUI Alerts) %>
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <% flash.each do |key, value| %>
+          <div class="alert mb-4 shadow-lg <%= key == 'alert' ? 'alert-error' : 'alert-success' %>">
+            <% if key == 'alert' %>
+              <i class="fas fa-exclamation-circle"></i>
+            <% else %>
+              <i class="fas fa-check-circle"></i>
+            <% end %>
+            <span><%= value %></span>
+          </div>
+        <% end %>
+      </div>
+
       <% unless content_for?(:hide_header) %>
         <header>
-          <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h1 class="text-3xl font-bold leading-tight tracking-tight text-gray-900">
+          <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-8">
+            <h1 class="text-4xl font-black leading-tight tracking-tight text-llama-dark">
               <%= content_for(:header) %>
             </h1>
-            <% flash.each do |key, value| %>
-              <div class="flash <%= key %>"><%= value %></div>
-            <% end %>
           </div>
         </header>
       <% end %>
+
       <main>
         <% if content_for?(:full_width) %>
           <%= yield %>
         <% else %>
-          <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-            <div class="px-4 py-8 sm:px-0">
-              <%= yield %>
-            </div>
+          <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <%= yield %>
           </div>
         <% end %>
       </main>
     </div>
+
+    <% unless content_for?(:hide_footer) %>
+      <%= render 'shared/footer' %>
+    <% end %>
   </body>
 </html>

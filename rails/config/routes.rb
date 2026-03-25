@@ -42,4 +42,13 @@ Rails.application.routes.draw do
   get "/prototypes/*page", to: "prototypes#show"
   # Defines the root path route ("/")
   # root "posts#index"
+  
+  get "/sitemap.xml", to: "sitemaps#index", format: "xml"
+  get "*slug", to: "pages#show", as: :static_page, constraints: lambda { |req| 
+    !req.path.starts_with?("/rails") && 
+    !req.path.starts_with?("/llama_bot") &&
+    !req.path.starts_with?("/assets") &&
+    !req.path.starts_with?("/admin") &&
+    !req.path.starts_with?("/up")
+  }
 end

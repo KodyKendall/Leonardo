@@ -1,0 +1,37 @@
+<footer class="footer p-10 bg-base-200 text-base-content border-t">
+  <aside>
+    <div class="flex items-center gap-2 mb-2 text-xl font-bold">
+      <i class="fas fa-calculator text-llama-blue"></i>
+      <span>Construction Estimating</span>
+    </div>
+    <p>Empowering estimators since <%= Time.current.year %>.<br/>Making project costs predictable.</p>
+  </aside> 
+  <nav>
+    <header class="footer-title">Navigation</header> 
+    <%= link_to "Home", root_path, class: "link link-hover" %>
+    <%= link_to "Hello World", static_page_path(slug: "hello-world"), class: "link link-hover" %>
+  </nav> 
+  <nav>
+    <header class="footer-title">Support</header> 
+    <%= link_to "Sign In", new_user_session_path, class: "link link-hover" %>
+    <%= link_to "Get Started", new_user_registration_path, class: "link link-hover" %>
+  </nav> 
+  <nav>
+    <header class="footer-title">Legal</header> 
+    <a class="link link-hover">Terms of use</a>
+    <a class="link link-hover">Privacy policy</a>
+    <a class="link link-hover">Cookie policy</a>
+  </nav>
+</footer>
+<footer class="footer px-10 py-4 border-t bg-base-200 text-base-content border-base-300">
+  <aside class="items-center grid-flow-col">
+    <p>&copy; <%= Time.current.year %> Construction Estimating. All rights reserved.</p>
+  </aside> 
+  <nav class="md:place-self-center md:justify-self-end">
+    <div class="grid grid-flow-col gap-4">
+      <a class="text-2xl opacity-70 hover:opacity-100 transition-opacity"><i class="fab fa-twitter"></i></a> 
+      <a class="text-2xl opacity-70 hover:opacity-100 transition-opacity"><i class="fab fa-linkedin"></i></a> 
+      <a class="text-2xl opacity-70 hover:opacity-100 transition-opacity"><i class="fab fa-github"></i></a>
+    </div>
+  </nav>
+</footer>
