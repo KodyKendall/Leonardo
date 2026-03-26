@@ -1,0 +1,223 @@
+<%#
+  --- First Scratchpad: Content Structure & SEO Strategy ---
+  Target Keyword: 'home construction estimate calculator'
+  Primary SEO Goal: Rank for 'cost discovery' while filtering for pro/commercial intent.
+  SEO Meta:
+    - Title: Construction Estimating | Home Construction Estimate Calculator
+    - Description: Stop guessing your margins. Transition from static calculators to professional software that guarantees accuracy for your next build.
+  Core Narrative: Transitioning from 'calculating' (simple math) to 'executing' (dynamic project management software).
+  Content Outline:
+    - H1: Home Construction Estimate Calculator: From Guesswork to Guaranteed Margins
+    - H2: Why Most Home Construction Calculators Fail
+      - H3: Ignoring Site-Specific Context
+      - H3: The Reality of Market Volatility
+    - H2: The Spreadsheet Trap: Why Your Excel Sheet is Fragile
+      - H3: Formula Errors & Broken Links
+      - H3: Static Data in a Dynamic Market
+    - H2: Moving From Guessing to Guaranteeing
+      - H3: The Power of 'Living Documents'
+      - H3: Real-Time Cost Tracking vs. One-Time Estimates
+    - H2: Key Metrics Every Pro Must Track
+      - H3: Hard Costs vs. Soft Costs
+      - H3: Contingency Planning for the 5% Error
+  Conversion Strategy: 'Stop guessing your margins'. Focus on the $25k mistake (5% of $500k) to drive urgency toward a software solution.
+  Research Insights:
+    - Intent: Balancing homeowner feasibility with professional speed-to-bid.
+    - Hook: A 5% error on a $500k build is a $25k mistake.
+%>
+
+<%#
+  --- Image Assets ---
+  Image 1: a room that is under construction with wooden framing
+  - URL: https://images.unsplash.com/photo-1704742950992-9815a104820c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTU2MDF8MHwxfHNlYXJjaHwxfHxjb25zdHJ1Y3Rpb24lMjBzaXRlJTIwaG91c2UlMjBidWlsZGluZ3xlbnwwfHx8fDE3NzQ1NDU2Mjl8MA&ixlib=rb-4.1.0&q=80&w=1080
+  - Photographer: Taylor Heery (https://unsplash.com/@taylorheeryphoto?utm_source=leonardo_rails_app&utm_medium=referral)
+  - Unsplash: https://unsplash.com/photos/1704742950992-9815a104820c?utm_source=leonardo_rails_app&utm_medium=referral
+
+  Image 2: A scientific calculator with its cover open
+  - URL: https://images.unsplash.com/photo-1757256137041-0aab889db199?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTU2MDF8MHwxfHNlYXJjaHwxfHxibHVlcHJpbnRzJTIwYW5kJTIwY2FsY3VsYXRvcnxlbnwwfHx8fDE3NzQ1NDU2Mjl8MA&ixlib=rb-4.1.0&q=80&w=1080
+  - Photographer: Gavin Allanwood (https://unsplash.com/@fp4?utm_source=leonardo_rails_app&utm_medium=referral)
+  - Unsplash: https://unsplash.com/photos/1757256137041-0aab889db199?utm_source=leonardo_rails_app&utm_medium=referral
+
+  Image 3: Woman standing in a modern kitchen and living area.
+  - URL: https://images.unsplash.com/photo-1749704647512-3f556575a241?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTU2MDF8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBob21lJTIwYXJjaGl0ZWN0dXJlfGVufDB8fHx8MTc3NDU0NTYzMHww&ixlib=rb-4.1.0&q=80&w=1080
+  - Photographer: Kailun Zhang (https://unsplash.com/@kailun2019?utm_source=leonardo_rails_app&utm_medium=referral)
+  - Unsplash: https://unsplash.com/photos/1749704647512-3f556575a241?utm_source=leonardo_rails_app&utm_medium=referral
+%>
+
+<%#
+  --- Second Scratchpad: Implementation Checks ---
+  Content Quality:
+    - No em dashes used (to prevent generic LLM punctuation patterns).
+    - No sign-posting ("In this section we will...").
+    - Jargon: Hard costs, Soft costs, Assemblies, Takeoffs, Margins, Topography, Soil composition.
+  SEO Check:
+    - H1 -> H2 -> H3 hierarchy maintained.
+    - Semantic keywords: 'takeoffs', 'margins', 'lumber pricing', 'contingency fund'.
+    - Meta tags preserved.
+  Conversion Check:
+    - CTA aligned with the 5% error / $25k mistake hook.
+%>
+
+<% content_for :title, "Construction Estimating | Home Construction Estimate Calculator" %>
+<% content_for :meta_description, "Stop guessing your margins. Transition from static calculators to professional software that guarantees accuracy for your next build." %>
+
+<div class="container mx-auto px-4 py-12 max-w-5xl">
+  <header class="mb-16 text-center">
+    <h1 class="text-5xl font-black mb-6 leading-tight">
+      Home Construction Estimate Calculator: From Guesswork to Guaranteed Margins
+    </h1>
+    <p class="text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+      A 5% error on a $500,000 build is a $25,000 mistake. In the world of high-stakes residential development, "good enough" math is a recipe for insolvency.
+    </p>
+  </header>
+
+  <section class="mb-20">
+    <div class="flex items-center mb-8 gap-4">
+      <div class="bg-primary/10 p-4 rounded-xl">
+        <i class="fas fa-exclamation-triangle text-primary text-2xl"></i>
+      </div>
+      <h2 class="text-3xl font-bold">Why Most Home Construction Calculators Fail</h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-12 items-start">
+      <div class="card bg-base-100 shadow-xl border border-base-200">
+        <div class="card-body">
+          <h3 class="card-title text-2xl mb-4 font-bold">
+            <i class="fas fa-mountain text-gray-400 mr-2"></i>
+            Ignoring Site-Specific Context
+          </h3>
+          <p class="text-gray-700 leading-relaxed">
+            Generic calculators assume a flat, cleared lot with utility hookups at the curb. They fail to account for the reality of soil composition, drainage requirements, or local zoning setbacks. A takeoff that ignores your site's specific topography is a liability. It creates a false sense of security while hiding the true cost of earthwork and foundation engineering.
+          </p>
+        </div>
+      </div>
+
+      <div class="card bg-base-100 shadow-xl border border-base-200">
+        <div class="card-body">
+          <h3 class="card-title text-2xl mb-4 font-bold">
+            <i class="fas fa-chart-line text-gray-400 mr-2"></i>
+            The Reality of Market Volatility
+          </h3>
+          <p class="text-gray-700 leading-relaxed">
+            Commodity pricing fluctuates weekly. Lumber, copper, and concrete costs do not stay static. A calculator relying on last year's national averages will leave your project underwater before the first slab is poured. Professionals leverage real-time pricing data and vendor integrations to shield their bottom line from sudden inflationary spikes.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <figure class="my-16">
+      <img src="https://images.unsplash.com/photo-1704742950992-9815a104820c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTU2MDF8MHwxfHNlYXJjaHwxfHxjb25zdHJ1Y3Rpb24lMjBzaXRlJTIwaG91c2UlMjBidWlsZGluZ3xlbnwwfHx8fDE3NzQ1NDU2Mjl8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="Home construction site under construction with wooden framing" class="rounded-2xl shadow-2xl w-full h-[500px] object-cover">
+      <figcaption class="text-sm text-gray-500 mt-4 text-center italic">
+        Photo by <a href="https://unsplash.com/@taylorheeryphoto?utm_source=leonardo_rails_app&utm_medium=referral" target="_blank" rel="noopener" class="hover:text-blue-600 underline decoration-dotted transition-colors">Taylor Heery</a> on <a href="https://unsplash.com/photos/1704742950992-9815a104820c?utm_source=leonardo_rails_app&utm_medium=referral" target="_blank" rel="noopener" class="hover:text-blue-600 underline decoration-dotted transition-colors">Unsplash</a>
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="mb-20">
+    <div class="flex items-center mb-8 gap-4">
+      <div class="bg-error/10 p-4 rounded-xl">
+        <i class="fas fa-file-excel text-error text-2xl"></i>
+      </div>
+      <h2 class="text-3xl font-bold">The Spreadsheet Trap: Why Your Excel Sheet is Fragile</h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-12">
+      <div class="space-y-8">
+        <div>
+          <h3 class="text-2xl font-bold mb-4 flex items-center">
+            <i class="fas fa-link-slash text-gray-400 mr-3"></i>
+            Formula Errors & Broken Links
+          </h3>
+          <p class="text-gray-700 leading-relaxed">
+            Spreadsheets are the industry standard but also the primary source of catastrophic estimating errors. A single broken link or a misaligned sum in a complex workbook can hide five-figure mistakes. Without automated audit trails, your estimate is only as strong as your last manual cell check. Fragility in your data leads to fragility in your business.
+          </p>
+        </div>
+
+        <figure class="my-8">
+          <img src="https://images.unsplash.com/photo-1757256137041-0aab889db199?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTU2MDF8MHwxfHNlYXJjaHwxfHxibHVlcHJpbnRzJTIwYW5kJTIwY2FsY3VsYXRvcnxlbnwwfHx8fDE3NzQ1NDU2Mjl8MA&ixlib=rb-4.1.0&q=80&w=1080" alt="Scientific calculator on blueprints" class="rounded-xl shadow-lg w-full h-80 object-cover">
+          <figcaption class="text-sm text-gray-500 mt-3 text-center italic">
+            Photo by <a href="https://unsplash.com/@fp4?utm_source=leonardo_rails_app&utm_medium=referral" target="_blank" rel="noopener" class="hover:text-blue-600 underline decoration-dotted transition-colors">Gavin Allanwood</a> on <a href="https://unsplash.com/photos/1757256137041-0aab889db199?utm_source=leonardo_rails_app&utm_medium=referral" target="_blank" rel="noopener" class="hover:text-blue-600 underline decoration-dotted transition-colors">Unsplash</a>
+          </figcaption>
+        </figure>
+      </div>
+
+      <div>
+        <h3 class="text-2xl font-bold mb-4 flex items-center">
+          <i class="fas fa-clock-rotate-left text-gray-400 mr-3"></i>
+          Static Data in a Dynamic Market
+        </h3>
+        <p class="text-gray-700 leading-relaxed">
+          Spreadsheets are snapshots in time. The moment you save the file, the data begins to decay. Construction is a fluid process where assemblies and labor rates shift mid-project. A static document cannot respond to the complexities of a modern build site, leaving you blind to the cost-to-complete until it is too late.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mb-20">
+    <div class="flex items-center mb-8 gap-4">
+      <div class="bg-success/10 p-4 rounded-xl">
+        <i class="fas fa-shield-halved text-success text-2xl"></i>
+      </div>
+      <h2 class="text-3xl font-bold">Moving From Guessing to Guaranteeing</h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+      <div>
+        <h3 class="text-2xl font-bold mb-4">The Power of 'Living Documents'</h3>
+        <p class="text-gray-700 leading-relaxed mb-6">
+          Transitioning to a cloud-based estimating platform turns static numbers into a living document. Every change in a takeoff or a subcontractor bid automatically flows through the entire project scope. This level of transparency ensures that your projected profit remains your actual profit, regardless of mid-stream changes.
+        </p>
+        <h3 class="text-2xl font-bold mb-4">Real-Time Cost Tracking vs. One-Time Estimates</h3>
+        <p class="text-gray-700 leading-relaxed">
+          The ultimate goal is execution, not just estimation. Tracking actual costs against estimates in real-time allows builders to identify budget overruns before they become terminal. This proactive approach to financial management is what separates scaled construction firms from those struggling to keep the lights on.
+        </p>
+      </div>
+
+      <figure class="my-10">
+        <img src="https://images.unsplash.com/photo-1749704647512-3f556575a241?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NTU2MDF8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBob21lJTIwYXJjaGl0ZWN0dXJlfGVufDB8fHx8MTc3NDU0NTYzMHww&ixlib=rb-4.1.0&q=80&w=1080" alt="Modern home architecture with a woman standing in a kitchen area" class="rounded-2xl shadow-2xl w-full h-[450px] object-cover">
+        <figcaption class="text-sm text-gray-500 mt-4 text-center italic">
+          Photo by <a href="https://unsplash.com/@kailun2019?utm_source=leonardo_rails_app&utm_medium=referral" target="_blank" rel="noopener" class="hover:text-blue-600 underline decoration-dotted transition-colors">Kailun Zhang</a> on <a href="https://unsplash.com/photos/1749704647512-3f556575a241?utm_source=leonardo_rails_app&utm_medium=referral" target="_blank" rel="noopener" class="hover:text-blue-600 underline decoration-dotted transition-colors">Unsplash</a>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="mb-20">
+    <div class="flex items-center mb-8 gap-4">
+      <div class="bg-info/10 p-4 rounded-xl">
+        <i class="fas fa-calculator text-info text-2xl"></i>
+      </div>
+      <h2 class="text-3xl font-bold">Key Metrics Every Pro Must Track</h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-12">
+      <div class="card bg-neutral text-neutral-content shadow-xl">
+        <div class="card-body">
+          <h3 class="card-title text-2xl mb-4 font-bold">Hard Costs vs. Soft Costs</h3>
+          <p class="leading-relaxed">
+            Total project precision requires a strict separation of hard costs and soft costs. Hard costs encompass tangible materials and direct labor. Soft costs include permits, architectural fees, insurance, and financing. Many basic tools bury soft costs in generic 'miscellaneous' percentages, which inevitably leads to inaccurate cash flow projections and funding gaps.
+          </p>
+        </div>
+      </div>
+
+      <div class="card bg-neutral text-neutral-content shadow-xl">
+        <div class="card-body">
+          <h3 class="card-title text-2xl mb-4 font-bold">Contingency Planning for the 5% Error</h3>
+          <p class="leading-relaxed">
+            Seasoned builders know that a contingency fund is not a luxury. It is a fundamental requirement. By identifying and quantifying specific risks during the estimating phase, you build a buffer that protects the project's viability. Planning for the '5% error' ensures that unexpected site conditions or material shortages do not derail the entire build.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="bg-gradient-to-r from-primary to-secondary text-primary-content p-12 rounded-3xl text-center shadow-2xl mt-16">
+    <h2 class="text-4xl font-black mb-6">Stop guessing your margins.</h2>
+    <p class="text-2xl mb-10 max-w-2xl mx-auto opacity-90">
+      A 5% error on a $500,000 build is a $25,000 mistake. Get the precision your business deserves.
+    </p>
+    <a href="/contact" class="btn btn-lg btn-accent px-12 text-xl font-bold shadow-lg transform hover:scale-105 transition-all">
+      Upgrade Your Estimating
+    </a>
+  </div>
+</div>
