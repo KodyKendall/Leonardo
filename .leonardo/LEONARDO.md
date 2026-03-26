@@ -37,6 +37,19 @@ The Cyborg Llama.
 *   **CRITICAL:** Do NOT use a "Blog" namespace in URLs unless explicitly requested for a specific section.
 *   **Logic over Data:** If you need a "Recent Posts" list on the homepage, glob the `app/views/pages/` folder to get the filenames/metadata rather than querying a database.
 
+### 5. Unsplash Stock Photos & Mandatory Attribution
+*   **Service:** Use `UnsplashService.new.search('query', count: 3)` to retrieve stock photos.
+*   **Attribution Rule:** Unsplash requires linking back to the photographer and Unsplash in every use case.
+*   **Implementation Pattern:**
+    ```erb
+    <figure class="my-10">
+      <img src="IMAGE_URL" alt="DESCRIPTION" class="rounded-xl shadow-lg w-full h-96 object-cover">
+      <figcaption class="text-sm text-gray-500 mt-3 text-center italic">
+        Photo by <a href="PHOTOGRAPHER_URL" target="_blank" rel="noopener" class="hover:text-blue-600 underline decoration-dotted transition-colors">NAME</a> on <a href="UNSPLASH_URL" target="_blank" rel="noopener" class="hover:text-blue-600 underline decoration-dotted transition-colors">Unsplash</a>
+      </figcaption>
+    </figure>
+    ```
+
 ## 🚀 Skills & Patterns
 
 ### Content Injection
