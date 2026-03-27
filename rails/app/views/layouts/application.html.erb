@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html data-theme="light">
   <head>
-    <title><%= content_for(:title) || "Rails Basic" %></title>
+    <title><%= content_for(:title) || "Steel Estimating AI | AI Construction Steel Takeoff" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <!-- Prevent caching to ensure fresh request_path and view_path -->
@@ -19,8 +19,8 @@
     <%= yield :head %>
 
     <link rel="manifest" href="/manifest.json">
-    <link rel="icon" href="https://service-jobs-images.s3.us-east-2.amazonaws.com/7rl98t1weu387r43il97h6ipk1l7" type="image/png">
-    <link rel="apple-touch-icon" href="https://service-jobs-images.s3.us-east-2.amazonaws.com/7rl98t1weu387r43il97h6ipk1l7">
+    <link rel="icon" href="https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/uj1j3g2ffgcifri2qiq591u00tvy" type="image/png">
+    <link rel="apple-touch-icon" href="https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/uj1j3g2ffgcifri2qiq591u00tvy">
     <!-- Tailwind CSS v3 + DaisyUI v4 (compatible versions) -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
@@ -29,14 +29,99 @@
         theme: {
           extend: {
             colors: {
-              'llama-purple': '#4C3F6D',
-              'llama-blue': '#489DF9',
-              'llama-dark': '#2D2442',
-            }
+              'brand-purple': '#4C3F6D',
+              'brand-blue': '#489DF9',
+              'brand-dark': '#2D2442',
+              'brand-gradient-start': '#4C3F6D',
+              'brand-gradient-end': '#6d5da1',
+              'accent-purple': '#8b5cf6',
+            },
+            backgroundImage: {
+              'brand-gradient': 'linear-gradient(135deg, #4C3F6D 0%, #6d5da1 100%)',
+              'text-gradient': 'linear-gradient(90deg, #4C3F6D 0%, #8b5cf6 100%)',
+            },
+            borderRadius: {
+              '3xl': '1.5rem',
+              '4xl': '2rem',
+              '5xl': '3rem',
+            },
+            animation: {
+              'shimmer': 'shimmer 2s ease-in-out infinite',
+              'slide': 'slide 2s ease-in-out infinite',
+              'pulse-glow': 'pulse-glow 2s ease-in-out infinite',
+            },
+            keyframes: {
+              shimmer: {
+                '0%': { backgroundPosition: '200% 0' },
+                '100%': { backgroundPosition: '-200% 0' },
+              },
+              slide: {
+                '0%': { transform: 'translateX(-100%)' },
+                '100%': { transform: 'translateX(100%)' },
+              },
+              'pulse-glow': {
+                '0%, 100%': { boxShadow: '0 0 0 0 rgba(168,85,247,0.4)' },
+                '50%': { boxShadow: '0 4px 16px rgba(168,85,247,0.4)' },
+              },
+            },
           }
-        }
+        },
+        daisyui: {
+          themes: [
+            {
+              light: {
+                "primary": "#4C3F6D",
+                "secondary": "#489DF9",
+                "accent": "#8b5cf6",
+                "neutral": "#2D2442",
+                "base-100": "#ffffff",
+                "--rounded-box": "1.5rem",
+                "--rounded-btn": "9999px",
+              },
+            },
+          ],
+        },
       }
     </script>
+    <style type="text/tailwindcss">
+      @layer components {
+        .glass-dark {
+          @apply bg-white/5 border border-white/10 backdrop-blur-md;
+        }
+        .founding-pilot {
+          @apply bg-[#2D2442] text-white overflow-hidden;
+        }
+        .btn-brand, .btn-primary {
+          @apply bg-brand-gradient text-white border-none hover:shadow-lg hover:shadow-brand-purple/50 transition-all rounded-full px-8 py-3 font-bold;
+        }
+        .btn-secondary {
+          @apply bg-brand-blue text-white border-none hover:shadow-lg hover:shadow-brand-blue/50 transition-all rounded-full px-8 py-3 font-bold;
+        }
+        .text-brand-gradient {
+          @apply bg-text-gradient bg-clip-text text-transparent;
+        }
+        .badge-brand {
+          @apply px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest bg-brand-gradient text-white border-none;
+        }
+        .card {
+          @apply rounded-4xl bg-white border border-gray-100 shadow-sm transition-all duration-300 hover:shadow-2xl hover:shadow-brand-purple/5;
+        }
+        .ai-shimmer {
+          background: linear-gradient(90deg, 
+            rgba(255,255,255,0.12) 0%,
+            rgba(139,92,246,0.6) 50%,
+            rgba(255,255,255,0.12) 100%
+          );
+          background-size: 200% 100%;
+          background-clip: text;
+          -webkit-text-fill-color: transparent;
+          @apply animate-shimmer;
+        }
+        .ai-pulse-glow {
+          @apply animate-pulse-glow;
+        }
+      }
+    </style>
 
     <!-- Font Awesome (public CDN) -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" data-llama-id="6" data-llama-editable="true">
@@ -69,7 +154,7 @@
       <% unless content_for?(:hide_header) %>
         <header>
           <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mb-8">
-            <h1 class="text-4xl font-black leading-tight tracking-tight text-llama-dark">
+            <h1 class="text-4xl font-black leading-tight tracking-tight text-brand-dark">
               <%= content_for(:header) %>
             </h1>
           </div>

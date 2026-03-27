@@ -1,148 +1,155 @@
 <% content_for :title, "Steel Estimating AI | AI Construction Steel Takeoff & Estimating Software" %>
 
-<div class="bg-base-100 min-h-screen">
-  <!-- Hero Section -->
-  <div class="hero min-h-[70vh] bg-base-200">
-    <div class="hero-content text-center">
-      <div class="flex flex-col items-center">
-        <div class="max-w-2xl">
-          <h2 class="text-xl md:text-2xl font-bold text-llama-blue mb-2">
-            AI construction steel takeoff & estimating software
-          </h2>
-          <h1 class="text-5xl md:text-7xl font-black text-llama-dark mb-6 leading-tight">
-            Save time & bid <span class="text-llama-blue">6x more jobs</span>
-          </h1>
-          <p class="py-4 text-xl text-gray-600 mb-8 font-light">
-            Build perfect bids in minutes with a custom system built around your exact pricing logic, labor rates, and vendor pricing. Keeps everything synced so you bid consistently, fast, and right. It's like having a Jr. Estimator for perfect bid setup, without paying for one.
-          </p>
+<div class="bg-white min-h-screen">
+  <!-- Hero Section (Founding Pilot Look) -->
+  <div class="pt-8 pb-20 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto founding-pilot rounded-[3xl] md:rounded-[5xl] shadow-2xl relative">
+      <!-- Background Blurs for depth -->
+      <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-accent-purple/20 blur-[100px] rounded-full pointer-events-none"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-brand-blue/10 blur-[120px] rounded-full pointer-events-none"></div>
+
+      <div class="relative z-10 px-8 py-20 md:py-32 flex flex-col items-center text-center">
+        <div class="badge-brand mb-8 flex items-center gap-2">
+          <i class="fas fa-wand-magic-sparkles"></i>
+          <span>The New Standard for Steel</span>
         </div>
+        
+        <h1 class="text-5xl md:text-8xl font-black mb-8 leading-tight max-w-5xl">
+          Bid <span class="text-brand-blue">6x More Jobs</span> with AI Precision
+        </h1>
+        
+        <p class="text-xl md:text-2xl text-white/70 mb-12 max-w-3xl font-light leading-relaxed">
+          The ultimate custom system for construction companies transitioning from fragile spreadsheets to high-velocity estimating software.
+        </p>
 
-        <div class="w-full max-w-6xl mt-12 px-4">
-          <div class="relative flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-0">
-
-            <!-- Before Card -->
-            <div class="relative z-10 lg:-mr-8 transform lg:-rotate-2 hover:rotate-0 transition-transform duration-300">
-              <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200">
-                <!-- Card Header -->
-                <div class="bg-gradient-to-r from-gray-100 to-gray-50 px-8 py-5 border-b border-gray-200 text-center">
-                  <div class="flex items-center justify-center gap-3">
-                    <i class="fas fa-times text-red-500 text-xl"></i>
-                    <span class="text-lg font-bold text-gray-800 uppercase tracking-wide">Before: Excel Spreadsheet</span>
-                  </div>
-                </div>
-                <!-- Image -->
-                <div class="p-2 bg-gray-50">
-                  <img src="https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/esdmd9wkjkulczhgy9e7l77xemek" alt="Before: Spreadsheet" class="w-full max-w-[480px] h-auto rounded-lg">
-                </div>
-                <!-- Card Footer -->
-                <div class="px-6 py-3 bg-gray-50 border-t border-gray-100">
-                  <div class="flex items-center gap-2 text-gray-500 text-sm">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span>Manual entry, error-prone</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Arrow Connector -->
-            <div class="relative z-40 flex flex-col items-center lg:mx-4">
-              <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-xl ring-4 ring-white">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-              </div>
-              <span class="mt-2 text-xs font-bold text-indigo-600 uppercase tracking-widest bg-white px-3 py-1 rounded-full shadow-sm">6 Weeks</span>
-            </div>
-
-            <!-- After Card -->
-            <div class="relative z-30 lg:-ml-8 transform lg:rotate-1 hover:rotate-0 transition-transform duration-300">
-              <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border-2 border-indigo-200 ring-4 ring-indigo-50">
-                <!-- Card Header -->
-                <div class="bg-gradient-to-r from-indigo-600 to-purple-600 px-8 py-5 text-center">
-                  <div class="flex items-center justify-center gap-3">
-                    <i class="fas fa-check text-emerald-400 text-2xl"></i>
-                    <span class="text-xl font-extrabold text-white uppercase tracking-wider">After: Custom Estimating Software</span>
-                  </div>
-                </div>
-                <!-- Image - Much larger -->
-                <div class="p-2 bg-gradient-to-b from-indigo-50 to-white">
-                  <img src="https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/uxsgsdkjxlsss7e7cymnh93tn03x" alt="After: Custom Software" class="w-full max-w-[900px] h-auto rounded-lg shadow-inner">
-                </div>
-                <!-- Card Footer -->
-                <div class="px-6 py-3 bg-gradient-to-r from-indigo-50 to-purple-50 border-t border-indigo-100">
-                  <div class="flex items-center gap-2 text-indigo-600 text-sm font-medium">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                    <span>Automated, accurate, fast</span>
-                  </div>
-                </div>
-              </div>
-              <!-- Highlight Badge -->
-              <div class="absolute -top-3 -right-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg">
-                62% Faster
-              </div>
-            </div>
-
+        <div class="flex flex-wrap gap-6 justify-center">
+          <%= link_to new_user_registration_path, class: "btn-brand flex items-center gap-3" do %>
+            <span>Get Started Free</span>
+            <i class="fas fa-arrow-right"></i>
+          <% end %>
+          <div class="glass-dark rounded-full px-8 py-3 font-bold flex items-center gap-3">
+            <i class="fas fa-play-circle text-brand-blue"></i>
+            <span>Watch Demo</span>
           </div>
-        </div>
-
-        <div class="flex flex-wrap gap-4 justify-center mt-12">
-          <%= link_to "Get Started", new_user_registration_path, class: "btn btn-primary btn-lg" %>
-          <%= link_to "Read our Blog", "#recent-posts", class: "btn btn-outline btn-lg" %>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Features/Benefits Section -->
+  <!-- Comparison Section -->
   <div class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
-      <div class="flex flex-col items-center text-center">
-        <div class="w-16 h-16 rounded-2xl bg-llama-blue/10 flex items-center justify-center text-llama-blue text-2xl mb-6">
-          <i class="fas fa-chart-line"></i>
+    <div class="text-center mb-16">
+      <h2 class="text-4xl md:text-5xl font-black text-brand-purple mb-4">Evolution of Estimating</h2>
+      <p class="text-gray-500 text-lg max-w-2xl mx-auto">See how we transform your manual workflow into a streamlined AI engine.</p>
+    </div>
+
+    <div class="relative flex flex-col lg:flex-row items-center justify-center gap-12">
+      <!-- Before Card -->
+      <div class="w-full lg:w-1/3 group">
+        <div class="bg-gray-50 rounded-4xl p-8 border border-gray-100 shadow-sm transition-all group-hover:shadow-xl">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-500">
+              <i class="fas fa-times"></i>
+            </div>
+            <span class="text-sm font-extrabold uppercase tracking-widest text-gray-400">Old Way: Excel</span>
+          </div>
+          <div class="rounded-2xl overflow-hidden border border-gray-200 mb-6 bg-white p-2">
+            <img src="https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/esdmd9wkjkulczhgy9e7l77xemek" alt="Before: Spreadsheet" class="w-full h-auto rounded-xl">
+          </div>
+          <p class="text-gray-500 text-sm italic">"One wrong formula ruined our entire bid."</p>
         </div>
-        <h3 class="text-xl font-bold mb-3">Profitability Analysis</h3>
-        <p class="text-gray-500 font-light">Understand your margins before the first shovel hits the ground.</p>
-      </div>
-      
-      <div class="flex flex-col items-center text-center">
-        <div class="w-16 h-16 rounded-2xl bg-llama-purple/10 flex items-center justify-center text-llama-purple text-2xl mb-6">
-          <i class="fas fa-layer-group"></i>
-        </div>
-        <h3 class="text-xl font-bold mb-3">Cost Breakdowns</h3>
-        <p class="text-gray-500 font-light">Detailed templates for materials, labor, and overhead tracking.</p>
       </div>
 
-      <div class="flex flex-col items-center text-center">
-        <div class="w-16 h-16 rounded-2xl bg-llama-blue/10 flex items-center justify-center text-llama-blue text-2xl mb-6">
-          <i class="fas fa-shield-halved"></i>
+      <!-- Arrow -->
+      <div class="hidden lg:flex flex-col items-center">
+        <div class="w-16 h-16 rounded-full bg-brand-gradient flex items-center justify-center text-white shadow-xl ring-8 ring-brand-purple/5">
+          <i class="fas fa-rocket text-2xl"></i>
         </div>
-        <h3 class="text-xl font-bold mb-3">Risk Mitigation</h3>
-        <p class="text-gray-500 font-light">Identify potential budget overruns early with our proven system.</p>
+        <div class="mt-4 badge-brand">6 Weeks</div>
+      </div>
+
+      <!-- After Card -->
+      <div class="w-full lg:w-3/5 group">
+        <div class="bg-brand-purple/5 rounded-4xl p-8 border border-brand-purple/10 shadow-sm transition-all group-hover:shadow-2xl group-hover:shadow-brand-purple/10">
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                <i class="fas fa-check"></i>
+              </div>
+              <span class="text-sm font-extrabold uppercase tracking-widest text-brand-purple">New Way: AI Takeoff</span>
+            </div>
+            <div class="bg-green-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-tighter">62% Faster</div>
+          </div>
+          <div class="rounded-2xl overflow-hidden border-2 border-brand-purple/20 shadow-2xl bg-white p-2 mb-6">
+            <img src="https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/uxsgsdkjxlsss7e7cymnh93tn03x" alt="After: Custom Software" class="w-full h-auto rounded-xl">
+          </div>
+          <p class="text-brand-purple font-medium">"We now bid with 100% confidence in minutes, not days."</p>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Recent Posts Section -->
-  <div id="recent-posts" class="py-24 bg-base-200">
+  <!-- Benefits Section -->
+  <div class="py-24 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between items-end mb-12">
-        <div>
-          <h2 class="text-4xl font-black text-llama-dark">Recent Insights</h2>
-          <p class="text-gray-500 mt-2 font-light">The latest from our construction estimating experts.</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-16">
+        <div class="flex flex-col items-start">
+          <div class="w-16 h-16 rounded-2xl bg-brand-purple flex items-center justify-center text-white text-2xl mb-8 shadow-lg shadow-brand-purple/20">
+            <i class="fas fa-microchip"></i>
+          </div>
+          <h3 class="text-2xl font-black text-brand-purple mb-4 tracking-tight">AI Margin Control</h3>
+          <p class="text-gray-500 leading-relaxed font-light">Stop guessing at your labor rates. Our AI identifies hidden costs and ensures every bid protects your bottom line.</p>
+        </div>
+        
+        <div class="flex flex-col items-start">
+          <div class="w-16 h-16 rounded-2xl bg-brand-blue flex items-center justify-center text-white text-2xl mb-8 shadow-lg shadow-brand-blue/20">
+            <i class="fas fa-layer-group"></i>
+          </div>
+          <h3 class="text-2xl font-black text-brand-purple mb-4 tracking-tight">Workflow Sync</h3>
+          <p class="text-gray-500 leading-relaxed font-light">Custom built around your existing shop logic. No generic templates—this is your system, accelerated by AI.</p>
+        </div>
+
+        <div class="flex flex-col items-start">
+          <div class="w-16 h-16 rounded-2xl bg-accent-purple flex items-center justify-center text-white text-2xl mb-8 shadow-lg shadow-accent-purple/20">
+            <i class="fas fa-shield-halved"></i>
+          </div>
+          <h3 class="text-2xl font-black text-brand-purple mb-4 tracking-tight">Key-Man Protection</h3>
+          <p class="text-gray-500 leading-relaxed font-light">Institutionalize your estimating logic. If your head estimator is away, the business doesn't stop.</p>
         </div>
       </div>
+    </div>
+  </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+  <!-- Insights Section -->
+  <div id="recent-posts" class="py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row justify-between items-center mb-16 gap-8 text-center md:text-left">
+        <div>
+          <h2 class="text-4xl md:text-6xl font-black text-brand-purple tracking-tight">Expert Insights</h2>
+          <p class="text-gray-500 mt-4 text-lg">The latest in steel construction and AI estimating.</p>
+        </div>
+        <%= link_to "#", class: "btn-brand" do %>
+          View All Insights
+        <% end %>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         <% @posts.each do |slug| %>
-          <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow border">
-            <div class="card-body">
-              <h2 class="card-title text-2xl"><%= slug.titleize %></h2>
-              <p class="text-gray-500 font-light my-4">Learn about <%= slug.gsub("-", " ") %> and how it impacts your next big bid.</p>
-              <div class="card-actions justify-end">
-                <%= link_to static_page_path(slug: slug), class: "btn btn-ghost btn-sm gap-2 text-llama-blue" do %>
-                  Read More <i class="fas fa-arrow-right"></i>
-                <% end %>
+          <%= link_to static_page_path(slug: slug), class: "group block" do %>
+            <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm transition-all h-full flex flex-col hover:shadow-2xl hover:shadow-brand-purple/5 hover:-translate-y-2">
+              <div class="badge-brand mb-6 self-start">Article</div>
+              <h2 class="text-2xl font-black text-brand-purple mb-4 leading-tight group-hover:text-brand-blue transition-colors">
+                <%= slug.titleize %>
+              </h2>
+              <p class="text-gray-500 font-light mb-8 line-clamp-3 flex-grow">
+                Mastering the complexities of <%= slug.gsub("-", " ") %> and modernizing your bid process.
+              </p>
+              <div class="flex items-center gap-2 text-brand-purple font-bold">
+                <span>Read Article</span>
+                <i class="fas fa-arrow-right text-brand-blue group-hover:translate-x-2 transition-transform"></i>
               </div>
             </div>
-          </div>
+          <% end %>
         <% end %>
       </div>
     </div>
