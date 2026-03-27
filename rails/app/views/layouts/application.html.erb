@@ -78,10 +78,10 @@
 
       <main>
         <% if content_for?(:full_width) %>
-          <%= yield %>
+          <%= content_for?(:content) ? yield(:content) : yield %>
         <% else %>
           <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <%= yield %>
+            <%= content_for?(:content) ? yield(:content) : yield %>
           </div>
         <% end %>
       </main>
