@@ -7,12 +7,20 @@
     <p>Empowering estimators since <%= Time.current.year %>.<br/>Making project costs predictable.</p>
   </aside> 
   <nav>
-    <header class="footer-title">Navigation</header> 
-    <%= link_to "Home", root_path, class: "link link-hover" %>
-    <%= link_to "Hello World", static_page_path(slug: "hello-world"), class: "link link-hover" %>
+    <header class="footer-title">Resources</header> 
+    <%= link_to "Mastering Estimates", static_page_path(slug: "cost-estimator-new-home-construction"), class: "link link-hover" %>
+    <%= link_to "Estimator Guide", static_page_path(slug: "home-construction-estimator"), class: "link link-hover" %>
+    <%= link_to "Free Estimating Software", static_page_path(slug: "free-construction-cost-estimating-software"), class: "link link-hover" %>
+    <%= link_to "House Construction Calculator", static_page_path(slug: "house-construction-estimate-calculator"), class: "link link-hover" %>
   </nav> 
   <nav>
-    <header class="footer-title">Support</header> 
+    <header class="footer-title">Company</header> 
+    <%= link_to "Home", root_path, class: "link link-hover" %>
+    <%= link_to "Support", "#", class: "link link-hover" %>
+    <%= link_to "Contact", "#", class: "link link-hover" %>
+  </nav> 
+  <nav>
+    <header class="footer-title">Account</header> 
     <%= link_to "Sign In", new_user_session_path, class: "link link-hover" %>
     <%= link_to "Get Started", new_user_registration_path, class: "link link-hover" %>
   </nav> 
@@ -20,7 +28,6 @@
     <header class="footer-title">Legal</header> 
     <a class="link link-hover">Terms of use</a>
     <a class="link link-hover">Privacy policy</a>
-    <a class="link link-hover">Cookie policy</a>
   </nav>
 </footer>
 <footer class="footer px-10 py-4 border-t bg-base-200 text-base-content border-base-300">

@@ -6,7 +6,14 @@
       </div>
       <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
         <li><%= link_to "Home", root_path %></li>
-        <li><%= link_to "Hello World", static_page_path(slug: "hello-world") %></li>
+        <li>
+          <a>Resources</a>
+          <ul class="p-2">
+            <li><%= link_to "Mastering Estimates", static_page_path(slug: "cost-estimator-new-home-construction") %></li>
+            <li><%= link_to "Estimator Guide", static_page_path(slug: "home-construction-estimator") %></li>
+            <li><%= link_to "Free Estimating Software", static_page_path(slug: "free-construction-cost-estimating-software") %></li>
+          </ul>
+        </li>
       </ul>
     </div>
     <%= link_to root_path, class: "btn btn-ghost text-xl font-bold gap-2" do %>
@@ -17,7 +24,16 @@
   <div class="navbar-center hidden lg:flex">
     <ul class="menu menu-horizontal px-1">
       <li><%= link_to "Home", root_path %></li>
-      <li><%= link_to "Hello World", static_page_path(slug: "hello-world") %></li>
+      <li>
+        <details>
+          <summary>Resources</summary>
+          <ul class="p-2 bg-base-100 rounded-t-none w-64 z-[1]">
+            <li><%= link_to "Mastering Estimates", static_page_path(slug: "cost-estimator-new-home-construction") %></li>
+            <li><%= link_to "Estimator Guide", static_page_path(slug: "home-construction-estimator") %></li>
+            <li><%= link_to "Free Estimating Software", static_page_path(slug: "free-construction-cost-estimating-software") %></li>
+          </ul>
+        </details>
+      </li>
     </ul>
   </div>
   <div class="navbar-end">
