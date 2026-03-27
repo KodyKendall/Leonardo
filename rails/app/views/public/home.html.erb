@@ -1,41 +1,48 @@
 <% content_for :title, "Steel Estimating AI | AI Construction Steel Takeoff & Estimating Software" %>
 
-<div class="bg-white min-h-screen">
-  <!-- Hero Section (Founding Pilot Look) -->
-  <div class="pt-8 pb-20 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto founding-pilot rounded-[3xl] md:rounded-[5xl] shadow-2xl relative">
-      <!-- Background Blurs for depth -->
-      <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-accent-purple/20 blur-[100px] rounded-full pointer-events-none"></div>
-      <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-brand-blue/10 blur-[120px] rounded-full pointer-events-none"></div>
+<% content_for :hero_section do %>
+  <div class="bg-brand-gradient relative overflow-hidden text-white">
+    <!-- Background Blurs for depth -->
+    <div class="absolute top-0 left-1/4 w-[500px] h-[500px] bg-accent-purple/20 blur-[120px] rounded-full pointer-events-none opacity-50"></div>
+    <div class="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-brand-blue/10 blur-[150px] rounded-full pointer-events-none opacity-50"></div>
 
-      <div class="relative z-10 px-8 py-20 md:py-32 flex flex-col items-center text-center">
-        <div class="badge-brand mb-8 flex items-center gap-2">
-          <i class="fas fa-wand-magic-sparkles"></i>
-          <span>The New Standard for Steel</span>
-        </div>
-        
-        <h1 class="text-5xl md:text-8xl font-black mb-8 leading-tight max-w-5xl">
-          Bid <span class="text-brand-blue">6x More Jobs</span> with AI Precision
-        </h1>
-        
-        <p class="text-xl md:text-2xl text-white/70 mb-12 max-w-3xl font-light leading-relaxed">
-          The ultimate custom system for construction companies transitioning from fragile spreadsheets to high-velocity estimating software.
-        </p>
+    <% content_for :navbar_class, "bg-transparent shadow-none border-none" %>
+    <% content_for :navbar_text_class, "text-white" %>
+    <% content_for :navbar_logo, "https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/2gtjznpnqu2cd81nd0eow2nl3p7j" %>
+    <% content_for :navbar_button_class, "bg-white !text-brand-purple hover:bg-gray-100 border-none shadow-xl" %>
+    <%= render 'shared/navbar' %>
 
-        <div class="flex flex-wrap gap-6 justify-center">
-          <%= link_to new_user_registration_path, class: "btn-brand flex items-center gap-3" do %>
-            <span>Get Started Free</span>
-            <i class="fas fa-arrow-right"></i>
-          <% end %>
-          <div class="glass-dark rounded-full px-8 py-3 font-bold flex items-center gap-3">
-            <i class="fas fa-play-circle text-brand-blue"></i>
-            <span>Watch Demo</span>
-          </div>
+    <div class="relative z-10 px-8 py-20 md:py-32 flex flex-col items-center text-center max-w-7xl mx-auto">
+      <div class="badge-brand mb-8 flex items-center gap-2 ring-4 ring-white/10">
+        <i class="fas fa-wand-magic-sparkles"></i>
+        <span>The New Standard for Steel</span>
+      </div>
+      
+      <h1 class="text-5xl md:text-8xl font-black mb-8 leading-tight max-w-5xl tracking-tight">
+        Bid <span class="text-brand-blue">6x More Jobs</span> with AI Precision
+      </h1>
+      
+      <p class="text-xl md:text-2xl text-white/80 mb-12 max-w-3xl font-light leading-relaxed">
+        The ultimate custom system for construction companies transitioning from fragile spreadsheets to high-velocity estimating software.
+      </p>
+
+      <div class="flex flex-wrap gap-6 justify-center">
+        <%= link_to new_user_registration_path, class: "bg-white text-brand-purple rounded-full px-10 py-4 font-bold hover:shadow-2xl hover:shadow-white/20 transition-all flex items-center gap-3 text-lg" do %>
+          <span>Get Started Free</span>
+          <i class="fas fa-arrow-right"></i>
+        <% end %>
+        <div class="glass-dark rounded-full px-10 py-4 font-bold flex items-center gap-3 cursor-pointer hover:bg-white/10 transition-all border-white/20 text-lg">
+          <i class="fas fa-play-circle text-brand-blue"></i>
+          <span>Watch Demo</span>
         </div>
       </div>
     </div>
   </div>
+<% end %>
 
+<% content_for :full_width, true %>
+
+<div class="bg-white min-h-screen">
   <!-- Comparison Section -->
   <div class="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-16">

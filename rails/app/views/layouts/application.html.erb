@@ -132,8 +132,12 @@
   </head>
 
   <body class="h-full min-h-screen flex flex-col">
-    <% unless content_for?(:hide_navbar) %>
-      <%= render 'shared/navbar' %>
+    <% if content_for?(:hero_section) %>
+      <%= yield :hero_section %>
+    <% else %>
+      <% unless content_for?(:hide_navbar) %>
+        <%= render 'shared/navbar' %>
+      <% end %>
     <% end %>
 
     <div class="flex-grow <%= content_for?(:full_width) ? '' : 'py-10' %>">

@@ -1,10 +1,10 @@
-<div class="navbar bg-base-100 shadow-sm px-4 lg:px-8">
+<div class="navbar <%= content_for?(:navbar_class) ? yield(:navbar_class) : 'bg-base-100 shadow-sm' %> px-4 lg:px-8">
   <div class="navbar-start">
     <div class="dropdown">
-      <div tabindex="0" role="button" class="btn btn-ghost lg:hidden">
+      <div tabindex="0" role="button" class="btn btn-ghost lg:hidden <%= content_for?(:navbar_text_class) ? yield(:navbar_text_class) : '' %>">
         <i class="fas fa-bars"></i>
       </div>
-      <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+      <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 text-base-content">
         <li><%= link_to "Home", root_path %></li>
         <li>
           <a>Resources</a>
@@ -16,18 +16,18 @@
         </li>
       </ul>
     </div>
-    <%= link_to root_path, class: "flex items-center gap-3 font-black text-2xl tracking-tight text-brand-purple" do %>
-      <img src="https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/uj1j3g2ffgcifri2qiq591u00tvy" alt="Steel Estimating AI" class="h-10 w-10">
+    <%= link_to root_path, class: "flex items-center gap-3 font-black text-2xl tracking-tight #{content_for?(:navbar_text_class) ? yield(:navbar_text_class) : 'text-brand-purple'}" do %>
+      <img src="<%= content_for?(:navbar_logo) ? yield(:navbar_logo) : 'https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/3u2z1d4o32kaoy46bde8urbcs9uo' %>" alt="Steel Estimating AI" class="h-10 w-10">
       <span>Steel Estimating AI</span>
     <% end %>
   </div>
   <div class="navbar-center hidden lg:flex">
-    <ul class="menu menu-horizontal px-1 font-medium">
+    <ul class="menu menu-horizontal px-1 font-medium <%= content_for?(:navbar_text_class) ? yield(:navbar_text_class) : '' %>">
       <li><%= link_to "Home", root_path %></li>
       <li>
         <details>
           <summary>Resources</summary>
-          <ul class="p-2 bg-base-100 rounded-box shadow-xl border border-base-200 w-64 z-[1]">
+          <ul class="p-2 bg-base-100 rounded-box shadow-xl border border-base-200 w-64 z-[1] text-base-content">
             <li><%= link_to "Mastering Estimates", static_page_path(slug: "the-hidden-cost-of-your-excel-estimator-scaling-new-home-construction-in-2025") %></li>
             <li><%= link_to "Estimator Guide", static_page_path(slug: "home-construction-estimator") %></li>
             <li><%= link_to "Free Estimating Software", static_page_path(slug: "free-construction-cost-estimating-software") %></li>
@@ -44,19 +44,19 @@
             <span><%= current_user.email.first.upcase %></span>
           </div>
         </div>
-        <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-2xl bg-base-100 rounded-box w-52 border border-base-200">
+        <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-2xl bg-base-100 rounded-box w-52 border border-base-200 text-base-content">
           <li><%= link_to "Profile", user_path(current_user) %></li>
           <% if current_user.respond_to?(:admin?) && current_user.admin? %>
             <li><%= link_to "Admin", admin_root_path %></li>
           <% end %>
           <li class="border-t border-base-200 mt-2 pt-2">
-            <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "text-error" %>
+            <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "text-error w-full text-left" %>
           </li>
         </ul>
       </div>
     <% else %>
-      <%= link_to "Sign in", new_user_session_path, class: "btn btn-ghost font-bold" %>
-      <%= link_to "Get Started", new_user_registration_path, class: "btn btn-brand" %>
+      <%= link_to "Sign in", new_user_session_path, class: "btn btn-ghost font-bold #{content_for?(:navbar_text_class) ? yield(:navbar_text_class) : ''}" %>
+      <%= link_to "Get Started", new_user_registration_path, class: "btn #{content_for?(:navbar_button_class) ? yield(:navbar_button_class) : 'btn-brand'}" %>
     <% end %>
   </div>
 </div>

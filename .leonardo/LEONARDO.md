@@ -163,3 +163,70 @@ these slugs/URLs should have the title of the page. We would just open this up a
 
 It's important for SEO that the URL/slug is more human readable, instead of the slug being the keywords we're targeting.
 
+_____
+
+Here's our brand styling: 
+
+Steel Estimating AI Branding Guideline: 
+
+Light backgrounds: https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/uj1j3g2ffgcifri2qiq591u00tvy (Purple Llama)
+Dark backgrounds: https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/h5e5wlt9zbgpaoifq91jw741pt0c (White Llama)
+
+Leonardo (Cyborg Eye Variant)
+
+Light backgrounds: https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/3u2z1d4o32kaoy46bde8urbcs9uo (Purple Llama + Blue Eye)
+Dark backgrounds: https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/2gtjznpnqu2cd81nd0eow2nl3p7j (White Llama + Blue Eye)
+
+Leonardo Profile (Closeup)
+
+Light/White backgrounds: https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/rz0iwirzz2cwnkd3eoe1uplmzvad (Leonardo-Profile-Purple)
+Dark backgrounds: https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/4bmqe5iolvp84ceyk9ttz8vylrym (Leonardo-Profile-White)
+
+COLORS & GRADIENTS
+
+Primary Purple: #4C3F6D
+Tertiary Blue (Leonardo Eye): #489DF9 — use for accents, links, interactive highlights
+Text Gradient: from-[#4C3F6D] to-[#8b5cf6] (used for hero emphasis)
+Brand Gradient: from-[#4C3F6D] to-[#6d5da1] (used for primary cards/buttons)
+
+STYLING PATTERNS
+
+The "Founding Pilot" Look (High-Impact): Use #2D2442 background + glass-dark overlays (white/5 fill + white/10 border) + purple-500 background blurs for depth.
+The "Glow" Effect: Buttons/Cards should use hover:shadow-purple-200/50 or shadow-2xl with a color-matched tinted shadow.
+Section Radius: Large containers use rounded-[3rem]. Standard cards use rounded-2xl.
+Primary Buttons: brand-bg + white text + rounded-full + hover:shadow-lg.
+Badges: px-4 py-1.5 rounded-full text-[10px] font-extrabold uppercase tracking-widest.
+
+ICONS
+
+Font Awesome 6: Always use specific, high-detail icons (e.g., fa-wand-magic-sparkles, fa-microchip, fa-rocket).
+
+Leonardo AI Active Indicator
+Purpose: Signal that AI is actively processing/thinking. Primary Color: #8b5cf6 (purple) / rgba(139, 92, 246, ...) Core Techniques:
+Text Shimmer - Gradient sweep across text
+
+background: linear-gradient(90deg, 
+  rgba(255,255,255,0.12) 0%,
+  rgba(139,92,246,0.6) 50%,
+  rgba(255,255,255,0.12) 100%
+);
+background-size: 200% 100%;
+background-clip: text;
+-webkit-text-fill-color: transparent;
+animation: shimmer 1.5-2s ease-in-out infinite;
+Bar Shimmer - Horizontal light sweep
+
+/* Gradient bar that slides left-to-right */
+background: linear-gradient(90deg,
+  transparent 0%,
+  rgba(139,92,246,0.8) 50%,
+  transparent 100%
+);
+animation: slide 2s ease-in-out infinite;
+Pulse Glow - Breathing box-shadow
+
+animation: pulse 1.5-2s ease-in-out infinite;
+/* Alternate between: */
+box-shadow: 0 0 0 0 rgba(168,85,247,0.4);
+box-shadow: 0 4px 16px rgba(168,85,247,0.4);
+Timing: 1.5–2s, ease-in-out, infinite Rule: Remove animation immediately when AI stops processing (no lingering effects).
