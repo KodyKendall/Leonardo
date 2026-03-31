@@ -1,6 +1,11 @@
 class LlamaMailer < ApplicationMailer
   def contact_notification(submission)
     @submission = submission
+
+    if @submission.attachment.attached?
+      attachments[@submission.attachment.filename.to_s] = @submission.attachment.download
+    end
+
     recipients = ['kodyckendall@gmail.com', 'darrendavidspencer@gmail.com']
 
     mail(

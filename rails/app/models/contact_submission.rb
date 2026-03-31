@@ -1,4 +1,6 @@
 class ContactSubmission < ApplicationRecord
+  has_one_attached :attachment
+
   validates :company_name, presence: true
   validates :first_name, presence: true
   validates :last_name, presence: true

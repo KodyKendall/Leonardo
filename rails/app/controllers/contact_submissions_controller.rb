@@ -18,6 +18,6 @@ class ContactSubmissionsController < ApplicationController
   private
 
   def contact_submission_params
-    params.require(:contact_submission).permit(:company_name, :first_name, :last_name, :title, :email)
+    params.require(:contact_submission).permit(:company_name, :first_name, :last_name, :title, :email, :attachment)
   end
 end

@@ -52,6 +52,16 @@
     <%= f.email_field :email, placeholder: "john@acme.com", class: "input input-bordered w-full rounded-xl focus:border-brand-purple focus:ring-brand-purple/20 bg-white/50" %>
   </div>
 
+  <div class="form-control mb-8">
+    <%= f.label :attachment, class: "label px-1" do %>
+      <div class="flex flex-col">
+        <span class="label-text font-semibold text-brand-purple">Upload your spreadsheet (optional)</span>
+        <span class="label-text-alt text-gray-400 italic">Submit an Excel or CSV for analysis</span>
+      </div>
+    <% end %>
+    <%= f.file_field :attachment, class: "file-input file-input-bordered file-input-primary w-full rounded-xl bg-white/50 focus:border-brand-purple focus:ring-brand-purple/20", accept: ".csv, .xlsx, .xls" %>
+  </div>
+
   <div class="flex justify-center">
     <%= f.submit class: "btn btn-brand btn-lg w-full md:w-auto min-w-[200px] shadow-xl hover:scale-105 transition-transform" do %>
       <span>Get a Free Consultation</span>

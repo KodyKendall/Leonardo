@@ -9,6 +9,10 @@
 <p><strong>Title:</strong> <%= @submission.title %></p>
 <p><strong>Email:</strong> <%= mail_to @submission.email %></p>
 
+<% if @submission.attachment.attached? %>
+  <p><strong>Attachment:</strong> <%= @submission.attachment.filename %> (<%= number_to_human_size(@submission.attachment.byte_size) %>)</p>
+<% end %>
+
 <hr>
 
 <p><em>Submitted at: <%= @submission.created_at.strftime("%B %d, %Y %H:%M %p") %></em></p>
