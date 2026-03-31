@@ -1,0 +1,47 @@
+<% content_for :title, "Construction Estimating Insights | Modern Bidding & Preconstruction Strategies" %>
+<% content_for :meta_description, "Explore our latest insights on construction estimating, from moving beyond spreadsheets to leveraging AI for material estimation and quantity takeoffs." %>
+
+<section class="py-24 bg-base-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-20">
+      <h1 class="text-5xl md:text-7xl font-black text-brand-purple mb-6 tracking-tight italic">Construction Estimating Insights</h1>
+      <p class="text-gray-500 text-xl max-w-3xl mx-auto font-light leading-relaxed">
+        The latest strategies, technology, and workflows for construction professionals transitioning from manual spreadsheets to high-velocity digital systems.
+      </p>
+    </div>
+
+    <% 
+      pages_dir = Rails.root.join("app/views/pages")
+      posts = Dir.glob(pages_dir.join("**/*.html.erb"))
+                 .sort_by { |f| File.mtime(f) }.reverse
+                 .map { |f| f.sub(pages_dir.to_s, "").sub(".html.erb", "") }
+                 .reject { |s| s.include?("/_") || s == "/blog" }
+                 .map { |s| s.starts_with?("/") ? s[1..-1] : s }
+    %>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+      <% posts.each do |slug| %>
+        <%= link_to static_page_path(slug: slug), class: "group block" do %>
+          <div class="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm transition-all h-full flex flex-col hover:shadow-2xl hover:shadow-brand-purple/5 hover:-translate-y-2">
+            <div class="badge-brand mb-6 self-start flex items-center gap-2">
+              <i class="fas fa-file-alt"></i>
+              <span>Article</span>
+            </div>
+            <h2 class="text-2xl font-black text-brand-purple mb-4 leading-tight group-hover:text-brand-blue transition-colors">
+              <%= slug.titleize %>
+            </h2>
+            <p class="text-gray-500 font-light mb-8 line-clamp-3 flex-grow">
+              Mastering the complexities of <%= slug.gsub("-", " ") %> and modernizing your bid process for 2025.
+            </p>
+            <div class="flex items-center gap-2 text-brand-purple font-bold">
+              <span>Read Full Article</span>
+              <i class="fas fa-arrow-right text-brand-blue group-hover:translate-x-2 transition-transform"></i>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<%= render 'shared/blog_cta' %>
