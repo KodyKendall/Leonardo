@@ -10,9 +10,9 @@
       Stop struggling with version control, broken formulas, and key-man risk. 
       Let us convert your existing Excel workflows into a custom, scalable estimating engine built exactly how your team works.
     </p>
-    <a href="/contact" class="btn-brand inline-flex items-center gap-4 text-lg">
-      <i class="fas fa-wand-magic-sparkles"></i> 
-      <span>Get a Free Consultation</span>
-    </a>
+    
+    <div class="mt-12 bg-white/40 backdrop-blur-sm p-8 md:p-12 rounded-2xl border border-white/50 shadow-inner">
+      <%= render partial: 'contact_submissions/form', locals: { contact_submission: ContactSubmission.new } %>
+    </div>
   </div>
 </div>

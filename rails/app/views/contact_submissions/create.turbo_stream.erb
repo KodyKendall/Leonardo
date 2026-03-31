@@ -1,0 +1,28 @@
+<% if @contact_submission.persisted? %>
+  <%= turbo_stream.replace "contact_form_container" do %>
+    <div class="founding-pilot rounded-2xl p-12 text-center shadow-2xl relative overflow-hidden group">
+      <div class="absolute inset-0 bg-brand-gradient opacity-10 group-hover:opacity-20 transition-opacity"></div>
+      
+      <div class="relative z-10">
+        <div class="w-20 h-20 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center mx-auto mb-8 border border-green-500/30">
+          <i class="fas fa-check text-3xl"></i>
+        </div>
+        
+        <h3 class="text-3xl font-black mb-4 tracking-tight">Mission Received</h3>
+        <p class="text-lg text-white/80 max-w-sm mx-auto leading-relaxed">
+          We've logged your request. One of our engineers will reach out within 24 hours to schedule your consultation.
+        </p>
+        
+        <div class="mt-8 flex justify-center items-center gap-2 text-white/40 text-xs font-bold uppercase tracking-widest">
+          <span class="w-8 h-px bg-white/10"></span>
+          <span>Founding Pilot Program</span>
+          <span class="w-8 h-px bg-white/10"></span>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% else %>
+  <%= turbo_stream.replace "contact_form_container" do %>
+    <%= render partial: "contact_submissions/form", locals: { contact_submission: @contact_submission } %>
+  <% end %>
+<% end %>

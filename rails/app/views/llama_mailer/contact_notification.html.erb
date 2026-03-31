@@ -1,0 +1,14 @@
+<h1>New Contact Submission</h1>
+
+<p>You have received a new lead from your website's blog CTA.</p>
+
+<hr>
+
+<p><strong>Company:</strong> <%= @submission.company_name %></p>
+<p><strong>Name:</strong> <%= @submission.first_name %> <%= @submission.last_name %></p>
+<p><strong>Title:</strong> <%= @submission.title %></p>
+<p><strong>Email:</strong> <%= mail_to @submission.email %></p>
+
+<hr>
+
+<p><em>Submitted at: <%= @submission.created_at.strftime("%B %d, %Y %H:%M %p") %></em></p>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_03_20_134720) do
+ActiveRecord::Schema[7.2].define(version: 2026_03_31_155502) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -50,6 +50,53 @@ ActiveRecord::Schema[7.2].define(version: 2026_03_20_134720) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "checkpoint_blobs", primary_key: ["thread_id", "checkpoint_ns", "channel", "version"], force: :cascade do |t|
+    t.text "thread_id", null: false
+    t.text "checkpoint_ns", default: "", null: false
+    t.text "channel", null: false
+    t.text "version", null: false
+    t.text "type", null: false
+    t.binary "blob"
+    t.index ["thread_id"], name: "checkpoint_blobs_thread_id_idx"
+  end
+
+  create_table "checkpoint_migrations", primary_key: "v", id: :integer, default: nil, force: :cascade do |t|
+  end
+
+  create_table "checkpoint_writes", primary_key: ["thread_id", "checkpoint_ns", "checkpoint_id", "task_id", "idx"], force: :cascade do |t|
+    t.text "thread_id", null: false
+    t.text "checkpoint_ns", default: "", null: false
+    t.text "checkpoint_id", null: false
+    t.text "task_id", null: false
+    t.integer "idx", null: false
+    t.text "channel", null: false
+    t.text "type"
+    t.binary "blob", null: false
+    t.text "task_path", default: "", null: false
+    t.index ["thread_id"], name: "checkpoint_writes_thread_id_idx"
+  end
+
+  create_table "checkpoints", primary_key: ["thread_id", "checkpoint_ns", "checkpoint_id"], force: :cascade do |t|
+    t.text "thread_id", null: false
+    t.text "checkpoint_ns", default: "", null: false
+    t.text "checkpoint_id", null: false
+    t.text "parent_checkpoint_id"
+    t.text "type"
+    t.jsonb "checkpoint", null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.index ["thread_id"], name: "checkpoints_thread_id_idx"
+  end
+
+  create_table "contact_submissions", force: :cascade do |t|
+    t.string "company_name", null: false
+    t.string "first_name", null: false
+    t.string "last_name", null: false
+    t.string "title", null: false
+    t.string "email", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "llama_bot_rails_conversation_participants", force: :cascade do |t|

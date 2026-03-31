@@ -32,12 +32,15 @@ Rails.application.routes.draw do
         post :impersonate
       end
     end
+    resources :contact_submissions, only: [:index, :show, :destroy]
   end
   
   post "/stop_impersonating", to: "application#stop_impersonating"
 
   # Recall.ai webhook
   post "/webhooks/recall", to: "webhooks#recall"
+
+  resources :contact_submissions, only: [:create]
 
   get "/prototypes/*page", to: "prototypes#show"
   # Defines the root path route ("/")

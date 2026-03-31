@@ -6,13 +6,18 @@
   <%= csrf_meta_tags %>
   <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   <%= javascript_importmap_tags %>
+  <script>function initApollo(){var n=Math.random().toString(36).substring(7),o=document.createElement("script");
+    o.src="https://assets.apollo.io/micro/website-tracker/tracker.iife.js?nocache="+n,o.async=!0,o.defer=!0,
+    o.onload=function(){window.trackingFunctions.onLoad({appId:"69aecb683afda200197a991d"})},
+    document.head.appendChild(o)}initApollo();</script>
 </head>
 <body class="bg-gray-100">
   <div class="flex">
     <aside class="w-64 bg-white shadow h-screen p-4">
       <nav>
         <%= link_to "Dashboard", admin_root_path, class: "block py-2" %>
-        <%= link_to "Users", admin_users_path, class: "block py-2" %>
+        <%= link_to "Users", admin_users_path, class: "block py-2 hover:text-blue-600 transition-colors" %>
+        <%= link_to "Submissions", admin_contact_submissions_path, class: "block py-2 hover:text-blue-600 transition-colors" %>
       </nav>
     </aside>
     <main class="flex-1 p-6">
