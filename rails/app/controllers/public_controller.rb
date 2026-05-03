@@ -1,5 +1,5 @@
 class PublicController < ApplicationController
-    skip_before_action :authenticate_user!
+    skip_before_action :authenticate_user!, raise: false
   
     # Root page of our application.
     # GET /

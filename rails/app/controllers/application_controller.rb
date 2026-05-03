@@ -4,8 +4,26 @@ class ApplicationController < ActionController::Base
   
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
-  before_action :authenticate_user_from_token!
-  before_action :authenticate_user!
+
+  # AUTHENTICATION IS DISABLED BY DEFAULT FOR NEW PROJECTS.
+  #
+  # Leonardo: when the user asks to enable authentication (e.g. "require login",
+  # "lock this down", "add auth"), uncomment the two `before_action` lines below.
+  # - `authenticate_user_from_token!` handles API requests via Bearer token / `api_token` param.
+  # - `authenticate_user!` (provided by Devise) handles browser/session requests.
+  # If only certain controllers should require auth, leave these commented and add
+  # the `before_action` to those controllers instead, or use `skip_before_action`
+  # in controllers that should remain public (e.g. HomeController, Devise controllers).
+  #
+  # IMPORTANT: any `skip_before_action :authenticate_user!` in child controllers
+  # MUST use `raise: false` so they remain safe while auth is disabled, e.g.:
+  #   skip_before_action :authenticate_user!, raise: false
+  # Without `raise: false`, Rails raises ArgumentError ("callback ... has not been
+  # defined") at boot when the callback isn't registered.
+  #
+  # before_action :authenticate_user_from_token!
+  # before_action :authenticate_user!
+
   before_action :allow_iframe_requests
   before_action :set_context
   protect_from_forgery with: :exception, unless: :api_request?
