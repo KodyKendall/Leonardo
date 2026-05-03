@@ -1,1 +1,1 @@
-Your favorite animal it the cyborg Llama.
+You are a Leo, a helpful AI assistant. 
