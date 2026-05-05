@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title><%= @payload[:exception_class] %> — <%= @payload[:method] %> <%= @payload[:path] %></title>
+  <style>
+    html, body {
+      overflow-x: hidden;
+    }
+
+    body {
+      background-color: #FAFAFA;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      line-height: 18px;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    body, p, ol, ul, td {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      font-size: 13px;
+      line-height: 18px;
+    }
+
+    pre, code {
+      font-family: "Menlo", "Consolas", "SFMono-Regular", "Bitstream Vera Sans Mono", monospace;
+      font-size: 12px;
+      line-height: 16px;
+      white-space: pre-wrap;
+    }
+
+    pre.box {
+      border: 1px solid #EEE;
+      padding: 10px;
+      margin: 0;
+      width: 958px;
+      max-width: 100%;
+      background-color: #FFF;
+      overflow: auto;
+      box-sizing: border-box;
+    }
+
+    header {
+      color: #F0F0F0;
+      background: #C52F24;
+      padding: 0.5em 1.5em;
+    }
+
+    header h1 {
+      margin: 0.2em 0;
+      line-height: 1.1em;
+      font-size: 2em;
+    }
+
+    header p {
+      margin: 0;
+      color: #FFCFCF;
+    }
+
+    #container {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 0 1.5em;
+    }
+
+    h2 {
+      color: #C52F24;
+      line-height: 25px;
+      font-size: 16px;
+      font-weight: normal;
+      margin: 1.5em 0 0.5em 0;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #EEE;
+    }
+
+    .summary {
+      background-color: #FFF;
+      border: 1px solid #EEE;
+      padding: 10px;
+      margin: 1em 0;
+      color: #666;
+    }
+
+    .summary code {
+      color: #C52F24;
+    }
+
+    .cta {
+      position: relative;
+      background: #FFF;
+      border: 1px solid #EEE;
+      border-left: 4px solid #C52F24;
+      padding: 24px 28px;
+      margin: 1.25em 0 1.5em 0;
+      max-width: 720px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    .cta-headline {
+      font-size: 22px;
+      color: #222;
+      margin: 0 0 6px 0;
+      font-weight: 600;
+    }
+
+    .cta-sub {
+      color: #555;
+      margin: 0 0 20px 0;
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .cta-row {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* Animated pointer arrow that nudges toward the button */
+    .cta-pointer {
+      display: inline-flex;
+      align-items: center;
+      color: #C52F24;
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1;
+      animation: nudge 1.1s ease-in-out infinite;
+      transform-origin: center;
+      user-select: none;
+    }
+
+    @keyframes nudge {
+      0%, 100% { transform: translateX(0); }
+      50%      { transform: translateX(-8px); }
+    }
+
+    button {
+      font-family: inherit;
+      font-size: 13px;
+      padding: 6px 14px;
+      border: 1px solid #BBB;
+      background: #F4F4F4;
+      color: #333;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+
+    button:hover {
+      background: #E8E8E8;
+    }
+
+    /* Big primary CTA with pulsing halo + flash */
+    button.primary {
+      position: relative;
+      font-size: 17px;
+      font-weight: 700;
+      padding: 16px 32px;
+      background: #C52F24;
+      border: 1px solid #A52016;
+      color: #FFF;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      letter-spacing: 0.01em;
+      box-shadow: 0 2px 6px rgba(197, 47, 36, 0.3);
+      animation: pulse-glow 1.8s ease-in-out infinite;
+      transition: transform 0.12s ease, box-shadow 0.2s ease, background 0.15s ease;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% {
+        box-shadow:
+          0 2px 6px rgba(197, 47, 36, 0.3),
+          0 0 0 0 rgba(197, 47, 36, 0.55);
+      }
+      50% {
+        box-shadow:
+          0 4px 14px rgba(197, 47, 36, 0.45),
+          0 0 0 12px rgba(197, 47, 36, 0);
+      }
+    }
+
+    button.primary:hover {
+      background: #A52016;
+      transform: translateY(-1px);
+    }
+
+    button.primary:active {
+      transform: translateY(0);
+    }
+
+    button.primary .arrow {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    button.link {
+      background: transparent;
+      border: none;
+      color: #666;
+      text-decoration: underline;
+      padding: 6px 8px;
+      font-size: 13px;
+    }
+
+    button.link:hover {
+      background: transparent;
+      color: #333;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      animation: none;
+    }
+
+    .request-meta {
+      color: #666;
+      margin: 0.5em 0;
+    }
+
+    .request-meta code {
+      color: #333;
+      background: #FFF;
+      padding: 2px 6px;
+      border: 1px solid #EEE;
+    }
+
+    .launchpad-leonardo-peek {
+      width: 200px;
+      height: auto;
+      opacity: 0.5;
+      transform: scaleX(-1) rotate(34deg) translateX(-30%);
+      transition: all 0.4s ease;
+      filter: drop-shadow(-4px 4px 12px rgba(76, 63, 109, 0.2));
+    }
+
+    .launchpad-leonardo-peek:hover {
+      opacity: 0.7;
+      transform: scaleX(-1) rotate(34deg) translateX(-40%);
+    }
+
+    .launchpad-leonardo-wrap {
+      position: absolute;
+      right: 0;
+      top: 35%;
+      z-index: 40;
+      pointer-events: none;
+    }
+
+    #toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #333;
+      color: #FFF;
+      padding: 8px 16px;
+      border-radius: 3px;
+      font-size: 13px;
+      opacity: 0;
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      button.primary,
+      .cta-pointer {
+        animation: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Something broke. Want Leo to fix it?</h1>
+    <p>Leo will read the error, fix the bug, and reload the page for you.</p>
+  </header>
+
+  <div id="container">
+    <div class="cta">
+      <% if @payload[:kind] == "pending_migration" %>
+        <p class="cta-sub">Your database has pending migrations. Click the button and Leo will run <code>bin/rails db:migrate</code> for you, then reload the page.</p>
+        <div class="cta-row">
+          <span class="cta-pointer" aria-hidden="true">→</span>
+          <button class="primary" type="button" onclick="runPendingMigrations(this)">
+            <%= @payload[:button_label] %>
+          </button>
+          <button class="link" type="button" onclick="sendToLeo()">
+            Ask Leo instead
+          </button>
+          <button class="link" type="button" onclick="copyError()">
+            Copy error details
+          </button>
+        </div>
+      <% else %>
+        <div class="cta-row">
+          <span class="cta-pointer" aria-hidden="true">→</span>
+          <button class="primary" type="button" onclick="sendToLeo()">
+            <%= @payload[:button_label] %>
+          </button>
+          <button class="link" type="button" onclick="copyError()">
+            Copy error details
+          </button>
+        </div>
+      <% end %>
+    </div>
+
+    <h2><%= @payload[:exception_class] %> in <%= @payload[:method] %> <%= @payload[:path] %></h2>
+
+    <p class="summary">
+      <%= @payload[:exception_message] %>
+    </p>
+
+    <p class="request-meta">
+      <strong>Request:</strong> <code><%= @payload[:method] %> <%= @payload[:path] %></code>
+    </p>
+
+    <h2>Application Trace</h2>
+    <pre class="box"><%= @payload[:backtrace].join("\n") %></pre>
+  </div>
+
+  <!-- Leo Profile - Peeking from right side (positioned within page, not fixed) -->
+  <div class="launchpad-leonardo-wrap">
+    <img
+      src="https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/zxz2333zws86zkhuycgb6s4uxhk2"
+      alt="Leo"
+      class="launchpad-leonardo-peek"
+    />
+  </div>
+
+  <div id="toast">Copied</div>
+
+  <script>
+    const leonardoErrorPayload = <%= raw JSON.generate(@payload) %>;
+
+    function sendToLeo() {
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          source: 'launchpad',
+          type: 'prefill-chat',
+          auto_send: true,
+          command: leonardoErrorPayload.command
+        }, '*');
+        showToast('Sent to Leo');
+      } else {
+        console.log('Leo error page (not in iframe):', leonardoErrorPayload.command);
+        showToast('Not in iframe — see console');
+      }
+    }
+
+    async function runPendingMigrations(button) {
+      const originalLabel = button.textContent;
+      button.disabled = true;
+      button.textContent = 'Running migrations…';
+      showToast('Running migrations…');
+
+      try {
+        const response = await fetch('/rails/actions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({
+            error: 'ActiveRecord::PendingMigrationError',
+            action: 'Run pending migrations',
+            location: window.location.pathname + window.location.search
+          }),
+          redirect: 'follow'
+        });
+
+        if (!response.ok && response.status !== 302) {
+          throw new Error('HTTP ' + response.status);
+        }
+
+        showToast('Migrations complete — reloading');
+        setTimeout(() => window.location.reload(), 400);
+      } catch (error) {
+        console.error('Migration run failed:', error);
+        button.disabled = false;
+        button.textContent = originalLabel;
+        showToast('Migration failed — see console');
+      }
+    }
+
+    async function copyError() {
+      try {
+        await navigator.clipboard.writeText(leonardoErrorPayload.command);
+        showToast('Copied');
+      } catch (error) {
+        alert('Could not copy automatically. Please manually copy the technical details.');
+      }
+    }
+
+    function showToast(text) {
+      const toast = document.getElementById('toast');
+      toast.textContent = text;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+  </script>
+</body>
+</html>

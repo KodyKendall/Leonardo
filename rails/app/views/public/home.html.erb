@@ -62,15 +62,20 @@
     />
   </div>
 
+  <!-- Bottom scrim - gradient fade to ensure chat pointer is legible over any content -->
+  <div class="launchpad-bottom-scrim fixed bottom-0 left-0 right-0 z-30 pointer-events-none" aria-hidden="true"></div>
+
   <!-- Chat Pointer - shimmering arrow pointing off-screen left toward chat -->
   <div class="launchpad-affordance launchpad-chat-pointer fixed bottom-8 left-4 z-40 pointer-events-none flex items-center gap-3">
     <svg class="launchpad-chat-pointer-arrow" width="120" height="28" viewBox="0 0 120 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
       <path d="M118 14 H14 M14 14 L26 4 M14 14 L26 24" stroke="url(#chatPointerGradient)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
       <defs>
-        <linearGradient id="chatPointerGradient" x1="0" y1="0" x2="120" y2="0" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#4C3F6D"/>
-          <stop offset="50%" stop-color="#8B5CF6"/>
-          <stop offset="100%" stop-color="#4C3F6D"/>
+        <linearGradient id="chatPointerGradient" x1="140" y1="0" x2="220" y2="0" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#FFFFFF"/>
+          <stop offset="50%" stop-color="#C4B5FD"/>
+          <stop offset="100%" stop-color="#FFFFFF"/>
+          <animate attributeName="x1" values="140; 140; -100; -100" keyTimes="0; 0.6; 0.8; 1" dur="8s" repeatCount="indefinite"/>
+          <animate attributeName="x2" values="220; 220; -20; -20" keyTimes="0; 0.6; 0.8; 1" dur="8s" repeatCount="indefinite"/>
         </linearGradient>
       </defs>
     </svg>
@@ -164,7 +169,44 @@
     letter-spacing: 0.02em;
   }
 
-  /* Chat Pointer */
+  /* Bottom scrim - dark gradient fading from bottom up */
+  .launchpad-bottom-scrim {
+    height: 180px;
+    background: linear-gradient(
+      to top,
+      rgba(15, 11, 30, 0.75) 0%,
+      rgba(15, 11, 30, 0.55) 35%,
+      rgba(15, 11, 30, 0.25) 70%,
+      rgba(15, 11, 30, 0) 100%
+    );
+  }
+
+  /* Chat Pointer text - solid white with a periodic purple glow halo.
+     We bypass the gradient/background-clip approach entirely (it kept
+     rendering as a solid white block) and use text-shadow keyframes
+     for the shimmer instead. */
+  .launchpad-chat-pointer-text.launchpad-dormant-pulse {
+    background: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    -webkit-text-fill-color: #FFFFFF;
+    color: #FFFFFF;
+    animation: chat-pointer-text-shimmer 8s ease-in-out infinite;
+    filter: none;
+  }
+
+  @keyframes chat-pointer-text-shimmer {
+    0%, 60%, 100% {
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    }
+    70%, 80% {
+      text-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.6),
+        0 0 10px rgba(196, 181, 253, 0.95),
+        0 0 22px rgba(139, 92, 246, 0.55);
+    }
+  }
+
   .launchpad-chat-pointer-arrow {
     display: inline-block;
     transform: translateX(0);
@@ -209,6 +251,19 @@
 
   .launchpad-command:active {
     transform: scale(0.995);
+  }
+
+  /* Flying clone sent to chat */
+  .launchpad-command-flying {
+    position: fixed;
+    margin: 0;
+    z-index: 9999;
+    pointer-events: none;
+    box-shadow: 0 8px 24px rgba(76, 63, 109, 0.25);
+    border-color: var(--launchpad-blue);
+    color: var(--launchpad-purple);
+    background: #F1F5F9;
+    will-change: transform, opacity;
   }
 
   .launchpad-command-arg {
@@ -302,8 +357,8 @@
       btn.addEventListener('click', function(e) {
         e.stopPropagation();
         const command = this.dataset.command;
+        flyToChat(this);
         sendToChat(command);
-        showClickFeedback(this);
       });
     });
 
@@ -340,6 +395,41 @@
     function showClickFeedback(element) {
       element.classList.add('clicked');
       setTimeout(() => element.classList.remove('clicked'), 350);
+    }
+
+    // Fly a clone of the clicked button toward the bottom-left chat input
+    // (which lives in the parent page outside this iframe).
+    function flyToChat(element) {
+      const rect = element.getBoundingClientRect();
+      const clone = element.cloneNode(true);
+      clone.classList.add('launchpad-command-flying');
+      clone.style.left = rect.left + 'px';
+      clone.style.top = rect.top + 'px';
+      clone.style.width = rect.width + 'px';
+      clone.style.height = rect.height + 'px';
+      clone.style.transition = 'transform 0.7s cubic-bezier(0.55, 0.08, 0.7, 0.2), opacity 0.7s ease-in';
+      document.body.appendChild(clone);
+
+      // Briefly dim the original so the clone visually "lifts off"
+      element.style.transition = 'opacity 0.2s ease';
+      element.style.opacity = '0.35';
+
+      // Target: a point just off the bottom-left of the iframe,
+      // aligned with the chat-pointer arrow (~bottom-8 left-4).
+      const targetX = -rect.left - rect.width;
+      const targetY = window.innerHeight - rect.top - rect.height / 2 - 24;
+
+      requestAnimationFrame(() => {
+        clone.style.transform =
+          'translate(' + targetX + 'px, ' + targetY + 'px) scale(0.15) rotate(-8deg)';
+        clone.style.opacity = '0';
+      });
+
+      setTimeout(() => {
+        clone.remove();
+        element.style.opacity = '';
+        element.style.transition = '';
+      }, 750);
     }
 
     // Listen for dismissal signal from parent Leonardo
