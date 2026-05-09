@@ -1,0 +1,458 @@
+<% content_for :full_width, true %>
+<% content_for :hide_header, true %>
+
+<!-- Leonardo Launchpad - Active Skeleton -->
+<div id="launchpad" class="min-h-screen bg-white relative">
+
+  <!-- Live Skeleton Structure -->
+  <div class="flex flex-col min-h-screen">
+
+    <!-- Navbar Placeholder Zone -->
+    <nav class="launchpad-zone launchpad-affordance h-16 flex items-center justify-between px-8"
+         data-zone-name="Navbar"
+         data-zone-command="Replace this navbar with a modern navbar with a text logo on the left and navigation links on the right">
+      <div class="flex items-center gap-2">
+        <span class="launchpad-zone-label text-xs">Navbar</span>
+      </div>
+      <div class="launchpad-zone-label text-xs">Logo + Navigation</div>
+    </nav>
+
+    <!-- Hero Section (Main Content Area) -->
+    <section class="flex-1 flex flex-col items-center justify-center py-20 px-4">
+
+      <!-- Central Status Message -->
+      <div class="text-center mb-16">
+        <h1 class="launchpad-title launchpad-dormant-pulse text-5xl md:text-6xl font-light tracking-tight mb-3">
+          Hi, I'm Your Leo.
+        </h1>
+        <p class="launchpad-subtitle text-xl text-gray-400 font-light mb-4">
+          What do you want to build?
+        </p>
+
+      </div>
+
+      <!-- Micro-Win Commands -->
+      <div class="launchpad-affordance w-full max-w-md space-y-3">
+        <button class="launchpad-command" data-command="Add a welcome message that says Hello World">
+          Add a welcome message that says Hello World
+        </button>
+        <button class="launchpad-command" data-command="Change the background to dark mode">
+          Change the background to dark mode
+        </button>
+        <button class="launchpad-command" data-command="Create a simple contact form">
+          Create a simple contact form
+        </button>
+      </div>
+    </section>
+
+    <!-- Footer Placeholder Zone -->
+    <footer class="launchpad-zone launchpad-affordance mt-auto h-16 flex items-center justify-between px-8 bg-white relative z-20"
+            data-zone-name="Footer"
+            data-zone-command="Replace this footer with a footer containing copyright, links, and social media icons">
+      <div class="launchpad-zone-label text-xs">Footer</div>
+      <div class="launchpad-zone-label text-xs">Links + Copyright</div>
+    </footer>
+  </div>
+
+  <!-- Leonardo Profile - Peeking from right side (positioned within page, not fixed) -->
+  <div class="launchpad-affordance absolute right-0 z-40 pointer-events-none" style="top: 35%;">
+    <img
+      src="https://llamapress-ai-image-uploads.s3.us-west-2.amazonaws.com/p8nl6bjjy6rarhkaz35p8qwreaa0"
+      alt="Leonardo"
+      class="launchpad-leonardo-peek"
+    />
+  </div>
+
+  <!-- Bottom scrim - gradient fade to ensure chat pointer is legible over any content -->
+  <div class="launchpad-bottom-scrim fixed bottom-0 left-0 right-0 z-30 pointer-events-none" aria-hidden="true"></div>
+
+  <!-- Chat Pointer - shimmering arrow pointing off-screen left toward chat -->
+  <div class="launchpad-affordance launchpad-chat-pointer fixed bottom-8 left-4 z-40 pointer-events-none flex items-center gap-3">
+    <svg class="launchpad-chat-pointer-arrow" width="120" height="28" viewBox="0 0 120 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M118 14 H14 M14 14 L26 4 M14 14 L26 24" stroke="url(#chatPointerGradient)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      <defs>
+        <linearGradient id="chatPointerGradient" x1="140" y1="0" x2="220" y2="0" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#FFFFFF"/>
+          <stop offset="50%" stop-color="#C4B5FD"/>
+          <stop offset="100%" stop-color="#FFFFFF"/>
+          <animate attributeName="x1" values="140; 140; -100; -100" keyTimes="0; 0.6; 0.8; 1" dur="8s" repeatCount="indefinite"/>
+          <animate attributeName="x2" values="220; 220; -20; -20" keyTimes="0; 0.6; 0.8; 1" dur="8s" repeatCount="indefinite"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <span class="launchpad-chat-pointer-text launchpad-dormant-pulse text-base font-medium">Tell Your Leo what you want to build</span>
+  </div>
+</div>
+
+<style>
+  /* Prevent horizontal scroll from Leonardo peeking */
+  html, body {
+    overflow-x: hidden;
+  }
+
+  /* Brand Colors */
+  :root {
+    --launchpad-purple: #4C3F6D;
+    --launchpad-blue: #489DF9;
+    --launchpad-dark: #2D2442;
+  }
+
+  /* Central Title */
+  .launchpad-title {
+    color: var(--launchpad-purple);
+  }
+
+  /* Dormant Pulse - Slow shimmer with glow following */
+  .launchpad-dormant-pulse {
+    position: relative;
+    background: linear-gradient(
+      90deg,
+      var(--launchpad-purple) 0%,
+      var(--launchpad-purple) 35%,
+      rgba(139, 92, 246, 1) 50%,
+      var(--launchpad-purple) 65%,
+      var(--launchpad-purple) 100%
+    );
+    background-size: 300% 100%;
+    background-position: 100% 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation:
+      dormant-shimmer 8s ease-in-out infinite,
+      dormant-glow 8s ease-in-out infinite;
+  }
+
+  @keyframes dormant-shimmer {
+    0%, 60% {
+      background-position: 100% 0;
+    }
+    80% {
+      background-position: -100% 0;
+    }
+    100% {
+      background-position: -100% 0;
+    }
+  }
+
+  @keyframes dormant-glow {
+    0%, 60% {
+      filter: drop-shadow(0 0 0 transparent);
+    }
+    70% {
+      filter: drop-shadow(0 4px 20px rgba(139, 92, 246, 0.4));
+    }
+    80% {
+      filter: drop-shadow(0 4px 20px rgba(139, 92, 246, 0.3));
+    }
+    90%, 100% {
+      filter: drop-shadow(0 0 0 transparent);
+    }
+  }
+
+  /* Leonardo Peeking from Right Side */
+  .launchpad-leonardo-peek {
+    width: 200px;
+    height: auto;
+    opacity: 0.5;
+    /* Flip horizontally (scaleX) + rotate 34 degrees + push further off-screen to the right */
+    transform: scaleX(-1) rotate(34deg) translateX(-30%);
+    transition: all 0.4s ease;
+    filter: drop-shadow(-4px 4px 12px rgba(76, 63, 109, 0.2));
+  }
+
+  .launchpad-leonardo-peek:hover {
+    opacity: 0.7;
+    transform: scaleX(-1) rotate(34deg) translateX(-40%);
+  }
+
+  .launchpad-subtitle {
+    letter-spacing: 0.02em;
+  }
+
+  /* Bottom scrim - dark gradient fading from bottom up */
+  .launchpad-bottom-scrim {
+    height: 180px;
+    background: linear-gradient(
+      to top,
+      rgba(15, 11, 30, 0.75) 0%,
+      rgba(15, 11, 30, 0.55) 35%,
+      rgba(15, 11, 30, 0.25) 70%,
+      rgba(15, 11, 30, 0) 100%
+    );
+  }
+
+  /* Chat Pointer text - solid white with a periodic purple glow halo.
+     We bypass the gradient/background-clip approach entirely (it kept
+     rendering as a solid white block) and use text-shadow keyframes
+     for the shimmer instead. */
+  .launchpad-chat-pointer-text.launchpad-dormant-pulse {
+    background: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    -webkit-text-fill-color: #FFFFFF;
+    color: #FFFFFF;
+    animation: chat-pointer-text-shimmer 8s ease-in-out infinite;
+    filter: none;
+  }
+
+  @keyframes chat-pointer-text-shimmer {
+    0%, 60%, 100% {
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    }
+    70%, 80% {
+      text-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.6),
+        0 0 10px rgba(196, 181, 253, 0.95),
+        0 0 22px rgba(139, 92, 246, 0.55);
+    }
+  }
+
+  .launchpad-chat-pointer-arrow {
+    display: inline-block;
+    transform: translateX(0);
+    filter: drop-shadow(0 2px 8px rgba(139, 92, 246, 0.25));
+    animation:
+      chat-pointer-nudge 2.4s ease-in-out infinite,
+      chat-pointer-glow 8s ease-in-out infinite;
+  }
+
+  @keyframes chat-pointer-nudge {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-10px); }
+  }
+
+  @keyframes chat-pointer-glow {
+    0%, 60%, 100% { filter: drop-shadow(0 2px 8px rgba(139, 92, 246, 0.2)); }
+    75% { filter: drop-shadow(0 2px 16px rgba(139, 92, 246, 0.55)); }
+  }
+
+  /* Micro-Win Commands */
+  .launchpad-command {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.875rem 1.25rem;
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.875rem;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 0.5rem;
+    color: #64748B;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .launchpad-command:hover {
+    background: #F1F5F9;
+    border-color: var(--launchpad-blue);
+    color: var(--launchpad-purple);
+    box-shadow: 0 2px 8px rgba(72, 157, 249, 0.15);
+  }
+
+  .launchpad-command:active {
+    transform: scale(0.995);
+  }
+
+  /* Flying clone sent to chat */
+  .launchpad-command-flying {
+    position: fixed;
+    margin: 0;
+    z-index: 9999;
+    pointer-events: none;
+    box-shadow: 0 8px 24px rgba(76, 63, 109, 0.25);
+    border-color: var(--launchpad-blue);
+    color: var(--launchpad-purple);
+    background: #F1F5F9;
+    will-change: transform, opacity;
+  }
+
+  .launchpad-command-arg {
+    color: #475569;
+  }
+
+  .launchpad-command:hover .launchpad-command-arg {
+    color: var(--launchpad-purple);
+  }
+
+  /* Interactive Zones */
+  .launchpad-zone {
+    position: relative;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+  }
+
+  .launchpad-zone-label {
+    color: #CBD5E1;
+    opacity: 0;
+    transition: all 0.2s ease;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .launchpad-zone:hover {
+    background: rgba(72, 157, 249, 0.04);
+    border-color: rgba(72, 157, 249, 0.25);
+  }
+
+  .launchpad-zone:hover .launchpad-zone-label {
+    opacity: 0.8;
+    color: var(--launchpad-blue);
+  }
+
+  /* Click Feedback Animation */
+  .launchpad-zone.clicked,
+  .launchpad-command.clicked {
+    animation: launchpad-pulse 0.35s ease;
+  }
+
+  @keyframes launchpad-pulse {
+    0% { background-color: transparent; }
+    50% { background-color: rgba(76, 63, 109, 0.12); }
+    100% { background-color: transparent; }
+  }
+
+  /* Self-Destruct: Hide affordances when dismissed */
+  .launchpad-dismissed .launchpad-affordance {
+    display: none !important;
+  }
+
+  .launchpad-dismissed .launchpad-zone {
+    border-color: transparent !important;
+    cursor: default;
+  }
+
+  .launchpad-dismissed .launchpad-zone:hover {
+    background: transparent;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .launchpad-title {
+      font-size: 2.5rem;
+    }
+
+    .launchpad-command {
+      padding: 0.75rem 1rem;
+      font-size: 0.8rem;
+    }
+  }
+</style>
+
+<script>
+  (function() {
+    'use strict';
+
+    const launchpad = document.getElementById('launchpad');
+    if (!launchpad) return;
+
+    // Check if launchpad should be dismissed
+    if (localStorage.getItem('launchpad_dismissed') === 'true') {
+      launchpad.classList.add('launchpad-dismissed');
+    }
+
+    // Handle command button clicks
+    document.querySelectorAll('.launchpad-command').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const command = this.dataset.command;
+        flyToChat(this);
+        sendToChat(command);
+      });
+    });
+
+    // Handle zone clicks (but not when clicking commands inside)
+    document.querySelectorAll('.launchpad-zone').forEach(zone => {
+      zone.addEventListener('click', function(e) {
+        // Don't trigger if clicking on a child button or already handled
+        if (e.target.closest('.launchpad-command')) return;
+
+        const command = this.dataset.zoneCommand;
+        if (command) {
+          sendToChat(command);
+          showClickFeedback(this);
+        }
+      });
+    });
+
+    // Send command to Leonardo chat via postMessage
+    function sendToChat(command) {
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          source: 'launchpad',
+          type: 'prefill-chat',
+          command: command
+        }, '*');
+        console.log('Launchpad: Sent command to chat:', command);
+      } else {
+        // Not in iframe - log for debugging
+        console.log('Launchpad: Command (not in iframe):', command);
+      }
+    }
+
+    // Visual feedback on click
+    function showClickFeedback(element) {
+      element.classList.add('clicked');
+      setTimeout(() => element.classList.remove('clicked'), 350);
+    }
+
+    // Fly a clone of the clicked button toward the bottom-left chat input
+    // (which lives in the parent page outside this iframe).
+    function flyToChat(element) {
+      const rect = element.getBoundingClientRect();
+      const clone = element.cloneNode(true);
+      clone.classList.add('launchpad-command-flying');
+      clone.style.left = rect.left + 'px';
+      clone.style.top = rect.top + 'px';
+      clone.style.width = rect.width + 'px';
+      clone.style.height = rect.height + 'px';
+      clone.style.transition = 'transform 0.7s cubic-bezier(0.55, 0.08, 0.7, 0.2), opacity 0.7s ease-in';
+      document.body.appendChild(clone);
+
+      // Briefly dim the original so the clone visually "lifts off"
+      element.style.transition = 'opacity 0.2s ease';
+      element.style.opacity = '0.35';
+
+      // Target: a point just off the bottom-left of the iframe,
+      // aligned with the chat-pointer arrow (~bottom-8 left-4).
+      const targetX = -rect.left - rect.width;
+      const targetY = window.innerHeight - rect.top - rect.height / 2 - 24;
+
+      requestAnimationFrame(() => {
+        clone.style.transform =
+          'translate(' + targetX + 'px, ' + targetY + 'px) scale(0.15) rotate(-8deg)';
+        clone.style.opacity = '0';
+      });
+
+      setTimeout(() => {
+        clone.remove();
+        element.style.opacity = '';
+        element.style.transition = '';
+      }, 750);
+    }
+
+    // Listen for dismissal signal from parent Leonardo
+    window.addEventListener('message', function(event) {
+      if (event.data && event.data.source === 'leonardo' && event.data.type === 'dismiss-launchpad') {
+        dismissLaunchpad();
+      }
+    });
+
+    // Dismiss function (can be called externally or via message)
+    function dismissLaunchpad() {
+      localStorage.setItem('launchpad_dismissed', 'true');
+      launchpad.classList.add('launchpad-dismissed');
+      console.log('Launchpad: Dismissed');
+    }
+
+    // Expose dismiss function globally for debugging/testing
+    window.dismissLaunchpad = dismissLaunchpad;
+    window.resetLaunchpad = function() {
+      localStorage.removeItem('launchpad_dismissed');
+      launchpad.classList.remove('launchpad-dismissed');
+      console.log('Launchpad: Reset');
+    };
+  })();
+</script>
