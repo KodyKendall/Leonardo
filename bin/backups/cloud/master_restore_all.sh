@@ -1,9 +1,21 @@
 #!/bin/bash
-set -e
-
-# Master restore script - runs all restore steps in correct order
+# Master restore script — runs all restore steps in correct order.
+# Designed to be resilient: individual steps retry on failure,
+# and non-critical failures don't abort the whole restore.
+#
 # Usage: ./master_restore_all.sh <instance_name> <s3_bucket_path>
 # Example: ./master_restore_all.sh LP-Test5 s3://llampress-ai-backups/backups/leonardos/LP-Test5
+#
+# Restore source selection (auto-detected from S3 pointer files):
+#   ${S3}/latest-backup.txt            → full backup timestamp (master_backup_all.sh)
+#   ${S3}/latest/last-quick-backup.txt → quick backup timestamp (quick_backup.sh)
+# Modes:
+#   none   → neither pointer exists; treat as new instance, exit 0
+#   full   → only full pointer, OR full ≥ quick: restore from timestamped folder
+#   quick  → only quick pointer: project-files sync + postgres dump (lossy:
+#            no docker volumes, no system configs)
+#   hybrid → both, quick newer: full restore at FULL_TS, then overlay quick
+#            project-files + postgres dump on top (preserves volumes & sys configs)
 
 INSTANCE_NAME="$1"
 S3_BUCKET="$2"
@@ -14,16 +26,94 @@ if [ -z "$INSTANCE_NAME" ] || [ -z "$S3_BUCKET" ]; then
     exit 1
 fi
 
-# ─── Resolve which backup to restore from ──────────────────────────────────
-# Two pointers can exist independently:
-#   ${S3}/latest-backup.txt           → full backup timestamp (master_backup_all.sh)
-#   ${S3}/latest/last-quick-backup.txt → quick backup timestamp (quick_backup.sh)
-# Both are "YYYYMMDD-HHMMSS" strings, so lexical compare = chronological.
+# ─── Helpers ──────────────────────────────────────────────────────────────
+
+# Wait for postgres to accept connections.
+# Uses TCP (-h 127.0.0.1) instead of unix socket. The official postgres image
+# runs a socket-only init phase on a fresh volume that pg_isready-via-socket
+# reports as "ready", but the init phase then `pg_ctl stop`s and re-execs into
+# the real production postgres — killing any client connection with "FATAL:
+# terminating connection due to administrator command". TCP is only opened in
+# the production phase, so it's a reliable readiness signal in all cases.
+wait_for_postgres() {
+    local timeout="${1:-60}"
+    local elapsed=0
+    echo -n "   Waiting for postgres"
+    until docker compose exec -T db pg_isready -h 127.0.0.1 -U postgres > /dev/null 2>&1; do
+        if [ $elapsed -ge $timeout ]; then
+            echo " TIMEOUT (pg_isready TCP)"
+            return 1
+        fi
+        echo -n "."
+        sleep 1
+        elapsed=$((elapsed + 1))
+    done
+    # Belt + suspenders: also verify a real query works
+    until docker compose exec -T db psql -U postgres -c "SELECT 1" > /dev/null 2>&1; do
+        if [ $elapsed -ge $timeout ]; then
+            echo " TIMEOUT (query test)"
+            return 1
+        fi
+        echo -n "."
+        sleep 1
+        elapsed=$((elapsed + 1))
+    done
+    echo " ready (${elapsed}s)"
+    return 0
+}
+
+full_docker_down() {
+    docker compose down --remove-orphans --timeout 10 2>/dev/null || true
+    sleep 2
+}
+
+# Set the postgres role's password to match POSTGRES_PASSWORD in ./.env.
+# Uses local socket auth inside the container (trust), so no current password needed.
+align_postgres_password() {
+    local new_password
+    new_password=$(grep "^POSTGRES_PASSWORD=" .env | cut -d= -f2-)
+    if [ -z "$new_password" ]; then
+        echo "   ❌ POSTGRES_PASSWORD not found in .env"
+        return 1
+    fi
+    docker compose exec -T db psql -U postgres -c \
+        "ALTER USER postgres PASSWORD '$new_password';" > /dev/null 2>&1
+    if docker compose exec -T db env PGPASSWORD="$new_password" \
+        psql -U postgres -c "SELECT 1" > /dev/null 2>&1; then
+        echo "   ✓ Password aligned with .env"
+        return 0
+    else
+        echo "   ❌ Password alignment verification failed"
+        return 1
+    fi
+}
+
+# Stream the quick-backup pg_dumpall through gunzip into psql.
+load_quick_postgres_dump() {
+    aws s3 cp "${S3_BUCKET}/latest/postgres-${INSTANCE_NAME}.sql.gz" - --only-show-errors \
+        | gunzip \
+        | docker compose exec -T db psql -U postgres --quiet -f -
+}
+
+# Drop every non-template, non-postgres database so the quick dump can recreate them.
+# Used in hybrid mode to clear the FULL_TS data before loading QUICK_TS dump.
+drop_user_databases() {
+    docker compose exec -T db psql -U postgres -d postgres -tAc \
+        "SELECT datname FROM pg_database WHERE datistemplate = false AND datname <> 'postgres';" \
+        | tr -d '\r' \
+        | while read -r dbname; do
+            [ -z "$dbname" ] && continue
+            echo "   🗑  Dropping database: $dbname"
+            docker compose exec -T db psql -U postgres -d postgres -c \
+                "DROP DATABASE IF EXISTS \"$dbname\" WITH (FORCE);" > /dev/null 2>&1
+        done
+}
+
+# ─── Resolve restore mode from pointer files ──────────────────────────────
 echo "🔍 Checking for existing backups..."
 FULL_TS=$(aws s3 cp "${S3_BUCKET}/latest-backup.txt" - 2>/dev/null | tr -d '[:space:]' || true)
 QUICK_TS=$(aws s3 cp "${S3_BUCKET}/latest/last-quick-backup.txt" - 2>/dev/null | tr -d '[:space:]' || true)
 
-# MODE: none | full | quick | hybrid
 if [ -z "$FULL_TS" ] && [ -z "$QUICK_TS" ]; then
     MODE="none"
 elif [ -n "$FULL_TS" ] && [ -z "$QUICK_TS" ]; then
@@ -61,95 +151,39 @@ echo "📍 Quick TS:  ${QUICK_TS:-<none>}"
 echo "⏱️  Start time: $(date)"
 echo ""
 MASTER_START=$(date +%s)
-
-# ─── Helpers ──────────────────────────────────────────────────────────────
-wait_for_postgres() {
-    local timeout="${1:-30}"
-    local elapsed=0
-    until docker compose exec -T db pg_isready -U postgres > /dev/null 2>&1; do
-        if [ $elapsed -ge $timeout ]; then
-            echo "   ❌ Postgres failed to become ready within ${timeout}s"
-            return 1
-        fi
-        sleep 1
-        elapsed=$((elapsed + 1))
-    done
-    return 0
-}
-
-align_postgres_password() {
-    # Sets the postgres role password to match POSTGRES_PASSWORD in ./.env.
-    # Uses local socket auth inside the container (trust), so no current password needed.
-    local new_password
-    new_password=$(grep "^POSTGRES_PASSWORD=" .env | cut -d= -f2-)
-    if [ -z "$new_password" ]; then
-        echo "   ❌ POSTGRES_PASSWORD not found in .env"
-        return 1
-    fi
-    docker compose exec -T db psql -U postgres -c \
-        "ALTER USER postgres PASSWORD '$new_password';" > /dev/null 2>&1
-    if docker compose exec -T db env PGPASSWORD="$new_password" \
-        psql -U postgres -c "SELECT 1" > /dev/null 2>&1; then
-        echo "   ✓ Password aligned with .env"
-        return 0
-    else
-        echo "   ❌ Password alignment failed"
-        return 1
-    fi
-}
-
-load_quick_postgres_dump() {
-    # Streams the quick-backup pg_dumpall through gunzip into psql.
-    # pg_dumpall has no DROP statements, so callers must ensure the target
-    # databases don't exist (fresh cluster, or DROP DATABASE first).
-    aws s3 cp "${S3_BUCKET}/latest/postgres-${INSTANCE_NAME}.sql.gz" - --only-show-errors \
-        | gunzip \
-        | docker compose exec -T db psql -U postgres --quiet -f -
-}
-
-drop_user_databases() {
-    # Drop every non-template, non-postgres database so the quick dump can recreate them.
-    docker compose exec -T db psql -U postgres -d postgres -tAc \
-        "SELECT datname FROM pg_database WHERE datistemplate = false AND datname <> 'postgres';" \
-        | tr -d '\r' \
-        | while read -r dbname; do
-            [ -z "$dbname" ] && continue
-            echo "   🗑  Dropping database: $dbname"
-            docker compose exec -T db psql -U postgres -d postgres -c \
-                "DROP DATABASE IF EXISTS \"$dbname\" WITH (FORCE);" > /dev/null 2>&1
-        done
-}
+ERRORS=""
 
 # ─── STEP 1: Restore project files ────────────────────────────────────────
-# Always runs (both full and quick backups carry project files).
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "📦 STEP 1: Restore Project Files"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 cd ~
 rm -rf Leonardo llamapress 2>/dev/null || true
 
-# Bootstrap: pull latest scripts from S3 into a temporary location so they
-# survive the project-files restore (which lays down its own bin/backups/cloud).
+# Bootstrap: pull latest scripts so they survive the project-files restore
 mkdir -p Leonardo/bin/backups/cloud
 cd Leonardo
 aws s3 sync s3://llampress-ai-backups/proprietary-scripts/ bin/backups/cloud/ --exclude "*" --include "*.sh" --quiet
 chmod +x bin/backups/cloud/*.sh
 
 if [ "$MODE" = "quick" ]; then
-    # Quick-only: sync directly into ~/Leonardo
-    ./bin/backups/cloud/8_restore_project_files_from_s3.sh \
-        "${INSTANCE_NAME}" \
-        "${S3_BUCKET}" \
-        /home/ubuntu \
-        quick
+    if ./bin/backups/cloud/8_restore_project_files_from_s3.sh \
+        "${INSTANCE_NAME}" "${S3_BUCKET}" /home/ubuntu quick; then
+        echo "✅ Step 1 complete (quick sync)"
+    else
+        echo "❌ Step 1 FAILED — project files quick-sync failed"
+        exit 1
+    fi
 else
-    # full or hybrid: extract tarball, normalize folder name to Leonardo
-    ./bin/backups/cloud/8_restore_project_files_from_s3.sh \
-        "${INSTANCE_NAME}" \
-        "${S3_BUCKET}" \
-        /home/ubuntu \
-        full
+    if ./bin/backups/cloud/8_restore_project_files_from_s3.sh \
+        "${INSTANCE_NAME}" "${S3_BUCKET}" /home/ubuntu full; then
+        echo "✅ Step 1 complete (tarball)"
+    else
+        echo "❌ Step 1 FAILED — project files tarball restore failed"
+        exit 1
+    fi
 
+    # Normalize folder name to Leonardo
     cd ~
     if [ -d "llamapress" ]; then
         rm -rf Leonardo
@@ -158,7 +192,6 @@ else
 fi
 
 cd ~/Leonardo
-echo "✅ Step 1 complete"
 echo ""
 
 # ─── QUICK-ONLY PATH ──────────────────────────────────────────────────────
@@ -176,79 +209,124 @@ if [ "$MODE" = "quick" ]; then
 
     # Ensure clean postgres state — wipe any stale volume from prior partial runs
     echo "📦 STEP 2 (quick): Prepare Fresh Postgres"
-    docker compose down 2>/dev/null || true
+    full_docker_down
     PG_VOLUME=$(docker volume ls --format '{{.Name}}' | grep -E '(_|^)postgres_data$' | head -n 1)
     if [ -n "$PG_VOLUME" ]; then
         echo "   🗑  Removing stale postgres volume: $PG_VOLUME"
         docker volume rm "$PG_VOLUME" > /dev/null 2>&1 || true
     fi
 
-    echo "🚀 Starting postgres (fresh volume)..."
-    docker compose up -d db
-    echo "⏳ Waiting for postgres..."
-    wait_for_postgres 60 || exit 1
-    echo "   ✓ Postgres is ready"
+    # Try up to 3 times to bring postgres up, load dump, align password
+    QUICK_PG_OK=false
+    for pg_attempt in 1 2 3; do
+        echo ""
+        echo "🚀 Starting postgres (attempt ${pg_attempt}/3)..."
+        full_docker_down
+        docker compose up -d db
 
-    echo "📥 Loading quick postgres dump (timestamp ${QUICK_TS})..."
-    load_quick_postgres_dump
-    echo "   ✓ Database loaded"
+        if ! wait_for_postgres 90; then
+            echo "   ⚠️  Postgres failed to become ready on attempt ${pg_attempt}"
+            [ $pg_attempt -lt 3 ] && sleep 5
+            continue
+        fi
 
-    echo "🔐 Aligning postgres password with .env..."
-    align_postgres_password || exit 1
+        echo "📥 Loading quick postgres dump (timestamp ${QUICK_TS})..."
+        if load_quick_postgres_dump; then
+            echo "   ✓ Database loaded"
+        else
+            echo "   ⚠️  Dump load returned non-zero on attempt ${pg_attempt}"
+            [ $pg_attempt -lt 3 ] && sleep 5
+            continue
+        fi
 
-    echo ""
-    echo "🚀 Starting all services..."
-    docker compose up -d
-    echo "✅ Quick-only restore complete"
-    echo ""
+        echo "🔐 Aligning postgres password with .env..."
+        if align_postgres_password; then
+            QUICK_PG_OK=true
+            break
+        else
+            echo "   ⚠️  Password alignment failed on attempt ${pg_attempt}"
+            [ $pg_attempt -lt 3 ] && sleep 5
+        fi
+    done
+
+    if [ "$QUICK_PG_OK" != true ]; then
+        echo "❌ Quick postgres restore FAILED after 3 attempts"
+        ERRORS="${ERRORS}quick_pg_restore "
+    fi
 
 # ─── FULL or HYBRID PATH ──────────────────────────────────────────────────
 else
-    # STEP 2: Restore Docker Volumes (includes postgres_data at FULL_TS)
+    # STEP 2: Restore Docker Volumes
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "📦 STEP 2: Restore Docker Volumes"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    docker compose down
+    full_docker_down
 
-    ./bin/backups/cloud/9_restore_docker_volumes_from_s3.sh \
-        "${INSTANCE_NAME}" \
-        "${S3_BUCKET}"
-    echo "✅ Step 2 complete"
+    if ./bin/backups/cloud/9_restore_docker_volumes_from_s3.sh \
+        "${INSTANCE_NAME}" "${S3_BUCKET}" "${FULL_TS}"; then
+        echo "✅ Step 2 complete"
+    else
+        echo "⚠️  Step 2 had errors (some volumes may have failed)"
+        ERRORS="${ERRORS}volume_restore "
+    fi
     echo ""
 
-    # STEP 3: Fix Postgres Password Mismatch
+    # STEP 3: Fix Postgres Password Mismatch (3 attempts)
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "📦 STEP 3: Fix Postgres Password"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "🚀 Starting postgres with OLD password (from restored volume)..."
-    docker compose up -d db
-    echo "⏳ Waiting for postgres..."
-    wait_for_postgres 30 || exit 1
-    echo "   ✓ Postgres is ready"
+    PG_PASSWORD_OK=false
+    for pg_attempt in 1 2 3; do
+        echo "🚀 Starting postgres (attempt ${pg_attempt}/3)..."
+        full_docker_down
+        docker compose up -d db
 
-    echo "🔐 Updating postgres password to match .env..."
-    align_postgres_password || exit 1
+        if wait_for_postgres 60; then
+            echo "🔐 Updating postgres password to match .env..."
+            if align_postgres_password; then
+                PG_PASSWORD_OK=true
+                break
+            fi
+        else
+            echo "   ⚠️  Postgres failed to start on attempt ${pg_attempt}"
+        fi
 
-    echo "🔄 Restarting postgres + redis..."
-    docker compose down
-    docker compose up -d db redis
-    echo "⏳ Waiting for postgres..."
-    wait_for_postgres 30 || exit 1
-    echo "   ✓ Postgres restarted with new password"
-    echo "✅ Step 3 complete"
+        if [ $pg_attempt -lt 3 ]; then
+            echo "   Retrying in 5s..."
+            sleep 5
+        fi
+    done
+
+    if [ "$PG_PASSWORD_OK" = true ]; then
+        echo "🔄 Restarting db + redis with new password..."
+        full_docker_down
+        docker compose up -d db redis
+        if wait_for_postgres 60; then
+            echo "   ✓ Postgres restarted"
+        else
+            echo "   ⚠️  Postgres slow to restart after password change"
+            ERRORS="${ERRORS}pg_restart "
+        fi
+        echo "✅ Step 3 complete"
+    else
+        echo "❌ Step 3 FAILED — could not fix postgres password after 3 attempts"
+        ERRORS="${ERRORS}pg_password "
+    fi
     echo ""
 
     # STEP 4: Restore system configs (SSL certs, Caddyfile, etc.)
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "📦 STEP 4: Restore System Configs & SSL Certificates"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    sudo ./bin/backups/cloud/7_restore_system_configs_from_s3.sh \
-        "${INSTANCE_NAME}" \
-        "${S3_BUCKET}"
-
+    if sudo ./bin/backups/cloud/7_restore_system_configs_from_s3.sh \
+        "${INSTANCE_NAME}" "${S3_BUCKET}"; then
+        echo "✅ Step 4 complete"
+    else
+        echo "⚠️  Step 4 had errors (non-critical, Caddy will re-issue certs)"
+        ERRORS="${ERRORS}system_configs "
+    fi
     echo "🔄 Reloading Caddy..."
-    sudo systemctl reload caddy
-    echo "✅ Step 4 complete"
+    sudo systemctl reload caddy 2>/dev/null || true
     echo ""
 
     # STEP 5 (hybrid only): Overlay quick backup on top of full
@@ -257,53 +335,77 @@ else
         echo "📦 STEP 5: Overlay Quick Backup (QUICK ${QUICK_TS} > FULL ${FULL_TS})"
         echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-        # Overlay project files (no --delete: preserves .git, node_modules, etc.
-        # that the tarball restored but quick_backup.sh excludes)
-        ./bin/backups/cloud/8_restore_project_files_from_s3.sh \
-            "${INSTANCE_NAME}" \
-            "${S3_BUCKET}" \
-            /home/ubuntu \
-            quick
+        # Overlay project files (no --delete inside step 8 quick mode: preserves
+        # .git, node_modules, etc. that the tarball restored)
+        if ./bin/backups/cloud/8_restore_project_files_from_s3.sh \
+            "${INSTANCE_NAME}" "${S3_BUCKET}" /home/ubuntu quick; then
+            echo "   ✓ Quick project files overlaid"
+        else
+            echo "   ⚠️  Quick project files overlay had errors"
+            ERRORS="${ERRORS}quick_overlay_files "
+        fi
 
         # Replace postgres data with quick dump.
-        # Postgres is already running from Step 3 with the .env password aligned.
-        # pg_dumpall has no DROP statements, so we drop user databases first.
-        echo "🗑  Dropping FULL_TS user databases before loading QUICK dump..."
-        drop_user_databases
+        # Postgres is already running from Step 3 with .env password aligned.
+        # pg_dumpall has no DROP statements, so drop user databases first.
+        if [ "$PG_PASSWORD_OK" = true ]; then
+            echo "🗑  Dropping FULL_TS user databases before loading QUICK dump..."
+            drop_user_databases
 
-        echo "📥 Loading quick postgres dump (timestamp ${QUICK_TS})..."
-        load_quick_postgres_dump
-        echo "   ✓ Database loaded"
-
-        # The dump's ALTER ROLE postgres may have reset the password to the
-        # backup-time value. Realign with current .env.
-        echo "🔐 Realigning postgres password with .env..."
-        align_postgres_password || exit 1
-
+            echo "📥 Loading quick postgres dump (timestamp ${QUICK_TS})..."
+            if load_quick_postgres_dump; then
+                echo "   ✓ Quick dump loaded"
+                echo "🔐 Realigning postgres password with .env..."
+                align_postgres_password || ERRORS="${ERRORS}quick_overlay_pwd "
+            else
+                echo "   ⚠️  Quick dump load failed"
+                ERRORS="${ERRORS}quick_overlay_pg "
+            fi
+        else
+            echo "   ⚠️  Skipping quick postgres overlay (Step 3 password fix failed)"
+        fi
         echo "✅ Step 5 complete"
         echo ""
     fi
-
-    # Final start
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "📦 Start All Services"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" 2>/dev/null)
-    IPADDRESS=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -s http://169.254.169.254/latest/meta-data/public-ipv4 2>/dev/null)
-    echo "📍 Public IP: ${IPADDRESS}"
-    echo "🌐 DNS already configured by orchestrator"
-    echo ""
-    echo "🚀 Starting all services..."
-    docker compose up -d
-    echo ""
 fi
+
+# ─── Final start + verification ───────────────────────────────────────────
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "📦 Start All Services"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" 2>/dev/null)
+IPADDRESS=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -s http://169.254.169.254/latest/meta-data/public-ipv4 2>/dev/null)
+echo "📍 Public IP: ${IPADDRESS}"
+echo "🌐 DNS already configured by orchestrator"
+echo ""
+echo "🚀 Starting all services..."
+full_docker_down
+docker compose up -d
+
+echo "🔍 Verifying services..."
+sleep 5
+RUNNING_SERVICES=$(docker compose ps --format '{{.Service}} {{.State}}' 2>/dev/null || echo "")
+echo "   Services: ${RUNNING_SERVICES}"
+
+if echo "$RUNNING_SERVICES" | grep -q "db.*running"; then
+    echo "   ✓ Database is running"
+else
+    echo "   ⚠️  Database may not be running"
+    ERRORS="${ERRORS}db_not_running "
+fi
+echo ""
 
 # ─── Final summary ────────────────────────────────────────────────────────
 MASTER_END=$(date +%s)
 MASTER_DURATION=$((MASTER_END - MASTER_START))
 
 echo "════════════════════════════════════════════════════════════"
-echo "✅ RESTORE COMPLETE! (mode=${MODE})"
+if [ -z "$ERRORS" ]; then
+    echo "✅ RESTORE COMPLETE! (mode=${MODE})"
+else
+    echo "⚠️  RESTORE COMPLETE WITH WARNINGS (mode=${MODE})"
+    echo "   Issues: ${ERRORS}"
+fi
 echo "════════════════════════════════════════════════════════════"
 echo "⏱️  Total time: ${MASTER_DURATION} seconds"
 echo "⏱️  End time: $(date)"
@@ -319,3 +421,9 @@ echo ""
 echo "📋 View logs:"
 echo "   docker compose logs -f"
 echo "════════════════════════════════════════════════════════════"
+
+# Exit non-zero only on truly fatal failures
+if echo "$ERRORS" | grep -qE "pg_password|quick_pg_restore|db_not_running"; then
+    exit 1
+fi
+exit 0

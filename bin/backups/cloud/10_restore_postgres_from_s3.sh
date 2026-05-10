@@ -1,36 +1,18 @@
 #!/bin/bash
-set -e
+# Postgres restore from S3 with retry logic.
+# Downloads the dump to a temp file first so the psql step can be retried
+# without re-downloading from S3.
 
-# Parse arguments
 S3_BUCKET="$1"
 BACKUP_NAME="$2"  # Optional: specific backup name
 
 if [ -z "$S3_BUCKET" ]; then
     echo "Usage: $0 <s3_bucket> [backup_name]"
     echo "Example: $0 s3://my-bucket/postgres-backups"
-    echo "Example: $0 s3://my-bucket/postgres-backups 20260224-012850/postgres-myapp-20260224-012850.sql.gz"
     exit 1
 fi
 
-# Database configurations
-DATABASES=("llamapress_production" "llamabot_production")
-DB_USER="postgres"
-
-echo ""
-echo "⚠️  WARNING: This will DESTROY all existing data in the following databases!"
-for DB_NAME in "${DATABASES[@]}"; do
-  echo "   - ${DB_NAME}"
-done
-echo ""
-read -p "Are you sure you want to continue? (y/N): " CONFIRM
-
-if [ "$CONFIRM" != "y" ] && [ "$CONFIRM" != "Y" ]; then
-  echo "❌ Restore cancelled."
-  exit 0
-fi
-
-echo ""
-echo "🔵 Fast Postgres Restore Starting..."
+echo "🔵 Postgres Restore Starting..."
 echo "⏱️  Start: $(date +%H:%M:%S)"
 START=$(date +%s)
 
@@ -38,22 +20,26 @@ START=$(date +%s)
 if [ -z "$BACKUP_NAME" ]; then
     echo "📋 No backup specified, finding latest..."
 
-    # Try to read the latest-backup.txt index file
-    LATEST_TIMESTAMP=$(aws s3 cp "${S3_BUCKET}/latest-backup.txt" - 2>/dev/null || echo "")
+    LATEST_TIMESTAMP=$(aws s3 cp "${S3_BUCKET}/latest-backup.txt" - 2>/dev/null | tr -d '[:space:]' || echo "")
 
     if [ -z "$LATEST_TIMESTAMP" ]; then
-        # Fallback: list all timestamp folders and get the most recent
-        LATEST_TIMESTAMP=$(aws s3 ls "${S3_BUCKET}/" | grep "PRE" | awk '{print $2}' | sed 's|/||g' | sort | tail -n 1)
+        # Fallback: list timestamp folders, excluding the quick-backup 'latest/' prefix
+        LATEST_TIMESTAMP=$(aws s3 ls "${S3_BUCKET}/" \
+            | grep "PRE" \
+            | awk '{print $2}' \
+            | sed 's|/||g' \
+            | grep -v '^latest$' \
+            | sort \
+            | tail -n 1)
     fi
 
     if [ -z "$LATEST_TIMESTAMP" ]; then
-        echo "❌ No backups found in ${S3_BUCKET}"
+        echo "❌ No full backups found in ${S3_BUCKET}"
         exit 1
     fi
 
     echo "📍 Using timestamp: ${LATEST_TIMESTAMP}"
 
-    # Find the postgres backup in this timestamp folder
     LATEST_FILE=$(aws s3 ls "${S3_BUCKET}/${LATEST_TIMESTAMP}/" | grep "postgres-" | awk '{print $4}' | head -n 1)
     if [ -z "$LATEST_FILE" ]; then
         echo "❌ No postgres backup found in ${S3_BUCKET}/${LATEST_TIMESTAMP}/"
@@ -64,86 +50,110 @@ if [ -z "$BACKUP_NAME" ]; then
     echo "📍 Using: ${BACKUP_NAME}"
 fi
 
-S3_PATH="${S3_BUCKET}/${BACKUP_NAME}"
+# --- Download dump to temp file (so we can retry psql without re-downloading) ---
+DUMP_FILE="/tmp/pg_restore_$$.sql.gz"
+trap "rm -f '$DUMP_FILE'" EXIT
 
-echo ""
-echo "📥 Source: ${S3_PATH}"
+echo "📥 Downloading SQL dump from S3..."
+echo "   Source: ${S3_BUCKET}/${BACKUP_NAME}"
+if ! aws s3 cp "${S3_BUCKET}/${BACKUP_NAME}" "$DUMP_FILE"; then
+    echo "❌ Failed to download SQL dump from S3"
+    exit 1
+fi
 
-# Stop services to prevent connections
-echo "🛑 Stopping llamapress and llamabot services..."
-docker compose stop llamapress llamabot 2>/dev/null || true
+DUMP_SIZE=$(stat -c%s "$DUMP_FILE" 2>/dev/null || echo "unknown")
+echo "   ✓ Downloaded (${DUMP_SIZE} bytes)"
 
-sleep 2
+# --- Helper: ensure postgres is up and accepting queries ---
+# Uses TCP (-h 127.0.0.1) instead of unix socket. The official postgres image
+# runs a socket-only init phase on a fresh volume that pg_isready-via-socket
+# reports as "ready", but the init phase then `pg_ctl stop`s and re-execs into
+# the real production postgres — killing any client connection with "FATAL:
+# terminating connection due to administrator command". TCP is only opened in
+# the production phase, so it's a reliable readiness signal in all cases.
+ensure_postgres_ready() {
+    echo "🚀 Ensuring database is running..."
+    docker compose up -d db
 
-# Make sure DB is running
-echo "🚀 Ensuring database is running..."
-docker compose up -d db
+    echo -n "⏳ Waiting for DB"
+    local timeout=60
+    local elapsed=0
+    until docker compose exec -T db pg_isready -h 127.0.0.1 -U postgres > /dev/null 2>&1; do
+        if [ $elapsed -ge $timeout ]; then
+            echo " ❌ Timeout (pg_isready)!"
+            return 1
+        fi
+        echo -n "."
+        sleep 1
+        elapsed=$((elapsed + 1))
+    done
+    # Verify a real query works (belt + suspenders)
+    until docker compose exec -T db psql -U postgres -c "SELECT 1" > /dev/null 2>&1; do
+        if [ $elapsed -ge $timeout ]; then
+            echo " ❌ Timeout (query test)!"
+            return 1
+        fi
+        echo -n "."
+        sleep 1
+        elapsed=$((elapsed + 1))
+    done
+    echo " ✓ (${elapsed}s)"
+    return 0
+}
 
-# Wait for DB (with timeout)
-echo -n "⏳ Waiting for DB"
-TIMEOUT=30
-ELAPSED=0
-until docker compose exec -T db pg_isready -U "$DB_USER" > /dev/null 2>&1; do
-    if [ $ELAPSED -ge $TIMEOUT ]; then
-        echo " ❌ Timeout!"
-        exit 1
+# --- Restore with retry ---
+MAX_ATTEMPTS=3
+RESTORE_OK=false
+
+for attempt in $(seq 1 $MAX_ATTEMPTS); do
+    echo ""
+    echo "📥 Restoring SQL dump (attempt ${attempt}/${MAX_ATTEMPTS})..."
+
+    if ! ensure_postgres_ready; then
+        echo "   ⚠️  Postgres not ready, restarting container..."
+        docker compose down db --timeout 10 2>/dev/null || true
+        sleep 3
+        continue
     fi
-    echo -n "."
-    sleep 1
-    ELAPSED=$((ELAPSED + 1))
+
+    # Feed the dump to psql from the local file (not streaming from S3)
+    if gunzip -c "$DUMP_FILE" \
+        | docker compose exec -T db psql -U postgres 2>&1 \
+        | grep -v "^CREATE\|^ALTER\|^SET\|^--\|^INSERT\|^COPY\|^$" || true; then
+
+        # Verify data was actually restored
+        echo "🔍 Verifying data restoration..."
+        TABLE_COUNT=$(docker compose exec -T db psql -U postgres -t -c \
+            "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';" \
+            2>/dev/null | tr -d ' \n' || echo "0")
+        echo "   Found ${TABLE_COUNT} tables in database"
+
+        if [ "$TABLE_COUNT" != "0" ] && [ -n "$TABLE_COUNT" ]; then
+            echo "   ✓ Data verified"
+            RESTORE_OK=true
+            break
+        else
+            echo "   ⚠️  No tables found after restore — psql may have been interrupted"
+        fi
+    fi
+
+    if [ $attempt -lt $MAX_ATTEMPTS ]; then
+        echo "   Retrying in 5s..."
+        # Full restart of DB to clear any bad state
+        docker compose down db --timeout 10 2>/dev/null || true
+        sleep 5
+    fi
 done
-echo " ✓"
-
-# Drop and recreate each database
-for DB_NAME in "${DATABASES[@]}"; do
-  echo ""
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo "🗄️  Preparing: ${DB_NAME}"
-
-  # Terminate existing connections
-  echo "🔌 Terminating existing connections..."
-  docker compose exec -T db psql -U "$DB_USER" -d postgres -c "
-    SELECT pg_terminate_backend(pg_stat_activity.pid)
-    FROM pg_stat_activity
-    WHERE pg_stat_activity.datname = '$DB_NAME'
-      AND pid <> pg_backend_pid();" > /dev/null 2>&1 || true
-
-  # Drop and recreate
-  echo "🗑️  Dropping ${DB_NAME}..."
-  docker compose exec -T db dropdb -U "$DB_USER" --if-exists "$DB_NAME"
-
-  echo "🆕 Creating fresh ${DB_NAME}..."
-  docker compose exec -T db createdb -U "$DB_USER" "$DB_NAME"
-done
-
-# Restore the full dump (covers all databases)
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "📥 Restoring from S3 backup..."
-aws s3 cp "$S3_PATH" - \
-    | gunzip \
-    | docker compose exec -T db psql -U "$DB_USER" 2>&1 \
-    | grep -Ev "^(CREATE|ALTER|SET|--|INSERT|COPY)|set_config|setval|^You are now connected|already exists|^ERROR:  (role|database)|^[[:space:]]*[0-9]+[[:space:]]*$|^$" || true
-
-# Verify data was restored
-echo ""
-echo "🔍 Verifying restoration..."
-for DB_NAME in "${DATABASES[@]}"; do
-  TABLE_COUNT=$(docker compose exec -T db psql -U "$DB_USER" -d "$DB_NAME" -t -c \
-    "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';" \
-    2>/dev/null | tr -d ' \n' || echo "0")
-  echo "   ${DB_NAME}: ${TABLE_COUNT} tables"
-done
-
-# Restart services
-echo ""
-echo "🚀 Restarting services..."
-docker compose up -d llamapress llamabot
 
 END=$(date +%s)
 DURATION=$((END - START))
 
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "✅ Restore complete in ${DURATION} seconds"
-echo "⏱️  End: $(date +%H:%M:%S)"
+if [ "$RESTORE_OK" = true ]; then
+    echo "✅ Restore complete in ${DURATION} seconds"
+    echo "⏱️  End: $(date +%H:%M:%S)"
+    exit 0
+else
+    echo "❌ Restore FAILED after ${MAX_ATTEMPTS} attempts (${DURATION}s)"
+    echo "⏱️  End: $(date +%H:%M:%S)"
+    exit 1
+fi
