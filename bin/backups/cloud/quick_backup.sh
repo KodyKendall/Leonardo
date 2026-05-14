@@ -47,6 +47,20 @@ aws s3 sync "${PROJECT_DIR}" "${S3_BUCKET}/latest/project-files/" \
     --delete \
     && SYNC_OK="1"
 
+# Step 3: Caddy config + certs (incremental sync, near-instant when unchanged)
+CADDY_OK=""
+if [ -d "/etc/caddy" ]; then
+    aws s3 sync "/etc/caddy" "${S3_BUCKET}/latest/caddy-config/" \
+        --storage-class STANDARD_IA --only-show-errors \
+        && CADDY_OK="1" || echo "Warning: Caddy config sync failed"
+fi
+CADDY_CERT_DIR="/var/lib/caddy/.local/share/caddy"
+if [ -d "$CADDY_CERT_DIR" ]; then
+    aws s3 sync "$CADDY_CERT_DIR" "${S3_BUCKET}/latest/caddy-data/" \
+        --storage-class STANDARD_IA --only-show-errors \
+        && CADDY_OK="1" || echo "Warning: Caddy data sync failed"
+fi
+
 # Wait for Postgres to finish
 wait $POSTGRES_PID && POSTGRES_OK="1"
 

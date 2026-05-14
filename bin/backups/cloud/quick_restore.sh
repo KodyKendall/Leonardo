@@ -54,9 +54,36 @@ aws s3 sync "${S3_BUCKET}/latest/project-files/" "${PROJECT_DIR}" \
 
 echo "Project files restored."
 
+# Step 3: Restore Caddy config + certs
+CADDY_EXISTS=$(aws s3 ls "${S3_BUCKET}/latest/caddy-config/" 2>/dev/null || true)
+if [ -n "$CADDY_EXISTS" ]; then
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "Restoring Caddy config..."
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    sudo mkdir -p /etc/caddy
+    aws s3 sync "${S3_BUCKET}/latest/caddy-config/" "/etc/caddy/" --only-show-errors
+    echo "Caddy config restored."
+fi
+
+CADDY_DATA_EXISTS=$(aws s3 ls "${S3_BUCKET}/latest/caddy-data/" 2>/dev/null || true)
+if [ -n "$CADDY_DATA_EXISTS" ]; then
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "Restoring Caddy certs/data..."
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    sudo mkdir -p /var/lib/caddy/.local/share/caddy
+    aws s3 sync "${S3_BUCKET}/latest/caddy-data/" "/var/lib/caddy/.local/share/caddy/" --only-show-errors
+    sudo chown -R caddy:caddy /var/lib/caddy
+    echo "Caddy data restored."
+fi
+
 END=$(date +%s)
 DURATION=$((END - START))
 
 echo ""
 echo "Quick restore complete in ${DURATION}s"
 echo "You may need to restart services: docker compose down && docker compose up -d"
+if [ -n "$CADDY_EXISTS" ] || [ -n "$CADDY_DATA_EXISTS" ]; then
+    echo "Reload Caddy: sudo systemctl reload caddy"
+fi
