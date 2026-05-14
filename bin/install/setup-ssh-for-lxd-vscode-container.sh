@@ -20,6 +20,7 @@ set -e
 
 SSH_DIR="/config/.ssh"
 JUMP_KEY="$SSH_DIR/id_ed25519_lxd_jump"
+SHARED_JUMP_KEY="/config/workspace/.ssh-shared/id_ed25519_lxd_jump"
 CHILD_KEY="$SSH_DIR/id_ed25519_leonardo"
 SSH_CONFIG="$SSH_DIR/config"
 BASHRC="/config/.bashrc"
@@ -58,13 +59,22 @@ fi
 mkdir -p "$SSH_DIR"
 chmod 700 "$SSH_DIR"
 
-# Generate jump key (shared across all children, proxy-only on parent)
+# Use shared jump key from golden image, or generate a new one
 if [ ! -f "$JUMP_KEY" ]; then
-    echo "📝 Generating LXD jump key..."
-    ssh-keygen -t ed25519 -f "$JUMP_KEY" -N "" -C "lxd-jump"
-    chmod 600 "$JUMP_KEY"
-    chmod 644 "$JUMP_KEY.pub"
-    echo "✅ Jump key generated"
+    if [ -f "$SHARED_JUMP_KEY" ]; then
+        echo "📝 Copying shared LXD jump key from golden image..."
+        cp "$SHARED_JUMP_KEY" "$JUMP_KEY"
+        cp "${SHARED_JUMP_KEY}.pub" "${JUMP_KEY}.pub"
+        chmod 600 "$JUMP_KEY"
+        chmod 644 "${JUMP_KEY}.pub"
+        echo "✅ Shared jump key installed (no need to add to node authorized_keys)"
+    else
+        echo "📝 Generating new LXD jump key..."
+        ssh-keygen -t ed25519 -f "$JUMP_KEY" -N "" -C "lxd-jump"
+        chmod 600 "$JUMP_KEY"
+        chmod 644 "$JUMP_KEY.pub"
+        echo "✅ Jump key generated (must be added to node authorized_keys)"
+    fi
 elif [ -r "$JUMP_KEY" ]; then
     echo "✅ Using existing jump key at $JUMP_KEY"
 else
