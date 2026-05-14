@@ -85,9 +85,13 @@ services:
     container_name: code
     environment:
       - TZ=America/Denver
-      - PASSWORD=password
+      - PASSWORD=${VSCODE_PASSWORD:-password}
       - PUID=1000
       - PGID=1000
+      - LXD_HOST_IP=${LXD_HOST_IP:-}
+      - LXD_HOST_PORT=${LXD_HOST_PORT:-}
+      - LXD_HOST_USER=${LXD_HOST_USER:-}
+      - LEONARDO_IP=${LEONARDO_IP:-}
       # - AUTO_SSH_LEONARDO=1
     volumes:
       - code_config:/config
