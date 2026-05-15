@@ -36,7 +36,6 @@ POSTGRES_PID=$!
 aws s3 sync "${PROJECT_DIR}" "${S3_BUCKET}/latest/project-files/" \
     --exclude "*.pyc" \
     --exclude "__pycache__/*" \
-    --exclude ".git/*" \
     --exclude "tmp/*" \
     --exclude "log/*" \
     --exclude "node_modules/*" \
