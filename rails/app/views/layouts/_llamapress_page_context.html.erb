@@ -10,6 +10,10 @@
     userLoggedIn: <%= user_signed_in? rescue false %>
   };
 
+  // PostHog analytics config (passed from env vars)
+  window.LLAMABOT_POSTHOG_KEY = <%= ENV['LLAMABOT_POSTHOG_KEY'].present? ? ENV['LLAMABOT_POSTHOG_KEY'].to_json.html_safe : 'null' %>;
+  window.LLAMABOT_POSTHOG_HOST = <%= ENV['LLAMABOT_POSTHOG_HOST'].present? ? ENV['LLAMABOT_POSTHOG_HOST'].to_json.html_safe : 'null' %>;
+
   // Function to update context variables
   function updatePageContext() {
     // These are set fresh on each page load from server-side variables
