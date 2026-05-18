@@ -158,6 +158,14 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "📦 STEP 1: Restore Project Files"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 cd ~
+
+# Preserve .ssh-shared before wiping Leonardo — the golden image bakes in a
+# shared LXD jump key that the VSCode SSH setup script needs. The backup
+# predates this key, so restoring would lose it.
+if [ -d "Leonardo/.ssh-shared" ]; then
+    cp -a Leonardo/.ssh-shared /tmp/.ssh-shared-preserve
+fi
+
 rm -rf Leonardo llamapress 2>/dev/null || true
 
 # Bootstrap: pull latest scripts so they survive the project-files restore
@@ -192,6 +200,14 @@ else
 fi
 
 cd ~/Leonardo
+
+# Restore .ssh-shared if it was preserved before the wipe
+if [ -d "/tmp/.ssh-shared-preserve" ]; then
+    cp -a /tmp/.ssh-shared-preserve .ssh-shared
+    rm -rf /tmp/.ssh-shared-preserve
+    echo "   ✓ Restored .ssh-shared (LXD jump key)"
+fi
+
 echo ""
 
 # ─── QUICK-ONLY PATH ──────────────────────────────────────────────────────
@@ -260,7 +276,11 @@ else
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "📦 STEP 2: Restore Docker Volumes"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    full_docker_down
+    # Must use -v so compose-prefixed volumes (e.g. leonardo_postgres_data) are
+    # actually removed — otherwise the volume restore script's `docker volume rm`
+    # silently fails and the old volume (with a different postgres password) survives.
+    docker compose down -v --remove-orphans --timeout 10 2>/dev/null || true
+    sleep 2
 
     if ./bin/backups/cloud/9_restore_docker_volumes_from_s3.sh \
         "${INSTANCE_NAME}" "${S3_BUCKET}" "${FULL_TS}"; then
