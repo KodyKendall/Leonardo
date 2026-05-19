@@ -22,6 +22,11 @@ fi
 TIMESTAMP="$BACKUP_FOLDER"  # Keep TIMESTAMP variable for backward compatibility
 BACKUP_NAME="postgres-${INSTANCE_NAME}-${TIMESTAMP}.sql.gz"
 
+# Source AWS credentials from .env if available (needed on LXD/Hetzner hosts without IMDS)
+if [ -z "$AWS_ACCESS_KEY_ID" ] && [ -f .env ]; then
+    export $(grep -E '^(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AWS_DEFAULT_REGION)=' .env | xargs)
+fi
+
 echo "🔵 Fast Postgres Backup Starting..."
 echo "⏱️  Start: $(date +%H:%M:%S)"
 START=$(date +%s)

@@ -17,6 +17,14 @@ echo "🔵 Volume Restore Starting..."
 echo "⏱️  Start: $(date +%H:%M:%S)"
 START=$(date +%s)
 
+# Source AWS credentials from .env if available (needed on LXD/Hetzner hosts without IMDS)
+if [ -z "$AWS_ACCESS_KEY_ID" ] && [ -f .env ]; then
+    export $(grep -E '^(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AWS_DEFAULT_REGION)=' .env | xargs)
+fi
+
+# Detect Docker Compose project name for volume prefix.
+PROJECT_NAME="${COMPOSE_PROJECT_NAME:-$(basename "$PWD" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9_-]//g')}"
+
 # If no timestamp specified, find the latest
 if [ -z "$TIMESTAMP" ]; then
     echo "📋 Finding latest backup..."
@@ -59,19 +67,24 @@ for volume in $VOLUMES; do
         continue
     fi
 
-    # Remove old volume and create new one
-    docker volume rm ${volume} 2>/dev/null || true
-    docker volume create ${volume} > /dev/null
+    # Use Compose-prefixed volume name (e.g. leonardo_postgres_data)
+    TARGET_VOLUME="${PROJECT_NAME}_${volume}"
+    echo "   Target volume: ${TARGET_VOLUME}"
+
+    # Remove old volumes (both prefixed and bare) and create the correct one
+    docker volume rm "${TARGET_VOLUME}" 2>/dev/null || true
+    docker volume rm "${volume}" 2>/dev/null || true
+    docker volume create "${TARGET_VOLUME}" > /dev/null
 
     # Stream from S3 directly to volume (no temp file)
     if aws s3 cp "${S3_BUCKET}/${TIMESTAMP}/${BACKUP_NAME}" - \
         | docker run --rm -i \
-            -v ${volume}:/volume \
+            -v ${TARGET_VOLUME}:/volume \
             alpine \
             tar xzf - -C /volume; then
         VOL_END=$(date +%s)
         VOL_DURATION=$((VOL_END - VOL_START))
-        echo "   ✓ ${volume} restored in ${VOL_DURATION}s"
+        echo "   ✓ ${volume} restored to ${TARGET_VOLUME} in ${VOL_DURATION}s"
         RESTORED_COUNT=$((RESTORED_COUNT + 1))
     else
         echo "   ❌ ${volume} restore FAILED"

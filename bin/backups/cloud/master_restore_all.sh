@@ -88,11 +88,42 @@ align_postgres_password() {
     fi
 }
 
-# Stream the quick-backup pg_dumpall through gunzip into psql.
+# Load per-database dumps from quick backup (matches quick_backup.sh output format).
 load_quick_postgres_dump() {
-    aws s3 cp "${S3_BUCKET}/latest/postgres-${INSTANCE_NAME}.sql.gz" - --only-show-errors \
-        | gunzip \
-        | docker compose exec -T db psql -U postgres --quiet -f -
+    local ok=true
+    for db in llamapress_production llamabot_production; do
+        local dump_url="${S3_BUCKET}/latest/${db}-${INSTANCE_NAME}.sql.gz"
+        if aws s3 ls "$dump_url" > /dev/null 2>&1; then
+            echo "   Loading ${db}..."
+            # Ensure database exists
+            docker compose exec -T db psql -U postgres -tc \
+                "SELECT 1 FROM pg_database WHERE datname='${db}'" | grep -q 1 \
+                || docker compose exec -T db psql -U postgres -c "CREATE DATABASE \"${db}\";" 2>/dev/null
+            if ! aws s3 cp "$dump_url" - --only-show-errors \
+                | gunzip \
+                | docker compose exec -T db psql -U postgres -d "$db" --quiet -f -; then
+                echo "   ⚠️  Failed to load ${db}"
+                ok=false
+            fi
+        else
+            echo "   ⚠️  ${db} dump not found at ${dump_url}"
+        fi
+    done
+    $ok
+}
+
+# Load the pg_dumpall from a full (timestamped) backup.
+load_full_postgres_dump() {
+    local dump_url="${S3_BUCKET}/${FULL_TS}/postgres-${INSTANCE_NAME}-${FULL_TS}.sql.gz"
+    if aws s3 ls "$dump_url" > /dev/null 2>&1; then
+        echo "   Loading pg_dumpall from ${dump_url}..."
+        aws s3 cp "$dump_url" - --only-show-errors \
+            | gunzip \
+            | docker compose exec -T db psql -U postgres --quiet -f -
+    else
+        echo "   ⚠️  Full dump not found at ${dump_url}"
+        return 1
+    fi
 }
 
 # Drop every non-template, non-postgres database so the quick dump can recreate them.
@@ -318,6 +349,18 @@ else
     done
 
     if [ "$PG_PASSWORD_OK" = true ]; then
+        # Safety net: load pg_dumpall in case volume restore targeted wrong volume names.
+        # This ensures database data is present even if the volume tar went to an orphaned volume.
+        echo "🔄 Loading pg_dumpall as safety net..."
+        drop_user_databases
+        if load_full_postgres_dump; then
+            echo "   ✓ Full dump loaded"
+            echo "🔐 Realigning postgres password after dump load..."
+            align_postgres_password || ERRORS="${ERRORS}pg_dump_pwd "
+        else
+            echo "   ⚠️  Full dump not available — relying on volume restore data"
+        fi
+
         echo "🔄 Restarting db + redis with new password..."
         full_docker_down
         docker compose up -d db redis
@@ -393,9 +436,11 @@ fi
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "📦 Start All Services"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" 2>/dev/null)
-IPADDRESS=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -s http://169.254.169.254/latest/meta-data/public-ipv4 2>/dev/null)
-echo "📍 Public IP: ${IPADDRESS}"
+IPADDRESS=""
+if TOKEN=$(curl -sf -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600" --connect-timeout 2 2>/dev/null); then
+    IPADDRESS=$(curl -sf -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4 --connect-timeout 2 2>/dev/null || true)
+fi
+echo "📍 Public IP: ${IPADDRESS:-<not available - LXD or non-AWS host>}"
 echo "🌐 DNS already configured by orchestrator"
 echo ""
 echo "🚀 Starting all services..."

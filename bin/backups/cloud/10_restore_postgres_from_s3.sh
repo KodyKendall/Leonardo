@@ -12,6 +12,11 @@ if [ -z "$S3_BUCKET" ]; then
     exit 1
 fi
 
+# Source AWS credentials from .env if available (needed on LXD/Hetzner hosts without IMDS)
+if [ -z "$AWS_ACCESS_KEY_ID" ] && [ -f .env ]; then
+    export $(grep -E '^(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AWS_DEFAULT_REGION)=' .env | xargs)
+fi
+
 echo "🔵 Postgres Restore Starting..."
 echo "⏱️  Start: $(date +%H:%M:%S)"
 START=$(date +%s)

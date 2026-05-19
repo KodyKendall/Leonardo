@@ -25,11 +25,14 @@ LAST_BACKUP=$(aws s3 cp "${S3_BUCKET}/latest/last-quick-backup.txt" - 2>/dev/nul
 echo "Last backup timestamp: ${LAST_BACKUP}"
 echo ""
 
-read -p "This will overwrite the database and project files. Continue? (y/N) " -n 1 -r
-echo ""
-if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo "Aborted."
-    exit 0
+# Skip confirmation if FORCE=true or running non-interactively (e.g. from SSM/orchestrator)
+if [ "${FORCE:-}" != "true" ] && [ -t 0 ]; then
+    read -p "This will overwrite the database and project files. Continue? (y/N) " -n 1 -r
+    echo ""
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "Aborted."
+        exit 0
+    fi
 fi
 
 START=$(date +%s)
@@ -59,6 +62,9 @@ fi
 if [ "$OVERALL_OK" = true ]; then
     echo ""
     echo "Step 2/3: Restoring llamapress_production..."
+    # Drop and recreate so pg_dump output loads cleanly (no duplicate key errors)
+    docker compose exec -T db psql -U postgres -c "DROP DATABASE IF EXISTS \"llamapress_production\" WITH (FORCE);" 2>/dev/null || true
+    docker compose exec -T db psql -U postgres -c "CREATE DATABASE \"llamapress_production\";" 2>/dev/null || true
     if aws s3 cp "${S3_BUCKET}/latest/llamapress_production-${INSTANCE_NAME}.sql.gz" - --only-show-errors \
         | gunzip \
         | docker compose exec -T db psql -U postgres -d llamapress_production --quiet -f -; then
@@ -78,6 +84,9 @@ fi
 if [ "$OVERALL_OK" = true ]; then
     echo ""
     echo "Step 3/3: Restoring llamabot_production..."
+    # Drop and recreate so pg_dump output loads cleanly (no duplicate key errors)
+    docker compose exec -T db psql -U postgres -c "DROP DATABASE IF EXISTS \"llamabot_production\" WITH (FORCE);" 2>/dev/null || true
+    docker compose exec -T db psql -U postgres -c "CREATE DATABASE \"llamabot_production\";" 2>/dev/null || true
     if aws s3 cp "${S3_BUCKET}/latest/llamabot_production-${INSTANCE_NAME}.sql.gz" - --only-show-errors \
         | gunzip \
         | docker compose exec -T db psql -U postgres -d llamabot_production --quiet -f -; then

@@ -25,18 +25,39 @@ echo "🔵 Fast Volume Backup Starting..."
 echo "⏱️  Start: $(date +%H:%M:%S)"
 START=$(date +%s)
 
-# List of volumes to backup
+# Source AWS credentials from .env if available (needed on LXD/Hetzner hosts without IMDS)
+if [ -z "$AWS_ACCESS_KEY_ID" ] && [ -f .env ]; then
+    export $(grep -E '^(AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY|AWS_DEFAULT_REGION)=' .env | xargs)
+fi
+
+# Detect Docker Compose project name for volume prefix.
+# Compose prefixes volumes with the project name (e.g. leonardo_postgres_data).
+PROJECT_NAME="${COMPOSE_PROJECT_NAME:-$(basename "$PWD" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9_-]//g')}"
+
+# List of volumes to backup (logical names as defined in docker-compose.yml)
 VOLUMES="postgres_data redis_data rails_storage code_config"
 
 for volume in $VOLUMES; do
     echo "📦 Backing up ${volume}..."
     VOL_START=$(date +%s)
 
+    # Resolve actual volume name: prefer Compose-prefixed, fall back to bare
+    prefixed="${PROJECT_NAME}_${volume}"
+    if docker volume inspect "$prefixed" >/dev/null 2>&1; then
+        SOURCE_VOLUME="$prefixed"
+    elif docker volume inspect "$volume" >/dev/null 2>&1; then
+        SOURCE_VOLUME="$volume"
+    else
+        echo "   ⚠️  Volume ${volume} not found (tried ${prefixed} and ${volume}), skipping"
+        continue
+    fi
+    echo "   Using volume: ${SOURCE_VOLUME}"
+
     BACKUP_NAME="${volume}-${INSTANCE_NAME}-${TIMESTAMP}.tar.gz"
 
     # Stream volume directly to S3 (no temp file) - save in timestamped folder
     docker run --rm \
-        -v ${volume}:/volume:ro \
+        -v ${SOURCE_VOLUME}:/volume:ro \
         alpine \
         tar czf - -C /volume . \
         | aws s3 cp - "${S3_BUCKET}/${TIMESTAMP}/${BACKUP_NAME}" \
