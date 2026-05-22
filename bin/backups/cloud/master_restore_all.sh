@@ -88,14 +88,20 @@ align_postgres_password() {
     fi
 }
 
-# Load per-database dumps from quick backup (matches quick_backup.sh output format).
+# Load postgres dumps from quick backup. Backwards-compatible across three S3 layouts:
+#   1. latest/{db}-{INSTANCE}.sql.gz       — current quick_backup.sh (per-db pg_dump)
+#   2. latest/postgres-{INSTANCE}.sql.gz   — legacy pg_dumpall (most existing instances)
+#   3. {db}_latest.sql.gz                  — backup_s3.sh / cron (per-db at S3 root)
 load_quick_postgres_dump() {
     local ok=true
+
+    # ── Strategy 1: per-database dumps in latest/ (current quick_backup.sh format)
+    local found_per_db=false
     for db in llamapress_production llamabot_production; do
         local dump_url="${S3_BUCKET}/latest/${db}-${INSTANCE_NAME}.sql.gz"
         if aws s3 ls "$dump_url" > /dev/null 2>&1; then
-            echo "   Loading ${db}..."
-            # Ensure database exists
+            found_per_db=true
+            echo "   Loading ${db} (per-db format)..."
             docker compose exec -T db psql -U postgres -tc \
                 "SELECT 1 FROM pg_database WHERE datname='${db}'" | grep -q 1 \
                 || docker compose exec -T db psql -U postgres -c "CREATE DATABASE \"${db}\";" 2>/dev/null
@@ -105,11 +111,55 @@ load_quick_postgres_dump() {
                 echo "   ⚠️  Failed to load ${db}"
                 ok=false
             fi
-        else
-            echo "   ⚠️  ${db} dump not found at ${dump_url}"
         fi
     done
-    $ok
+
+    if [ "$found_per_db" = true ]; then
+        $ok
+        return
+    fi
+
+    # ── Strategy 2: pg_dumpall in latest/ (legacy format — what most instances have)
+    local dumpall_url="${S3_BUCKET}/latest/postgres-${INSTANCE_NAME}.sql.gz"
+    if aws s3 ls "$dumpall_url" > /dev/null 2>&1; then
+        echo "   Loading pg_dumpall from ${dumpall_url} (legacy format)..."
+        if aws s3 cp "$dumpall_url" - --only-show-errors \
+            | gunzip \
+            | docker compose exec -T db psql -U postgres --quiet -f -; then
+            echo "   ✓ pg_dumpall loaded"
+            return 0
+        else
+            echo "   ⚠️  pg_dumpall load failed"
+            return 1
+        fi
+    fi
+
+    # ── Strategy 3: per-database dumps at S3 root (backup_s3.sh / cron format)
+    local found_root_db=false
+    for db in llamapress_production llamabot_production; do
+        local dump_url="${S3_BUCKET}/${db}_latest.sql.gz"
+        if aws s3 ls "$dump_url" > /dev/null 2>&1; then
+            found_root_db=true
+            echo "   Loading ${db} (root-level format)..."
+            docker compose exec -T db psql -U postgres -tc \
+                "SELECT 1 FROM pg_database WHERE datname='${db}'" | grep -q 1 \
+                || docker compose exec -T db psql -U postgres -c "CREATE DATABASE \"${db}\";" 2>/dev/null
+            if ! aws s3 cp "$dump_url" - --only-show-errors \
+                | gunzip \
+                | docker compose exec -T db psql -U postgres -d "$db" --quiet -f -; then
+                echo "   ⚠️  Failed to load ${db}"
+                ok=false
+            fi
+        fi
+    done
+
+    if [ "$found_root_db" = true ]; then
+        $ok
+        return
+    fi
+
+    echo "   ⚠️  No postgres dumps found in any known format under ${S3_BUCKET}"
+    return 1
 }
 
 # Load the pg_dumpall from a full (timestamped) backup.
@@ -197,6 +247,12 @@ if [ -d "Leonardo/.ssh-shared" ]; then
     cp -a Leonardo/.ssh-shared /tmp/.ssh-shared-preserve
 fi
 
+# Preserve target instance identity before wipe. The backup's .env carries the
+# SOURCE instance's identity/creds — restoring it would point this instance at
+# the wrong S3 path, mothership token, AWS creds, LXD host, etc. We splice
+# select identity keys back from this snapshot after the tarball is restored.
+cp /home/ubuntu/Leonardo/.env /tmp/.env.pre-restore 2>/dev/null || true
+
 rm -rf Leonardo llamapress 2>/dev/null || true
 
 # Bootstrap: pull latest scripts so they survive the project-files restore
@@ -237,6 +293,51 @@ if [ -d "/tmp/.ssh-shared-preserve" ]; then
     cp -a /tmp/.ssh-shared-preserve .ssh-shared
     rm -rf /tmp/.ssh-shared-preserve
     echo "   ✓ Restored .ssh-shared (LXD jump key)"
+fi
+
+# Splice target instance identity back into .env. The tarball restore just
+# overwrote .env with the SOURCE instance's values; here we put back the keys
+# that define THIS instance (S3 path, mothership token, AWS creds, LXD host,
+# etc.). Done before any later step reads .env so services start with the
+# correct identity. POSTGRES_PASSWORD is intentionally excluded — the later
+# postgres password-alignment step will sync the running DB with the source's
+# password from the restored .env.
+if [ -f /tmp/.env.pre-restore ]; then
+    echo "🔐 Splicing target instance identity back into .env..."
+    IDENTITY_KEYS=(
+        INSTANCE_NAME
+        S3_BUCKET_PATH
+        HOSTED_DOMAIN
+        FULL_HOSTED_DOMAIN
+        MOTHERSHIP_API_TOKEN
+        MOTHERSHIP_INSTANCE_NAME
+        MOTHERSHIP_URL
+        AWS_ACCESS_KEY_ID
+        AWS_SECRET_ACCESS_KEY
+        AWS_DEFAULT_REGION
+        LXD_HOST_IP
+        LXD_HOST_PORT
+        LXD_HOST_USER
+        LEONARDO_IP
+        VSCODE_PASSWORD
+        SECRET_KEY_BASE
+        LLAMAPRESS_AI_LOGIN_SECRET
+    )
+
+    for key in "${IDENTITY_KEYS[@]}"; do
+        val=$(grep "^${key}=" /tmp/.env.pre-restore | head -1 | cut -d= -f2-)
+        if [ -n "$val" ]; then
+            if grep -q "^${key}=" /home/ubuntu/Leonardo/.env 2>/dev/null; then
+                sed -i "s|^${key}=.*|${key}=${val}|" /home/ubuntu/Leonardo/.env
+            else
+                echo "${key}=${val}" >> /home/ubuntu/Leonardo/.env
+            fi
+        fi
+    done
+
+    cp /home/ubuntu/Leonardo/.env /home/ubuntu/Leonardo/.env.rails
+    rm /tmp/.env.pre-restore
+    echo "   ✓ Identity spliced for ${INSTANCE_NAME}"
 fi
 
 echo ""
