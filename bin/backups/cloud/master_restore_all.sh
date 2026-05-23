@@ -340,6 +340,12 @@ if [ -f /tmp/.env.pre-restore ]; then
     echo "   ✓ Identity spliced for ${INSTANCE_NAME}"
 fi
 
+# Re-anchor cwd to the freshly-restored Leonardo. The earlier `rm -rf Leonardo`
+# left the shell's cwd fd pointing at a deleted inode; without this, every
+# subsequent `docker compose` call fails with "no configuration file provided"
+# because compose can't find docker-compose.yml from the stale cwd.
+cd /home/ubuntu/Leonardo
+
 echo ""
 
 # ─── QUICK-ONLY PATH ──────────────────────────────────────────────────────
