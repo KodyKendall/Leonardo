@@ -10,6 +10,13 @@ INSTANCE_NAME="$1"
 S3_BUCKET="$2"
 PROJECT_DIR="${3:-$PWD}"
 
+# Load S3 backup creds from .env. LXD/Hetzner have no IMDS role, so the aws CLI
+# needs these from the env. The `=.+` requires a non-empty value, so on AWS —
+# where .env carries no AWS_* keys — this is a no-op and the IMDS role is used.
+if [ -f "${PROJECT_DIR}/.env" ]; then
+  export $(grep -E '^AWS_(ACCESS_KEY_ID|SECRET_ACCESS_KEY|DEFAULT_REGION)=.+' "${PROJECT_DIR}/.env" | xargs)
+fi
+
 if [ -z "$INSTANCE_NAME" ] || [ -z "$S3_BUCKET" ]; then
     echo "Usage: $0 <instance_name> <s3_bucket_path> [project_dir]"
     echo "Example: $0 LP-Test5 s3://llampress-ai-backups/backups/leonardos/LP-Test5"
@@ -71,10 +78,23 @@ echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "📦 STEP 4/4: Backup System Configs"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-sudo "${SCRIPT_DIR}/4_backup_system_configs_to_s3.sh" \
-    "${INSTANCE_NAME}" \
-    "${S3_BUCKET}" \
-    "${BACKUP_TIMESTAMP}"
+# Step 4 needs root (Caddy certs/conf, authorized_keys). On LXD/Hetzner, forward
+# the S3 creds through sudo via `env` so they survive env_reset. On AWS the vars
+# are unset, so we fall through to plain sudo and step 4 uses the IMDS role.
+if [ -n "${AWS_ACCESS_KEY_ID:-}" ]; then
+    sudo env AWS_ACCESS_KEY_ID="$AWS_ACCESS_KEY_ID" \
+             AWS_SECRET_ACCESS_KEY="$AWS_SECRET_ACCESS_KEY" \
+             AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION:-us-west-2}" \
+             "${SCRIPT_DIR}/4_backup_system_configs_to_s3.sh" \
+             "${INSTANCE_NAME}" \
+             "${S3_BUCKET}" \
+             "${BACKUP_TIMESTAMP}"
+else
+    sudo "${SCRIPT_DIR}/4_backup_system_configs_to_s3.sh" \
+        "${INSTANCE_NAME}" \
+        "${S3_BUCKET}" \
+        "${BACKUP_TIMESTAMP}"
+fi
 echo "✅ Step 4 complete"
 echo ""
 
