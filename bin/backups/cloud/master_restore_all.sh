@@ -346,6 +346,13 @@ fi
 # because compose can't find docker-compose.yml from the stale cwd.
 cd /home/ubuntu/Leonardo
 
+# The restored project tarball can land bin/*.sh without exec bits, which makes later
+# `sudo bin/db/backup.sh` / master_backup_all.sh sub-script calls fail ("command not found"
+# / exit 126) and orphan the instance in `error` on its next backup. Re-assert exec bits on
+# all repo scripts so the restored instance is runnable. Idempotent; safe to re-run.
+echo "🔧 Re-asserting exec bits on bin/*.sh after project restore..."
+find /home/ubuntu/Leonardo/bin -name '*.sh' -exec chmod +x {} + 2>/dev/null || true
+
 echo ""
 
 # ─── QUICK-ONLY PATH ──────────────────────────────────────────────────────
