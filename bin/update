@@ -1,0 +1,45 @@
+#!/bin/bash
+# Update LlamaBot and LlamaPress to new image versions
+# Usage: bin/update <llamabot_version> <llamapress_version>
+# Note: This script runs on the HOST (via nsenter), not inside llamabot
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+
+cd "$PROJECT_DIR"
+
+LLAMABOT_VERSION="$1"
+LLAMAPRESS_VERSION="$2"
+
+if [ -z "$LLAMABOT_VERSION" ] || [ -z "$LLAMAPRESS_VERSION" ]; then
+    echo "Usage: bin/update <llamabot_version> <llamapress_version>"
+    exit 1
+fi
+
+echo "Updating to llamabot:$LLAMABOT_VERSION, llamapress-simple:$LLAMAPRESS_VERSION..."
+
+# Update image tags in docker-compose.yml using sed
+sed -i "s|kody06/llamabot:[^ ]*|kody06/llamabot:${LLAMABOT_VERSION}|g" docker-compose.yml
+sed -i "s|kody06/llamapress-simple:[^ ]*|kody06/llamapress-simple:${LLAMAPRESS_VERSION}|g" docker-compose.yml
+
+echo "Updated docker-compose.yml"
+
+# Pull new images
+echo "Pulling new images..."
+docker compose pull llamabot llamapress
+
+if [ $? -ne 0 ]; then
+    echo "ERROR: docker compose pull failed"
+    exit 1
+fi
+
+echo "Pull complete. Scheduling restart..."
+
+# Generate unique unit name with timestamp to avoid conflicts
+UNIT_NAME="leonardo-update-$(date +%s)"
+
+# Run via systemd-run so restart survives container shutdown
+sudo systemd-run --no-block --unit="$UNIT_NAME" \
+    /bin/bash -c "cd /home/ubuntu/Leonardo && docker compose down llamapress llamabot && docker compose up -d"
+
+echo "Update scheduled via systemd (check: journalctl -u $UNIT_NAME --follow)"
