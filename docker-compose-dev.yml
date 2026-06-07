@@ -22,6 +22,7 @@ services:
       - ./rails/config/environments/development.rb:/rails/config/environments/development.rb
       - ./rails/config/database.yml:/rails/config/database.yml
       - ./rails/config/importmap.rb:/rails/config/importmap.rb
+      - ./rails/config/initializers/devise.rb:/rails/config/initializers/devise.rb
       - ./rails/requirements:/rails/requirements:delegated
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:prepare && bundle exec rails s -b 0.0.0.0"
     # command: tail -f /dev/null

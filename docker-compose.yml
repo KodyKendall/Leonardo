@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   llamapress:
-    image: kody06/llamapress-simple:0.4.0g        # <— pre-built tag (includes erb_lint)
+    image: kody06/llamapress-simple:0.4.0h        # <— pre-built tag (includes erb_lint)
     # user: "1000:1000"  # Run as UID 1000 to prevent root-owned file creation
     env_file: .env                           # read secrets from this file
     environment:
@@ -17,6 +17,7 @@ services:
       - ./rails/config/environments/development.rb:/rails/config/environments/development.rb
       - ./rails/config/database.yml:/rails/config/database.yml
       - ./rails/config/importmap.rb:/rails/config/importmap.rb:delegated
+      - ./rails/config/initializers/devise.rb:/rails/config/initializers/devise.rb:delegated
       - ./rails/requirements:/rails/requirements:delegated
     # Fail-open command: if db:prepare or `rails s` exits non-zero, the container stays alive
     # via `tail -f /dev/null` so Leonardo can still `docker exec` in and call `tail_rails_logs`
@@ -38,7 +39,7 @@ services:
       - llama-network
 
   llamabot:
-    image: kody06/llamabot:0.4.1z
+    image: kody06/llamabot:0.5.0
     # user: "1000:1000"  # Run as UID 1000 to prevent root-owned file creation
     env_file:
       - .env
