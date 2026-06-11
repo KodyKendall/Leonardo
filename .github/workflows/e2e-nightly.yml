@@ -55,7 +55,9 @@ jobs:
             bot=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/login || true)
             rails=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/up || true)
             echo "attempt $i: llamabot /login -> ${bot:-none}, rails /up -> ${rails:-none}"
-            if [ "$bot" = "200" ] && [ "$rails" = "200" ]; then exit 0; fi
+            # /login is 200 once users exist, 302 (→ /register) on a fresh
+            # instance — both mean the app is up.
+            case "$bot" in 200|302) if [ "$rails" = "200" ]; then exit 0; fi ;; esac
             sleep 5
           done
           echo "::error::Stack did not become healthy"
