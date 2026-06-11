@@ -4,6 +4,10 @@ How code gets from a laptop to production with automated confidence at every
 step. The goal: **you never have to manually test the stack before deploying.**
 If the pipeline is green, ship it.
 
+(For *what to test and when to write tests* — including the bug-fix-equals-
+failing-test-first rule and how TDD applies to AI-written code — see
+[TESTING.md](TESTING.md).)
+
 ## The system at a glance
 
 ```

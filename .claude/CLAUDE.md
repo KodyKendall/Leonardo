@@ -10,6 +10,65 @@ See the starting rails project and base image here: https://github.com/kodykenda
 
 ---
 
+## How we develop & test (standing rules)
+
+Full reasoning in [docs/TESTING.md](../docs/TESTING.md); pipeline/release
+mechanics in [docs/SHIPPING.md](../docs/SHIPPING.md). The rules:
+
+1. **The pipeline is the gate, not a human.** PR CI (specs + pytest + browser
+   smoke + mock-LLM e2e) gates merges; the nightly real-LLM canary gates
+   deploys. Manual testing is exploration only — never verification. Nobody
+   is the human regression suite.
+2. **Bug fix = failing test first. No exceptions.** Reproduce the bug as a
+   failing spec before fixing it. This is the one testing rule that must
+   never decay.
+3. **Test-first for AI-written code.** When an agent (including you)
+   implements something, write/obtain the failing spec first and iterate
+   until green: ticket → failing spec → implement → e2e smoke → ship.
+4. **Test-first for deterministic logic with a clear contract** (models,
+   validations, auth/tokens, WS routing). Test-soon (backfill once the shape
+   settles) when still exploring.
+5. **Never unit-TDD prompts or LLM behavior.** Assert structure (a row
+   exists, fields populated, interrupt fired), never exact LLM text. Real-LLM
+   tests run nightly, not per-PR; the `fake-llm` tier covers plumbing on PRs.
+6. **Releases are tags, not laptops.** `git tag vX.Y.Z && git push origin
+   vX.Y.Z` publishes images through a gated build → boot-smoke → push
+   workflow. Never `docker buildx --push` by hand. Bump the tag in
+   `docker-compose.yml` via PR and let Leonardo CI validate the composition.
+
+## META: Be self-improving — capture what you learn
+
+Whenever you learn something counterintuitive, surprising, or hard-won — a
+quirk, a gotcha, an SSH/tooling footgun, a non-obvious fix, or a workaround
+that cost you real time — write it down so the next run doesn't relearn it.
+Documentation is part of finishing the task, not an optional extra. Treat a
+debugging detour that ends with "oh, THAT's why" as a signal to persist the
+lesson.
+
+Three places, by scope — update whichever fit (often more than one):
+
+- **A skill** (`.claude/skills/<name>/SKILL.md`) — when the lesson is an
+  operational playbook for a recurring task (e.g. how to update a fleet of
+  Leo instances, how to log a support incident). Add it as a
+  "Gotcha"/"Quirk" in the matching skill, in that skill's existing style.
+- **This CLAUDE.md** — when the lesson is a broad, project-wide convention,
+  architectural fact, or safety rule that anyone working in this repo needs
+  regardless of task.
+- **Memory** (the project memory directory under `~/.claude/projects/`,
+  e.g. `~/.claude/projects/-home-ubuntu-Leonardo/memory/` on a deployed
+  instance — the slug varies by checkout path) — when the lesson is a
+  discrete fact best surfaced by relevance later (an incident, a
+  fleet-latent bug, a recall hook). Add the one-line pointer to `MEMORY.md`.
+
+Rule of thumb: skill = how to do a recurring task, CLAUDE.md = standing
+rules of the repo, memory = a fact to recall. When unsure, prefer writing it
+somewhere over losing it. Cross-link them (the skill holds the playbook; the
+memory is the quick hook). Don't duplicate what the code/git history already
+records — capture the non-obvious why. Before adding, skim for an existing
+entry and update it rather than creating a near-duplicate.
+
+---
+
 ## ../LlamaBot implementation (Agent Orchestration) repository & code. 
 
 You can also look in to see how the agent orchestration works for the actual left-hand chat interface implementation, or view the Github Repo at https://github.com/KodyKendall/LlamaBot
