@@ -1,0 +1,123 @@
+# Nightly real-LLM end-to-end canary.
+#
+# Boots the full pinned stack and runs the ticket-mode e2e test with a REAL
+# DeepSeek call: browser → chat UI → WebSocket → rails_ticket_mode_agent →
+# ticket row in Postgres. This is the regression net for prompt drift, model
+# API changes, and integration breakage — the things PR-level tests can't see.
+#
+# Costs a few cents per run. On failure it opens a GitHub issue so it can't
+# fail silently.
+#
+# Run it on demand from the Actions tab ("Run workflow") any time you want a
+# pre-deploy confidence check.
+
+name: E2E Nightly (real LLM)
+
+on:
+  schedule:
+    - cron: '0 12 * * *' # 12:00 UTC ≈ 5–6am Denver, before the workday
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  ticket-mode:
+    name: Ticket mode with real DeepSeek
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create .env from template + inject LLM key
+        run: |
+          cp .env.example .env
+          sed -i 's/^LANGSMITH_TRACING=.*/LANGSMITH_TRACING=false/' .env
+          sed -i 's|^DEEPSEEK_API_KEY=.*|DEEPSEEK_API_KEY=${{ secrets.DEEPSEEK_API_KEY }}|' .env
+
+      - name: Start database and create llamabot auth DB
+        run: |
+          docker compose -f docker-compose.yml up -d --wait db redis
+          docker compose -f docker-compose.yml exec -T db \
+            psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname='llamabot_production'" | grep -q 1 || \
+          docker compose -f docker-compose.yml exec -T db \
+            psql -U postgres -c "CREATE DATABASE llamabot_production"
+
+      - name: Start the stack
+        run: docker compose -f docker-compose.yml up -d llamapress llamabot
+
+      - name: Wait for chat UI (llamabot) and Rails (llamapress)
+        run: |
+          for i in $(seq 1 60); do
+            bot=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/login || true)
+            rails=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/up || true)
+            echo "attempt $i: llamabot /login -> ${bot:-none}, rails /up -> ${rails:-none}"
+            if [ "$bot" = "200" ] && [ "$rails" = "200" ]; then exit 0; fi
+            sleep 5
+          done
+          echo "::error::Stack did not become healthy"
+          docker compose -f docker-compose.yml logs llamabot | tail -80
+          docker compose -f docker-compose.yml logs llamapress | tail -40
+          exit 1
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+
+      - name: Install Playwright
+        working-directory: e2e
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Run smoke tests first (cheap failure isolation)
+        working-directory: e2e
+        env:
+          E2E_BASE_URL: http://localhost:8080
+          E2E_COMPOSE_FILE: docker-compose.yml
+        run: npx playwright test tests/smoke.spec.ts
+
+      - name: Run ticket-mode test (REAL LLM)
+        working-directory: e2e
+        env:
+          E2E_BASE_URL: http://localhost:8080
+          E2E_COMPOSE_FILE: docker-compose.yml
+          E2E_TICKET_TIMEOUT_MS: '900000'
+        run: npx playwright test tests/ticket-mode.spec.ts
+
+      - name: Upload Playwright report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-nightly
+          path: e2e/playwright-report/
+          retention-days: 14
+
+      - name: Container logs on failure
+        if: failure()
+        run: |
+          docker compose -f docker-compose.yml logs llamabot | tail -200
+          docker compose -f docker-compose.yml logs llamapress | tail -80
+
+      - name: Open an issue on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue create -R "${{ github.repository }}" \
+            --title "Nightly e2e (real LLM) failed — $(date -u +%Y-%m-%d)" \
+            --body "The nightly real-LLM ticket-mode canary failed.
+
+          **Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          Check the Playwright report artifact (trace + video) and container logs on the run page. Common causes: agent/prompt regression in the llamabot image, DeepSeek API change, stack boot failure."
+
+      - name: Stop services
+        if: always()
+        run: docker compose -f docker-compose.yml down
