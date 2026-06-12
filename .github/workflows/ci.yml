@@ -7,10 +7,13 @@
 name: CI
 
 on:
+  # `candidate` is the long-lived QA-staging branch in front of main — updates
+  # land there first and get the same gate as main before promotion. See
+  # docs/QA_STAGING.md.
   push:
-    branches: [main, master]
+    branches: [main, master, candidate]
   pull_request:
-    branches: [main, master]
+    branches: [main, master, candidate]
 
 jobs:
   lint:
