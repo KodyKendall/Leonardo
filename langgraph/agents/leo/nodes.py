@@ -18,6 +18,7 @@ import os
 
 from openai import OpenAI
 from app.agents.utils.images import encode_image
+from app.agents.leonardo.llm_factory import get_llm
 
 # Define base paths relative to project root
 SCRIPT_DIR = Path(__file__).parent.resolve()
@@ -37,7 +38,7 @@ class LlamaPressState(AgentState):
 # Node
 def leo(state: LlamaPressState):
 #    read_rails_file("app/agents/llamabot/nodes.py") # Testing.
-   llm = ChatOpenAI(model="gpt-4.1")
+   llm = get_llm("deepseek-v4-flash")
    llm_with_tools = llm.bind_tools(tools)
 
    custom_prompt_instructions_from_llamapress_dev = state.get("agent_prompt")
