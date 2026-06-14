@@ -12,6 +12,12 @@ dotenv.config({ path: path.resolve(__dirname, '.env') });
  * Tests drive the LlamaBot FastAPI chat UI directly (default http://localhost:8000).
  * Agent runs use a REAL LLM (DeepSeek v4 Flash by default) — see README.md.
  */
+// Set E2E_ARTIFACTS=1 to capture a screenshot + video + trace for EVERY test
+// (passing ones too) — useful for documenting a run. CI leaves it unset and
+// only keeps artifacts on failure, so green runs stay fast. All output lands
+// in the gitignored test-results/ + playwright-report/ dirs, never in git.
+const captureAll = !!process.env.E2E_ARTIFACTS;
+
 export default defineConfig({
   testDir: './tests',
   // Agent turns with a real LLM are slow; individual tests override this further.
@@ -25,9 +31,9 @@ export default defineConfig({
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
     baseURL: process.env.E2E_BASE_URL || 'http://localhost:8000',
-    trace: 'retain-on-failure',
-    video: 'retain-on-failure',
-    screenshot: 'only-on-failure',
+    trace: captureAll ? 'on' : 'retain-on-failure',
+    video: captureAll ? 'on' : 'retain-on-failure',
+    screenshot: captureAll ? 'on' : 'only-on-failure',
   },
   projects: [
     {

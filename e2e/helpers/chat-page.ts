@@ -29,9 +29,13 @@ export class ChatPage {
     this.connectionStatus = page.locator('[data-llamabot="connection-status"]');
   }
 
-  /** Open the chat UI and wait until the WebSocket is connected. */
-  async goto() {
-    await this.page.goto('/');
+  /**
+   * Open the chat UI and wait until the WebSocket is connected.
+   * Pass a query string (e.g. '?llm_model=gemini-3-flash') to exercise the
+   * URL-param handling that runs during page init.
+   */
+  async goto(query = '') {
+    await this.page.goto('/' + query);
     await expect(this.messageInput, 'chat UI should load (are you logged in?)').toBeVisible({
       timeout: 30_000,
     });
