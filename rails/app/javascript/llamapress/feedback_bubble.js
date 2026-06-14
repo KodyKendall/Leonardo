@@ -2,10 +2,13 @@
 // A minimal feedback widget with messaging and notifications support
 // Note: screenshot_annotator.js exposes window.screenshotAnnotator
 
+import { enableElementSelector, disableElementSelector } from "llamapress/element_selector"
+
 let bubbleInitialized = false;
 let isFormOpen = false;
 let screenshotAttachment = null;
 let videoAttachment = null;
+let selectedElement = null; // { text, html, selector, url }
 let isRecordingVideo = false;
 let notificationSubscription = null;
 let unreadCount = 0;
@@ -79,6 +82,20 @@ function createBubbleHTML() {
               </button>
             </div>
 
+            <!-- Selected element preview -->
+            <div id="feedback-element-preview" class="hidden mb-2">
+              <div class="flex items-center gap-2 p-2 bg-green-50 rounded border border-green-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-green-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                </svg>
+                <span id="feedback-element-text" class="text-xs text-green-700 truncate flex-1" title=""></span>
+                <button type="button" id="feedback-element-remove"
+                        class="w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600 flex-shrink-0">
+                  &times;
+                </button>
+              </div>
+            </div>
+
             <!-- Video preview -->
             <div id="feedback-video-preview" class="hidden mb-2">
               <div class="flex items-center gap-2 p-2 bg-purple-50 rounded border border-purple-200">
@@ -95,6 +112,12 @@ function createBubbleHTML() {
 
             <div class="flex items-center justify-between mt-2">
               <div class="flex items-center gap-2">
+                <button type="button" id="feedback-select-element-btn" title="Select an element on the page"
+                        class="text-gray-400 hover:text-purple-600 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                  </svg>
+                </button>
                 <button type="button" id="feedback-screenshot-btn" title="Take screenshot"
                         class="text-gray-400 hover:text-purple-600 transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -613,9 +636,11 @@ function resetForm() {
   if (filename) filename.textContent = '';
   if (screenshotPreview) screenshotPreview.classList.add('hidden');
   if (videoPreview) videoPreview.classList.add('hidden');
+  document.getElementById('feedback-element-preview')?.classList.add('hidden');
 
   screenshotAttachment = null;
   videoAttachment = null;
+  selectedElement = null;
   hideStatus();
 }
 
@@ -638,6 +663,11 @@ async function submitFeedback(description, file, screenshot) {
   if (videoAttachment && videoAttachment.blob) {
     const videoFile = new File([videoAttachment.blob], videoAttachment.filename, { type: 'video/webm' });
     formData.append('user_feedback[attachments][]', videoFile);
+  }
+  if (selectedElement) {
+    formData.append('user_feedback[selected_element_html]', selectedElement.html || '');
+    formData.append('user_feedback[selected_element_selector]', selectedElement.selector || '');
+    formData.append('user_feedback[selected_element_url]', selectedElement.url || '');
   }
 
   const response = await fetch('/llama_bot/feedback', {
@@ -740,6 +770,39 @@ function attachEventListeners() {
     removeScreenshotBtn.addEventListener('click', () => {
       screenshotAttachment = null;
       document.getElementById('feedback-screenshot-preview')?.classList.add('hidden');
+    });
+  }
+
+  // Select element button - close the panel so the user can pick a page element,
+  // then reopen it with the captured element attached.
+  const selectElementBtn = document.getElementById('feedback-select-element-btn');
+  if (selectElementBtn) {
+    selectElementBtn.addEventListener('click', () => {
+      togglePanel(false);
+      enableElementSelector({
+        onSelect: (detail) => {
+          selectedElement = { ...detail, url: window.location.pathname };
+          const preview = document.getElementById('feedback-element-preview');
+          const text = document.getElementById('feedback-element-text');
+          if (preview && text) {
+            const label = detail.text || detail.selector || 'Element selected';
+            text.textContent = label;
+            text.title = detail.selector || label;
+            preview.classList.remove('hidden');
+          }
+          togglePanel(true);
+        },
+        onCancel: () => togglePanel(true)
+      });
+    });
+  }
+
+  // Remove selected element
+  const removeElementBtn = document.getElementById('feedback-element-remove');
+  if (removeElementBtn) {
+    removeElementBtn.addEventListener('click', () => {
+      selectedElement = null;
+      document.getElementById('feedback-element-preview')?.classList.add('hidden');
     });
   }
 
