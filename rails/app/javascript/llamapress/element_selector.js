@@ -4,9 +4,19 @@
 let elementSelectorEnabled = false;
 let elementSelectorStyles = null;
 let currentHighlightedElement = null;
+// When set, the selected element is delivered to this callback locally instead of
+// being posted to the parent window (used by the in-app feedback bubble).
+let onSelectCallback = null;
+let onCancelCallback = null;
 
-export function enableElementSelector() {
+// enableElementSelector() with no args keeps the original behavior (postMessage to
+// the parent window, driven by the chat iframe via message_handler.js).
+// Passing { onSelect, onCancel } switches to local delivery for same-document callers.
+export function enableElementSelector(options = {}) {
     if (elementSelectorEnabled) return;
+
+    onSelectCallback = options.onSelect || null;
+    onCancelCallback = options.onCancel || null;
 
     elementSelectorEnabled = true;
     console.log('Element selector enabled');
@@ -33,12 +43,15 @@ export function enableElementSelector() {
     // Add event listeners
     document.addEventListener('mousemove', handleElementSelectorMouseMove, true);
     document.addEventListener('click', handleElementSelectorClick, true);
+    document.addEventListener('keydown', handleElementSelectorKeydown, true);
 }
 
 export function disableElementSelector() {
     if (!elementSelectorEnabled) return;
 
     elementSelectorEnabled = false;
+    onSelectCallback = null;
+    onCancelCallback = null;
     console.log('Element selector disabled');
 
     // Remove styles
@@ -59,12 +72,28 @@ export function disableElementSelector() {
     // Remove event listeners
     document.removeEventListener('mousemove', handleElementSelectorMouseMove, true);
     document.removeEventListener('click', handleElementSelectorClick, true);
+    document.removeEventListener('keydown', handleElementSelectorKeydown, true);
+}
+
+// Cancel selection mode on Escape (e.g. user changed their mind).
+function handleElementSelectorKeydown(event) {
+    if (event.key !== 'Escape') return;
+    event.preventDefault();
+    event.stopPropagation();
+    const onCancel = onCancelCallback;
+    disableElementSelector();
+    if (onCancel) onCancel();
 }
 
 function handleElementSelectorMouseMove(event) {
     const target = event.target;
 
     if (!target || target.tagName === 'HTML' || target.tagName === 'BODY') {
+        return;
+    }
+
+    // Never highlight the feedback bubble itself.
+    if (target.closest('#llamapress-feedback-bubble')) {
         return;
     }
 
@@ -88,22 +117,80 @@ function handleElementSelectorClick(event) {
         return;
     }
 
+    // Ignore clicks on the feedback bubble itself.
+    if (target.closest('#llamapress-feedback-bubble')) {
+        return;
+    }
+
     // Extract text content for display
     let textContent = extractElementText(target);
 
     // Get the outerHTML for the LLM
     let outerHTML = target.outerHTML;
 
-    // Send selected element data to parent
+    // Build a CSS selector path for the element
+    let selector = buildCssSelector(target);
+
+    // Visual feedback
+    showSelectionFeedback(target);
+
+    if (onSelectCallback) {
+        // Local delivery (e.g. feedback bubble). Capture the callback before
+        // disabling, since disableElementSelector() clears it.
+        const cb = onSelectCallback;
+        disableElementSelector();
+        cb({ text: textContent, html: outerHTML, selector });
+        return;
+    }
+
+    // Default: send selected element data to the parent window (chat flow)
     window.parent.postMessage({
         source: 'element-selector',
         type: 'element-selected',
         text: textContent,
-        html: outerHTML
+        html: outerHTML,
+        selector: selector
     }, '*');
+}
 
-    // Visual feedback
-    showSelectionFeedback(target);
+// Build a reasonably-specific CSS selector path for an element by walking up
+// ancestors until an id is found or the body is reached.
+function buildCssSelector(element) {
+    if (!element || !element.tagName) return '';
+
+    const parts = [];
+    let el = element;
+
+    while (el && el.nodeType === 1 && el.tagName !== 'BODY' && el.tagName !== 'HTML') {
+        let part = el.tagName.toLowerCase();
+
+        if (el.id) {
+            // An id is unique enough to stop here.
+            parts.unshift(`#${CSS.escape(el.id)}`);
+            break;
+        }
+
+        const className = (el.className && typeof el.className === 'string')
+            ? el.className.trim().split(/\s+/).filter(Boolean)[0]
+            : null;
+        if (className) {
+            part += `.${CSS.escape(className)}`;
+        }
+
+        // Disambiguate among siblings of the same tag.
+        const parent = el.parentElement;
+        if (parent) {
+            const sameTag = Array.from(parent.children).filter(c => c.tagName === el.tagName);
+            if (sameTag.length > 1) {
+                part += `:nth-of-type(${sameTag.indexOf(el) + 1})`;
+            }
+        }
+
+        parts.unshift(part);
+        el = el.parentElement;
+    }
+
+    return parts.join(' > ');
 }
 
 function extractElementText(element) {
