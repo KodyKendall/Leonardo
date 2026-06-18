@@ -14,3 +14,12 @@ they would be unable to use Leonardo to continue building the app.
 
 Any Rails commands must be ran throuch the docker container using docker compose, like so: `docker compose exec -it llamapress bundle exec rails <commands>`
 
+## Generating PDFs
+
+Pick the lightest tool for the job. For simple or structured documents (invoices, tables,
+reports), prefer **Prawn** — pure Ruby, fast, no browser, and it cannot freeze the app.
+Only reach for **Grover / headless Chrome** when you genuinely need full HTML/CSS fidelity.
+If you do use Grover, you MUST render through a single-flight + hard-timeout guard (one
+render at a time, capped time) — a slow or hung headless-Chrome render will otherwise
+occupy the small Puma thread pool and freeze the ENTIRE app (blank screen). Pattern + code:
+https://llamapress.ai/cookbook/pdf-generation
