@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_06_14_161925) do
+ActiveRecord::Schema[7.2].define(version: 2026_06_15_180149) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -168,6 +168,19 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_14_161925) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_llama_bot_rails_projects_on_name"
+  end
+
+  create_table "llama_bot_rails_releases", force: :cascade do |t|
+    t.string "version", null: false
+    t.string "title"
+    t.text "notes"
+    t.boolean "published", default: false, null: false
+    t.datetime "released_at"
+    t.datetime "emailed_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["released_at"], name: "index_llama_bot_rails_releases_on_released_at"
+    t.index ["version"], name: "index_llama_bot_rails_releases_on_version", unique: true
   end
 
   create_table "llama_bot_rails_shared_links", force: :cascade do |t|
