@@ -209,6 +209,17 @@ function createBubbleHTML() {
             </div>
           </div>
         </div>
+
+        <!-- Version footer: shows the running version, links to release notes -->
+        <a id="feedback-version-chip"
+           href="${(window.llamapressConfig && window.llamapressConfig.releasesUrl) || '/llama_bot/releases'}"
+           class="flex items-center justify-center gap-1.5 px-3 py-2 bg-gray-50 border-t border-gray-200 rounded-b-xl text-[11px] text-gray-400 hover:text-purple-600 transition-colors"
+           title="View release notes">
+          <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>What's new · <span class="font-mono">${(window.llamapressConfig && window.llamapressConfig.appVersion) || 'dev'}</span></span>
+        </a>
       </div>
     </div>
 
@@ -537,6 +548,57 @@ function hideStatus() {
   if (status) status.classList.add('hidden');
 }
 
+// Show a failure state that lets the user copy a full error report to send to
+// an admin, and prompts them to refresh and try again.
+function showSubmitError(summary, details) {
+  const status = document.getElementById('feedback-status');
+  if (!status) return;
+
+  status.classList.remove('hidden');
+  status.className = 'mt-2 text-xs text-red-600';
+  status.textContent = '';
+
+  const summaryEl = document.createElement('p');
+  summaryEl.textContent = summary;
+
+  const hintEl = document.createElement('p');
+  hintEl.className = 'mt-1 text-gray-600';
+  hintEl.textContent = 'Try refreshing the page and submitting again. If it keeps failing, copy the error details below and send them to an admin.';
+
+  const copyBtn = document.createElement('button');
+  copyBtn.type = 'button';
+  copyBtn.className = 'mt-2 px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded border border-gray-300 transition-colors';
+  copyBtn.textContent = 'Copy error details';
+  copyBtn.addEventListener('click', async () => {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(details);
+      } else {
+        const ta = document.getElementById('feedback-error-details');
+        if (ta) { ta.select(); document.execCommand('copy'); }
+      }
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => { copyBtn.textContent = 'Copy error details'; }, 2000);
+    } catch (e) {
+      console.error('[FeedbackBubble] Failed to copy error details:', e);
+      const ta = document.getElementById('feedback-error-details');
+      if (ta) ta.classList.remove('hidden');
+    }
+  });
+
+  // Hidden textarea holds the full report so it's selectable/copyable as a fallback.
+  const detailsEl = document.createElement('textarea');
+  detailsEl.id = 'feedback-error-details';
+  detailsEl.readOnly = true;
+  detailsEl.value = details;
+  detailsEl.className = 'hidden mt-2 w-full h-24 text-[11px] font-mono border border-gray-300 rounded p-2 resize-none';
+
+  status.appendChild(summaryEl);
+  status.appendChild(hintEl);
+  status.appendChild(copyBtn);
+  status.appendChild(detailsEl);
+}
+
 // Recording indicator - created as separate DOM element
 function showRecordingIndicator(onStop) {
   // Remove existing indicator if any
@@ -670,17 +732,66 @@ async function submitFeedback(description, file, screenshot) {
     formData.append('user_feedback[selected_element_url]', selectedElement.url || '');
   }
 
-  const response = await fetch('/llama_bot/feedback', {
-    method: 'POST',
-    headers: { 'X-CSRF-Token': getCSRFToken(), 'Accept': 'text/html' },
-    body: formData,
-    redirect: 'manual'
-  });
+  let response;
+  try {
+    response = await fetch('/llama_bot/feedback', {
+      method: 'POST',
+      headers: { 'X-CSRF-Token': getCSRFToken(), 'Accept': 'text/html' },
+      body: formData,
+      redirect: 'manual'
+    });
+  } catch (networkError) {
+    // Network/CORS failure - no response at all
+    const err = new Error(`Network error while submitting feedback: ${networkError.message}`);
+    err.details = buildErrorReport({
+      requestPath,
+      viewPath,
+      stage: 'network',
+      message: networkError.message
+    });
+    throw err;
+  }
 
   if (response.type === 'opaqueredirect' || response.ok || (response.status >= 200 && response.status < 400)) {
     return { success: true };
   }
-  throw new Error('Failed to submit feedback');
+
+  // Pull the response body so admins get something actionable
+  let responseBody = '';
+  try {
+    responseBody = await response.text();
+  } catch (_) { /* body may be unavailable */ }
+
+  const err = new Error(`Failed to submit feedback (HTTP ${response.status})`);
+  err.details = buildErrorReport({
+    requestPath,
+    viewPath,
+    stage: 'response',
+    status: response.status,
+    statusText: response.statusText,
+    body: responseBody
+  });
+  throw err;
+}
+
+// Build a copy-pasteable error report for the user to send to an admin.
+function buildErrorReport({ requestPath, viewPath, stage, status, statusText, message, body }) {
+  const lines = [
+    'LlamaPress feedback submission failed',
+    `Time: ${new Date().toISOString()}`,
+    `Page: ${requestPath || (typeof window !== 'undefined' ? window.location.href : '')}`,
+    `View: ${viewPath || '(unknown)'}`,
+    `Stage: ${stage}`
+  ];
+  if (status !== undefined) lines.push(`Status: ${status} ${statusText || ''}`.trim());
+  if (message) lines.push(`Error: ${message}`);
+  if (typeof navigator !== 'undefined') lines.push(`User agent: ${navigator.userAgent}`);
+  if (body) {
+    lines.push('Server response:');
+    // Cap the body so the report stays copy-pasteable
+    lines.push(body.length > 2000 ? body.slice(0, 2000) + '\n…(truncated)' : body);
+  }
+  return lines.join('\n');
 }
 
 function attachEventListeners() {
@@ -911,7 +1022,8 @@ function attachEventListeners() {
         }, 1500);
       } catch (error) {
         console.error('Feedback submission error:', error);
-        showStatus('Failed to send. Please try again.', true);
+        const details = error.details || `${error.message || 'Unknown error'}\n${error.stack || ''}`.trim();
+        showSubmitError(error.message || 'Failed to send your feedback.', details);
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.textContent = 'Send';
