@@ -16,6 +16,18 @@ on:
     branches: [main, master, candidate]
 
 jobs:
+  # Fast, docker-free guard for bin/update's platform-allowlist sync (the upstream→fork
+  # update mechanism). See docs/DISTRIBUTION.md.
+  bin-update-sync:
+    name: bin/update allowlist sync
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: bash syntax check
+        run: bash -n bin/update
+      - name: allowlist-sync regression test
+        run: bash test/bin_update_sync.sh
+
   lint:
     name: ERB Lint (HTML Validity)
     runs-on: ubuntu-latest
