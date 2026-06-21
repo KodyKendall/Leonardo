@@ -168,10 +168,34 @@ sync_from_upstream() {
   fi
 }
 
+# ---- run any pending migrations the sync just delivered --------------------
+# The allowlist includes rails/db/migrate, so a sync can drop NEW platform
+# migrations onto the box. Rails then blocks EVERY request with
+# PendingMigrationError until they're applied — so we run db:migrate inside the
+# llamapress container after every sync. Idempotent (a no-op when nothing is
+# pending) and best-effort: a failure is logged, never fatal, so the image swap
+# and restart still proceed.
+run_pending_migrations() {
+  local DCM
+  if docker compose version >/dev/null 2>&1; then DCM="docker compose"
+  elif command -v docker-compose >/dev/null 2>&1; then DCM="docker-compose"
+  else log "migrate: docker compose not found — skipping"; return 0; fi
+  if ! $DCM ps 2>/dev/null | grep -q "llamapress"; then
+    log "migrate: llamapress container not running — skipping db:migrate"; return 0
+  fi
+  log "migrate: applying any pending migrations in llamapress ..."
+  if $DCM exec -T llamapress bin/rails db:migrate >>"$LOG" 2>&1; then
+    log "migrate: db:migrate ok"
+  else
+    log "migrate: WARN db:migrate failed (see $LOG) — app may show PendingMigrationError"
+  fi
+}
+
 # ---- --sync-only fast path (no image swap, no version args needed) ---------
 if [ "${1:-}" = "--sync-only" ]; then
   log "=== bin/update --sync-only ==="
   sync_from_upstream
+  run_pending_migrations
   log "=== bin/update --sync-only done ==="
   exit 0
 fi
@@ -238,6 +262,7 @@ log "=== bin/update start (llamabot=$LLAMABOT_TARGET llamapress=$LLAMAPRESS_TARG
 # invariant: once docker-compose.yml is allowlisted (Phase 2), the sync must land first so
 # the fresh upstream compose is then stamped with the intended tags, not upstream's defaults.
 sync_from_upstream
+run_pending_migrations
 
 [ -f "$COMPOSE_FILE" ] || fail "no $COMPOSE_FILE in $PROJECT_DIR"
 
