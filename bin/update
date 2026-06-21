@@ -1,45 +1,280 @@
-#!/bin/bash
-# Update LlamaBot and LlamaPress to new image versions
+#!/usr/bin/env bash
+#
+# bin/update — pull the platform allowlist from upstream + swap image versions, then restart.
+#
+# Invoked on the HOST (cwd = the Leonardo project dir) in two ways:
+#   1. The "Update Now" banner: LlamaBot's POST /api/update runs
+#        bash bin/update <llamabot_version> <llamapress_version>
+#      on the host via its nsenter bridge (app/routers/slash_commands.py).
+#   2. The mothership admin fleet-push (PushInstanceUpdateJob) over SSH.
+#
+# We deliberately NEVER `git merge`/`git pull` — user instances carry agent-edited code and a
+# merge silently rewrites their app (auth, routes, home page have all been broken this way).
+# Instead, updating is two safe channels:
+#   * IMAGE  — set the new versions -> docker compose pull -> recreate the changed services.
+#   * SYNC   — pull a small, explicit ALLOWLIST of platform paths WHOLESALE from upstream via
+#              `git checkout upstream/main -- <allowlist>`. A path-scoped checkout only ever
+#              touches paths that exist in upstream; client-only files (e.g. bin/local/) and the
+#              app's own migrations are left intact. Anything NOT on the allowlist is the client's.
+#              See docs/DISTRIBUTION.md. The allowlist starts tiny and grows deliberately —
+#              a path qualifies ONLY if clients never hand-edit it (checkout clobbers local edits).
+#
+# `.gitignore` is UNION-merged (never overwritten) so client entries survive; `.leonardo/
+# instance.json` is force-untracked (its drift once sent backups to the wrong bucket).
+#
+# The sync is committed, scoped to the synced paths only, and is skipped gracefully when there is
+# no `upstream` remote (e.g. on the upstream repo itself) or the network is unavailable.
+#
+# Dual-mode version setting, auto-detected from docker-compose.yml (applied AFTER the sync so the
+# fresh upstream compose keeps the intended tags):
+#   * parametrized (image: ...:${LLAMABOT_VERSION:-X}) -> write the version into .env (gitignored)
+#   * literal tag  (image: ...:X)                      -> rewrite the tag in docker-compose.yml
+#
 # Usage: bin/update <llamabot_version> <llamapress_version>
-# Note: This script runs on the HOST (via nsenter), not inside llamabot
+#        bin/update --sync-only            # pull the allowlist from upstream, no image swap
+#
+set -uo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+cd "$PROJECT_DIR" || { echo "bin/update: cannot cd to $PROJECT_DIR" >&2; exit 1; }
 
-cd "$PROJECT_DIR"
+COMPOSE_FILE="docker-compose.yml"
+ENV_FILE=".env"
+MARKER_DIR=".leonardo"
+MARKER="$MARKER_DIR/last_update.json"
+LOG="$MARKER_DIR/update.log"
 
-LLAMABOT_VERSION="$1"
-LLAMAPRESS_VERSION="$2"
+UPSTREAM_REMOTE="upstream"
+UPSTREAM_BRANCH="main"
 
-if [ -z "$LLAMABOT_VERSION" ] || [ -z "$LLAMAPRESS_VERSION" ]; then
-    echo "Usage: bin/update <llamabot_version> <llamapress_version>"
-    exit 1
+# The allowlist: platform paths pulled WHOLESALE from upstream (overwrite). Only ever add paths
+# clients never hand-edit — a checkout clobbers local changes there. Trend this toward zero by
+# moving paths into the image instead (see docs/DISTRIBUTION.md).
+#
+# v1 is deliberately the smallest self-sustaining set:
+#   * bin               — platform tooling, incl. bin/update itself => the allowlist self-propagates
+#                         (future additions ship themselves). bin/local/ is client-owned, never clobbered.
+#   * rails/db/migrate  — new platform migrations (append-only; never collides with the app's own).
+# Phase-2 targets, added only AFTER a fleet divergence audit (each overwrites wholesale):
+#   docker-compose.yml, rails/app/javascript/llamapress, rails/app/views/layouts/_llamapress_page_context.html.erb
+ALLOWLIST=(
+  "bin"
+  "rails/db/migrate"
+)
+
+# The auto-commit guard (paths the sync may commit) is DERIVED from ALLOWLIST + the two
+# special-cased files, so it can never drift from the list above. Matches a dir prefix or exact file.
+build_sync_commit_re() {
+  local p esc parts=()
+  for p in "${ALLOWLIST[@]}" ".gitignore" ".leonardo/instance.json"; do
+    esc="${p//./\\.}"
+    parts+=("${esc}(/|\$)")
+  done
+  local IFS='|'; printf '^(%s)' "${parts[*]}"
+}
+SYNC_COMMIT_RE="$(build_sync_commit_re)"
+
+LLAMABOT_TARGET="${1:-}"
+LLAMAPRESS_TARGET="${2:-}"
+VERSION_RE='^[0-9A-Za-z.\-]+$'
+CHANGED=()
+
+mkdir -p "$MARKER_DIR" 2>/dev/null || true
+
+log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*" | tee -a "$LOG" >&2; }
+
+write_marker() { # $1 status  $2 message
+  cat > "$MARKER" <<EOF
+{
+  "status": "$1",
+  "message": "$2",
+  "llamabot_target": "$LLAMABOT_TARGET",
+  "llamapress_target": "$LLAMAPRESS_TARGET",
+  "changed_services": "${CHANGED[*]:-}",
+  "finished_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+}
+EOF
+}
+
+fail() { log "FAILED: $1"; write_marker "failed" "$1"; exit 1; }
+
+# ---- platform sync (allowlist checkout from upstream) ----------------------
+ensure_gitignore_union() { # $1 ref — append upstream .gitignore lines not already present
+  local ref="$1" up line
+  up="$(git -C "$PROJECT_DIR" show "$ref:.gitignore" 2>/dev/null)" || return 0
+  touch "$PROJECT_DIR/.gitignore"
+  while IFS= read -r line; do
+    [ -z "$line" ] && continue
+    grep -qxF -- "$line" "$PROJECT_DIR/.gitignore" 2>/dev/null || echo "$line" >> "$PROJECT_DIR/.gitignore"
+  done <<< "$up"
+  grep -qxF -- ".leonardo/instance.json" "$PROJECT_DIR/.gitignore" 2>/dev/null \
+    || echo ".leonardo/instance.json" >> "$PROJECT_DIR/.gitignore"
+}
+
+sync_from_upstream() {
+  command -v git >/dev/null 2>&1 || { log "sync: git not found — skipping"; return 0; }
+  git -C "$PROJECT_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1 \
+    || { log "sync: not a git repo — skipping"; return 0; }
+  git config --global --add safe.directory "$PROJECT_DIR" 2>/dev/null || true
+  git -C "$PROJECT_DIR" remote get-url "$UPSTREAM_REMOTE" >/dev/null 2>&1 \
+    || { log "sync: no '$UPSTREAM_REMOTE' remote — skipping (this IS upstream?)"; return 0; }
+
+  log "sync: fetching $UPSTREAM_REMOTE/$UPSTREAM_BRANCH ..."
+  if ! git -C "$PROJECT_DIR" fetch --quiet "$UPSTREAM_REMOTE" "$UPSTREAM_BRANCH" 2>>"$LOG"; then
+    log "sync: WARN git fetch failed — skipping sync (image swap continues)"
+    return 0
+  fi
+  local ref="$UPSTREAM_REMOTE/$UPSTREAM_BRANCH" sha
+  git -C "$PROJECT_DIR" rev-parse --verify --quiet "$ref" >/dev/null \
+    || { log "sync: WARN $ref missing — skipping"; return 0; }
+  sha="$(git -C "$PROJECT_DIR" rev-parse --short "$ref")"
+
+  # 1) pull allowlisted paths that actually exist in upstream (overwrite wholesale)
+  local p present=()
+  for p in "${ALLOWLIST[@]}"; do
+    if git -C "$PROJECT_DIR" cat-file -e "$ref:$p" 2>/dev/null; then present+=("$p")
+    else log "sync: allowlist '$p' absent in $ref — skipping"; fi
+  done
+  if [ "${#present[@]}" -gt 0 ]; then
+    if git -C "$PROJECT_DIR" checkout "$ref" -- "${present[@]}" 2>>"$LOG"; then
+      log "sync: pulled from $ref: ${present[*]}"
+    else
+      log "sync: WARN checkout had issues (see $LOG)"
+    fi
+  fi
+
+  # 2) .gitignore UNION-merged (never overwritten); 3) instance.json force-untracked
+  ensure_gitignore_union "$ref"
+  git -C "$PROJECT_DIR" rm -r --cached --ignore-unmatch -- ".leonardo/instance.json" >/dev/null 2>&1 || true
+
+  # 4) commit the sync — scoped, and only if no UNRELATED staged work is present
+  git -C "$PROJECT_DIR" add -- "${present[@]}" ".gitignore" 2>/dev/null || true
+  local f extra=0 nstaged=0
+  while IFS= read -r f; do
+    [ -z "$f" ] && continue
+    nstaged=$((nstaged + 1))
+    [[ "$f" =~ $SYNC_COMMIT_RE ]] || { extra=1; log "sync: unrelated staged change: $f"; }
+  done < <(git -C "$PROJECT_DIR" diff --cached --name-only 2>/dev/null)
+
+  if [ "$nstaged" -eq 0 ]; then
+    log "sync: already up to date ($sha) — nothing to commit"
+  elif [ "$extra" -eq 1 ]; then
+    log "sync: WARN unrelated staged changes present — left sync staged, NOT committing"
+  elif git -C "$PROJECT_DIR" commit --quiet -m "chore(platform-sync): allowlist <- $ref ($sha)" 2>>"$LOG"; then
+    log "sync: committed platform-sync ($sha)"
+  else
+    log "sync: WARN commit failed (see $LOG)"
+  fi
+}
+
+# ---- --sync-only fast path (no image swap, no version args needed) ---------
+if [ "${1:-}" = "--sync-only" ]; then
+  log "=== bin/update --sync-only ==="
+  sync_from_upstream
+  log "=== bin/update --sync-only done ==="
+  exit 0
 fi
 
-echo "Updating to llamabot:$LLAMABOT_VERSION, llamapress-simple:$LLAMAPRESS_VERSION..."
+# ---- validate -------------------------------------------------------------
+[ -n "$LLAMABOT_TARGET" ] && [ -n "$LLAMAPRESS_TARGET" ] \
+  || fail "usage: bin/update <llamabot_version> <llamapress_version>"
+[[ "$LLAMABOT_TARGET"   =~ $VERSION_RE ]] || fail "invalid llamabot version: $LLAMABOT_TARGET"
+[[ "$LLAMAPRESS_TARGET" =~ $VERSION_RE ]] || fail "invalid llamapress version: $LLAMAPRESS_TARGET"
 
-# Update image tags in docker-compose.yml using sed
-sed -i "s|kody06/llamabot:[^ ]*|kody06/llamabot:${LLAMABOT_VERSION}|g" docker-compose.yml
-sed -i "s|kody06/llamapress-simple:[^ ]*|kody06/llamapress-simple:${LLAMAPRESS_VERSION}|g" docker-compose.yml
+if docker compose version >/dev/null 2>&1; then DC="docker compose"; else DC="docker-compose"; fi
 
-echo "Updated docker-compose.yml"
+# Effective current version for an image: prefer a .env override, else the
+# compose default (${VAR:-default}) or the literal tag.
+current_version() { # $1 var_name  $2 image_prefix
+  local var="$1" prefix="$2" v="" line
+  if [ -f "$ENV_FILE" ]; then
+    v="$(grep -E "^${var}=" "$ENV_FILE" 2>/dev/null | tail -n1 | sed -E 's/^[^=]+=//; s/[[:space:]"]//g')"
+  fi
+  if [ -z "$v" ]; then
+    line="$(grep -E "image:.*${prefix}" "$COMPOSE_FILE" | head -n1)"
+    if echo "$line" | grep -q "\${${var}"; then
+      v="$(echo "$line" | sed -nE "s/.*\\\$\\{${var}:-([^}]+)\\}.*/\\1/p")"
+    else
+      v="$(echo "$line" | sed -nE "s#.*${prefix}([0-9A-Za-z._-]+).*#\\1#p")"
+    fi
+  fi
+  echo "$v"
+}
 
-# Pull new images
-echo "Pulling new images..."
-docker compose pull llamabot llamapress
+set_env_var() { # $1 var  $2 value  — replace-or-append in .env
+  touch "$ENV_FILE"
+  local tmp; tmp="$(mktemp)"
+  grep -vE "^$1=" "$ENV_FILE" > "$tmp" 2>/dev/null || true
+  echo "$1=$2" >> "$tmp"
+  cat "$tmp" > "$ENV_FILE"
+  rm -f "$tmp"
+}
 
-if [ $? -ne 0 ]; then
-    echo "ERROR: docker compose pull failed"
-    exit 1
+apply_one() { # $1 service  $2 env_var  $3 image_prefix  $4 target
+  local svc="$1" var="$2" prefix="$3" target="$4" cur line
+  grep -qE "image:.*${prefix}" "$COMPOSE_FILE" || { log "skip $svc: $prefix not in compose"; return; }
+  cur="$(current_version "$var" "$prefix")"
+  if [ "$cur" = "$target" ]; then
+    log "$svc already at $target — no change"
+    return
+  fi
+  log "$svc: ${cur:-unknown} -> $target"
+  line="$(grep -E "image:.*${prefix}" "$COMPOSE_FILE" | head -n1)"
+  if echo "$line" | grep -q "\${${var}"; then
+    set_env_var "$var" "$target"
+    log "$svc: set $var=$target in $ENV_FILE (.env mode)"
+  else
+    sed -i -E "s#(${prefix})[0-9A-Za-z._-]+#\\1${target}#" "$COMPOSE_FILE"
+    log "$svc: rewrote image tag in $COMPOSE_FILE (literal mode)"
+  fi
+  CHANGED+=("$svc")
+}
+
+log "=== bin/update start (llamabot=$LLAMABOT_TARGET llamapress=$LLAMAPRESS_TARGET) ==="
+
+# Pull the platform allowlist BEFORE setting versions. In v1 the allowlist is bin +
+# rails/db/migrate, so this ordering is a no-op for tags today. It's kept as a forward
+# invariant: once docker-compose.yml is allowlisted (Phase 2), the sync must land first so
+# the fresh upstream compose is then stamped with the intended tags, not upstream's defaults.
+sync_from_upstream
+
+[ -f "$COMPOSE_FILE" ] || fail "no $COMPOSE_FILE in $PROJECT_DIR"
+
+apply_one "llamabot"   "LLAMABOT_VERSION"   "kody06/llamabot:"          "$LLAMABOT_TARGET"
+apply_one "llamapress" "LLAMAPRESS_VERSION" "kody06/llamapress-simple:" "$LLAMAPRESS_TARGET"
+
+if [ "${#CHANGED[@]}" -eq 0 ]; then
+  log "nothing to update — already current"
+  write_marker "noop" "already up to date"
+  echo "Already up to date."
+  exit 0
 fi
 
-echo "Pull complete. Scheduling restart..."
+# ---- pull (synchronous; pull does NOT recreate/kill containers) -----------
+log "pulling: ${CHANGED[*]}"
+if ! $DC pull "${CHANGED[@]}" >>"$LOG" 2>&1; then
+  fail "docker compose pull failed for: ${CHANGED[*]} (see $LOG)"
+fi
+log "pull ok"
 
-# Generate unique unit name with timestamp to avoid conflicts
-UNIT_NAME="leonardo-update-$(date +%s)"
+# ---- recreate DETACHED so we survive llamabot restarting its own container ----
+write_marker "restarting" "images pulled; recreating ${CHANGED[*]}"
+RESTART_CMD="cd $PROJECT_DIR && $DC up -d ${CHANGED[*]}"
+if command -v systemd-run >/dev/null 2>&1; then
+  UNIT="leonardo-update-$(date +%s)"
+  if sudo systemd-run --no-block --unit="$UNIT" /bin/bash -c "$RESTART_CMD"; then
+    log "recreate scheduled via systemd ($UNIT)"
+  else
+    log "systemd-run failed; falling back to nohup"
+    nohup bash -c "$RESTART_CMD" >>"$LOG" 2>&1 &
+  fi
+else
+  nohup bash -c "$RESTART_CMD" >>"$LOG" 2>&1 &
+  log "recreate scheduled via nohup"
+fi
 
-# Run via systemd-run so restart survives container shutdown
-sudo systemd-run --no-block --unit="$UNIT_NAME" \
-    /bin/bash -c "cd /home/ubuntu/Leonardo && docker compose down llamapress llamabot && docker compose up -d"
-
-echo "Update scheduled via systemd (check: journalctl -u $UNIT_NAME --follow)"
+write_marker "success" "updated ${CHANGED[*]}; restart scheduled"
+log "=== bin/update done (changed: ${CHANGED[*]}) ==="
+echo "Update initiated for: ${CHANGED[*]}. Containers restarting..."
+exit 0

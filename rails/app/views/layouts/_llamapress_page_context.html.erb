@@ -7,7 +7,9 @@
   // LlamaPress configuration for JS modules
   window.llamapressConfig = {
     feedbackBubbleEnabled: <%= defined?(LlamapressConfig) ? LlamapressConfig.feedback_bubble_enabled : true %>,
-    userLoggedIn: <%= user_signed_in? rescue false %>
+    userLoggedIn: <%= user_signed_in? rescue false %>,
+    appVersion: <%= (defined?(LlamaBotRails) ? LlamaBotRails.app_version : "dev").to_json.html_safe %>,
+    releasesUrl: "<%= (LlamaBotRails::Engine.routes.url_helpers.releases_path rescue "/llama_bot/releases") %>"
   };
 
   // PostHog analytics config (passed from env vars)
