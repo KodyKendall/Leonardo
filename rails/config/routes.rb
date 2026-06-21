@@ -8,6 +8,12 @@ Rails.application.routes.draw do
       post :generate_bio_audio
     end
   end
+  # Agent-facing JSON API consumed by the user_api_agent LangGraph agent through the
+  # llamapress_api layer (Authorization: LlamaBot <token>). See Api::UsersController.
+  namespace :api do
+    resources :users, only: [:index, :show]
+  end
+
   mount LlamaBotRails::Engine => "/llama_bot"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
