@@ -38,6 +38,8 @@ mkdir -p rails/db/migrate bin rails/app/javascript/llamapress
 echo "A" > rails/db/migrate/20260101_a.rb
 echo "D-new-upstream" > rails/db/migrate/20260105_d.rb
 printf 'services:\n  llamabot:\n    image: kody06/llamabot:9.9.9-UPSTREAM\n' > docker-compose.yml
+mkdir -p langgraph
+printf '{"graphs":{"leo":"x","new_upstream_agent":"y"}}\n' > langgraph/langgraph.json
 cp "$UPDATE" bin/update && chmod +x bin/update
 echo "UPSTREAM-helper" > bin/helper.sh
 echo "UPSTREAM-JS" > rails/app/javascript/llamapress/element_selector.js
@@ -53,6 +55,7 @@ mkdir -p bin/local && echo "azure" > bin/local/azure.sh           # bespoke clie
 echo "CLIENT_ONLY_IGNORE" >> .gitignore                           # client gitignore entry
 echo "CLIENT-COMPOSE" > docker-compose.yml                        # NOT on v1 allowlist -> must survive
 echo "CLIENT-JS" > rails/app/javascript/llamapress/element_selector.js  # NOT on v1 allowlist -> must survive
+mkdir -p langgraph && printf '{"graphs":{"leo":"x"}}\n' > langgraph/langgraph.json  # allowlisted -> upstream wins
 mkdir -p .leonardo && echo '{"name":"bc-dev-2"}' > .leonardo/instance.json
 mkdir -p rails/app/views/home && echo "client app" > rails/app/views/home/index.html.erb
 git add -A && git add -f .leonardo/instance.json && git commit -qm "client state"
@@ -65,6 +68,7 @@ chk '[ -f bin/helper.sh ]'                                    "upstream bin/ fil
 chk '[ -f bin/local/azure.sh ]'                               "bin/local preserved"
 chk 'grep -q CLIENT-COMPOSE docker-compose.yml'               "non-allowlisted docker-compose untouched (v1)"
 chk 'grep -q CLIENT-JS rails/app/javascript/llamapress/element_selector.js' "non-allowlisted JS untouched (v1)"
+chk 'grep -q new_upstream_agent langgraph/langgraph.json'    "allowlisted langgraph.json pulled from upstream"
 chk 'grep -qx CLIENT_ONLY_IGNORE .gitignore'                  "gitignore client line kept"
 chk 'grep -qx UPSTREAM_ONLY_IGNORE .gitignore'                "gitignore upstream line added"
 chk '! git ls-files --error-unmatch .leonardo/instance.json >/dev/null 2>&1' "instance.json untracked"
