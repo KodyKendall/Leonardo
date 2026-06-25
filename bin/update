@@ -173,31 +173,45 @@ sync_from_upstream() {
 # migrations onto the box. Rails then blocks EVERY request with
 # PendingMigrationError until they're applied — so we run db:migrate inside the
 # llamapress container after every sync. Idempotent (a no-op when nothing is
-# pending) and best-effort: a failure is logged, never fatal, so the image swap
-# and restart still proceed.
+# pending).
+#
+# We never gate on a single-shot `ps | grep` — a transient miss during container
+# recreation is enough to skip the migrate and cause PendingMigrationError 500s.
+# Instead we poll exec-readiness and retry db:migrate, then fail LOUD so the
+# error is visible rather than silently swallowed.
+#
+# MIGRATE_MAX_RETRIES / MIGRATE_RETRY_SLEEP_SEC may be overridden for tests.
 run_pending_migrations() {
-  local DCM
+  local DCM i
+  local max_retries="${MIGRATE_MAX_RETRIES:-12}"
+  local retry_sleep="${MIGRATE_RETRY_SLEEP_SEC:-5}"
   if docker compose version >/dev/null 2>&1; then DCM="docker compose"
   elif command -v docker-compose >/dev/null 2>&1; then DCM="docker-compose"
   else log "migrate: docker compose not found — skipping"; return 0; fi
-  if ! $DCM ps 2>/dev/null | grep -q "llamapress"; then
-    log "migrate: llamapress container not running — skipping db:migrate"; return 0
-  fi
-  log "migrate: applying any pending migrations in llamapress ..."
-  if $DCM exec -T llamapress bin/rails db:migrate >>"$LOG" 2>&1; then
-    log "migrate: db:migrate ok"
-  else
-    log "migrate: WARN db:migrate failed (see $LOG) — app may show PendingMigrationError"
-  fi
+
+  for i in $(seq 1 "$max_retries"); do
+    if $DCM exec -T llamapress true >/dev/null 2>&1; then
+      log "migrate: applying any pending migrations in llamapress (attempt $i) ..."
+      if $DCM exec -T llamapress bin/rails db:migrate >>"$LOG" 2>&1; then
+        log "migrate: db:migrate ok"; return 0
+      fi
+      log "migrate: WARN db:migrate attempt $i failed — retrying"
+    else
+      log "migrate: llamapress not exec-ready (attempt $i/$max_retries) — waiting"
+    fi
+    sleep "$retry_sleep"
+  done
+  log "migrate: ERROR could not apply migrations after $max_retries attempts — app may 500 (PendingMigrationError); run '$DCM exec -T llamapress bin/rails db:migrate' manually"
+  return 1
 }
 
 # ---- --sync-only fast path (no image swap, no version args needed) ---------
 if [ "${1:-}" = "--sync-only" ]; then
   log "=== bin/update --sync-only ==="
   sync_from_upstream
-  run_pending_migrations
+  run_pending_migrations; mig_rc=$?
   log "=== bin/update --sync-only done ==="
-  exit 0
+  exit "$mig_rc"
 fi
 
 # ---- validate -------------------------------------------------------------
