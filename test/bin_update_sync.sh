@@ -7,6 +7,9 @@
 # the client's own work, bin/local/, customized non-allowlisted files, .gitignore entries, and
 # instance.json are all preserved — and unrelated staged work is never swept into the sync commit.
 #
+# Also covers run_pending_migrations retry behavior (scenarios 3-4): a mock docker binary is
+# injected into PATH so tests never need a live container.
+#
 # Pure git + bash; no docker, no network. Exits non-zero on any failed assertion.
 # Run: bash test/bin_update_sync.sh
 #
@@ -22,6 +25,10 @@ fails=0
 ok()  { echo "  PASS  $1"; }
 no()  { echo "  FAIL  $1"; fails=$((fails + 1)); }
 chk() { if eval "$1"; then ok "$2"; else no "$2"; fi; }
+
+# Keep retry loops fast in all scenarios (production defaults: 12 retries, 5s sleep).
+export MIGRATE_MAX_RETRIES=2
+export MIGRATE_RETRY_SLEEP_SEC=0
 
 # ---------- UPSTREAM (on main) ----------
 up="$WORK/upstream"
@@ -74,6 +81,71 @@ git add rails/app/views/home/index.html.erb
 bash bin/update --sync-only >/dev/null 2>&1
 chk '[ "$(git rev-parse HEAD)" = "$head_before" ]'            "no commit made while unrelated work staged"
 chk 'git diff --cached --name-only | grep -q home/index'      "Leo staged work left intact"
+
+# ---- scenarios 3 & 4: run_pending_migrations retry / loud-failure -----
+# A minimal git repo (no upstream remote → sync skips gracefully) combined with
+# a mock docker binary lets us exercise the retry loop without a live stack.
+mig_dir="$WORK/mig_test"
+mkdir -p "$mig_dir/bin" "$mig_dir/.leonardo"
+cd "$mig_dir"
+git init -q -b main && git config user.email t@t && git config user.name test
+git commit -q --allow-empty -m "init"
+cp "$UPDATE" bin/update && chmod +x bin/update
+
+mock_bin="$WORK/mock_bin"
+mkdir -p "$mock_bin"
+
+echo "== scenario 3: transient exec-ready miss — db:migrate runs after retry =="
+s3="$WORK/state3"
+mkdir -p "$s3"
+echo "1" > "$s3/fail_until"   # exec true fails on attempt 1, succeeds on attempt 2
+
+cat > "$mock_bin/docker" <<DOCKEREOF
+#!/usr/bin/env bash
+s3="${s3}"
+case "\$*" in
+  "compose version") exit 0 ;;
+  "compose exec -T llamapress true")
+    cnt=\$(cat "\$s3/cnt" 2>/dev/null || echo 0)
+    cnt=\$((cnt+1)); echo \$cnt > "\$s3/cnt"
+    fail_until=\$(cat "\$s3/fail_until" 2>/dev/null || echo 0)
+    [ "\$cnt" -le "\$fail_until" ] && exit 1; exit 0 ;;
+  "compose exec -T llamapress bin/rails db:migrate")
+    echo ok >> "\$s3/migrate_calls"; exit 0 ;;
+  *) exit 1 ;;
+esac
+DOCKEREOF
+chmod +x "$mock_bin/docker"
+
+PATH="$mock_bin:$PATH" bash "$mig_dir/bin/update" --sync-only >/dev/null 2>&1
+chk 'grep -q ok "$s3/migrate_calls" 2>/dev/null' \
+  "db:migrate called after transient exec-ready failure"
+cnt3=$(cat "$s3/cnt" 2>/dev/null || echo 0)
+chk '[ "$cnt3" -gt 1 ]' "exec-ready check retried before calling migrate"
+
+echo "== scenario 4: permanently unavailable — loud error, non-zero exit =="
+s4="$WORK/state4"
+mkdir -p "$s4"
+
+cat > "$mock_bin/docker" <<DOCKEREOF
+#!/usr/bin/env bash
+s4="${s4}"
+case "\$*" in
+  "compose version") exit 0 ;;
+  "compose exec -T llamapress true")
+    cnt=\$(cat "\$s4/cnt" 2>/dev/null || echo 0)
+    cnt=\$((cnt+1)); echo \$cnt > "\$s4/cnt"
+    exit 1 ;;
+  *) exit 1 ;;
+esac
+DOCKEREOF
+chmod +x "$mock_bin/docker"
+
+PATH="$mock_bin:$PATH" bash "$mig_dir/bin/update" --sync-only \
+  2>"$s4/stderr" >/dev/null
+s4_rc=$?
+chk '[ "$s4_rc" -ne 0 ]' "non-zero exit when llamapress never becomes exec-ready"
+chk 'grep -q ERROR "$s4/stderr" 2>/dev/null' "ERROR logged on migration timeout"
 
 echo
 if [ "$fails" -eq 0 ]; then echo "ALL PASS"; else echo "$fails FAILED"; fi
