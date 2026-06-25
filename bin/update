@@ -56,11 +56,16 @@ UPSTREAM_BRANCH="main"
 #   * bin               — platform tooling, incl. bin/update itself => the allowlist self-propagates
 #                         (future additions ship themselves). bin/local/ is client-owned, never clobbered.
 #   * rails/db/migrate  — new platform migrations (append-only; never collides with the app's own).
+#   * langgraph/langgraph.json — the agent-graph registry. New platform agents are dead unless they're
+#                         registered here, so it must track upstream wholesale. Caveat: a checkout
+#                         clobbers local edits, so clients register their own graphs upstream rather
+#                         than by hand-editing this file.
 # Phase-2 targets, added only AFTER a fleet divergence audit (each overwrites wholesale):
 #   docker-compose.yml, rails/app/javascript/llamapress, rails/app/views/layouts/_llamapress_page_context.html.erb
 ALLOWLIST=(
   "bin"
   "rails/db/migrate"
+  "langgraph/langgraph.json"
 )
 
 # The auto-commit guard (paths the sync may commit) is DERIVED from ALLOWLIST + the two
