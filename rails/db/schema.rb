@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_06_15_180149) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_05_191324) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -326,8 +326,10 @@ ActiveRecord::Schema[7.2].define(version: 2026_06_15_180149) do
     t.string "twilio_number"
     t.boolean "admin"
     t.string "api_token"
+    t.string "llamapress_user_guid"
     t.index ["api_token"], name: "index_users_on_api_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["llamapress_user_guid"], name: "index_users_on_llamapress_user_guid", unique: true, where: "(llamapress_user_guid IS NOT NULL)"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
