@@ -66,6 +66,7 @@ ALLOWLIST=(
   "bin"
   "rails/db/migrate"
   "langgraph/langgraph.json"
+  "docker-compose.yml"
 )
 
 # The auto-commit guard (paths the sync may commit) is DERIVED from ALLOWLIST + the two
