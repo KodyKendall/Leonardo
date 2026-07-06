@@ -60,8 +60,12 @@ UPSTREAM_BRANCH="main"
 #                         registered here, so it must track upstream wholesale. Caveat: a checkout
 #                         clobbers local edits, so clients register their own graphs upstream rather
 #                         than by hand-editing this file.
+#   * docker-compose.yml — the service/mount definition. Platform changes here (new mounts, service
+#                         wiring) must reach the fleet wholesale; the version tags are re-stamped
+#                         AFTER the sync (see the ordering note by sync_from_upstream below), so
+#                         upstream's default tags never stick. Clients don't hand-edit compose.
 # Phase-2 targets, added only AFTER a fleet divergence audit (each overwrites wholesale):
-#   docker-compose.yml, rails/app/javascript/llamapress, rails/app/views/layouts/_llamapress_page_context.html.erb
+#   rails/app/javascript/llamapress, rails/app/views/layouts/_llamapress_page_context.html.erb
 ALLOWLIST=(
   "bin"
   "rails/db/migrate"

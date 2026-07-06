@@ -53,7 +53,7 @@ git config user.email c@c && git config user.name client
 echo "C-client-own" > rails/db/migrate/20260601_client_c.rb       # app's own migration
 mkdir -p bin/local && echo "azure" > bin/local/azure.sh           # bespoke client script
 echo "CLIENT_ONLY_IGNORE" >> .gitignore                           # client gitignore entry
-echo "CLIENT-COMPOSE" > docker-compose.yml                        # NOT on v1 allowlist -> must survive
+echo "CLIENT-COMPOSE" > docker-compose.yml                        # allowlisted -> upstream overwrites wholesale
 echo "CLIENT-JS" > rails/app/javascript/llamapress/element_selector.js  # NOT on v1 allowlist -> must survive
 mkdir -p langgraph && printf '{"graphs":{"leo":"x"}}\n' > langgraph/langgraph.json  # allowlisted -> upstream wins
 mkdir -p .leonardo && echo '{"name":"bc-dev-2"}' > .leonardo/instance.json
@@ -66,7 +66,7 @@ chk '[ -f rails/db/migrate/20260601_client_c.rb ]'            "client migration 
 chk 'grep -q D-new-upstream rails/db/migrate/20260105_d.rb'   "upstream migration pulled"
 chk '[ -f bin/helper.sh ]'                                    "upstream bin/ file pulled"
 chk '[ -f bin/local/azure.sh ]'                               "bin/local preserved"
-chk 'grep -q CLIENT-COMPOSE docker-compose.yml'               "non-allowlisted docker-compose untouched (v1)"
+chk 'grep -q 9.9.9-UPSTREAM docker-compose.yml'               "allowlisted docker-compose pulled from upstream"
 chk 'grep -q CLIENT-JS rails/app/javascript/llamapress/element_selector.js' "non-allowlisted JS untouched (v1)"
 chk 'grep -q new_upstream_agent langgraph/langgraph.json'    "allowlisted langgraph.json pulled from upstream"
 chk 'grep -qx CLIENT_ONLY_IGNORE .gitignore'                  "gitignore client line kept"
