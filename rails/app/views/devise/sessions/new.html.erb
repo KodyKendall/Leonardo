@@ -2,6 +2,9 @@
   Sign In
 <% end %>
 
+<%# Unified Login — platform-owned "Sign in with your LlamaPress.ai account" CTA (llama_bot_rails gem). Inert on self-hosted apps. %>
+<%= render "llama_bot_rails/sign_in_with_llamapress" %>
+
 <div class="max-w-md mx-auto mt-8 bg-white rounded-lg shadow-md p-8">
   <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
     <div class="mb-4">
