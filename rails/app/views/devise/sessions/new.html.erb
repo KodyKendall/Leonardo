@@ -2,6 +2,9 @@
   Sign In
 <% end %>
 
+<%# Unified Login — platform-owned "Sign in with your LlamaPress.ai account" CTA (llama_bot_rails gem). Inert on self-hosted apps. respond_to?-guarded so an old gem image degrades to blank (never a crash) AND there is no lazy engine view-path race on cold boot. %>
+<%= LlamaBotRails::SsoHelper.respond_to?(:cta_html) ? LlamaBotRails::SsoHelper.cta_html : "" %>
+
 <div class="max-w-md mx-auto mt-8 bg-white rounded-lg shadow-md p-8">
   <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
     <div class="mb-4">

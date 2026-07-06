@@ -23,6 +23,7 @@ services:
       - ./rails/config/database.yml:/rails/config/database.yml
       - ./rails/config/importmap.rb:/rails/config/importmap.rb
       - ./rails/config/initializers/devise.rb:/rails/config/initializers/devise.rb
+      - ./.leonardo/instance.json:/rails/.leonardo/instance.json:ro  # instance metadata only, NOT the whole .leonardo dir (read by the image's leonardo_instance.rb initializer)
       - ./rails/requirements:/rails/requirements:delegated
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:prepare && bundle exec rails s -b 0.0.0.0"
     # command: tail -f /dev/null
@@ -55,6 +56,8 @@ services:
       - ../LlamaBot/app:/app/app  # Dev: full mount for hot reload
       - ./rails:/app/app/rails  # Override: Leonardo's Rails code
       - ./langgraph/langgraph.json:/app/app/langgraph.json  # Override: merged config
+      - ./langgraph/langgraph.local.json:/app/app/langgraph.local.json  # Client overlay: agent registry
+      - ./langgraph/agent_modes.json:/app/app/agent_modes.json  # Custom chat-mode dropdown entries
       - ./langgraph/agents:/app/app/user_agents  # Add: custom agents
       - /var/run/docker.sock:/var/run/docker.sock
       - ./:/app/leonardo  # Full Leonardo repo for git access

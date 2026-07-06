@@ -1,1 +1,14 @@
+#!/usr/bin/env bash
+set -e
+cd "$(dirname "$0")/.."
+
+# docker-compose mounts .leonardo/instance.json into the Rails container; if it
+# doesn't exist docker would create a root-owned DIRECTORY at that path. Seed it
+# from the template so the mount is always a file.
+if [ ! -f .leonardo/instance.json ]; then
+  echo "⚠️  .leonardo/instance.json missing — seeding from instance-template.json (run bin/install/setup-instance-json to register this instance)"
+  mkdir -p .leonardo
+  cp instance-template.json .leonardo/instance.json
+fi
+
 docker compose -f docker-compose-dev.yml up -d

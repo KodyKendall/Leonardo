@@ -1,0 +1,7 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "leo": "./user_agents/leo/nodes.py:build_workflow"
+  },
+  "env": ".env"
+}

@@ -17,6 +17,7 @@ INSTANCE_NAME=""
 ENVIRONMENT="development"
 S3_BUCKET=""
 REGION=""
+MOTHERSHIP_URL="https://llamapress.ai"
 
 # Parse command line arguments
 while [[ $# -gt 0 ]]; do
@@ -37,6 +38,10 @@ while [[ $# -gt 0 ]]; do
       REGION="$2"
       shift 2
       ;;
+    --mothership-url)
+      MOTHERSHIP_URL="$2"
+      shift 2
+      ;;
     -h|--help)
       echo "Usage: setup-instance-json [OPTIONS]"
       echo ""
@@ -45,6 +50,7 @@ while [[ $# -gt 0 ]]; do
       echo "  --env ENV         Environment: development|staging|production (default: development)"
       echo "  --bucket BUCKET   S3 bucket name (optional)"
       echo "  --region REGION   AWS region (optional)"
+      echo "  --mothership-url URL  Mothership URL (default: https://llamapress.ai)"
       echo "  -h, --help        Show this help message"
       exit 0
       ;;
@@ -121,6 +127,7 @@ cat > "$INSTANCE_FILE" <<EOF
 {
   "instance_name": "$INSTANCE_NAME",
   "instance_guid": "$INSTANCE_GUID",
+  "mothership_url": "$MOTHERSHIP_URL",
   "environment": "$ENVIRONMENT",
   "s3_bucket": "${S3_BUCKET:-}",
   "region": "${REGION:-}",
