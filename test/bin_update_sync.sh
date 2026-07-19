@@ -43,6 +43,7 @@ printf '{"graphs":{"leo":"x","new_upstream_agent":"y"}}\n' > langgraph/langgraph
 cp "$UPDATE" bin/update && chmod +x bin/update
 echo "UPSTREAM-helper" > bin/helper.sh
 echo "UPSTREAM-JS" > rails/app/javascript/llamapress/element_selector.js
+echo "UPSTREAM-APPJS" > rails/app/javascript/application.js
 printf '.env\n.leonardo/instance.json\n.leonardo/update.log\nUPSTREAM_ONLY_IGNORE\n' > .gitignore
 git add -A && git commit -qm "upstream base"
 
@@ -54,7 +55,8 @@ echo "C-client-own" > rails/db/migrate/20260601_client_c.rb       # app's own mi
 mkdir -p bin/local && echo "azure" > bin/local/azure.sh           # bespoke client script
 echo "CLIENT_ONLY_IGNORE" >> .gitignore                           # client gitignore entry
 echo "CLIENT-COMPOSE" > docker-compose.yml                        # allowlisted -> upstream overwrites wholesale
-echo "CLIENT-JS" > rails/app/javascript/llamapress/element_selector.js  # NOT on v1 allowlist -> must survive
+echo "CLIENT-JS" > rails/app/javascript/llamapress/element_selector.js  # allowlisted -> upstream overwrites wholesale
+echo "CLIENT-APPJS" > rails/app/javascript/application.js               # NOT on allowlist -> must survive
 mkdir -p langgraph && printf '{"graphs":{"leo":"x"}}\n' > langgraph/langgraph.json  # allowlisted -> upstream wins
 mkdir -p .leonardo && echo '{"name":"bc-dev-2"}' > .leonardo/instance.json
 mkdir -p rails/app/views/home && echo "client app" > rails/app/views/home/index.html.erb
@@ -67,7 +69,8 @@ chk 'grep -q D-new-upstream rails/db/migrate/20260105_d.rb'   "upstream migratio
 chk '[ -f bin/helper.sh ]'                                    "upstream bin/ file pulled"
 chk '[ -f bin/local/azure.sh ]'                               "bin/local preserved"
 chk 'grep -q 9.9.9-UPSTREAM docker-compose.yml'               "allowlisted docker-compose pulled from upstream"
-chk 'grep -q CLIENT-JS rails/app/javascript/llamapress/element_selector.js' "non-allowlisted JS untouched (v1)"
+chk 'grep -q UPSTREAM-JS rails/app/javascript/llamapress/element_selector.js' "allowlisted llamapress JS pulled from upstream"
+chk 'grep -q CLIENT-APPJS rails/app/javascript/application.js'  "non-allowlisted JS untouched"
 chk 'grep -q new_upstream_agent langgraph/langgraph.json'    "allowlisted langgraph.json pulled from upstream"
 chk 'grep -qx CLIENT_ONLY_IGNORE .gitignore'                  "gitignore client line kept"
 chk 'grep -qx UPSTREAM_ONLY_IGNORE .gitignore'                "gitignore upstream line added"
