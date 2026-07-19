@@ -37,9 +37,10 @@ git init -q -b main && git config user.email u@u && git config user.name up
 mkdir -p rails/db/migrate bin rails/app/javascript/llamapress
 echo "A" > rails/db/migrate/20260101_a.rb
 echo "D-new-upstream" > rails/db/migrate/20260105_d.rb
-printf 'services:\n  llamabot:\n    image: kody06/llamabot:9.9.9-UPSTREAM\n' > docker-compose.yml
+printf 'services:\n  llamabot:\n    image: kody06/llamabot:9.9.9-UPSTREAM\n    volumes:\n      - ./langgraph/langgraph.local.json:/app/app/langgraph.local.json\n' > docker-compose.yml
 mkdir -p langgraph
 printf '{"graphs":{"leo":"x","new_upstream_agent":"y"}}\n' > langgraph/langgraph.json
+printf '{"modes":{"leo":"upstream-default"}}\n' > langgraph/langgraph.local.json
 cp "$UPDATE" bin/update && chmod +x bin/update
 echo "UPSTREAM-helper" > bin/helper.sh
 echo "UPSTREAM-JS" > rails/app/javascript/llamapress/element_selector.js
@@ -58,6 +59,7 @@ echo "CLIENT-COMPOSE" > docker-compose.yml                        # allowlisted 
 echo "CLIENT-JS" > rails/app/javascript/llamapress/element_selector.js  # allowlisted -> upstream overwrites wholesale
 echo "CLIENT-APPJS" > rails/app/javascript/application.js               # NOT on allowlist -> must survive
 mkdir -p langgraph && printf '{"graphs":{"leo":"x"}}\n' > langgraph/langgraph.json  # allowlisted -> upstream wins
+git rm -q langgraph/langgraph.local.json                          # fork predates the overlay file -> sync must seed it
 mkdir -p .leonardo && echo '{"name":"bc-dev-2"}' > .leonardo/instance.json
 mkdir -p rails/app/views/home && echo "client app" > rails/app/views/home/index.html.erb
 git add -A && git add -f .leonardo/instance.json && git commit -qm "client state"
@@ -72,6 +74,7 @@ chk 'grep -q 9.9.9-UPSTREAM docker-compose.yml'               "allowlisted docke
 chk 'grep -q UPSTREAM-JS rails/app/javascript/llamapress/element_selector.js' "allowlisted llamapress JS pulled from upstream"
 chk 'grep -q CLIENT-APPJS rails/app/javascript/application.js'  "non-allowlisted JS untouched"
 chk 'grep -q new_upstream_agent langgraph/langgraph.json'    "allowlisted langgraph.json pulled from upstream"
+chk 'grep -q upstream-default langgraph/langgraph.local.json' "missing overlay langgraph.local.json seeded from upstream"
 chk 'grep -qx CLIENT_ONLY_IGNORE .gitignore'                  "gitignore client line kept"
 chk 'grep -qx UPSTREAM_ONLY_IGNORE .gitignore'                "gitignore upstream line added"
 chk '! git ls-files --error-unmatch .leonardo/instance.json >/dev/null 2>&1' "instance.json untracked"
@@ -88,6 +91,27 @@ git add rails/app/views/home/index.html.erb
 bash bin/update --sync-only >/dev/null 2>&1
 chk '[ "$(git rev-parse HEAD)" = "$head_before" ]'            "no commit made while unrelated work staged"
 chk 'git diff --cached --name-only | grep -q home/index'      "Leo staged work left intact"
+
+echo "== scenario 2b: overlay seed is one-shot — client edits survive resync =="
+printf '{"modes":{"custom":"CLIENT-MODE"}}\n' > langgraph/langgraph.local.json
+bash bin/update --sync-only >/dev/null 2>&1
+chk 'grep -q CLIENT-MODE langgraph/langgraph.local.json'      "client overlay edits survive later syncs"
+
+echo "== scenario 2c: docker's empty-directory wedge is healed =="
+rm -f langgraph/langgraph.local.json
+mkdir langgraph/langgraph.local.json   # what docker leaves behind for a missing bind source
+bash bin/update --sync-only >/dev/null 2>&1
+chk '[ -f langgraph/langgraph.local.json ]'                   "empty-directory wedge replaced by a file"
+chk 'grep -q upstream-default langgraph/langgraph.local.json' "healed overlay re-seeded from upstream"
+
+echo "== scenario 2d: preflight fails loud on a missing bind source =="
+(cd "$up" \
+  && printf 'services:\n  llamabot:\n    image: kody06/llamabot:9.9.9-UPSTREAM\n    volumes:\n      - ./langgraph/langgraph.local.json:/app/app/langgraph.local.json\n      - ./does-not-exist.json:/app/does-not-exist.json\n' > docker-compose.yml \
+  && git commit -qam "mount a file that ships nowhere")
+bash bin/update --sync-only >/dev/null 2>&1
+s2d_rc=$?
+chk '[ "$s2d_rc" -ne 0 ]'                                     "non-zero exit on missing bind source"
+chk 'grep -q "does-not-exist.json but it does not exist" .leonardo/update.log' "preflight ERROR names the missing source"
 
 # ---- scenarios 3 & 4: run_pending_migrations retry / loud-failure -----
 # A minimal git repo (no upstream remote → sync skips gracefully) combined with
