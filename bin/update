@@ -64,13 +64,17 @@ UPSTREAM_BRANCH="main"
 #                         wiring) must reach the fleet wholesale; the version tags are re-stamped
 #                         AFTER the sync (see the ordering note by sync_from_upstream below), so
 #                         upstream's default tags never stick. Clients don't hand-edit compose.
+#   * rails/app/javascript/llamapress — platform JS helpers (feedback bubble, element selector,
+#                         console capture, etc.). Platform-owned; downstream overrides belong in
+#                         a different path, not hand-edits here — a sync overwrites wholesale.
 # Phase-2 targets, added only AFTER a fleet divergence audit (each overwrites wholesale):
-#   rails/app/javascript/llamapress, rails/app/views/layouts/_llamapress_page_context.html.erb
+#   rails/app/views/layouts/_llamapress_page_context.html.erb
 ALLOWLIST=(
   "bin"
   "rails/db/migrate"
   "langgraph/langgraph.json"
   "docker-compose.yml"
+  "rails/app/javascript/llamapress"
 )
 
 # The auto-commit guard (paths the sync may commit) is DERIVED from ALLOWLIST + the two

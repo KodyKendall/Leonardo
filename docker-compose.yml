@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   llamapress:
-    image: kody06/llamapress-simple:0.6.4a        # <— pre-built tag (includes erb_lint)
+    image: kody06/llamapress-simple:0.6.4b        # <— pre-built tag (includes erb_lint)
     # user: "1000:1000"  # Run as UID 1000 to prevent root-owned file creation
     env_file: .env                           # read secrets from this file
     environment:
@@ -49,7 +49,9 @@ services:
     privileged: true  # Required for nsenter capabilities
     volumes:
       - ./rails:/app/app/rails
-      - ./langgraph/langgraph.json:/app/app/langgraph.json
+      # NOTE: langgraph.json (the platform base) is deliberately NOT mounted — it ships
+      # with the LlamaBot image so new platform agent modes work here with no Leonardo
+      # change. Client graphs go in the langgraph.local.json overlay below.
       - ./langgraph/langgraph.local.json:/app/app/langgraph.local.json  # Client overlay: agent registry
       - ./langgraph/agent_modes.json:/app/app/agent_modes.json  # Custom chat-mode dropdown entries
       - ./langgraph/agents:/app/app/user_agents
