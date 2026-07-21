@@ -40,6 +40,7 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_DIR" || { echo "bin/update: cannot cd to $PROJECT_DIR" >&2; exit 1; }
 
 COMPOSE_FILE="docker-compose.yml"
+OVERRIDE_FILE="docker-compose.override.yml"   # per-instance config; never synced (see seed_override_file)
 ENV_FILE=".env"
 MARKER_DIR=".leonardo"
 MARKER="$MARKER_DIR/last_update.json"
@@ -63,7 +64,10 @@ UPSTREAM_BRANCH="main"
 #   * docker-compose.yml — the service/mount definition. Platform changes here (new mounts, service
 #                         wiring) must reach the fleet wholesale; the version tags are re-stamped
 #                         AFTER the sync (see the ordering note by sync_from_upstream below), so
-#                         upstream's default tags never stick. Clients don't hand-edit compose.
+#                         upstream's default tags never stick. Clients never hand-edit compose —
+#                         per-instance config lives in docker-compose.override.yml (auto-merged by
+#                         docker compose, never synced). A pre-sync snapshot of the compose file is
+#                         kept on-box (docker-compose.yml.pre-sync-*, last 3) as a safety net.
 #   * rails/app/javascript/llamapress — platform JS helpers (feedback bubble, element selector,
 #                         console capture, etc.). Platform-owned; downstream overrides belong in
 #                         a different path, not hand-edits here — a sync overwrites wholesale.
@@ -77,11 +81,34 @@ ALLOWLIST=(
   "rails/app/javascript/llamapress"
 )
 
+# Client-overlay files: bind-mounted as FILES by docker-compose.yml (which IS allowlisted)
+# but deliberately NOT allowlisted themselves — the client owns their contents (e.g. custom
+# Leo modes in langgraph.local.json). A sync can therefore deliver a compose that mounts a
+# file the client doesn't have yet; docker auto-creates the missing bind source as a
+# root-owned DIRECTORY, and every `up` after that fails with runc's "not a directory" mount
+# error. Each path here is seeded from upstream ONCE when missing (never overwritten after
+# that), and an empty-directory wedge left behind by docker is healed in place.
+# INVARIANT: any new file bind-mount added to docker-compose.yml upstream needs a matching
+# entry here (or must ship inside the image) — see docs/DISTRIBUTION.md.
+OVERLAY_SEEDS=(
+  "langgraph/langgraph.local.json"
+  "langgraph/agent_modes.json"
+  "rails/config/initializers/devise.rb"
+  "rails/config/initializers/llama_bot_rails.rb"
+  "rails/config/initializers/session_cookie.rb"
+  "rails/config/initializers/custom"
+  "rails/config/locales"
+  "rails/config/storage.yml"
+  "rails/config/environments/test.rb"
+  "rails/lib"
+  "rails/public/uploads"
+)
+
 # The auto-commit guard (paths the sync may commit) is DERIVED from ALLOWLIST + the two
 # special-cased files, so it can never drift from the list above. Matches a dir prefix or exact file.
 build_sync_commit_re() {
   local p esc parts=()
-  for p in "${ALLOWLIST[@]}" ".gitignore" ".leonardo/instance.json"; do
+  for p in "${ALLOWLIST[@]}" "${OVERLAY_SEEDS[@]}" "$OVERRIDE_FILE" ".gitignore" ".leonardo/instance.json"; do
     esc="${p//./\\.}"
     parts+=("${esc}(/|\$)")
   done
@@ -124,6 +151,163 @@ ensure_gitignore_union() { # $1 ref — append upstream .gitignore lines not alr
   done <<< "$up"
   grep -qxF -- ".leonardo/instance.json" "$PROJECT_DIR/.gitignore" 2>/dev/null \
     || echo ".leonardo/instance.json" >> "$PROJECT_DIR/.gitignore"
+  grep -qxF -- "$COMPOSE_FILE.pre-sync-*" "$PROJECT_DIR/.gitignore" 2>/dev/null \
+    || echo "$COMPOSE_FILE.pre-sync-*" >> "$PROJECT_DIR/.gitignore"
+}
+
+# ---- pre-sync safety net: snapshot compose before the wholesale checkout ---
+# The sync overwrites docker-compose.yml wholesale; any hand-edit the override
+# migration missed stays recoverable on-box. Newest 3 snapshots are kept.
+backup_compose() {
+  [ -f "$PROJECT_DIR/$COMPOSE_FILE" ] || return 0
+  local snap="$COMPOSE_FILE.pre-sync-$(date -u +%Y%m%d-%H%M%S)"
+  if cp "$PROJECT_DIR/$COMPOSE_FILE" "$PROJECT_DIR/$snap" 2>>"$LOG"; then
+    log "backup: snapshotted $COMPOSE_FILE -> $snap"
+  else
+    log "backup: WARN could not snapshot $COMPOSE_FILE (see $LOG)"
+  fi
+  ls -1t "$PROJECT_DIR/$COMPOSE_FILE".pre-sync-* 2>/dev/null | tail -n +4 | xargs -r rm -f
+}
+
+# ---- per-instance override file (never synced, seeded once if absent) ------
+# docker compose auto-merges docker-compose.override.yml over the base file, so
+# per-box config (extra mounts, mem limits, custom services) survives every
+# wholesale compose sync. Deliberately NOT on the allowlist and NOT overwritten
+# here — the whole point is that the client owns its contents. When seeded it
+# joins SEEDED so the sync commit picks it up; called again post-sync as a
+# fallback for boxes with no upstream remote (idempotent).
+seed_override_file() {
+  [ -e "$PROJECT_DIR/$OVERRIDE_FILE" ] && return 0
+  cat > "$PROJECT_DIR/$OVERRIDE_FILE" <<'EOF'
+# ✅ PER-INSTANCE OVERRIDES LIVE HERE — this file is yours; platform updates never touch it.
+# docker compose merges it over docker-compose.yml automatically.
+# Merge rules: single values (command, restart, mem_limit) REPLACE the base;
+# maps (environment) merge per key; lists (volumes, ports) APPEND; you cannot remove base entries.
+# New services defined here are added to the stack.
+#
+# Example:
+# services:
+#   llamapress:
+#     volumes:
+#       - ./rails/config/initializers/my_custom.rb:/rails/config/initializers/my_custom.rb
+#     mem_limit: 1g
+services: {}
+EOF
+  SEEDED+=("$OVERRIDE_FILE")
+  log "seed: created $OVERRIDE_FILE (per-instance overrides; updates never touch it)"
+}
+
+# ---- one-shot seeding of client-overlay files (see OVERLAY_SEEDS) ----------
+# Handles both FILE seeds (blob upstream) and DIRECTORY seeds (tree upstream).
+# A dir seed fires when the local dir is missing OR empty — an empty dir is
+# either docker's auto-created wedge or a bare default, and a path-scoped
+# checkout only ADDS files there, it cannot clobber content that doesn't exist.
+# A non-empty local dir is client-owned and never touched.
+SEEDED=()
+seed_overlay_files() { # $1 ref
+  local ref="$1" p dst typ
+  SEEDED=()
+  for p in "${OVERLAY_SEEDS[@]}"; do
+    dst="$PROJECT_DIR/$p"
+    typ="$(git -C "$PROJECT_DIR" cat-file -t "$ref:$p" 2>/dev/null)" || typ=""
+
+    if [ "$typ" = "tree" ]; then
+      if [ -e "$dst" ] && [ ! -d "$dst" ]; then
+        log "seed: ERROR $p is a file where a directory belongs — fix manually: rm '$p' && bash bin/update --sync-only"
+        continue
+      fi
+      if [ -d "$dst" ] && [ -n "$(ls -A "$dst" 2>/dev/null)" ]; then
+        continue  # non-empty -> client-owned, never overwrite
+      fi
+      rmdir "$dst" 2>/dev/null || true  # clear a root-owned empty wedge so checkout can recreate it user-owned
+      if git -C "$PROJECT_DIR" checkout "$ref" -- "$p" 2>>"$LOG"; then
+        log "seed: created dir $p from $ref (client-owned from now on, never overwritten)"
+        SEEDED+=("$p")
+      else
+        log "seed: WARN failed to checkout dir $p (see $LOG)"
+      fi
+      continue
+    fi
+
+    # file seed (blob upstream, or absent upstream — placehold_missing_mounts backstops that)
+    if [ -d "$dst" ]; then
+      # docker's missing-bind-source footgun: an empty root-owned dir where a file belongs
+      if rmdir "$dst" 2>>"$LOG"; then
+        log "seed: healed docker's empty-directory wedge at $p"
+      else
+        log "seed: ERROR $p is a non-empty directory where a file belongs — fix manually: sudo rm -r '$p' && bash bin/update --sync-only"
+        continue
+      fi
+    fi
+    [ -e "$dst" ] && continue
+    if [ -n "$typ" ]; then
+      mkdir -p "$(dirname "$dst")" 2>>"$LOG" || true
+      if git -C "$PROJECT_DIR" show "$ref:$p" > "$dst" 2>>"$LOG"; then
+        log "seed: created $p from $ref (client-owned from now on, never overwritten)"
+        SEEDED+=("$p")
+      else
+        log "seed: WARN failed to write $p (see $LOG)"
+      fi
+    else
+      log "seed: WARN $p missing locally and absent in $ref — placeholder will be created if compose mounts it"
+    fi
+  done
+}
+
+# ---- last-resort placeholders: never let docker invent a mount source ------
+# After seeding, any bind source still missing (absent upstream, no network,
+# future compose additions) gets a minimal USER-owned placeholder. Left alone,
+# docker auto-creates a ROOT-owned empty directory instead: file mounts then
+# crashloop ("not a directory" from runc) and dir mounts shadow the image's
+# content. Type is inferred from the path (an extension => file; content-aware:
+# {} for .json since an empty file is invalid JSON; otherwise an empty dir).
+# Logs a loud WARN — the stack stays bootable, but real content should follow.
+placehold_missing_mounts() {
+  local src dst base f
+  for f in "$COMPOSE_FILE" "$OVERRIDE_FILE"; do
+    [ -f "$PROJECT_DIR/$f" ] || continue
+    while IFS= read -r src; do
+      dst="$PROJECT_DIR/$src"
+      [ -e "$dst" ] && continue
+      mkdir -p "$(dirname "$dst")" 2>>"$LOG" || true
+      case "${src##*/}" in
+        ?*.*)  # basename has an extension -> file mount
+          case "$src" in
+            *.json) printf '{}\n' > "$dst" 2>>"$LOG" ;;
+            *) printf '# Placeholder created by bin/update: %s was missing at update time.\n# Replace with real content (a platform sync may reseed it: bash bin/update --sync-only).\n' "$src" > "$dst" 2>>"$LOG" ;;
+          esac
+          [ -f "$dst" ] && log "placehold: WARN created placeholder FILE $src — was missing, docker would have wedged it into a directory" ;;
+        *)     # no extension -> directory mount
+          mkdir -p "$dst" 2>>"$LOG"
+          [ -d "$dst" ] && log "placehold: WARN created placeholder DIR $src — was missing, docker would have created it root-owned" ;;
+      esac
+    done < <(sed -nE 's|^[[:space:]]*-[[:space:]]*"?\./([^:"]+)"?:.*|\1|p' "$PROJECT_DIR/$f")
+  done
+}
+
+# ---- preflight: refuse to act on a compose whose bind sources are missing ---
+# Docker silently creates a missing bind-mount source as a root-owned directory; for file
+# mounts that permanently wedges the container ("not a directory" from runc) until someone
+# deletes the directory by hand. Fail LOUD before docker ever sees the compose instead.
+# Covers the override file too — plain `docker compose` merges it, so its binds count.
+preflight_compose() {
+  [ -f "$PROJECT_DIR/$COMPOSE_FILE" ] || return 0
+  local bad=0 src p f
+  for f in "$COMPOSE_FILE" "$OVERRIDE_FILE"; do
+    [ -f "$PROJECT_DIR/$f" ] || continue
+    while IFS= read -r src; do
+      [ -e "$PROJECT_DIR/$src" ] \
+        || { log "preflight: ERROR $f bind-mounts ./$src but it does not exist on the host"; bad=1; }
+    done < <(sed -nE 's|^[[:space:]]*-[[:space:]]*"?\./([^:"]+)"?:.*|\1|p' "$PROJECT_DIR/$f")
+  done
+  for p in "${OVERLAY_SEEDS[@]}"; do
+    case "${p##*/}" in
+      ?*.*)  # extension => a FILE seed; a directory there is docker's missing-bind-source wedge
+        [ -d "$PROJECT_DIR/$p" ] \
+          && { log "preflight: ERROR $p is a directory where a file belongs (docker missing-bind-source wedge)"; bad=1; } ;;
+    esac
+  done
+  return "$bad"
 }
 
 sync_from_upstream() {
@@ -144,7 +328,9 @@ sync_from_upstream() {
     || { log "sync: WARN $ref missing — skipping"; return 0; }
   sha="$(git -C "$PROJECT_DIR" rev-parse --short "$ref")"
 
-  # 1) pull allowlisted paths that actually exist in upstream (overwrite wholesale)
+  # 1) pull allowlisted paths that actually exist in upstream (overwrite wholesale) —
+  #    snapshotting the compose file first so a clobbered hand-edit stays recoverable
+  backup_compose
   local p present=()
   for p in "${ALLOWLIST[@]}"; do
     if git -C "$PROJECT_DIR" cat-file -e "$ref:$p" 2>/dev/null; then present+=("$p")
@@ -158,12 +344,17 @@ sync_from_upstream() {
     fi
   fi
 
+  # 1b) seed client-overlay files the fresh compose may bind-mount (one-shot, never overwrites),
+  #     plus the per-instance override file — inside the sync so the commit includes them
+  seed_overlay_files "$ref"
+  seed_override_file
+
   # 2) .gitignore UNION-merged (never overwritten); 3) instance.json force-untracked
   ensure_gitignore_union "$ref"
   git -C "$PROJECT_DIR" rm -r --cached --ignore-unmatch -- ".leonardo/instance.json" >/dev/null 2>&1 || true
 
   # 4) commit the sync — scoped, and only if no UNRELATED staged work is present
-  git -C "$PROJECT_DIR" add -- "${present[@]}" ".gitignore" 2>/dev/null || true
+  git -C "$PROJECT_DIR" add -- "${present[@]}" "${SEEDED[@]}" ".gitignore" 2>/dev/null || true
   local f extra=0 nstaged=0
   while IFS= read -r f; do
     [ -z "$f" ] && continue
@@ -222,10 +413,14 @@ run_pending_migrations() {
 # ---- --sync-only fast path (no image swap, no version args needed) ---------
 if [ "${1:-}" = "--sync-only" ]; then
   log "=== bin/update --sync-only ==="
+  sync_rc=0
   sync_from_upstream
-  run_pending_migrations; mig_rc=$?
+  seed_override_file
+  placehold_missing_mounts
+  preflight_compose || sync_rc=1
+  run_pending_migrations || sync_rc=1
   log "=== bin/update --sync-only done ==="
-  exit "$mig_rc"
+  exit "$sync_rc"
 fi
 
 # ---- validate -------------------------------------------------------------
@@ -290,6 +485,9 @@ log "=== bin/update start (llamabot=$LLAMABOT_TARGET llamapress=$LLAMAPRESS_TARG
 # invariant: once docker-compose.yml is allowlisted (Phase 2), the sync must land first so
 # the fresh upstream compose is then stamped with the intended tags, not upstream's defaults.
 sync_from_upstream
+seed_override_file
+placehold_missing_mounts
+preflight_compose || fail "compose references missing bind-mount sources (see $LOG) — refusing to pull/restart"
 run_pending_migrations
 
 [ -f "$COMPOSE_FILE" ] || fail "no $COMPOSE_FILE in $PROJECT_DIR"

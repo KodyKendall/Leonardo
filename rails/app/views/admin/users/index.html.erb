@@ -1,4 +1,6 @@
-<div class="p-6 space-y-6">
+<%= render "shared/admin_nav" %>
+
+<div class="space-y-6">
   <div class="flex justify-between items-center">
     <h1 class="text-2xl font-bold">Users</h1>
     <%= form_with url: admin_users_path, method: :get, class: "flex items-center" do |form| %>

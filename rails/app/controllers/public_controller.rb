@@ -10,4 +10,9 @@ class PublicController < ApplicationController
     # GET /chat
     def chat
     end
+
+    # Walks the user through putting the app on their phone's home screen.
+    # GET /install
+    def install
+    end
   end

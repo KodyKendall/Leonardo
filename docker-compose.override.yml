@@ -1,0 +1,13 @@
+# ✅ PER-INSTANCE OVERRIDES LIVE HERE — this file is yours; platform updates never touch it.
+# docker compose merges it over docker-compose.yml automatically.
+# Merge rules: single values (command, restart, mem_limit) REPLACE the base;
+# maps (environment) merge per key; lists (volumes, ports) APPEND; you cannot remove base entries.
+# New services defined here are added to the stack.
+#
+# Example:
+# services:
+#   llamapress:
+#     volumes:
+#       - ./rails/config/initializers/my_custom.rb:/rails/config/initializers/my_custom.rb
+#     mem_limit: 1g
+services: {}
