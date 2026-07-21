@@ -82,6 +82,10 @@ chk '[ -f .leonardo/instance.json ]'                          "instance.json kep
 chk 'grep -q "client app" rails/app/views/home/index.html.erb' "Leo app work untouched"
 chk 'git log -1 --pretty=%s | grep -q platform-sync'          "scoped platform-sync commit created"
 chk '[ -z "$(git status --porcelain)" ]'                      "working tree clean after sync"
+chk '[ -f docker-compose.override.yml ]'                      "override file seeded"
+chk 'git ls-files --error-unmatch docker-compose.override.yml >/dev/null 2>&1' "seeded override committed by sync"
+chk 'ls docker-compose.yml.pre-sync-* >/dev/null 2>&1'        "pre-sync compose snapshot kept"
+chk 'grep -qxF "docker-compose.yml.pre-sync-*" .gitignore'    "snapshot pattern gitignored"
 
 echo "== scenario 2: unrelated staged work blocks the commit =="
 head_before="$(git rev-parse HEAD)"
@@ -94,8 +98,10 @@ chk 'git diff --cached --name-only | grep -q home/index'      "Leo staged work l
 
 echo "== scenario 2b: overlay seed is one-shot — client edits survive resync =="
 printf '{"modes":{"custom":"CLIENT-MODE"}}\n' > langgraph/langgraph.local.json
+printf 'services:\n  llamapress:\n    mem_limit: 1g  # CLIENT-OVERRIDE\n' > docker-compose.override.yml
 bash bin/update --sync-only >/dev/null 2>&1
 chk 'grep -q CLIENT-MODE langgraph/langgraph.local.json'      "client overlay edits survive later syncs"
+chk 'grep -q CLIENT-OVERRIDE docker-compose.override.yml'     "client override edits survive later syncs"
 
 echo "== scenario 2c: docker's empty-directory wedge is healed =="
 rm -f langgraph/langgraph.local.json
@@ -104,14 +110,29 @@ bash bin/update --sync-only >/dev/null 2>&1
 chk '[ -f langgraph/langgraph.local.json ]'                   "empty-directory wedge replaced by a file"
 chk 'grep -q upstream-default langgraph/langgraph.local.json' "healed overlay re-seeded from upstream"
 
-echo "== scenario 2d: preflight fails loud on a missing bind source =="
+echo "== scenario 2e: missing dir mount source seeded from upstream =="
 (cd "$up" \
-  && printf 'services:\n  llamabot:\n    image: kody06/llamabot:9.9.9-UPSTREAM\n    volumes:\n      - ./langgraph/langgraph.local.json:/app/app/langgraph.local.json\n      - ./does-not-exist.json:/app/does-not-exist.json\n' > docker-compose.yml \
-  && git commit -qam "mount a file that ships nowhere")
+  && mkdir -p rails/lib/tasks && echo "PLATFORM-RAKE" > rails/lib/tasks/platform.rake \
+  && printf 'services:\n  llamabot:\n    image: kody06/llamabot:9.9.9-UPSTREAM\n    volumes:\n      - ./langgraph/langgraph.local.json:/app/app/langgraph.local.json\n      - ./rails/lib:/rails/lib\n' > docker-compose.yml \
+  && git add -A && git commit -qam "mount rails/lib")
 bash bin/update --sync-only >/dev/null 2>&1
-s2d_rc=$?
-chk '[ "$s2d_rc" -ne 0 ]'                                     "non-zero exit on missing bind source"
-chk 'grep -q "does-not-exist.json but it does not exist" .leonardo/update.log' "preflight ERROR names the missing source"
+chk 'grep -q PLATFORM-RAKE rails/lib/tasks/platform.rake'     "missing dir mount seeded from upstream"
+echo "CLIENT-RAKE" > rails/lib/tasks/client_own.rake
+bash bin/update --sync-only >/dev/null 2>&1
+chk '[ -f rails/lib/tasks/client_own.rake ]'                  "non-empty dir left client-owned on resync"
+rm -rf rails/lib && mkdir -p rails/lib                        # docker's empty-dir wedge for a dir mount
+bash bin/update --sync-only >/dev/null 2>&1
+chk 'grep -q PLATFORM-RAKE rails/lib/tasks/platform.rake'     "empty dir wedge re-seeded from upstream"
+
+echo "== scenario 2d: missing bind source gets a placeholder, not a wedge =="
+(cd "$up" \
+  && printf 'services:\n  llamabot:\n    image: kody06/llamabot:9.9.9-UPSTREAM\n    volumes:\n      - ./langgraph/langgraph.local.json:/app/app/langgraph.local.json\n      - ./rails/lib:/rails/lib\n      - ./does-not-exist.json:/app/does-not-exist.json\n      - ./missing-dir:/app/missing-dir\n' > docker-compose.yml \
+  && git commit -qam "mount sources that ship nowhere")
+bash bin/update --sync-only >/dev/null 2>&1
+chk '! grep -q "preflight: ERROR" .leonardo/update.log'       "no preflight abort — placeholders keep the update alive"
+chk 'grep -qx "{}" does-not-exist.json'                       "missing .json file placeholded with {}"
+chk '[ -d missing-dir ]'                                      "missing dir mount placeholded as directory"
+chk 'grep -q "placehold: WARN" .leonardo/update.log'          "placeholder creation logged loudly"
 
 # ---- scenarios 3 & 4: run_pending_migrations retry / loud-failure -----
 # A minimal git repo (no upstream remote → sync skips gracefully) combined with

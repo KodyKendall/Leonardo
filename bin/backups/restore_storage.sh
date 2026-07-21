@@ -26,7 +26,7 @@ fi
 echo "Latest backup: $LATEST_BACKUP"
 
 # Check if container is running
-if ! docker compose -f "$PROJECT_ROOT/docker-compose.yml" ps llamapress --status running -q 2>/dev/null | grep -q .; then
+if ! docker compose --project-directory "$PROJECT_ROOT" ps llamapress --status running -q 2>/dev/null | grep -q .; then
     echo "Error: llamapress container is not running. Start it first with docker compose up -d"
     exit 1
 fi
@@ -52,7 +52,7 @@ unzip -o "$TEMP_FILE" -d "$TEMP_DIR/"
 
 # Copy into the container's named volume
 echo "Copying storage into container..."
-docker compose -f "$PROJECT_ROOT/docker-compose.yml" cp "$TEMP_DIR/storage/." llamapress:/rails/storage/
+docker compose --project-directory "$PROJECT_ROOT" cp "$TEMP_DIR/storage/." llamapress:/rails/storage/
 
 # Clean up
 rm -rf "$TEMP_DIR"

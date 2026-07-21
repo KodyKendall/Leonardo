@@ -1,3 +1,23 @@
+// Chromium will not fire beforeinstallprompt unless a registered service worker
+// has a fetch handler, so this file exists mainly to make the app installable.
+//
+// It deliberately does not cache. The application layout sends
+// Cache-Control: no-cache, no-store, must-revalidate so that request_path and
+// view_path stay fresh for LlamaBot — a caching worker would serve stale page
+// context back to the agent.
+
+self.addEventListener("install", (event) => {
+  self.skipWaiting()
+})
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim())
+})
+
+self.addEventListener("fetch", (event) => {
+  event.respondWith(fetch(event.request))
+})
+
 // Add a service worker for processing Web Push notifications:
 //
 // self.addEventListener("push", async (event) => {

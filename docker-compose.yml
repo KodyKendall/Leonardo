@@ -1,4 +1,18 @@
+# ⚠️  PLATFORM-MANAGED FILE — DO NOT HAND-EDIT.
+# bin/update overwrites this file wholesale on every platform update.
+# Per-instance changes (extra mounts, mem limits, custom services) belong in
+#   docker-compose.override.yml  (auto-merged by docker compose; never touched by updates).
+# Always run plain `docker compose` from this directory — an explicit
+# `-f docker-compose.yml` skips the override file.
+
 version: "3.8"
+
+# Cap container logs (json-file grows unbounded by default and fills the disk)
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "50m"
+    max-file: "3"
 
 services:
   llamapress:
@@ -8,6 +22,7 @@ services:
     environment:
       - RAILS_ENV=development
       - BOOTSNAP_CACHE_DIR=/rails/tmp/cache/bootsnap
+      - MALLOC_ARENA_MAX=2                   # cap glibc malloc arenas — curbs Puma memory fragmentation
     volumes:
       - rails_storage:/rails/storage         # ActiveStorage local files
       - ./rails/app:/rails/app:delegated
@@ -18,6 +33,14 @@ services:
       - ./rails/config/database.yml:/rails/config/database.yml
       - ./rails/config/importmap.rb:/rails/config/importmap.rb:delegated
       - ./rails/config/initializers/devise.rb:/rails/config/initializers/devise.rb:delegated
+      - ./rails/config/initializers/llama_bot_rails.rb:/rails/config/initializers/llama_bot_rails.rb:delegated
+      - ./rails/config/initializers/session_cookie.rb:/rails/config/initializers/session_cookie.rb:delegated
+      - ./rails/config/initializers/custom:/rails/config/initializers/custom:delegated  # generic extension point: Rails auto-loads initializer subdirs, per-app initializers drop in with no compose change
+      - ./rails/config/locales:/rails/config/locales:delegated
+      - ./rails/config/storage.yml:/rails/config/storage.yml
+      - ./rails/config/environments/test.rb:/rails/config/environments/test.rb
+      - ./rails/lib:/rails/lib:delegated
+      - ./rails/public/uploads:/rails/public/uploads:delegated
       - ./.leonardo/instance.json:/rails/.leonardo/instance.json:ro  # instance metadata only, NOT the whole .leonardo dir (read by the image's leonardo_instance.rb initializer)
       - ./rails/requirements:/rails/requirements:delegated
     # Fail-open command: if db:prepare or `rails s` exits non-zero, the container stays alive
@@ -31,6 +54,7 @@ services:
     ports:
       - "3000:3000"                            # http://server_ip/
     restart: unless-stopped
+    logging: *default-logging
     depends_on:
       db:
         condition: service_healthy
@@ -41,6 +65,8 @@ services:
 
   llamabot:
     image: kody06/llamabot:0.6.0c
+    restart: unless-stopped
+    logging: *default-logging
     # user: "1000:1000"  # Run as UID 1000 to prevent root-owned file creation
     env_file:
       - .env
@@ -75,6 +101,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    logging: *default-logging
     networks:
       - llama-network
     healthcheck:
@@ -87,6 +114,7 @@ services:
     image: redis:7-alpine
     volumes: [redis_data:/data]
     restart: unless-stopped
+    logging: *default-logging
     networks:
       - llama-network
 
@@ -111,6 +139,7 @@ services:
     ports:
       - "8443:8443"
     restart: unless-stopped
+    logging: *default-logging
 
 volumes:
   redis_data:

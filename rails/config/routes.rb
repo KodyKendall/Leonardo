@@ -11,7 +11,11 @@ Rails.application.routes.draw do
   # Agent-facing JSON API consumed by the user_api_agent LangGraph agent through the
   # llamapress_api layer (Authorization: LlamaBot <token>). See Api::UsersController.
   namespace :api do
-    resources :users, only: [:index, :show]
+    # `only:` is a real part of the agent's capability ceiling, not just tidiness:
+    # a route that doesn't exist 404s before any controller (and so before
+    # `llama_bot_allow`) runs. Adding a verb here EXPANDS what the agent can do —
+    # pair every addition with a matching `llama_bot_allow` in the controller.
+    resources :users, only: [:index, :show, :create]
   end
 
   mount LlamaBotRails::Engine => "/llama_bot"
@@ -29,6 +33,7 @@ Rails.application.routes.draw do
   # root "prototypes#show", page: "home"
   get "home" => "public#home"
   get "chat" => "public#chat"
+  get "install" => "public#install"
 
   namespace :admin do
     root to: "dashboard#index"

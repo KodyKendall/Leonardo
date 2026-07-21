@@ -2,6 +2,7 @@
 // Handles postMessage events from the Leonardo IDE
 
 import { enableElementSelector, disableElementSelector } from "llamapress/element_selector"
+import { isExecuteJsOriginAllowed } from "llamapress/execute_js_guard"
 
 window.addEventListener("message", (event) => {
     if (event.data.source !== 'leonardo') { return; } // don't process messages from leonardo (prevents infinite loop)
@@ -21,6 +22,47 @@ window.addEventListener("message", (event) => {
     if (event.data.type === 'clear-console-logs') {
         window._consoleLogs = [];
         try { sessionStorage.removeItem('_consoleLogs'); } catch { /* silent */ }
+        return;
+    }
+
+    // Execute JavaScript in this page and reply with the (serialized) result.
+    // Used by the agent's execute_browser_js tool via the LlamaBot parent window.
+    if (event.data.type === 'execute-js') {
+        const { id, code } = event.data;
+
+        // Fail closed: only run arbitrary JS when the message genuinely comes from a
+        // configured LlamaBot origin (see execute_js_guard.js). This guard is scoped to
+        // execute-js only — every other command above is untouched.
+        if (!isExecuteJsOriginAllowed(event.origin, window.LLAMABOT_ALLOWED_ORIGINS)) {
+            event.source.postMessage({
+                source: 'llamapress',
+                type: 'js-execution-result',
+                id, ok: false, result: null,
+                error: `execute-js rejected: origin ${event.origin} is not in the LlamaBot allowlist`
+            }, event.origin);
+            return;
+        }
+
+        (async () => {
+            let ok = true, serialized = null, error = null;
+            try {
+                // Indirect eval → runs in global scope (this file is an ES module);
+                // Promise.resolve awaits promise-returning code transparently.
+                const value = await Promise.resolve(window.eval(code));
+                try { serialized = value === undefined ? 'undefined' : JSON.stringify(value); }
+                catch { serialized = String(value); } // circular refs, DOM nodes
+                if (serialized && serialized.length > 10000) serialized = serialized.slice(0, 10000) + '...[truncated]';
+            } catch (e) {
+                ok = false;
+                error = (e && (e.stack || e.message)) ? String(e.stack || e.message) : String(e);
+            }
+            // Always reply, even on throw — the parent is awaiting this to resume the agent.
+            event.source.postMessage({
+                source: 'llamapress',
+                type: 'js-execution-result',
+                id, ok, result: serialized, error
+            }, event.origin);
+        })();
         return;
     }
 
