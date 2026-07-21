@@ -2,6 +2,13 @@
 version: "3.8"
 # docker compose -f docker-compose-dev.yml build
 
+# Cap container logs (json-file grows unbounded by default and fills the disk)
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "50m"
+    max-file: "3"
+
 services:
   llamapress:
     # image: kody06/llamapress-simple:0.4.0g        # <— pre-built tag
@@ -12,6 +19,7 @@ services:
     environment:
       - RAILS_ENV=development
       - BOOTSNAP_CACHE_DIR=/rails/tmp/cache/bootsnap
+      - MALLOC_ARENA_MAX=2                   # cap glibc malloc arenas — curbs Puma memory fragmentation
     volumes:
       - ../LlamaPress-Simple/vendor/llama_bot_rails:/rails/vendor/llama_bot_rails  # Dev: hot reload gem changes
       - rails_storage:/rails/storage         # ActiveStorage local files
@@ -23,6 +31,14 @@ services:
       - ./rails/config/database.yml:/rails/config/database.yml
       - ./rails/config/importmap.rb:/rails/config/importmap.rb
       - ./rails/config/initializers/devise.rb:/rails/config/initializers/devise.rb
+      - ./rails/config/initializers/llama_bot_rails.rb:/rails/config/initializers/llama_bot_rails.rb
+      - ./rails/config/initializers/session_cookie.rb:/rails/config/initializers/session_cookie.rb
+      - ./rails/config/initializers/custom:/rails/config/initializers/custom  # generic extension point: Rails auto-loads initializer subdirs
+      - ./rails/config/locales:/rails/config/locales
+      - ./rails/config/storage.yml:/rails/config/storage.yml
+      - ./rails/config/environments/test.rb:/rails/config/environments/test.rb
+      - ./rails/lib:/rails/lib
+      - ./rails/public/uploads:/rails/public/uploads
       - ./.leonardo/instance.json:/rails/.leonardo/instance.json:ro  # instance metadata only, NOT the whole .leonardo dir (read by the image's leonardo_instance.rb initializer)
       - ./rails/requirements:/rails/requirements:delegated
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:prepare && bundle exec rails s -b 0.0.0.0"
@@ -31,6 +47,7 @@ services:
     ports:
       - "3000:3000"                            # http://server_ip/
     restart: unless-stopped
+    logging: *default-logging
     depends_on:
       db:
         condition: service_healthy
@@ -42,6 +59,8 @@ services:
   llamabot:
     # image: kody06/llamabot:0.4.0l
     build: ../LlamaBot
+    restart: unless-stopped
+    logging: *default-logging
     # user: "1000:1000"  # DISABLED for macOS - Docker Desktop handles permissions differently
     env_file:
       - .env
@@ -82,6 +101,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    logging: *default-logging
     networks:
       - llama-network
     healthcheck:
@@ -94,6 +114,7 @@ services:
     image: redis:7-alpine
     volumes: [redis_data:/data]
     restart: unless-stopped
+    logging: *default-logging
     networks:
       - llama-network
 
@@ -113,6 +134,7 @@ services:
     ports:
       - "8443:8443"
     restart: unless-stopped
+    logging: *default-logging
       
 volumes:
   redis_data:

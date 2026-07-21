@@ -1,0 +1,6 @@
+<nav class="flex gap-2 border-b border-gray-200 mb-6">
+  <%= link_to "Dashboard", admin_root_path,
+        class: "px-4 py-2 -mb-px border-b-2 #{current_page?(admin_root_path) ? 'border-llama-purple text-llama-purple font-semibold' : 'border-transparent text-gray-600 hover:text-gray-900'}" %>
+  <%= link_to "Users", admin_users_path,
+        class: "px-4 py-2 -mb-px border-b-2 #{current_page?(admin_users_path) ? 'border-llama-purple text-llama-purple font-semibold' : 'border-transparent text-gray-600 hover:text-gray-900'}" %>
+</nav>

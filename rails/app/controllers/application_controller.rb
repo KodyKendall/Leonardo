@@ -26,6 +26,7 @@ class ApplicationController < ActionController::Base
 
   before_action :allow_iframe_requests
   before_action :set_context
+  before_action :touch_last_seen
   protect_from_forgery with: :exception, unless: :api_request?
 
   def allow_iframe_requests
@@ -53,6 +54,14 @@ class ApplicationController < ActionController::Base
   end
 
   private
+
+  # Trackable's last_sign_in_at goes stale for users who stay signed in for weeks;
+  # last_seen_at measures actual usage. Throttled to one write per 15 minutes.
+  def touch_last_seen
+    return unless user_signed_in?
+    return if current_user.last_seen_at&.after?(15.minutes.ago)
+    current_user.update_column(:last_seen_at, Time.current)
+  end
 
   def authenticate_user_from_token!
     return unless api_request?

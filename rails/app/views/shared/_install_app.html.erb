@@ -1,0 +1,42 @@
+<div data-controller="pwa-install">
+  <%# What we detected, shown to the user so a wrong branch is obvious rather than mysterious. %>
+  <p class="text-sm text-gray-500" data-pwa-install-target="platform"></p>
+
+  <div class="mt-4" hidden data-pwa-install-target="container">
+    <button
+      type="button"
+      class="btn btn-primary"
+      data-pwa-install-target="button"
+      data-action="pwa-install#install"
+    >
+      Install Mobile App
+    </button>
+  </div>
+
+  <%# Desktop path: nothing to install here, so hand the phone the URL instead.
+      Rendered always and revealed by JS — the QR is identical for every visitor. %>
+  <div class="mt-4" hidden data-pwa-install-target="qr">
+    <%# No padding: the SVG carries its own quiet zone (see PwaHelper::QR_QUIET_ZONE),
+        so wrapper padding would only shrink the modules a phone has to resolve. %>
+    <div class="w-56 overflow-hidden rounded-lg border border-gray-200 bg-white">
+      <%= install_qr_code_svg %>
+    </div>
+  </div>
+
+  <%# Also the no-JavaScript state, which is why it starts visible. %>
+  <p class="mt-4 text-sm text-gray-600" data-pwa-install-target="fallback">
+    Open this page on your phone to install the app.
+  </p>
+
+  <dialog class="modal" data-pwa-install-target="dialog">
+    <div class="modal-box">
+      <h3 class="text-lg font-bold">Install LlamaPress</h3>
+
+      <div class="mt-4" data-pwa-install-target="instructions"></div>
+
+      <div class="modal-action">
+        <button type="button" class="btn" data-action="pwa-install#close">Done</button>
+      </div>
+    </div>
+  </dialog>
+</div>

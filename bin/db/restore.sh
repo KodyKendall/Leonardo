@@ -9,7 +9,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 BACKUP_DIR="$PROJECT_ROOT/backups"
-COMPOSE_FILE="$PROJECT_ROOT/docker-compose.yml"
 DB_NAME="llamapress_production"
 DB_USER="postgres"
 LOG_FILE="$BACKUP_DIR/restore.log"
@@ -38,7 +37,7 @@ success() {
 }
 
 # Check if docker compose is running
-if ! docker compose -f "$COMPOSE_FILE" ps db | grep -q "Up"; then
+if ! docker compose --project-directory "$PROJECT_ROOT" ps db | grep -q "Up"; then
     error "Database container is not running. Start with: docker compose up -d db"
 fi
 
@@ -94,7 +93,7 @@ fi
 echo ""
 log "Creating pre-restore backup of current database..."
 PRE_RESTORE_BACKUP="$BACKUP_DIR/pre_restore_$(date +%Y%m%d_%H%M%S).sql.gz"
-if docker compose -f "$COMPOSE_FILE" exec -T db pg_dump -U "$DB_USER" "$DB_NAME" 2>/dev/null | gzip > "$PRE_RESTORE_BACKUP"; then
+if docker compose --project-directory "$PROJECT_ROOT" exec -T db pg_dump -U "$DB_USER" "$DB_NAME" 2>/dev/null | gzip > "$PRE_RESTORE_BACKUP"; then
     success "Pre-restore backup created: $(basename $PRE_RESTORE_BACKUP)"
 else
     warning "Could not create pre-restore backup (database might be empty)"
@@ -102,14 +101,14 @@ fi
 
 # Stop the Rails app to prevent connections
 log "Stopping llamapress service..."
-docker compose -f "$COMPOSE_FILE" stop llamapress llamabot
+docker compose --project-directory "$PROJECT_ROOT" stop llamapress llamabot
 
 # Wait a moment for connections to close
 sleep 2
 
 # Terminate existing connections
 log "Terminating existing database connections..."
-docker compose -f "$COMPOSE_FILE" exec -T db psql -U "$DB_USER" -d postgres -c "
+docker compose --project-directory "$PROJECT_ROOT" exec -T db psql -U "$DB_USER" -d postgres -c "
 SELECT pg_terminate_backend(pg_stat_activity.pid)
 FROM pg_stat_activity
 WHERE pg_stat_activity.datname = '$DB_NAME'
@@ -117,21 +116,21 @@ WHERE pg_stat_activity.datname = '$DB_NAME'
 
 # Drop and recreate database
 log "Dropping database $DB_NAME..."
-docker compose -f "$COMPOSE_FILE" exec -T db dropdb -U "$DB_USER" --if-exists "$DB_NAME"
+docker compose --project-directory "$PROJECT_ROOT" exec -T db dropdb -U "$DB_USER" --if-exists "$DB_NAME"
 
 log "Creating fresh database $DB_NAME..."
-docker compose -f "$COMPOSE_FILE" exec -T db createdb -U "$DB_USER" "$DB_NAME"
+docker compose --project-directory "$PROJECT_ROOT" exec -T db createdb -U "$DB_USER" "$DB_NAME"
 
 # Restore from backup
 log "Restoring from backup..."
 if [[ "$BACKUP_FILE" == *.gz ]]; then
-    if gunzip < "$BACKUP_FILE" | docker compose -f "$COMPOSE_FILE" exec -T db psql -U "$DB_USER" -d "$DB_NAME" > /dev/null 2>&1; then
+    if gunzip < "$BACKUP_FILE" | docker compose --project-directory "$PROJECT_ROOT" exec -T db psql -U "$DB_USER" -d "$DB_NAME" > /dev/null 2>&1; then
         success "Database restored successfully!"
     else
         error "Restore failed! Pre-restore backup available at: $(basename $PRE_RESTORE_BACKUP)"
     fi
 else
-    if cat "$BACKUP_FILE" | docker compose -f "$COMPOSE_FILE" exec -T db psql -U "$DB_USER" -d "$DB_NAME" > /dev/null 2>&1; then
+    if cat "$BACKUP_FILE" | docker compose --project-directory "$PROJECT_ROOT" exec -T db psql -U "$DB_USER" -d "$DB_NAME" > /dev/null 2>&1; then
         success "Database restored successfully!"
     else
         error "Restore failed! Pre-restore backup available at: $(basename $PRE_RESTORE_BACKUP)"
@@ -140,7 +139,7 @@ fi
 
 # Restart services
 log "Restarting services..."
-docker compose -f "$COMPOSE_FILE" up -d llamapress llamabot
+docker compose --project-directory "$PROJECT_ROOT" up -d llamapress llamabot
 
 # Wait for services to be healthy
 log "Waiting for services to start..."
@@ -148,7 +147,7 @@ sleep 5
 
 # Verify restoration
 log "Verifying database..."
-TABLE_COUNT=$(docker compose -f "$COMPOSE_FILE" exec -T db psql -U "$DB_USER" -d "$DB_NAME" -t -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';" 2>/dev/null | tr -d ' ')
+TABLE_COUNT=$(docker compose --project-directory "$PROJECT_ROOT" exec -T db psql -U "$DB_USER" -d "$DB_NAME" -t -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';" 2>/dev/null | tr -d ' ')
 
 if [ "$TABLE_COUNT" -gt 0 ]; then
     success "Verification passed! Database has $TABLE_COUNT tables."
