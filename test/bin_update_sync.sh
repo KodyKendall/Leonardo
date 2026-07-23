@@ -7,8 +7,9 @@
 # the client's own work, bin/local/, customized non-allowlisted files, .gitignore entries, and
 # instance.json are all preserved — and unrelated staged work is never swept into the sync commit.
 #
-# Also covers run_pending_migrations retry behavior (scenarios 3-4): a mock docker binary is
-# injected into PATH so tests never need a live container.
+# Also covers run_pending_migrations retry behavior (scenarios 3-4) and the image-swap
+# pull/recreate decisions (scenarios 5-7): a mock docker binary is injected into PATH so
+# tests never need a live container.
 #
 # Pure git + bash; no docker, no network. Exits non-zero on any failed assertion.
 # Run: bash test/bin_update_sync.sh
@@ -198,6 +199,92 @@ PATH="$mock_bin:$PATH" bash "$mig_dir/bin/update" --sync-only \
 s4_rc=$?
 chk '[ "$s4_rc" -ne 0 ]' "non-zero exit when llamapress never becomes exec-ready"
 chk 'grep -q ERROR "$s4/stderr" 2>/dev/null' "ERROR logged on migration timeout"
+
+# ---- scenarios 5-7: image-swap decisions must consider the RUNNING containers -----
+# docker-compose.yml is on the sync allowlist, so the sync can overwrite it with
+# upstream's copy that ALREADY carries the target tags: the file then matches the
+# target while the containers still run old images. These scenarios drive the full
+# image-swap path with mock docker/sudo/systemd-run so pull/up decisions are
+# observable. The systemd-run mock runs the detached restart payload synchronously.
+
+make_img_mock() { # $1 state_dir — mock docker records pull/up calls; running tags come from files
+  local st="$1"
+  mkdir -p "$st"
+  cat > "$mock_bin/docker" <<DOCKEREOF
+#!/usr/bin/env bash
+st="${st}"
+case "\$*" in
+  "compose version") exit 0 ;;
+  "compose exec -T llamapress true") exit 0 ;;
+  "compose exec -T llamapress bin/rails db:migrate") exit 0 ;;
+  "compose ps -q llamabot") echo cid_llamabot ;;
+  "compose ps -q llamapress") echo cid_llamapress ;;
+  "inspect --format {{.Config.Image}} cid_llamabot") cat "\$st/running_llamabot" ;;
+  "inspect --format {{.Config.Image}} cid_llamapress") cat "\$st/running_llamapress" ;;
+  "compose pull"*) echo "\$*" >> "\$st/calls"; exit 0 ;;
+  "compose up -d"*) echo "\$*" >> "\$st/calls"; exit 0 ;;
+  *) exit 1 ;;
+esac
+DOCKEREOF
+  chmod +x "$mock_bin/docker"
+  printf '#!/usr/bin/env bash\nexec "$@"\n' > "$mock_bin/sudo"
+  chmod +x "$mock_bin/sudo"
+  cat > "$mock_bin/systemd-run" <<'SDEOF'
+#!/usr/bin/env bash
+# run the -c payload synchronously so tests can assert immediately after bin/update returns
+for ((i=1; i<=$#; i++)); do
+  if [ "${!i}" = "-c" ]; then j=$((i+1)); bash -c "${!j}"; exit $?; fi
+done
+exit 1
+SDEOF
+  chmod +x "$mock_bin/systemd-run"
+}
+
+img_up="$WORK/img_upstream"
+mkdir -p "$img_up" && cd "$img_up"
+git init -q -b main && git config user.email u@u && git config user.name up
+mkdir -p bin
+cp "$UPDATE" bin/update && chmod +x bin/update
+printf 'services:\n  llamabot:\n    image: kody06/llamabot:1.0.0\n  llamapress:\n    image: kody06/llamapress-simple:2.0.0\n' > docker-compose.yml
+git add -A && git commit -qm "img upstream v1"
+
+cd "$WORK" && git clone -q img_upstream img_client && cd img_client
+git remote rename origin upstream
+git config user.email c@c && git config user.name client
+
+echo "== scenario 5: synced compose already at target tags, containers run OLD images =="
+# upstream merges a release PR bumping compose to the target tags
+printf 'services:\n  llamabot:\n    image: kody06/llamabot:1.2.3\n  llamapress:\n    image: kody06/llamapress-simple:2.3.4\n' > "$img_up/docker-compose.yml"
+(cd "$img_up" && git commit -qam "release 1.2.3 / 2.3.4")
+s5="$WORK/state5"; make_img_mock "$s5"
+echo "kody06/llamabot:1.0.0"          > "$s5/running_llamabot"
+echo "kody06/llamapress-simple:2.0.0" > "$s5/running_llamapress"
+PATH="$mock_bin:$PATH" bash bin/update 1.2.3 2.3.4 >/dev/null 2>&1
+chk '! grep -q "\"status\": \"noop\"" .leonardo/last_update.json' "no noop marker while containers run old images"
+chk 'grep -q "^compose pull.*llamabot" "$s5/calls" 2>/dev/null'   "llamabot image pulled"
+chk 'grep -q "^compose pull.*llamapress" "$s5/calls" 2>/dev/null' "llamapress image pulled"
+chk 'grep -qx "compose up -d" "$s5/calls" 2>/dev/null'            "sync changed compose -> full up -d (no service list)"
+
+echo "== scenario 6: sync delivers a non-image compose change -> full recreate =="
+# upstream adds config (no tag change); running containers already at target tags
+printf 'services:\n  llamabot:\n    image: kody06/llamabot:1.2.3\n    environment:\n      - MALLOC_ARENA_MAX=2\n  llamapress:\n    image: kody06/llamapress-simple:2.3.4\n' > "$img_up/docker-compose.yml"
+(cd "$img_up" && git commit -qam "add MALLOC_ARENA_MAX")
+s6="$WORK/state6"; make_img_mock "$s6"
+echo "kody06/llamabot:1.2.3"          > "$s6/running_llamabot"
+echo "kody06/llamapress-simple:2.3.4" > "$s6/running_llamapress"
+PATH="$mock_bin:$PATH" bash bin/update 1.2.3 2.3.4 >/dev/null 2>&1
+chk '! grep -q "\"status\": \"noop\"" .leonardo/last_update.json' "no noop marker when sync changed compose"
+chk 'grep -qx "compose up -d" "$s6/calls" 2>/dev/null'            "full up -d applies non-image compose changes"
+chk '! grep -q "^compose pull" "$s6/calls" 2>/dev/null'           "no pull when no image tag changed"
+
+echo "== scenario 7: nothing changed anywhere -> true noop =="
+# upstream unchanged since scenario 6's sync; running tags match targets
+s7="$WORK/state7"; make_img_mock "$s7"
+echo "kody06/llamabot:1.2.3"          > "$s7/running_llamabot"
+echo "kody06/llamapress-simple:2.3.4" > "$s7/running_llamapress"
+PATH="$mock_bin:$PATH" bash bin/update 1.2.3 2.3.4 >/dev/null 2>&1
+chk 'grep -q "\"status\": \"noop\"" .leonardo/last_update.json'   "noop marker written when truly current"
+chk '[ ! -f "$s7/calls" ]'                                        "no pull or up calls on a true noop"
 
 echo
 if [ "$fails" -eq 0 ]; then echo "ALL PASS"; else echo "$fails FAILED"; fi

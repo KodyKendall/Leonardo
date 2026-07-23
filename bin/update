@@ -120,6 +120,7 @@ LLAMABOT_TARGET="${1:-}"
 LLAMAPRESS_TARGET="${2:-}"
 VERSION_RE='^[0-9A-Za-z.\-]+$'
 CHANGED=()
+COMPOSE_SYNC_CHANGED=0   # set by sync_from_upstream when the checkout altered docker-compose.yml
 
 mkdir -p "$MARKER_DIR" 2>/dev/null || true
 
@@ -331,6 +332,9 @@ sync_from_upstream() {
   # 1) pull allowlisted paths that actually exist in upstream (overwrite wholesale) —
   #    snapshotting the compose file first so a clobbered hand-edit stays recoverable
   backup_compose
+  local compose_before=""
+  [ -f "$PROJECT_DIR/$COMPOSE_FILE" ] \
+    && compose_before="$(git -C "$PROJECT_DIR" hash-object "$COMPOSE_FILE" 2>/dev/null)"
   local p present=()
   for p in "${ALLOWLIST[@]}"; do
     if git -C "$PROJECT_DIR" cat-file -e "$ref:$p" 2>/dev/null; then present+=("$p")
@@ -342,6 +346,15 @@ sync_from_upstream() {
     else
       log "sync: WARN checkout had issues (see $LOG)"
     fi
+  fi
+  # A changed compose can carry non-image config (mounts, env, log rotation) that only a
+  # container recreate applies — the main flow widens the restart to a full `up -d` on this.
+  local compose_after=""
+  [ -f "$PROJECT_DIR/$COMPOSE_FILE" ] \
+    && compose_after="$(git -C "$PROJECT_DIR" hash-object "$COMPOSE_FILE" 2>/dev/null)"
+  if [ "$compose_before" != "$compose_after" ]; then
+    COMPOSE_SYNC_CHANGED=1
+    log "sync: $COMPOSE_FILE changed — all services will be recreated"
   fi
 
   # 1b) seed client-overlay files the fresh compose may bind-mount (one-shot, never overwrites),
@@ -463,7 +476,18 @@ apply_one() { # $1 service  $2 env_var  $3 image_prefix  $4 target
   grep -qE "image:.*${prefix}" "$COMPOSE_FILE" || { log "skip $svc: $prefix not in compose"; return; }
   cur="$(current_version "$var" "$prefix")"
   if [ "$cur" = "$target" ]; then
-    log "$svc already at $target — no change"
+    # The file matching the target is NOT proof the box is current: the sync may have just
+    # pulled an upstream compose already carrying the target tags while the containers still
+    # run old images. Trust the RUNNING container, not the file.
+    local cid running=""
+    cid="$($DC ps -q "$svc" 2>/dev/null | head -n1)"
+    [ -n "$cid" ] && running="$(docker inspect --format '{{.Config.Image}}' "$cid" 2>/dev/null)"
+    if [ -n "$running" ] && [ "$running" != "${prefix}${target}" ]; then
+      log "$svc: file already at $target but container runs $running — updating"
+      CHANGED+=("$svc")
+    else
+      log "$svc already at $target — no change"
+    fi
     return
   fi
   log "$svc: ${cur:-unknown} -> $target"
@@ -480,10 +504,10 @@ apply_one() { # $1 service  $2 env_var  $3 image_prefix  $4 target
 
 log "=== bin/update start (llamabot=$LLAMABOT_TARGET llamapress=$LLAMAPRESS_TARGET) ==="
 
-# Pull the platform allowlist BEFORE setting versions. In v1 the allowlist is bin +
-# rails/db/migrate, so this ordering is a no-op for tags today. It's kept as a forward
-# invariant: once docker-compose.yml is allowlisted (Phase 2), the sync must land first so
-# the fresh upstream compose is then stamped with the intended tags, not upstream's defaults.
+# Pull the platform allowlist BEFORE setting versions. docker-compose.yml IS allowlisted,
+# so the sync must land first: the fresh upstream compose is then stamped with the intended
+# tags, not upstream's defaults. Corollary: the fresh compose may ALREADY carry the target
+# tags, so apply_one compares against the running containers, never just the file.
 sync_from_upstream
 seed_override_file
 placehold_missing_mounts
@@ -495,7 +519,7 @@ run_pending_migrations
 apply_one "llamabot"   "LLAMABOT_VERSION"   "kody06/llamabot:"          "$LLAMABOT_TARGET"
 apply_one "llamapress" "LLAMAPRESS_VERSION" "kody06/llamapress-simple:" "$LLAMAPRESS_TARGET"
 
-if [ "${#CHANGED[@]}" -eq 0 ]; then
+if [ "${#CHANGED[@]}" -eq 0 ] && [ "$COMPOSE_SYNC_CHANGED" -eq 0 ]; then
   log "nothing to update — already current"
   write_marker "noop" "already up to date"
   echo "Already up to date."
@@ -503,15 +527,25 @@ if [ "${#CHANGED[@]}" -eq 0 ]; then
 fi
 
 # ---- pull (synchronous; pull does NOT recreate/kill containers) -----------
-log "pulling: ${CHANGED[*]}"
-if ! $DC pull "${CHANGED[@]}" >>"$LOG" 2>&1; then
-  fail "docker compose pull failed for: ${CHANGED[*]} (see $LOG)"
+if [ "${#CHANGED[@]}" -gt 0 ]; then
+  log "pulling: ${CHANGED[*]}"
+  if ! $DC pull "${CHANGED[@]}" >>"$LOG" 2>&1; then
+    fail "docker compose pull failed for: ${CHANGED[*]} (see $LOG)"
+  fi
+  log "pull ok"
 fi
-log "pull ok"
 
 # ---- recreate DETACHED so we survive llamabot restarting its own container ----
-write_marker "restarting" "images pulled; recreating ${CHANGED[*]}"
-RESTART_CMD="cd $PROJECT_DIR && $DC up -d ${CHANGED[*]}"
+# When the sync changed docker-compose.yml, recreate EVERYTHING (`up -d` with no service
+# list) — compose only recreates services whose config actually changed, and this applies
+# non-image changes too (new mounts, log rotation, env). Otherwise recreate only CHANGED.
+if [ "$COMPOSE_SYNC_CHANGED" -eq 1 ]; then
+  write_marker "restarting" "compose changed; recreating all services (images: ${CHANGED[*]:-none})"
+  RESTART_CMD="cd $PROJECT_DIR && $DC up -d"
+else
+  write_marker "restarting" "images pulled; recreating ${CHANGED[*]:-}"
+  RESTART_CMD="cd $PROJECT_DIR && $DC up -d ${CHANGED[*]:-}"
+fi
 if command -v systemd-run >/dev/null 2>&1; then
   UNIT="leonardo-update-$(date +%s)"
   if sudo systemd-run --no-block --unit="$UNIT" /bin/bash -c "$RESTART_CMD"; then
@@ -525,7 +559,7 @@ else
   log "recreate scheduled via nohup"
 fi
 
-write_marker "success" "updated ${CHANGED[*]}; restart scheduled"
-log "=== bin/update done (changed: ${CHANGED[*]}) ==="
-echo "Update initiated for: ${CHANGED[*]}. Containers restarting..."
+write_marker "success" "updated ${CHANGED[*]:-config only}; restart scheduled"
+log "=== bin/update done (changed: ${CHANGED[*]:-config only}) ==="
+echo "Update initiated for: ${CHANGED[*]:-config only}. Containers restarting..."
 exit 0
