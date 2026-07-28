@@ -181,6 +181,11 @@ jobs:
           E2E_COMPOSE_FILE: docker-compose.yml
         run: npx playwright test tests/smoke.spec.ts
 
+      - name: Scaffold smoke (LlamaPress templates via plain rails generate)
+        env:
+          E2E_COMPOSE_FILE: docker-compose.yml
+        run: bin/ci/scaffold-smoke.sh
+
       - name: Upload Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@v4
