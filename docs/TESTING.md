@@ -51,6 +51,18 @@ pipeline that enforces all of this.
   decided not to (say so in the PR).
 - If it fixed a bug: the regression test exists and failed before the fix.
 
+## Scaffold smoke (LlamaPress generator templates)
+
+The e2e-smoke CI job also runs `bin/ci/scaffold-smoke.sh`: it executes a plain
+`bin/rails generate scaffold ...` inside the shipping llamapress container —
+the same CLI path Leo's bash tool uses — and asserts the rendered index has
+the LlamaPress drawer/table UI (record_drawer frame, filter panel, no
+`text` columns in the table). The templates live in the `llama_bot_rails`
+gem (`docs/scaffold_templates.md` there), so this step only proves anything
+once the pinned llamapress image contains a gem version that ships them.
+The script cleans up after itself (rollback, then destroy). Runnable locally:
+`E2E_COMPOSE_FILE=docker-compose-dev.yml bin/ci/scaffold-smoke.sh`.
+
 ## What we deliberately don't do
 
 - Dogmatic red-green-refactor for everything. Much of this codebase (prompts,
