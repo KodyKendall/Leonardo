@@ -24,10 +24,19 @@ class ApplicationController < ActionController::Base
   # before_action :authenticate_user_from_token!
   # before_action :authenticate_user!
 
+  # `prepend: true` is load-bearing, do not drop it (SupportIncident #187 — a customer
+  # was locked out of his own app for hours with the CORRECT password).
+  # Without it, verify_authenticity_token runs LAST. On POST /users/sign_in, warden
+  # authenticates from the form params inside an earlier before_action
+  # (`touch_last_seen` calls `user_signed_in?`), and Devise's
+  # `clean_up_csrf_token_on_authentication` deletes session[:_csrf_token] right then.
+  # Verification afterwards finds no token and fails on a perfectly valid request.
+  # The bug is invisible at build time because magic-link GET /auto_login/:id skips CSRF.
+  protect_from_forgery with: :exception, prepend: true, unless: :api_request?
+
   before_action :allow_iframe_requests
   before_action :set_context
   before_action :touch_last_seen
-  protect_from_forgery with: :exception, unless: :api_request?
 
   def allow_iframe_requests
     response.headers.delete('X-Frame-Options')

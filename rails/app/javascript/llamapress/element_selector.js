@@ -1,6 +1,8 @@
 // Element Selector functionality
 // Allows users to visually select elements in the page for the AI to reference
 
+import { capPayload, MAX_SELECTED_ELEMENT_BYTES } from "llamapress/payload_caps"
+
 let elementSelectorEnabled = false;
 let elementSelectorStyles = null;
 let currentHighlightedElement = null;
@@ -125,8 +127,10 @@ function handleElementSelectorClick(event) {
     // Extract text content for display
     let textContent = extractElementText(target);
 
-    // Get the outerHTML for the LLM
-    let outerHTML = target.outerHTML;
+    // Get the outerHTML for the LLM. Capped: picking a <section> on a
+    // content-heavy page produced a 375 KB block inside a single chat message,
+    // which no amount of conversation compaction could ever reclaim.
+    let outerHTML = capPayload(target.outerHTML, MAX_SELECTED_ELEMENT_BYTES);
 
     // Build a CSS selector path for the element
     let selector = buildCssSelector(target);

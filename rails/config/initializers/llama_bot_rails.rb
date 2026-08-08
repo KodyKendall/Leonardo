@@ -4,6 +4,20 @@ Rails.application.configure do
   config.llama_bot_rails.enable_console_tool = !Rails.env.production?
 
   # ------------------------------------------------------------------------
+  # Unified Login — auto-provision (claim) SSO users on first sign-in
+  # ------------------------------------------------------------------------
+  # Managed Leo boxes only. Lets the gem's default guid_user_resolver create-or-link
+  # a Devise user from a mothership-VERIFIED grant payload, so the FIRST time an
+  # authorized owner/operator clicks "Sign in with your LlamaPress.ai account" the
+  # Rails surface signs them in instead of dead-ending at
+  # "no host user for guid=… — degrading to /".
+  #
+  # Safe here because the resolver only runs AFTER grant_redeemer succeeds: the
+  # email/guid are verified server-to-server over the bearer channel, not user input.
+  # The gem defaults this to false so self-hosters stay opt-out.
+  LlamaBotRails.provision_sso_users = true
+
+  # ------------------------------------------------------------------------
   # Custom State Builder
   # ------------------------------------------------------------------------
   # The gem uses `LlamaBotRails::AgentStateBuilder` by default.
