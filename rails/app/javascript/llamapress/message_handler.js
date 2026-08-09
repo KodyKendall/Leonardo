@@ -3,6 +3,7 @@
 
 import { enableElementSelector, disableElementSelector } from "llamapress/element_selector"
 import { isExecuteJsOriginAllowed } from "llamapress/execute_js_guard"
+import { capPayload, MAX_PAGE_HTML_BYTES } from "llamapress/payload_caps"
 
 window.addEventListener("message", (event) => {
     if (event.data.source !== 'leonardo') { return; } // don't process messages from leonardo (prevents infinite loop)
@@ -80,7 +81,9 @@ window.addEventListener("message", (event) => {
     }
 
     // Ensure we have the most up-to-date HTML content
-    window.full_html = document.documentElement.outerHTML;
+    // Capped: a content-heavy page (inlined transcripts, long tables) renders to
+    // megabytes of markup, and this is re-sent on every single chat message.
+    window.full_html = capPayload(document.documentElement.outerHTML, MAX_PAGE_HTML_BYTES);
 
     // Always use current browser URL for request_path (handles Turbo navigation)
     const currentPath = window.location.pathname;

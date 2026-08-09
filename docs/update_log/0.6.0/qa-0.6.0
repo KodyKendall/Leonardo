@@ -1,0 +1,16 @@
+0.6.0g: 
+- [x] Test that the blue vision warning pop up has an 'x' that you can click on and it dismisses it.
+    - Michaela comment: The x is there but it is very close to the background colour and difficult to see until you hover over it. Should it not allow the image to attach, since it is useless to still have it attach if the AI can't read it.
+- [x] Test that I can copy & paste an image into the Purple feedback bubble.
+- Michaela comment: It would be helpul for it to say the image name instead of pasted image so I know I uplaoded the correct image. Maybe displaying it like when you take a screenshot for uniformness?
+- [x] Test that I can edit a comment that I added in there.
+- [x] Test that I can add two images into a single comment
+- Michaela comment: Can add two images to a single comment, cannot however add multiple images at once - need to save and edit to add another one.
+- [x] Test that I can add two images into a single feedback bubble submission
+- Michaela comment: Cannot add two images to a single feedback submission, by either pasting from clipboard or taking a screenshot through the chat bubble.
+- [x] Test that a selected element's HTML renders inside the feedback item. (and test some crazy select ones to see if it's massive or not) (might need to wrap in an iFrame or something to contain it)
+- Michaela comment: Still shows raw HTML instead of rendering it (tried it on a simple button)
+- [x] Test that there is a link to the page in the feedback item that I can click on and it takes me to the relevant page that the user submitted the feedback on.
+- Michaela comment: There is a link to the page, it is a little difficult to know what it is unless you're specifically looking for it (shows as like a link button and a weird looking L?), but doesn't show the specific element that was selected.
+- [x] Can remove images from submitted feedback when editing.
+- Michaela comment: Cannot remove images from feedback when editing.

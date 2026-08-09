@@ -1,0 +1,58 @@
+0.6.0:
+- [x] Add unified login based on LlamaPress.ai mothership for better UX on login across LlamaBot & LlamaPress-Simple Rails apps.
+
+0.6.0b: 
+- [x] Fix UI/UX issues with our chat tab, so our background runs route properly and the user is less confused. (Ticket -> Engineer mode in particular was rough & broken).
+- [x] Auto change to implement when it goes from ticket -> engineer mode.
+
+0.6.0c: 
+- [x] Make sure tool telemetry and errors don't get dropped 
+- [x] Bound delegated sub-agent runs to 240s, disable hidden provider retries, stream progress heartbeats, and warn users after 90s of silence.
+- [x] Add "fix_permissions" tool call to all other modes - beginner planning, engineer planning, ticket planning, etc.
+- [x] Fix the branding window to move the labels below the hex code.
+- [x] Add GPT 5 Nano as the default image vision model
+- [x] Add compose button to be outside hamburger menu as top level item
+- [x] Make collapse icon more clear
+- [x] Add a field to type feedback when user clicks "bad" on the banner at bottom of how is leo doing?
+- [x] Remove Leonardo Said: if they're copying a subset of a message, or just a single message, and include it if they're copying across multiple messages
+- [x] Add a "reply" button so the user can quote Leo and respond to a specific, individual message.
+- [x] Add the fix_permissions tool call into the other items.
+- [x] Remove the deprecated search_tool toolcall, in liue of using glob and grep.
+
+0.6.0d:
+- [x] Add better persistence and retries for network errors
+- [x] Add .ico as an allowed upload item in our file upload
+- [x] UI/UX fix new button responsiveness on small horizontal width for chat
+- [x] Add DeepSeek v4 flash endpoints for Fireworks, GMI, and Azure Foundry
+- [x] Add resilient retries in LlamaBot (for websocket disconnections, etc.)
+- [x] Add auth for Rails access reusing existing Gem functionality
+- [x] langgraph.json in LlamaBot becomes source of truth for Platform nodes. (overrides what's in langgraph.json in Leonardo upstream repo)
+- [x] Improve conversation history mechanics & reloads. (offload to s3 option, compact/summarize postgres, keep lighter weight human/ai message pairs for cold restore (>48 hours))
+
+0.6.0e:
+- [x] Add advanced JavaScript tool calling for Leo to execute tool calls JavaScript on the browser (disabled by default).
+- [x] Improve the update banner experience: honest fail-fast errors (no more 3-minute dead wait), per-version failure marker suppresses the banner after a failed attempt (auto-unsticks on next release), failures reported to mothership via report_error, update UI hidden from roles that can't update.
+
+0.6.0f:
+- [x] Fix the leo custom modes not saving the cookie for last used mode. (UX issue)
+
+0.6.0g: (inbox sweep — 10 delegated fixes, all failing-test-first)
+- [x] Fix the dead "Update Now" button. It was broken on EVERY box since 0.5.3 (~45 running instances, cost us at least one churn): chat.html captured the modal/pill handles at parse time, but their markup lives ~370 lines further down, so both were null for the life of the page and openModal() silently no-opped. Handles are lazy now, and a qsRequired() helper warns instead of failing silently. (SI#203, supersedes SI#173/#74)
+- [x] Fix scheduled-jobs /invoke leaking `idle in transaction` DB connections until the pool ran dry and every agent turn hung fleet-wide (crm box was silently dead ~40h). /invoke no longer holds a request-scoped session across the agent run — every DB touch is its own short-lived session. (SI#137)
+- [x] Fix `delete_memory` killing the whole chat turn when the LLM passed a blank filename (IsADirectoryError), plus close the path-traversal hole in the same call. Bad tool input now returns a correctable error instead of raising.
+- [x] Fix checkpoint Restore leaving every restored file root-owned, so Leo silently failed on the next edit to anything the customer had just restored. (SI: leo-palevi-dev)
+- [x] Fix checkpoint Restore also reverting platform files (bin/update, docker-compose.yml, langgraph.json, applied migrations) — which left boxes running new images against an old platform and re-broke Engineer Mode. Restore now re-applies the bin/update ALLOWLIST paths from the pre-rollback HEAD as one labelled commit, and reports what it re-applied. (repeat of SI#179 on the same box)
+- [x] Fix password login breaking whenever the agent enables authentication: protect_from_forgery ran AFTER the before_actions, so warden cleared the CSRF token before it was verified and the user was bounced back to the login page forever with the correct password. (SI#187, customer locked out for hours)
+- [x] Fix the floating feedback bubble failing with "Failed to fetch" — it submitted via fetch() but the engine controller always redirected. The widget asks for JSON and the controller answers in kind; the HTML form is unchanged. (SI#139)
+- [x] Unified Login: auto-provision (claim) SSO users on first sign-in for the Rails surface, so an authorized owner/operator's first "Sign in with your LlamaPress.ai account" actually signs them in instead of dead-ending. Opt-in via LlamaBotRails.provision_sso_users (on for managed Leo boxes, off for self-hosters). LlamaBot shadow users are now named by their verified email instead of lp-<guid>.
+- [x] Add frontend error telemetry. Error reporting was backend-only, so a browser-side "Lost connection" mid-run left zero trace on the mothership. window.onerror / unhandledrejection / websocket-drop now POST to /api/frontend-error with source="frontend", deduped and capped per page load. Removed the dead report_disconnect scaffolding.
+- [x] Attach debug context to thumbs feedback. A 👎 used to carry only thread_id/rating/note — no websocket close code, no model/mode, nothing to triage with. Feedback now ships a bounded, secret-redacted browser snapshot (ws close/reconnect, outbox, recent console), and websocket logs carry [ws=<id> thread=<tid>] so open/close/error lines can finally be correlated to the thread they served. (Mothership storage + admin display still to do.)
+- [x] Centralize the Anthropic-only cache_control guard behind supports_prompt_caching()/invoke_with_cache() so no agent can reintroduce the fleet-wide TypeError crash on DeepSeek by copy-pasting an old invoke.
+- [] on refresh, try to recover to the last page the the user 
+
+future (backlog):
+- [] Give the code container Docker access so Codex/Claude skills can run `docker compose exec` (needs a security decision: docker.sock mount is host-root-equivalent).
+- [] Mothership side of feedback debug context: debug_context jsonb on instance_message_annotations, receiver, and the admin display.
+- [] Keep websocket pings independent of long-running LangGraph work (blocking work can still starve pings and kill the socket).
+- [] We also need like superadmin configuration for seeing: what LLM models are available (and not available) to use, see .env variables, see config variables, see our instance.json, api_tokens, etc.
+- [] Improving message conversation history user experience.

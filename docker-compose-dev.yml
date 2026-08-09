@@ -123,6 +123,11 @@ services:
     container_name: code
     user: root
     environment:
+      # Run code-server as the host's ubuntu user (1000:1000) so it can write
+      # to the bind-mounted repo. Without these, lsio defaults to abc (911:911)
+      # and every save into /config/workspace is "permission denied".
+      - PUID=1000
+      - PGID=1000
       - TZ=America/Denver
       - PASSWORD=password
       # - AUTO_SSH_LEONARDO=1
