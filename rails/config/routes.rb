@@ -34,6 +34,7 @@ Rails.application.routes.draw do
   get "home" => "public#home"
   get "chat" => "public#chat"
   get "install" => "public#install"
+  get "brand" => "public#brand", as: :brand
 
   namespace :admin do
     root to: "dashboard#index"
