@@ -15,4 +15,9 @@ class PublicController < ApplicationController
     # GET /install
     def install
     end
+
+    # Living reference for the app's shared visual language.
+    # GET /brand
+    def brand
+    end
   end
