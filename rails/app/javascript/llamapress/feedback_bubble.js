@@ -3,10 +3,10 @@
 // Note: screenshot_annotator.js exposes window.screenshotAnnotator
 
 import { enableElementSelector, disableElementSelector } from "llamapress/element_selector"
+import { enablePasteToAttach, addFilesToInput, mergePickedFiles } from "llamapress/paste_to_attach"
 
 let bubbleInitialized = false;
 let isFormOpen = false;
-let screenshotAttachment = null;
 let videoAttachment = null;
 let selectedElement = null; // { text, html, selector, url }
 let isRecordingVideo = false;
@@ -17,6 +17,16 @@ let currentTab = 'feedback';
 function shouldShowBubble() {
   const config = window.llamapressConfig || {};
   return config.feedbackBubbleEnabled && config.userLoggedIn;
+}
+
+// The path (with its query) of the page the reporter is on. Our own highlight params
+// are dropped so feedback filed while reviewing an earlier item doesn't inherit that
+// item's element ring. Kept in sync with feedback_element_highlight.js.
+function currentPagePath() {
+  const url = new URL(window.location.href);
+  url.searchParams.delete('lp_feedback_element');
+  url.searchParams.delete('lp_feedback_id');
+  return `${url.pathname}${url.search}`;
 }
 
 function getCSRFToken() {
@@ -73,14 +83,11 @@ function createBubbleHTML() {
                       class="w-full h-20 border border-gray-300 rounded-lg p-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       placeholder="Share your feedback..."></textarea>
 
-            <!-- Screenshot preview -->
-            <div id="feedback-screenshot-preview" class="hidden mb-2 relative">
-              <img id="feedback-screenshot-img" class="w-full rounded border border-gray-200" />
-              <button type="button" id="feedback-screenshot-remove"
-                      class="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600">
-                &times;
-              </button>
-            </div>
+            <!-- Attachment previews (screenshot, paperclip or paste) - thumbnail + real
+                 filename, so the user can see WHICH images they attached. One submission
+                 can carry several, so this is a list; it scrolls rather than pushing
+                 Send out of the panel. -->
+            <div id="feedback-attachment-preview" class="hidden mb-2 space-y-2 max-h-56 overflow-y-auto"></div>
 
             <!-- Selected element preview -->
             <div id="feedback-element-preview" class="hidden mb-2">
@@ -132,11 +139,10 @@ function createBubbleHTML() {
                   </svg>
                 </button>
                 <label class="cursor-pointer text-gray-400 hover:text-purple-600 transition-colors flex items-center gap-1">
-                  <input type="file" id="feedback-file" class="hidden" accept="image/*,video/*,.pdf,.doc,.docx,.txt" />
+                  <input type="file" id="feedback-file" class="hidden" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt" />
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                   </svg>
-                  <span id="feedback-filename" class="text-xs truncate max-w-16"></span>
                 </label>
               </div>
               <button type="submit" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-lg transition-colors">
@@ -688,25 +694,116 @@ async function fetchUnreadCount() {
   } catch (e) { console.error(e); }
 }
 
+// Attachments - screenshots, pastes and paperclip picks all land in one list, so there
+// is a single thing to preview, submit and reset no matter where an image came from.
+//
+// The file input carries them all, but it cannot be trusted as the only record: the file
+// picker REPLACES input.files with just the new pick, it never appends. So every render
+// stages the current list, and a pick is merged back over that staged copy.
+//
+// Images get a thumbnail so the user can confirm what they attached; everything else
+// shows just the name. Object URLs are revoked on each re-render - the bubble lives for
+// the whole session.
+let attachmentObjectUrls = [];
+// What is attached right now, kept in step with the input by renderAttachments().
+let stagedAttachments = [];
+
+function getFileInput() {
+  return document.getElementById('feedback-file');
+}
+
+function attachmentPreviewItem(file, index) {
+  const item = document.createElement('div');
+  item.className = 'feedback-attachment-item rounded border border-purple-200 overflow-hidden';
+  item.dataset.index = String(index);
+  item.innerHTML = `
+    <img class="feedback-attachment-thumb hidden w-full block max-h-32 object-contain bg-white" alt="" />
+    <div class="flex items-center gap-2 p-2 bg-purple-50">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-purple-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+      </svg>
+      <span class="feedback-attachment-name text-xs text-purple-700 truncate flex-1"></span>
+      <button type="button" class="feedback-attachment-remove w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600 flex-shrink-0" title="Remove">
+        &times;
+      </button>
+    </div>
+  `;
+
+  const name = item.querySelector('.feedback-attachment-name');
+  name.textContent = file.name;
+  name.title = file.name;
+
+  if ((file.type || '').startsWith('image/') && typeof URL.createObjectURL === 'function') {
+    const url = URL.createObjectURL(file);
+    attachmentObjectUrls.push(url);
+    const img = item.querySelector('.feedback-attachment-thumb');
+    img.src = url;
+    img.classList.remove('hidden');
+  }
+
+  return item;
+}
+
+function renderAttachments() {
+  const preview = document.getElementById('feedback-attachment-preview');
+  const fileInput = getFileInput();
+  if (!preview || !fileInput) return;
+
+  attachmentObjectUrls.forEach((url) => URL.revokeObjectURL(url));
+  attachmentObjectUrls = [];
+  preview.innerHTML = '';
+
+  const files = Array.from(fileInput.files || []);
+  files.forEach((file, index) => preview.appendChild(attachmentPreviewItem(file, index)));
+  preview.classList.toggle('hidden', files.length === 0);
+
+  // Every path that changes the attachments ends here, so this is the one place that
+  // needs to remember them — the next file-picker 'change' event has already wiped
+  // fileInput.files down to just the new pick by the time we hear about it.
+  stagedAttachments = files;
+}
+
+// Adds files (a screenshot, a paste) to what's already attached, then repaints.
+function addAttachments(files) {
+  const fileInput = getFileInput();
+  if (!fileInput || !files.length) return;
+  addFilesToInput(fileInput, files);
+  renderAttachments();
+}
+
+function removeAttachmentAt(index) {
+  const fileInput = getFileInput();
+  if (!fileInput) return;
+
+  const transfer = new DataTransfer();
+  Array.from(fileInput.files || []).forEach((file, i) => {
+    if (i !== index) transfer.items.add(file);
+  });
+  fileInput.files = transfer.files;
+  renderAttachments();
+}
+
+function clearAttachments() {
+  const fileInput = getFileInput();
+  if (fileInput) fileInput.value = '';
+  renderAttachments();
+}
+
 function resetForm() {
   const form = document.getElementById('feedback-form');
-  const filename = document.getElementById('feedback-filename');
-  const screenshotPreview = document.getElementById('feedback-screenshot-preview');
   const videoPreview = document.getElementById('feedback-video-preview');
 
   if (form) form.reset();
-  if (filename) filename.textContent = '';
-  if (screenshotPreview) screenshotPreview.classList.add('hidden');
+  clearAttachments();
   if (videoPreview) videoPreview.classList.add('hidden');
   document.getElementById('feedback-element-preview')?.classList.add('hidden');
 
-  screenshotAttachment = null;
   videoAttachment = null;
   selectedElement = null;
   hideStatus();
 }
 
-async function submitFeedback(description, file, screenshot) {
+async function submitFeedback(description, files) {
   const requestPath = window.request_path || '/';
   const viewPath = window.view_path || '';
   const pageContext = `\n\n---\nPage: ${requestPath}\nView: ${viewPath}`;
@@ -717,28 +814,28 @@ async function submitFeedback(description, file, screenshot) {
   formData.append('user_feedback[description]', fullDescription);
   formData.append('user_feedback[feedback_type]', 'general');
 
-  if (file) formData.append('user_feedback[attachments][]', file);
-  if (screenshot && screenshot.blob) {
-    const screenshotFile = new File([screenshot.blob], screenshot.filename, { type: 'image/png' });
-    formData.append('user_feedback[attachments][]', screenshotFile);
-  }
+  (files || []).forEach((file) => formData.append('user_feedback[attachments][]', file));
   if (videoAttachment && videoAttachment.blob) {
     const videoFile = new File([videoAttachment.blob], videoAttachment.filename, { type: 'video/webm' });
     formData.append('user_feedback[attachments][]', videoFile);
   }
+  // The page this was reported on, captured whether or not an element was picked, so
+  // every feedback item links back to where it happened.
+  formData.append('user_feedback[selected_element_url]', currentPagePath());
   if (selectedElement) {
     formData.append('user_feedback[selected_element_html]', selectedElement.html || '');
     formData.append('user_feedback[selected_element_selector]', selectedElement.selector || '');
-    formData.append('user_feedback[selected_element_url]', selectedElement.url || '');
   }
 
   let response;
   try {
+    // Ask for JSON. The engine controller used to always redirect, and relying on
+    // browser redirect handling for a fetch() submit surfaced in Chrome as a
+    // network-stage "Failed to fetch" (SupportIncident #139, leo-manu).
     response = await fetch('/llama_bot/feedback', {
       method: 'POST',
-      headers: { 'X-CSRF-Token': getCSRFToken(), 'Accept': 'text/html' },
-      body: formData,
-      redirect: 'manual'
+      headers: { 'X-CSRF-Token': getCSRFToken(), 'Accept': 'application/json' },
+      body: formData
     });
   } catch (networkError) {
     // Network/CORS failure - no response at all
@@ -798,7 +895,6 @@ function attachEventListeners() {
   const trigger = document.getElementById('feedback-trigger');
   const form = document.getElementById('feedback-form');
   const fileInput = document.getElementById('feedback-file');
-  const filenameDisplay = document.getElementById('feedback-filename');
 
   // Toggle panel
   if (trigger) {
@@ -850,37 +946,47 @@ function attachEventListeners() {
   }
 
   // File input
-  if (fileInput && filenameDisplay) {
-    fileInput.addEventListener('change', (e) => {
-      const file = e.target.files?.[0];
-      filenameDisplay.textContent = file ? file.name : '';
+  if (fileInput) {
+    // Merge the pick into what was already staged — the picker replaces, it never appends.
+    fileInput.addEventListener('change', () => {
+      mergePickedFiles(fileInput, stagedAttachments);
+      renderAttachments();
     });
   }
 
-  // Screenshot button
+  // Paste-to-attach: an image on the clipboard pasted into the feedback box becomes
+  // an attachment directly, instead of forcing a save-to-disk-then-browse round trip.
+  // The input is multi-file, so pastes add to what's already attached.
+  enablePasteToAttach(document.getElementById('feedback-text'), fileInput, {
+    // Setting .files programmatically does not fire 'change', so repaint here.
+    onAttach: renderAttachments
+  });
+
+  // Remove one attachment - the list is re-rendered on every change, so delegate.
+  document.getElementById('feedback-attachment-preview')
+    ?.addEventListener('click', (e) => {
+      const button = e.target.closest('.feedback-attachment-remove');
+      if (!button) return;
+      // Removing re-renders the list, detaching this button - the click then looks
+      // like a click outside the bubble and would close the whole panel.
+      e.stopPropagation();
+      removeAttachmentAt(Number(button.closest('.feedback-attachment-item').dataset.index));
+    });
+
+  // Screenshot button - a capture joins the attachment list, so several screenshots
+  // (and pasted images) can ride along on the same submission.
   const screenshotBtn = document.getElementById('feedback-screenshot-btn');
   if (screenshotBtn) {
     screenshotBtn.addEventListener('click', () => {
       togglePanel(false);
       window.screenshotAnnotator?.startCapture((attachment) => {
-        screenshotAttachment = attachment;
-        const preview = document.getElementById('feedback-screenshot-preview');
-        const img = document.getElementById('feedback-screenshot-img');
-        if (preview && img && attachment.dataUrl) {
-          img.src = attachment.dataUrl;
-          preview.classList.remove('hidden');
+        if (attachment?.blob) {
+          addAttachments([
+            new File([attachment.blob], attachment.filename, { type: attachment.mime_type || 'image/png' })
+          ]);
         }
         togglePanel(true);
       });
-    });
-  }
-
-  // Remove screenshot
-  const removeScreenshotBtn = document.getElementById('feedback-screenshot-remove');
-  if (removeScreenshotBtn) {
-    removeScreenshotBtn.addEventListener('click', () => {
-      screenshotAttachment = null;
-      document.getElementById('feedback-screenshot-preview')?.classList.add('hidden');
     });
   }
 
@@ -892,7 +998,7 @@ function attachEventListeners() {
       togglePanel(false);
       enableElementSelector({
         onSelect: (detail) => {
-          selectedElement = { ...detail, url: window.location.pathname };
+          selectedElement = { ...detail, url: currentPagePath() };
           const preview = document.getElementById('feedback-element-preview');
           const text = document.getElementById('feedback-element-text');
           if (preview && text) {
@@ -996,7 +1102,7 @@ function attachEventListeners() {
       const textarea = document.getElementById('feedback-text');
       const fileInput = document.getElementById('feedback-file');
       const description = textarea?.value?.trim();
-      const file = fileInput?.files?.[0];
+      const files = Array.from(fileInput?.files || []);
 
       if (!description) {
         showStatus('Please enter some feedback', true);
@@ -1010,7 +1116,7 @@ function attachEventListeners() {
       }
 
       try {
-        await submitFeedback(description, file, screenshotAttachment);
+        await submitFeedback(description, files);
         showStatus('Thanks for your feedback!');
         setTimeout(() => {
           togglePanel(false);

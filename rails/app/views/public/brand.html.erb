@@ -1,0 +1,352 @@
+<%#
+  IMPORTANT FOR LLMs AND FUTURE BUILDERS:
+
+  This is the app's living Brand page. If the user asks to change colors,
+  typography, rounding, motion, buttons, badges, surfaces, or other global
+  styling while viewing or referring to this page, they are probably asking
+  to change the visual system for the ENTIRE app—not to restyle this page alone.
+
+  Make global brand changes in:
+    app/assets/stylesheets/application.css
+
+  In particular, update the [data-theme="llamapress"] DaisyUI theme variables
+  and shared global styles there. This page deliberately uses semantic DaisyUI
+  classes such as bg-primary, btn-primary, bg-base-100, text-base-content,
+  alert-error, and rounded-box. It should inherit and demonstrate the global
+  theme automatically after those shared values change.
+
+  Do not hard-code replacement brand colors or one-off visual overrides in this
+  view unless the user explicitly asks for a Brand-page-only change. Keep this
+  page as the visual reference for the same styling used throughout the app.
+%>
+<% content_for :title, "Brand" %>
+<% content_for :full_width, true %>
+<% content_for :hide_header, true %>
+
+<div class="min-h-screen bg-base-200 text-base-content transition-colors duration-200" data-controller="brand-theme-preview" data-theme="llamapress">
+  <header class="sticky top-0 z-20 border-b border-base-300 bg-base-100/90 backdrop-blur">
+    <div class="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+      <div class="flex items-center gap-3">
+        <div class="grid h-10 w-10 place-items-center rounded-xl bg-primary text-primary-content shadow-sm">
+          <i class="fa-solid fa-swatchbook"></i>
+        </div>
+        <div>
+          <p class="text-xs font-bold uppercase tracking-[0.18em] text-primary">Living style guide</p>
+          <h1 class="text-xl font-bold">Brand</h1>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 sm:gap-3">
+        <div class="hidden items-center gap-2 md:flex">
+          <span class="text-xs font-medium text-base-content/45" data-brand-theme-preview-target="label">Light preview</span>
+          <div class="join rounded-btn border border-base-300 bg-base-200/70 p-1 shadow-inner" role="group" aria-label="Brand theme preview">
+            <button type="button" class="btn btn-primary btn-xs join-item gap-1.5 border-0" data-brand-theme-preview-target="lightButton" data-action="brand-theme-preview#showLight" aria-pressed="true" title="Preview light theme">
+              <i class="fa-solid fa-sun"></i><span class="hidden lg:inline">Light</span>
+            </button>
+            <button type="button" class="btn btn-ghost btn-xs join-item gap-1.5 border-0" data-brand-theme-preview-target="darkButton" data-action="brand-theme-preview#showDark" aria-pressed="false" title="Preview dark theme">
+              <i class="fa-solid fa-moon"></i><span class="hidden lg:inline">Dark</span>
+            </button>
+          </div>
+        </div>
+        <div class="join rounded-btn border border-base-300 bg-base-200/70 p-1 md:hidden" role="group" aria-label="Brand theme preview">
+          <button type="button" class="btn btn-primary btn-xs join-item border-0" data-brand-theme-preview-target="lightButton" data-action="brand-theme-preview#showLight" aria-pressed="true" title="Preview light theme"><i class="fa-solid fa-sun"></i></button>
+          <button type="button" class="btn btn-ghost btn-xs join-item border-0" data-brand-theme-preview-target="darkButton" data-action="brand-theme-preview#showDark" aria-pressed="false" title="Preview dark theme"><i class="fa-solid fa-moon"></i></button>
+        </div>
+        <%= link_to root_path, class: "btn btn-ghost btn-sm gap-2" do %>
+          <i class="fa-solid fa-arrow-left"></i>
+          <span class="hidden sm:inline">Back to app</span>
+        <% end %>
+      </div>
+    </div>
+  </header>
+
+  <% brand_sections = [
+    ["overview", "Overview", "fa-compass"],
+    ["colors", "Colors", "fa-palette"],
+    ["surfaces", "Surfaces", "fa-layer-group"],
+    ["states", "States", "fa-circle-check"],
+    ["components", "Components", "fa-cubes"],
+    ["typography", "Typography", "fa-font"],
+    ["shape-motion", "Shape & motion", "fa-wand-magic-sparkles"]
+  ] %>
+
+  <nav aria-label="Brand sections" class="sticky top-[73px] z-10 border-b border-base-300 bg-base-100/95 px-4 py-3 backdrop-blur xl:hidden">
+    <div class="mx-auto flex max-w-7xl gap-2 overflow-x-auto pb-1">
+      <% brand_sections.each do |anchor, label, icon| %>
+        <a href="#<%= anchor %>" class="btn btn-ghost btn-sm shrink-0 gap-2 border border-transparent hover:border-primary/15 hover:bg-primary/5 hover:text-primary">
+          <i class="fa-solid <%= icon %> text-xs"></i><%= label %>
+        </a>
+      <% end %>
+    </div>
+  </nav>
+
+  <div class="mx-auto grid max-w-[90rem] items-start xl:grid-cols-[15rem_minmax(0,1fr)] xl:gap-8 xl:px-8">
+    <aside class="sticky top-24 hidden py-12 xl:block">
+      <nav aria-label="Brand handbook navigation" class="rounded-box border border-base-300 bg-base-100 p-3 shadow-sm">
+        <div class="border-b border-base-200 px-3 pb-4 pt-2">
+          <p class="text-xs font-bold uppercase tracking-[0.18em] text-primary">Brand handbook</p>
+          <p class="mt-1 text-sm text-base-content/50">Jump to a section</p>
+        </div>
+        <ul class="menu mt-2 gap-1 p-0">
+          <% brand_sections.each_with_index do |(anchor, label, icon), index| %>
+            <li>
+              <a href="#<%= anchor %>" class="group gap-3 rounded-xl py-3 text-sm text-base-content/65 transition duration-150 hover:bg-primary/5 hover:text-primary active:scale-[0.98]">
+                <span class="grid h-8 w-8 place-items-center rounded-lg bg-base-200 text-base-content/50 transition duration-150 group-hover:bg-primary/10 group-hover:text-primary"><i class="fa-solid <%= icon %>"></i></span>
+                <span class="flex-1 font-medium"><%= label %></span>
+                <span class="text-[10px] tabular-nums text-base-content/30"><%= format("%02d", index + 1) %></span>
+              </a>
+            </li>
+          <% end %>
+        </ul>
+        <div class="mt-3 rounded-xl bg-primary/5 p-3 text-xs leading-5 text-base-content/55">
+          <i class="fa-solid fa-circle-info mr-1 text-primary"></i>
+          Every sample uses the live global theme.
+        </div>
+      </nav>
+    </aside>
+
+    <main class="min-w-0 space-y-10 px-4 py-8 sm:px-6 lg:px-8 lg:py-12 xl:px-0">
+    <section id="overview" class="scroll-mt-36 overflow-hidden rounded-box border border-primary/15 bg-base-100 shadow-sm xl:scroll-mt-24">
+      <div class="grid lg:grid-cols-[1.15fr_0.85fr]">
+        <div class="p-6 sm:p-10">
+          <span class="badge badge-primary badge-outline gap-2"><i class="fa-solid fa-palette"></i> Global theme</span>
+          <h2 class="mt-5 max-w-3xl text-4xl font-bold tracking-tight sm:text-5xl">One shared visual language for the whole app.</h2>
+          <p class="mt-5 max-w-2xl text-base leading-7 text-base-content/65">Pages use meaningful names such as <strong class="text-base-content">primary</strong>, <strong class="text-base-content">base</strong>, and <strong class="text-base-content">error</strong>. The global theme decides what those names look like. Change the theme once and every page using those names updates with it.</p>
+        </div>
+        <div class="flex flex-col justify-center border-t border-primary/15 bg-primary/5 p-6 sm:p-10 lg:border-l lg:border-t-0">
+          <p class="text-sm font-semibold text-primary">The simple rule</p>
+          <p class="mt-3 text-2xl font-bold">Use purpose, not paint.</p>
+          <p class="mt-3 text-sm leading-6 text-base-content/65">Choose <code class="rounded bg-base-100 px-1.5 py-1 text-primary">btn-primary</code> because it is the main action—not because purple looks nice there.</p>
+        </div>
+      </div>
+    </section>
+
+    <% brand_colors = [
+      ["Primary", "Main actions and selected states", "bg-primary", "text-primary-content", "--p", "btn-primary"],
+      ["Secondary", "Rare supporting brand emphasis", "bg-secondary", "text-secondary-content", "--s", "btn-secondary"],
+      ["Accent", "Small highlights and data details", "bg-accent", "text-accent-content", "--a", "btn-accent"],
+      ["Neutral", "Strong neutral controls and dark surfaces", "bg-neutral", "text-neutral-content", "--n", "btn-neutral"]
+    ] %>
+
+    <section id="colors" class="scroll-mt-36 xl:scroll-mt-24" aria-labelledby="brand-colors-heading">
+      <div class="mb-5">
+        <p class="text-xs font-bold uppercase tracking-[0.18em] text-primary">Foundation</p>
+        <h2 id="brand-colors-heading" class="mt-1 text-3xl font-bold">Brand colors</h2>
+        <p class="mt-2 max-w-3xl text-sm leading-6 text-base-content/60">These colors create identity. Primary should do most of the work; secondary and accent should appear sparingly.</p>
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <% brand_colors.each do |name, purpose, background, content, variable, example| %>
+          <article class="overflow-hidden rounded-box border border-base-300 bg-base-100 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-md">
+            <div class="flex h-28 items-end <%= background %> <%= content %> p-5">
+              <span class="font-mono text-xs opacity-75"><%= variable %></span>
+            </div>
+            <div class="p-5">
+              <h3 class="font-bold"><%= name %></h3>
+              <p class="mt-1 min-h-10 text-sm text-base-content/55"><%= purpose %></p>
+              <code class="mt-4 inline-block rounded bg-base-200 px-2 py-1 text-xs text-base-content/70"><%= example %></code>
+            </div>
+          </article>
+        <% end %>
+      </div>
+    </section>
+
+    <% surfaces = [
+      ["Base 100", "Cards and main surfaces", "bg-base-100", "--b1"],
+      ["Base 200", "Page background and quiet sections", "bg-base-200", "--b2"],
+      ["Base 300", "Borders and deeper separation", "bg-base-300", "--b3"],
+      ["Base content", "Default text and icons", "bg-base-content", "--bc"]
+    ] %>
+
+    <section id="surfaces" class="scroll-mt-36 grid gap-6 lg:grid-cols-[0.8fr_1.2fr] xl:scroll-mt-24">
+      <div>
+        <p class="text-xs font-bold uppercase tracking-[0.18em] text-primary">Structure</p>
+        <h2 class="mt-1 text-3xl font-bold">Surfaces and text</h2>
+        <p class="mt-3 text-sm leading-6 text-base-content/60">Most of a polished interface should be neutral. These layers create hierarchy without introducing another color.</p>
+        <div class="alert mt-5 border-base-300 bg-base-100 text-sm shadow-sm">
+          <i class="fa-solid fa-circle-info text-primary"></i>
+          <span>Use spacing, type, borders, and surfaces before reaching for more color.</span>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 overflow-hidden rounded-box border border-base-300 shadow-sm sm:grid-cols-4">
+        <% surfaces.each do |name, purpose, background, variable| %>
+          <div class="flex min-h-44 flex-col justify-between <%= background %> p-5 <%= name == 'Base content' ? 'text-base-100' : 'text-base-content' %>">
+            <span class="font-mono text-xs opacity-60"><%= variable %></span>
+            <div><p class="font-bold"><%= name %></p><p class="mt-1 text-xs opacity-60"><%= purpose %></p></div>
+          </div>
+        <% end %>
+      </div>
+    </section>
+
+    <% states = [
+      ["Info", "Helpful system information", "alert-info", "fa-circle-info", "--in / --inc"],
+      ["Success", "A confirmed successful result", "alert-success", "fa-circle-check", "--su / --suc"],
+      ["Warning", "Something needs attention", "alert-warning", "fa-triangle-exclamation", "--wa / --wac"],
+      ["Error", "A failure or destructive outcome", "alert-error", "fa-circle-exclamation", "--er / --erc"]
+    ] %>
+
+    <section id="states" class="scroll-mt-36 xl:scroll-mt-24" aria-labelledby="states-heading">
+      <div class="mb-5">
+        <p class="text-xs font-bold uppercase tracking-[0.18em] text-primary">Meaning</p>
+        <h2 id="states-heading" class="mt-1 text-3xl font-bold">State colors</h2>
+        <p class="mt-2 max-w-3xl text-sm leading-6 text-base-content/60">State colors communicate what happened. They are not decoration and should not be used merely to separate categories.</p>
+      </div>
+      <div class="grid gap-4 md:grid-cols-2">
+        <% states.each do |name, purpose, alert_class, icon, variable| %>
+          <div class="alert <%= alert_class %> shadow-sm">
+            <i class="fa-solid <%= icon %>"></i>
+            <div><h3 class="font-bold"><%= name %></h3><p class="text-sm opacity-80"><%= purpose %></p></div>
+            <code class="hidden text-xs opacity-70 sm:block"><%= variable %></code>
+          </div>
+        <% end %>
+      </div>
+    </section>
+
+    <section id="components" class="scroll-mt-36 grid gap-6 lg:grid-cols-2 xl:scroll-mt-24">
+      <article class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm sm:p-8">
+        <p class="text-xs font-bold uppercase tracking-[0.18em] text-primary">Components</p>
+        <h2 class="mt-1 text-2xl font-bold">Buttons</h2>
+        <p class="mt-2 text-sm text-base-content/60">One clear primary action. Supporting actions stay quieter.</p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <button type="button" class="btn btn-primary"><i class="fa-solid fa-check"></i> Primary</button>
+          <button type="button" class="btn btn-outline">Secondary action</button>
+          <button type="button" class="btn btn-ghost">Quiet action</button>
+          <button type="button" class="btn btn-error btn-outline"><i class="fa-solid fa-trash"></i> Destructive</button>
+        </div>
+      </article>
+
+      <article class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm sm:p-8">
+        <p class="text-xs font-bold uppercase tracking-[0.18em] text-primary">Components</p>
+        <h2 class="mt-1 text-2xl font-bold">Badges</h2>
+        <p class="mt-2 text-sm text-base-content/60">Categories are neutral. State badges use color only when the meaning calls for it.</p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <span class="badge badge-ghost border-base-300"><i class="fa-solid fa-lightbulb mr-1 text-primary"></i> Idea</span>
+          <span class="badge badge-ghost border-base-300"><i class="fa-solid fa-wand-magic-sparkles mr-1 text-primary"></i> Feature</span>
+          <span class="badge badge-success badge-outline">Complete</span>
+          <span class="badge badge-warning badge-outline">Needs attention</span>
+          <span class="badge badge-error badge-outline">Failed</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm sm:p-8">
+      <div class="grid gap-8 lg:grid-cols-[0.75fr_1.25fr]">
+        <div>
+          <p class="text-xs font-bold uppercase tracking-[0.18em] text-primary">Components</p>
+          <h2 class="mt-1 text-2xl font-bold">Forms</h2>
+          <p class="mt-2 text-sm leading-6 text-base-content/60">Fields use neutral surfaces. The main action uses the brand color, and errors appear only when something is wrong.</p>
+        </div>
+        <form class="grid gap-4 sm:grid-cols-2" onsubmit="return false">
+          <label class="form-control w-full">
+            <span class="label-text mb-2 font-medium">Project name</span>
+            <input class="input input-bordered w-full bg-base-100 focus:input-primary" value="My useful app" aria-label="Project name example">
+          </label>
+          <label class="form-control w-full">
+            <span class="label-text mb-2 font-medium">Category</span>
+            <select class="select select-bordered w-full bg-base-100" aria-label="Category example"><option>Productivity</option></select>
+          </label>
+          <label class="form-control sm:col-span-2">
+            <span class="label-text mb-2 font-medium">Description</span>
+            <textarea class="textarea textarea-bordered min-h-24 bg-base-100" aria-label="Description example">A short, clear explanation of what this app helps people do.</textarea>
+          </label>
+          <div class="flex justify-end gap-2 sm:col-span-2">
+            <button type="button" class="btn btn-ghost">Cancel</button>
+            <button type="button" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save project</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="typography" class="scroll-mt-36 xl:scroll-mt-24" aria-labelledby="typography-heading">
+      <div class="mb-5">
+        <p class="text-xs font-bold uppercase tracking-[0.18em] text-primary">Typography</p>
+        <h2 id="typography-heading" class="mt-1 text-3xl font-bold">Voice you can see</h2>
+        <p class="mt-2 max-w-3xl text-sm leading-6 text-base-content/60">The current brand uses the app's system sans-serif stack: a clean, fast typeface chosen by each device. The scale below is the shared hierarchy pages should follow.</p>
+      </div>
+      <div class="overflow-hidden rounded-box border border-base-300 bg-base-100 shadow-sm">
+        <div class="grid border-b border-base-300 lg:grid-cols-[0.7fr_1.3fr]">
+          <div class="bg-primary/5 p-6 sm:p-8">
+            <p class="text-xs font-bold uppercase tracking-[0.18em] text-primary">Font family</p>
+            <p class="mt-4 text-4xl font-bold tracking-tight">System Sans</p>
+            <p class="mt-3 text-sm leading-6 text-base-content/60">Uses the familiar interface font built into the visitor's device. No external font download is required.</p>
+            <code class="mt-5 inline-block rounded bg-base-100 px-3 py-2 text-xs text-base-content/70 shadow-sm">font-sans</code>
+          </div>
+          <div class="grid divide-y divide-base-200 p-6 sm:p-8">
+            <div class="grid gap-2 py-4 sm:grid-cols-[9rem_1fr] sm:items-baseline"><div><p class="text-xs font-bold uppercase tracking-wider text-base-content/45">Display</p><code class="text-xs text-primary">text-5xl / bold</code></div><p class="text-4xl font-bold tracking-tight sm:text-5xl">Build something useful.</p></div>
+            <div class="grid gap-2 py-4 sm:grid-cols-[9rem_1fr] sm:items-baseline"><div><p class="text-xs font-bold uppercase tracking-wider text-base-content/45">Page title</p><code class="text-xs text-primary">text-3xl / bold</code></div><p class="text-3xl font-bold tracking-tight">Feedback Inbox</p></div>
+            <div class="grid gap-2 py-4 sm:grid-cols-[9rem_1fr] sm:items-baseline"><div><p class="text-xs font-bold uppercase tracking-wider text-base-content/45">Section</p><code class="text-xs text-primary">text-2xl / bold</code></div><p class="text-2xl font-bold">Your next best move</p></div>
+            <div class="grid gap-2 py-4 sm:grid-cols-[9rem_1fr] sm:items-baseline"><div><p class="text-xs font-bold uppercase tracking-wider text-base-content/45">Body</p><code class="text-xs text-primary">text-base / regular</code></div><p class="max-w-2xl text-base leading-7 text-base-content/70">Clear language and comfortable line spacing make complex ideas feel simple and approachable.</p></div>
+            <div class="grid gap-2 py-4 sm:grid-cols-[9rem_1fr] sm:items-baseline"><div><p class="text-xs font-bold uppercase tracking-wider text-base-content/45">Eyebrow</p><code class="text-xs text-primary">uppercase / tracked</code></div><p class="text-xs font-bold uppercase tracking-[0.18em] text-primary">Living style guide</p></div>
+          </div>
+        </div>
+        <div class="grid gap-6 p-6 sm:grid-cols-3 sm:p-8">
+          <div><p class="text-sm font-bold">Weights</p><div class="mt-3 space-y-2 text-sm"><p class="font-normal">Regular 400</p><p class="font-medium">Medium 500</p><p class="font-semibold">Semibold 600</p><p class="font-bold">Bold 700</p></div></div>
+          <div><p class="text-sm font-bold">Tone</p><p class="mt-3 text-sm leading-6 text-base-content/60">Warm, direct, calm, and useful. Prefer short words and clear next steps.</p></div>
+          <div><p class="text-sm font-bold">Readability</p><p class="mt-3 text-sm leading-6 text-base-content/60">Use sentence case, generous line height, and muted text only for supporting information.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="shape-motion" class="scroll-mt-36 xl:scroll-mt-24" aria-labelledby="shape-motion-heading">
+      <div class="mb-5">
+        <p class="text-xs font-bold uppercase tracking-[0.18em] text-primary">Shape and motion</p>
+        <h2 id="shape-motion-heading" class="mt-1 text-3xl font-bold">A consistent feel</h2>
+        <p class="mt-2 max-w-3xl text-sm leading-6 text-base-content/60">These are live examples, not pictures. Change the global theme values and the samples update across the whole app.</p>
+      </div>
+      <div class="grid gap-4 lg:grid-cols-4">
+        <article class="rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+          <div class="grid h-32 place-items-center rounded-box border-2 border-primary/25 bg-primary/5">
+            <div class="text-center"><i class="fa-regular fa-window-maximize text-2xl text-primary"></i><p class="mt-2 text-sm font-bold">Card shape</p></div>
+          </div>
+          <div class="mt-4 flex items-center justify-between gap-2"><span class="text-sm text-base-content/60">Large surfaces</span><code class="rounded bg-base-200 px-2 py-1 text-xs">1rem</code></div>
+        </article>
+        <article class="rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+          <div class="grid h-32 place-items-center rounded-box bg-base-200">
+            <button type="button" class="btn btn-primary">Button shape</button>
+          </div>
+          <div class="mt-4 flex items-center justify-between gap-2"><span class="text-sm text-base-content/60">Controls</span><code class="rounded bg-base-200 px-2 py-1 text-xs">0.65rem</code></div>
+        </article>
+        <article class="rounded-box border border-base-300 bg-base-100 p-5 shadow-sm">
+          <div class="flex h-32 flex-wrap content-center items-center justify-center gap-2 rounded-box bg-base-200">
+            <span class="badge badge-primary">Primary</span><span class="badge badge-ghost border-base-300">Category</span>
+          </div>
+          <div class="mt-4 flex items-center justify-between gap-2"><span class="text-sm text-base-content/60">Pill badges</span><code class="rounded bg-base-200 px-2 py-1 text-xs">full</code></div>
+        </article>
+        <article class="group rounded-box border border-base-300 bg-base-100 p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:shadow-lg">
+          <div class="grid h-32 place-items-center rounded-box border border-primary/15 bg-primary/5 transition duration-200 group-hover:bg-primary/10">
+            <div class="text-center"><i class="fa-solid fa-arrow-pointer text-2xl text-primary transition duration-200 group-hover:scale-110"></i><p class="mt-2 text-sm font-bold">Hover this card</p></div>
+          </div>
+          <div class="mt-4 flex items-center justify-between gap-2"><span class="text-sm text-base-content/60">Subtle motion</span><code class="rounded bg-base-200 px-2 py-1 text-xs">0.15–0.2s</code></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="grid gap-6 lg:grid-cols-2">
+      <article class="rounded-box border border-base-300 bg-base-100 p-6 shadow-sm sm:p-8">
+        <p class="text-xs font-bold uppercase tracking-[0.18em] text-primary">Guardrails</p>
+        <h2 class="mt-1 text-2xl font-bold">How to keep pages coherent</h2>
+        <ul class="mt-6 space-y-4 text-sm text-base-content/70">
+          <li class="flex gap-3"><i class="fa-solid fa-check mt-0.5 text-success"></i><span>Use one main brand color and mostly neutral surfaces.</span></li>
+          <li class="flex gap-3"><i class="fa-solid fa-check mt-0.5 text-success"></i><span>Use red, amber, and green only for real system states.</span></li>
+          <li class="flex gap-3"><i class="fa-solid fa-check mt-0.5 text-success"></i><span>Use spacing, typography, icons, and borders before adding color.</span></li>
+          <li class="flex gap-3"><i class="fa-solid fa-xmark mt-0.5 text-error"></i><span>Do not give every category a different saturated color.</span></li>
+          <li class="flex gap-3"><i class="fa-solid fa-xmark mt-0.5 text-error"></i><span>Do not add gradients unless the brand explicitly calls for them.</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="rounded-box bg-neutral p-6 text-neutral-content sm:p-8">
+      <div class="flex flex-col justify-between gap-6 md:flex-row md:items-center">
+        <div>
+          <p class="text-sm font-semibold opacity-70">For every page in this app</p>
+          <h2 class="mt-1 text-2xl font-bold">Use semantic classes. Let the theme handle the color.</h2>
+        </div>
+        <div class="flex flex-wrap gap-2 font-mono text-xs">
+          <span class="rounded bg-neutral-content/10 px-3 py-2">btn-primary</span>
+          <span class="rounded bg-neutral-content/10 px-3 py-2">bg-base-100</span>
+          <span class="rounded bg-neutral-content/10 px-3 py-2">text-base-content</span>
+          <span class="rounded bg-neutral-content/10 px-3 py-2">border-base-300</span>
+        </div>
+      </div>
+    </section>
+    </main>
+  </div>
+</div>

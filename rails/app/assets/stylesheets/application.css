@@ -15,6 +15,84 @@
  *= require_self
  */
 
+/*
+ * Global LlamaPress design theme.
+ *
+ * Pages should use DaisyUI's semantic classes (such as btn-primary,
+ * bg-base-100, text-base-content, and alert-error) instead of hard-coded
+ * colors. Changing these values updates every page that follows that rule.
+ * DaisyUI v4 expects these short OKLCH variable names.
+ */
+[data-theme="llamapress"] {
+  color-scheme: light;
+
+  --p: 58% 0.19 292;
+  --pc: 98% 0.01 292;
+  --s: 55% 0.14 270;
+  --sc: 98% 0.01 270;
+  --a: 68% 0.10 225;
+  --ac: 22% 0.03 240;
+  --n: 28% 0.025 270;
+  --nc: 97% 0.006 270;
+
+  --b1: 100% 0 0;
+  --b2: 97.5% 0.005 270;
+  --b3: 92.5% 0.009 270;
+  --bc: 25% 0.025 270;
+
+  --in: 65% 0.10 235;
+  --inc: 20% 0.025 235;
+  --su: 62% 0.12 155;
+  --suc: 18% 0.025 155;
+  --wa: 72% 0.12 78;
+  --wac: 22% 0.03 78;
+  --er: 62% 0.17 25;
+  --erc: 98% 0.01 25;
+
+  --rounded-box: 1rem;
+  --rounded-btn: 0.65rem;
+  --rounded-badge: 9999px;
+  --animation-btn: 0.15s;
+  --animation-input: 0.15s;
+  --btn-focus-scale: 0.98;
+  --border-btn: 1px;
+}
+
+[data-theme="llamapress-dark"] {
+  color-scheme: dark;
+
+  --p: 73% 0.15 292;
+  --pc: 18% 0.035 292;
+  --s: 72% 0.11 270;
+  --sc: 18% 0.03 270;
+  --a: 74% 0.09 225;
+  --ac: 17% 0.025 235;
+  --n: 32% 0.025 270;
+  --nc: 94% 0.008 270;
+
+  --b1: 21% 0.018 270;
+  --b2: 17% 0.016 270;
+  --b3: 29% 0.022 270;
+  --bc: 93% 0.009 270;
+
+  --in: 72% 0.09 235;
+  --inc: 17% 0.025 235;
+  --su: 70% 0.11 155;
+  --suc: 16% 0.025 155;
+  --wa: 78% 0.11 78;
+  --wac: 20% 0.03 78;
+  --er: 70% 0.15 25;
+  --erc: 17% 0.025 25;
+
+  --rounded-box: 1rem;
+  --rounded-btn: 0.65rem;
+  --rounded-badge: 9999px;
+  --animation-btn: 0.15s;
+  --animation-input: 0.15s;
+  --btn-focus-scale: 0.98;
+  --border-btn: 1px;
+}
+
 /* Custom styles */
 #mobile-menu {
   display: none;

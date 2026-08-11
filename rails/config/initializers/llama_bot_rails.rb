@@ -4,6 +4,34 @@ Rails.application.configure do
   config.llama_bot_rails.enable_console_tool = !Rails.env.production?
 
   # ------------------------------------------------------------------------
+  # Unified Login — auto-provision (claim) SSO users on first sign-in
+  # ------------------------------------------------------------------------
+  # Managed Leo boxes only. Lets the gem's default guid_user_resolver create-or-link
+  # a Devise user from a mothership-VERIFIED grant payload, so the FIRST time an
+  # authorized owner/operator clicks "Sign in with your LlamaPress.ai account" the
+  # Rails surface signs them in instead of dead-ending at
+  # "no host user for guid=… — degrading to /".
+  #
+  # Safe here because the resolver only runs AFTER grant_redeemer succeeds: the
+  # email/guid are verified server-to-server over the bearer channel, not user input.
+  # The gem defaults this to false so self-hosters stay opt-out.
+  #
+  # respond_to? guard: this overlay ships over the git channel, but the accessor
+  # ships baked into the image. A box can pull this file before it pulls an image
+  # whose vendored gem defines the accessor, and an unguarded assignment turns that
+  # ordering into a NoMethodError at boot — Rails never starts. Degrade instead:
+  # on an older image SSO auto-provisioning stays off (the gem's own default) until
+  # the image catches up. Remove the guard once every box is on >= 0.6.5a.
+  if LlamaBotRails.respond_to?(:provision_sso_users=)
+    LlamaBotRails.provision_sso_users = true
+  else
+    Rails.logger.warn(
+      "[[LlamaBot]] provision_sso_users not supported by the vendored gem in this image; " \
+      "SSO auto-provisioning disabled. Upgrade llamapress-simple to >= 0.6.5a."
+    )
+  end
+
+  # ------------------------------------------------------------------------
   # Custom State Builder
   # ------------------------------------------------------------------------
   # The gem uses `LlamaBotRails::AgentStateBuilder` by default.

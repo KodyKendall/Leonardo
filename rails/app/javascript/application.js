@@ -16,6 +16,7 @@ import "llamapress/navigation_tracking"
 import "llamapress/screenshot_annotator"
 import "llamapress/video_recorder"
 import "llamapress/feedback_bubble"
+import "llamapress/feedback_element_highlight"
 
 // Required for the app to be installable to a phone's home screen: Chromium won't
 // fire beforeinstallprompt without a registered worker. Failure is expected and

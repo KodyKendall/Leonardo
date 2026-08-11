@@ -22,6 +22,22 @@
   window.LLAMABOT_POSTHOG_KEY = <%= ENV['LLAMABOT_POSTHOG_KEY'].present? ? ENV['LLAMABOT_POSTHOG_KEY'].to_json.html_safe : 'null' %>;
   window.LLAMABOT_POSTHOG_HOST = <%= ENV['LLAMABOT_POSTHOG_HOST'].present? ? ENV['LLAMABOT_POSTHOG_HOST'].to_json.html_safe : 'null' %>;
 
+  // Cap the page snapshot before it is ever handed to the chat. A page that
+  // inlines a lot of content renders to megabytes of markup, and this value is
+  // re-sent on every chat message; the agent only ever reads request_path and
+  // view_path out of it. Mirrors llamapress/payload_caps.js (this partial is an
+  // inline script, so it cannot import the module) and LlamaBot's own ingestion
+  // cap, which is the load-bearing one.
+  var LLAMAPRESS_MAX_PAGE_HTML_BYTES = 64 * 1024;
+
+  function capPageHtml(html) {
+    if (typeof html !== 'string' || html.length <= LLAMAPRESS_MAX_PAGE_HTML_BYTES) return html;
+    var head = html.slice(0, Math.floor(LLAMAPRESS_MAX_PAGE_HTML_BYTES * 0.7));
+    var tail = html.slice(html.length - Math.floor(LLAMAPRESS_MAX_PAGE_HTML_BYTES * 0.2));
+    var omitted = html.length - head.length - tail.length;
+    return head + '\n... [truncated: ' + omitted + ' bytes omitted] ...\n' + tail;
+  }
+
   // Function to update context variables
   function updatePageContext() {
     // These are set fresh on each page load from server-side variables
@@ -34,14 +50,14 @@
 
   // Wait for entire page to load before calling this
   document.addEventListener('DOMContentLoaded', function() {
-    window.full_html = document.documentElement.outerHTML;
+    window.full_html = capPageHtml(document.documentElement.outerHTML);
     updatePageContext();
   });
 
   // Handle Turbo navigation to ensure fresh context on SPA-style navigation
   document.addEventListener('turbo:load', function() {
     // Force refresh of page context on Turbo navigation
-    window.full_html = document.documentElement.outerHTML;
+    window.full_html = capPageHtml(document.documentElement.outerHTML);
     updatePageContext();
   });
 

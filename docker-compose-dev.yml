@@ -20,6 +20,28 @@ services:
       - RAILS_ENV=development
       - BOOTSNAP_CACHE_DIR=/rails/tmp/cache/bootsnap
       - MALLOC_ARENA_MAX=2                   # cap glibc malloc arenas — curbs Puma memory fragmentation
+      # Secrets withheld from the Rails container. Keep this list identical to
+      # docker-compose.yml, or the dev box stops matching what the fleet runs.
+      # Rationale and the kept-on-purpose list live in docker-compose.yml.
+      # NOT blanked: OPENAI_API_KEY, DEEPSEEK_API_KEY and GEMINI_API_KEY are
+      # called server-side by real customer apps (2026-08-09 fleet audit).
+      - LLAMAPRESS_AI_LOGIN_SECRET=
+      - SCHEDULER_TOKEN=
+      - WS_SECRET_KEY=
+      - AUTH_DB_URI=
+      - TAVILY_API_KEY=
+      - GROUND_ROUTE_SEARCH_API_KEY=
+      - VSCODE_PASSWORD=
+      - GOOGLE_API_KEY=
+      - GMI_DEEPSEEK_API_KEY=
+      - FIREWORKS_DEEPSEEK_API_KEY=
+      - ALIBABA_API_KEY=
+      - META_API_KEY=
+      - MODEL_API_KEY=
+      - BEDROCK_API_KEY=
+      - ANTHROPIC_API_KEY=
+      - AWS_KEY=
+      - AWS_PASS=
     volumes:
       - ../LlamaPress-Simple/vendor/llama_bot_rails:/rails/vendor/llama_bot_rails  # Dev: hot reload gem changes
       - rails_storage:/rails/storage         # ActiveStorage local files
@@ -123,8 +145,23 @@ services:
     container_name: code
     user: root
     environment:
+      # Run code-server as the host's ubuntu user (1000:1000) so it can write
+      # to the bind-mounted repo. Without these, lsio defaults to abc (911:911)
+      # and every save into /config/workspace is "permission denied".
+      - PUID=1000
+      - PGID=1000
       - TZ=America/Denver
-      - PASSWORD=password
+      # Read the password from .env. Never hardcode one here.
+      #
+      # This line used to read `PASSWORD=password`. Port 8443 is published on all
+      # interfaces and this box answers on a public hostname, so the editor was
+      # reachable from the internet behind the word "password". The editor mounts
+      # the whole project at /config/workspace, which puts the raw .env, and every
+      # live API key in it, one sign-in away.
+      #
+      # `:?` makes compose refuse to run when VSCODE_PASSWORD is unset. A loud
+      # failure beats a guessable default.
+      - PASSWORD=${VSCODE_PASSWORD:?VSCODE_PASSWORD must be set in .env}
       # - AUTO_SSH_LEONARDO=1
     volumes:
       - code_config:/config
