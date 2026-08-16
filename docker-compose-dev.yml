@@ -143,6 +143,11 @@ services:
   code:
     image: kody06/llamabot-vscode:latest
     container_name: code
+    # The VS Code editor is opt-in. This profile keeps `docker compose up -d`
+    # (a reboot, bin/update) from starting the editor. LlamaBot starts and stops
+    # it on request with `docker compose --profile code up -d code` when someone
+    # turns the editor on in Settings. See LlamaBot app/services/vscode_service.py.
+    profiles: ["code"]
     user: root
     environment:
       # Run code-server as the host's ubuntu user (1000:1000) so it can write

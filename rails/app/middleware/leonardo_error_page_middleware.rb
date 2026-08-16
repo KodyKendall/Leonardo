@@ -8,6 +8,21 @@ class LeonardoErrorPageMiddleware
   def call(env)
     @app.call(env)
   rescue Exception => exception # rubocop:disable Lint/RescueException
+    # Tell the mothership before we swallow this. For any path we handle we
+    # render the "Ask Leo to fix this" page WITHOUT re-raising, so the gem's
+    # own telemetry middleware never sees the exception — without this call,
+    # exactly the crashes a customer actually hits would be the ones missing
+    # from /admin/instance_errors.
+    #
+    # Guarded so this overlay still boots against gem versions that predate the
+    # reporter. Reporting is deduped on the exception object, so paths that
+    # re-raise below (SKIP_PATH_PREFIXES) are not reported twice.
+    if defined?(LlamaBotRails::MothershipReporter)
+      LlamaBotRails::MothershipReporter.report_exception(
+        exception, env: env, recovered: false, context: "leonardo_error_page"
+      )
+    end
+
     request = Rack::Request.new(env)
     raise exception unless handle?(request)
 
