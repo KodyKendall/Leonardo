@@ -16,7 +16,7 @@ x-logging: &default-logging
 
 services:
   llamapress:
-    image: kody06/llamapress-simple:0.7.0        # <— pre-built tag (includes erb_lint)
+    image: kody06/llamapress-simple:0.7.1        # <— pre-built tag (includes erb_lint)
     # user: "1000:1000"  # Run as UID 1000 to prevent root-owned file creation
     env_file: .env                           # read secrets from this file
     environment:
@@ -175,6 +175,11 @@ services:
   code:
     image: kody06/llamabot-vscode:0.2.0
     container_name: code
+    # The VS Code editor is opt-in. This profile keeps `docker compose up -d`
+    # (a reboot, bin/update) from starting the editor. LlamaBot starts and stops
+    # it on request with `docker compose --profile code up -d code` when someone
+    # turns the editor on in Settings. See LlamaBot app/services/vscode_service.py.
+    profiles: ["code"]
     environment:
       - TZ=America/Denver
       - PASSWORD=${VSCODE_PASSWORD:-password}

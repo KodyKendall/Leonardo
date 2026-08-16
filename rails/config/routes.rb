@@ -52,6 +52,9 @@ Rails.application.routes.draw do
   post "/webhooks/recall", to: "webhooks#recall"
 
   get "/prototypes/*page", to: "prototypes#show"
+
+  # TEMPORARY — manual smoke test for Rails error telemetry. Delete after use.
+  get "/telemetry_boom", to: "telemetry_boom#show"
   # Defines the root path route ("/")
   # root "posts#index"
 end

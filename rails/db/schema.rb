@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_20_000001) do
+ActiveRecord::Schema[7.2].define(version: 2026_08_16_031122) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -87,6 +87,40 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_20_000001) do
     t.jsonb "checkpoint", null: false
     t.jsonb "metadata", default: {}, null: false
     t.index ["thread_id"], name: "checkpoints_thread_id_idx"
+  end
+
+  create_table "llama_bot_rails_activity_events", force: :cascade do |t|
+    t.string "event_type", null: false
+    t.datetime "occurred_at", null: false
+    t.string "actor_type"
+    t.string "actor_id"
+    t.string "actor_label"
+    t.string "subject_type"
+    t.string "subject_id"
+    t.string "subject_label"
+    t.string "workspace_id"
+    t.string "source", default: "system", null: false
+    t.string "request_id"
+    t.string "correlation_id"
+    t.bigint "parent_event_id"
+    t.string "controller"
+    t.string "action"
+    t.string "job_class"
+    t.string "job_id"
+    t.string "trigger_type"
+    t.string "trigger_name"
+    t.boolean "human", default: false, null: false
+    t.integer "changed_records_count", default: 0, null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.index ["actor_type", "actor_id", "occurred_at"], name: "idx_llama_activity_actor"
+    t.index ["correlation_id"], name: "idx_llama_activity_correlation"
+    t.index ["event_type", "occurred_at"], name: "idx_llama_activity_type"
+    t.index ["human", "workspace_id", "occurred_at"], name: "idx_llama_activity_human"
+    t.index ["parent_event_id"], name: "idx_llama_activity_parent"
+    t.index ["request_id"], name: "idx_llama_activity_request"
+    t.index ["subject_type", "subject_id", "occurred_at"], name: "idx_llama_activity_subject"
+    t.index ["workspace_id", "occurred_at"], name: "idx_llama_activity_workspace"
   end
 
   create_table "llama_bot_rails_conversation_participants", force: :cascade do |t|
@@ -348,6 +382,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_20_000001) do
     t.jsonb "object"
     t.jsonb "object_changes"
     t.datetime "created_at"
+    t.string "correlation_id"
+    t.string "request_id"
+    t.string "source"
+    t.bigint "activity_event_id"
+    t.index ["activity_event_id"], name: "idx_versions_activity_event"
+    t.index ["correlation_id"], name: "idx_versions_correlation"
     t.index ["created_at"], name: "index_versions_on_created_at"
     t.index ["item_type", "item_id"], name: "index_versions_on_item_type_and_item_id"
   end
