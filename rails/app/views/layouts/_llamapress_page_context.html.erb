@@ -1,3 +1,39 @@
+  <!-- Earliest-possible error capture. llamapress/console_capture.js is an ES
+       module, so it is DEFERRED — it does not exist yet while the body parses, and
+       an inline <script> that throws during page load would go unrecorded entirely.
+       That is precisely the "I loaded the page and it is broken" error a user most
+       wants to report. This classic script runs before everything and just buffers;
+       console_capture drains it on load (see llamapress/early_error_buffer.js) and
+       nulls the buffer, which is the signal for these listeners to stand down. -->
+  <script>
+    (function () {
+      window.__llamapressEarlyErrors = [];
+      function stash(entry) {
+        var buf = window.__llamapressEarlyErrors;
+        if (buf && buf.length < 25) buf.push(entry);
+      }
+      window.addEventListener("error", function (event) {
+        if (!window.__llamapressEarlyErrors) return;
+        stash({
+          kind: "uncaught",
+          message: event.message,
+          filename: event.filename,
+          lineno: event.lineno,
+          stack: event.error && event.error.stack
+        });
+      });
+      window.addEventListener("unhandledrejection", function (event) {
+        if (!window.__llamapressEarlyErrors) return;
+        var r = event.reason;
+        stash({
+          kind: "unhandled-rejection",
+          message: (r && r.message) || String(r),
+          stack: r && r.stack
+        });
+      });
+    })();
+  </script>
+
 <script>
   // Force fresh data on every page load - cache busting with timestamp
   window.page_loaded_at = <%= Time.current.to_f %>;
