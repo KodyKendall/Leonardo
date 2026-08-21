@@ -40,13 +40,12 @@
   window.request_path = "<%= @request_path %>";
   window.view_path = "<%= @view_path %>";
 
-  // LlamaPress configuration for JS modules
-  window.llamapressConfig = {
-    feedbackBubbleEnabled: <%= defined?(LlamapressConfig) ? LlamapressConfig.feedback_bubble_enabled : true %>,
-    userLoggedIn: <%= user_signed_in? rescue false %>,
-    appVersion: <%= (defined?(LlamaBotRails) ? LlamaBotRails.app_version : "dev").to_json.html_safe %>,
-    releasesUrl: "<%= (LlamaBotRails::Engine.routes.url_helpers.releases_path rescue "/llama_bot/releases") %>"
-  };
+  // The LlamaPress JS config object used to be defined right here, which meant
+  // it only existed on pages rendered through THIS partial — so the feedback
+  // bubble was silently absent from every other layout (prototypes, admin
+  // shells, anything Leo generated). The gem now injects it into the <head> of
+  // every HTML response instead (LlamaBotRails::PageConfigInjection), so there
+  // is one source of truth and no layout can forget it. Nothing to do here.
 
   // Origins allowed to run JS in this page via the execute-js postMessage command
   // (the agent's execute_browser_js tool). Fails closed to [] when unset, so
