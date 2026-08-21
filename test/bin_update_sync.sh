@@ -286,6 +286,44 @@ PATH="$mock_bin:$PATH" bash bin/update 1.2.3 2.3.4 >/dev/null 2>&1
 chk 'grep -q "\"status\": \"noop\"" .leonardo/last_update.json'   "noop marker written when truly current"
 chk '[ ! -f "$s7/calls" ]'                                        "no pull or up calls on a true noop"
 
+# ---- scenario 8: a PROJECT_DIR owned by another uid ------------------------
+# Fleet boxes run bin/update against a checkout owned by a different uid (911 on the dev box).
+# git then refuses EVERY command in that repo with "dubious ownership", so the sync's
+# is-inside-work-tree probe fails and the whole allowlist sync silently skips — the box takes
+# the new images but keeps frozen platform code. safe.directory has to be registered BEFORE
+# the first git command that needs it, not after.
+echo "== scenario 8: dubious repo ownership must not skip the sync =="
+if sudo -n true 2>/dev/null; then
+  own_up="$WORK/own_upstream"
+  mkdir -p "$own_up" && cd "$own_up"
+  git init -q -b main && git config user.email u@u && git config user.name up
+  mkdir -p bin && cp "$UPDATE" bin/update && chmod +x bin/update
+  echo "STALE" > bin/helper.sh
+  printf 'services:\n  llamabot:\n    image: kody06/llamabot:1.0.0\n' > docker-compose.yml
+  git add -A && git commit -qm "own upstream"
+
+  cd "$WORK" && git clone -q own_upstream own_client && cd own_client
+  git remote rename origin upstream
+  git config user.email c@c && git config user.name client
+
+  echo "NEW-PLATFORM-CODE" > "$own_up/bin/helper.sh"
+  (cd "$own_up" && git commit -qam "platform bump")
+
+  # the fleet's shape: worktree + gitdir owned by another uid, contents still writable
+  sudo chown 911:911 "$WORK/own_client" "$WORK/own_client/.git"
+  sudo chmod -R a+rwX "$WORK/own_client"
+
+  own_home="$WORK/own_home"; mkdir -p "$own_home"   # clean global config — no safe.directory yet
+  HOME="$own_home" bash bin/update --sync-only >/dev/null 2>&1
+  chk 'grep -q NEW-PLATFORM-CODE bin/helper.sh'            "allowlist synced despite dubious repo ownership"
+  chk '! grep -q "not a git repo" .leonardo/update.log'    "sync not misreported as not-a-git-repo"
+  chk 'git config --file "$own_home/.gitconfig" --get-all safe.directory 2>/dev/null | grep -qxF "$WORK/own_client"' \
+                                                           "safe.directory registered for the project dir"
+  sudo chown -R "$(id -u):$(id -g)" "$WORK/own_client"     # let the EXIT trap clean up
+else
+  echo "  SKIP  scenario 8 needs passwordless sudo to chown the repo"
+fi
+
 echo
 if [ "$fails" -eq 0 ]; then echo "ALL PASS"; else echo "$fails FAILED"; fi
 exit "$fails"

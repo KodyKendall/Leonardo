@@ -313,9 +313,13 @@ preflight_compose() {
 
 sync_from_upstream() {
   command -v git >/dev/null 2>&1 || { log "sync: git not found — skipping"; return 0; }
+  # MUST come before the first git command in $PROJECT_DIR. Fleet checkouts are often owned by
+  # a different uid than the caller; git then refuses EVERY command there with "dubious
+  # ownership", the probe below reads that as "not a git repo", and the whole sync silently
+  # skips — the box takes new images while its platform code stays frozen.
+  git config --global --add safe.directory "$PROJECT_DIR" 2>/dev/null || true
   git -C "$PROJECT_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1 \
     || { log "sync: not a git repo — skipping"; return 0; }
-  git config --global --add safe.directory "$PROJECT_DIR" 2>/dev/null || true
   git -C "$PROJECT_DIR" remote get-url "$UPSTREAM_REMOTE" >/dev/null 2>&1 \
     || { log "sync: no '$UPSTREAM_REMOTE' remote — skipping (this IS upstream?)"; return 0; }
 
