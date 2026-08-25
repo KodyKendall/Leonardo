@@ -2,8 +2,14 @@ class ApplicationController < ActionController::Base
   include Pundit::Authorization
   include Pagy::Backend  # Pagination - provides pagy() method for controllers
   
-  # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
-  allow_browser versions: :modern
+  # Do NOT put this back to Rails' `:modern` default (Safari 17.2+ / Chrome 120+).
+  # `:modern` returns a hard HTTP 406 "browser not supported" page on EVERY route,
+  # sign-in included, so an older phone gets no app at all. Our users are small
+  # businesses on whatever phone they own: a 2026-08-23 sweep of 129 running boxes
+  # found 89 of them unreachable from Samsung Internet 23 and iOS Safari 16.6.
+  # Browsers not named in this hash are allowed through, so this widens rather than
+  # enumerates. Guarded by spec/requests/allow_browser_spec.rb. SupportIncident #344.
+  allow_browser versions: { safari: 15, chrome: 96, firefox: 95, opera: 82, ie: false }
 
   # AUTHENTICATION IS DISABLED BY DEFAULT FOR NEW PROJECTS.
   #
