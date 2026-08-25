@@ -543,12 +543,29 @@ fi
 # When the sync changed docker-compose.yml, recreate EVERYTHING (`up -d` with no service
 # list) — compose only recreates services whose config actually changed, and this applies
 # non-image changes too (new mounts, log rotation, env). Otherwise recreate only CHANGED.
+# After the recreate, prune now-unreferenced images: every update pulls a new
+# llamabot/llamapress tag (~5GB each) but the OLD tag lingers forever, so boxes
+# accumulate ~1GB+ of superseded image layers per update cycle and slowly fill the
+# node disk (2026-06-26 sweep: 46-64% of each box's image space was stale old tags,
+# ~290GB reclaimable on a single node). `docker image prune -af` runs AFTER `up -d`
+# so the freshly-recreated stack references (and protects) the current images;
+# only images no container references — the old versions — are removed. It's
+# `image prune` (NOT `system prune -af`, which the 2026-06-10 lxd3 incident proved
+# wipes images out from under stopped/crashed stacks and forces slow re-pulls).
+#
+# 🛑 DO NOT DELETE THIS AGAIN. Added 2026-06-27 (6ed8e521), silently reverted
+# 2026-07-22 by afb3c77c — an unrelated evals/OpenWiki/SEO commit that carried a
+# stale copy of this file. Reverted a SECOND time by the 0.7.4 release, found
+# 2026-08-25 during the post-merge reconcile. One month after the first revert,
+# node-2 hit 100% root and node-5 88% pool (2026-08-23) purely from the images this
+# line would have pruned. If you are resolving a conflict in this file, KEEP the
+# prune. Guarded daily by the mothership BinUpdateSyncCheckJob.
 if [ "$COMPOSE_SYNC_CHANGED" -eq 1 ]; then
   write_marker "restarting" "compose changed; recreating all services (images: ${CHANGED[*]:-none})"
-  RESTART_CMD="cd $PROJECT_DIR && $DC up -d"
+  RESTART_CMD="cd $PROJECT_DIR && $DC up -d && docker image prune -af"
 else
   write_marker "restarting" "images pulled; recreating ${CHANGED[*]:-}"
-  RESTART_CMD="cd $PROJECT_DIR && $DC up -d ${CHANGED[*]:-}"
+  RESTART_CMD="cd $PROJECT_DIR && $DC up -d ${CHANGED[*]:-} && docker image prune -af"
 fi
 if command -v systemd-run >/dev/null 2>&1; then
   UNIT="leonardo-update-$(date +%s)"
