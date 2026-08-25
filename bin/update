@@ -121,6 +121,11 @@ LLAMAPRESS_TARGET="${2:-}"
 VERSION_RE='^[0-9A-Za-z.\-]+$'
 CHANGED=()
 COMPOSE_SYNC_CHANGED=0   # set by sync_from_upstream when the checkout altered docker-compose.yml
+SYNC_SKIPPED=0           # set by sync_from_upstream when the allowlist sync did NOT run.
+                         # A skipped sync is SILENT damage: images move, platform overlay
+                         # (bin/, rails/db/migrate, docker-compose.yml, JS helpers) does not,
+                         # so the box drifts version-by-version until something 500s or a
+                         # feature reports itself "not installed". Surfaced in the done line.
 
 mkdir -p "$MARKER_DIR" 2>/dev/null || true
 
@@ -313,19 +318,27 @@ preflight_compose() {
 
 sync_from_upstream() {
   command -v git >/dev/null 2>&1 || { log "sync: git not found — skipping"; return 0; }
-  # MUST come before the first git command in $PROJECT_DIR. Fleet checkouts are often owned by
-  # a different uid than the caller; git then refuses EVERY command there with "dubious
-  # ownership", the probe below reads that as "not a git repo", and the whole sync silently
-  # skips — the box takes new images while its platform code stays frozen.
+  # safe.directory MUST be registered BEFORE the first git command that touches the
+  # repo. git refuses every command in a repo it considers "dubiously owned" (the
+  # working tree is owned by a different uid than the caller), so `rev-parse
+  # --is-inside-work-tree` exits non-zero and the old ordering logged the flatly
+  # untrue "not a git repo — skipping" and dropped the whole allowlist sync. The box
+  # then got new IMAGES with platform overlay code (bin/, rails/db/migrate,
+  # docker-compose.yml, JS helpers) frozen at whatever version last synced — which is
+  # how leo-nefe reached 0.7.2.1 images while missing the 2026-08-16 activity-tracking
+  # migrations, and why its Leo showed "Activity tracking is not installed yet"
+  # (2026-08-20, SI #320). Registering first is free and idempotent when ownership is
+  # already fine.
   git config --global --add safe.directory "$PROJECT_DIR" 2>/dev/null || true
   git -C "$PROJECT_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1 \
-    || { log "sync: not a git repo — skipping"; return 0; }
+    || { log "sync: SKIPPED — '$PROJECT_DIR' is not a usable git work tree (ownership? corruption?); platform overlay will NOT be updated"; SYNC_SKIPPED=1; return 0; }
   git -C "$PROJECT_DIR" remote get-url "$UPSTREAM_REMOTE" >/dev/null 2>&1 \
-    || { log "sync: no '$UPSTREAM_REMOTE' remote — skipping (this IS upstream?)"; return 0; }
+    || { log "sync: no '$UPSTREAM_REMOTE' remote — skipping (this IS upstream?)"; SYNC_SKIPPED=1; return 0; }
 
   log "sync: fetching $UPSTREAM_REMOTE/$UPSTREAM_BRANCH ..."
   if ! git -C "$PROJECT_DIR" fetch --quiet "$UPSTREAM_REMOTE" "$UPSTREAM_BRANCH" 2>>"$LOG"; then
-    log "sync: WARN git fetch failed — skipping sync (image swap continues)"
+    log "sync: SKIPPED — git fetch of $UPSTREAM_REMOTE/$UPSTREAM_BRANCH failed; platform overlay will NOT be updated (image swap continues)"
+    SYNC_SKIPPED=1
     return 0
   fi
   local ref="$UPSTREAM_REMOTE/$UPSTREAM_BRANCH" sha
@@ -543,6 +556,8 @@ fi
 # When the sync changed docker-compose.yml, recreate EVERYTHING (`up -d` with no service
 # list) — compose only recreates services whose config actually changed, and this applies
 # non-image changes too (new mounts, log rotation, env). Otherwise recreate only CHANGED.
+if [ "$COMPOSE_SYNC_CHANGED" -eq 1 ]; then
+  write_marker "restarting" "compose changed; recreating all services (images: ${CHANGED[*]:-none})"
 # After the recreate, prune now-unreferenced images: every update pulls a new
 # llamabot/llamapress tag (~5GB each) but the OLD tag lingers forever, so boxes
 # accumulate ~1GB+ of superseded image layers per update cycle and slowly fill the
@@ -560,8 +575,6 @@ fi
 # node-2 hit 100% root and node-5 88% pool (2026-08-23) purely from the images this
 # line would have pruned. If you are resolving a conflict in this file, KEEP the
 # prune. Guarded daily by the mothership BinUpdateSyncCheckJob.
-if [ "$COMPOSE_SYNC_CHANGED" -eq 1 ]; then
-  write_marker "restarting" "compose changed; recreating all services (images: ${CHANGED[*]:-none})"
   RESTART_CMD="cd $PROJECT_DIR && $DC up -d && docker image prune -af"
 else
   write_marker "restarting" "images pulled; recreating ${CHANGED[*]:-}"
@@ -581,6 +594,11 @@ else
 fi
 
 write_marker "success" "updated ${CHANGED[*]:-config only}; restart scheduled"
-log "=== bin/update done (changed: ${CHANGED[*]:-config only}) ==="
+SYNC_NOTE=""
+if [ "$SYNC_SKIPPED" = "1" ]; then
+  SYNC_NOTE="; SYNC SKIPPED"
+  log "=== WARNING: allowlist sync did NOT run — this box now has NEW IMAGES with STALE platform overlay code. Re-run bin/update once the cause logged above is fixed. ==="
+fi
+log "=== bin/update done (changed: ${CHANGED[*]:-config only}${SYNC_NOTE}) ==="
 echo "Update initiated for: ${CHANGED[*]:-config only}. Containers restarting..."
 exit 0
