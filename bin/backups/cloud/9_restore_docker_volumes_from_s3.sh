@@ -51,6 +51,10 @@ if [ -z "$TIMESTAMP" ]; then
 fi
 
 # List of volumes to restore
+# Must stay symmetric with 2_backup_docker_volumes_to_s3.sh (SI#327). A box whose
+# storage root sits outside these volumes is captured separately as
+# rails_storage_outofvolume-*.tar.gz; restoring it is a manual step, deliberately,
+# because the right destination depends on where the box has been reconfigured to.
 VOLUMES="postgres_data redis_data rails_storage code_config"
 FAILED_VOLUMES=""
 RESTORED_COUNT=0

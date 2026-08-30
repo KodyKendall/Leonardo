@@ -324,6 +324,90 @@ else
   echo "  SKIP  scenario 8 needs passwordless sudo to chown the repo"
 fi
 
+# ---------- SCENARIO 9: ensure_gitignore_union is append-safe ----------
+# Two ways the union silently broke on the fleet (mothership sweep, 2026-08-24):
+#   a) a .gitignore with no trailing newline glues the first appended line onto the
+#      last existing one, breaking BOTH rules;
+#   b) a root-owned .gitignore in an ubuntu-owned repo makes every append fail —
+#      the error went to stderr and the function carried on, so a third of the
+#      fleet could never receive another rule and nobody knew.
+echo
+echo "SCENARIO 9: .gitignore union is append-safe"
+
+g_up="$WORK/gi_upstream"
+mkdir -p "$g_up" && cd "$g_up"
+git init -q -b main && git config user.email u@u && git config user.name up
+mkdir -p bin && cp "$UPDATE" bin/update && chmod +x bin/update
+printf 'services:\n  llamabot:\n    image: kody06/llamabot:1.0.0\n' > docker-compose.yml
+printf '.env\nAGENT_CREDS_SENTINEL\n' > .gitignore
+git add -A && git commit -qm "gi upstream"
+
+cd "$WORK" && git clone -q gi_upstream gi_client && cd gi_client
+git remote rename origin upstream
+git config user.email c@c && git config user.name client
+
+# (a) client .gitignore deliberately has NO trailing newline
+printf '.env\nCLIENT_LAST_LINE_NO_NEWLINE' > .gitignore
+git commit -qam "client gitignore without trailing newline"
+
+bash bin/update --sync-only >/dev/null 2>&1
+
+chk 'grep -qxF "CLIENT_LAST_LINE_NO_NEWLINE" .gitignore' \
+    "pre-existing last line survives the union intact"
+chk 'grep -qxF "AGENT_CREDS_SENTINEL" .gitignore' \
+    "upstream line is appended as its own line"
+chk '! grep -q "CLIENT_LAST_LINE_NO_NEWLINEAGENT_CREDS_SENTINEL" .gitignore' \
+    "no-trailing-newline does not glue two rules together"
+
+# (b) unwritable .gitignore must be reported, not silently skipped
+if sudo -n true 2>/dev/null; then
+  printf '.env\n' > .gitignore
+  git commit -qam "reset gitignore" >/dev/null 2>&1 || true
+  sudo chown 0:0 .gitignore && sudo chmod 644 .gitignore
+  echo "NEW_UPSTREAM_RULE" >> "$g_up/.gitignore"
+  (cd "$g_up" && git commit -qam "add rule")
+
+  bash bin/update --sync-only >/dev/null 2>&1
+
+  # Either it recovered ownership and applied the rule, or it said so loudly.
+  chk 'grep -qxF "NEW_UPSTREAM_RULE" .gitignore || grep -q "gitignore: NOT WRITABLE" .leonardo/update.log' \
+      "unwritable .gitignore is repaired or logged, never a silent no-op"
+  sudo chown "$(id -u):$(id -g)" .gitignore
+else
+  echo "  SKIP  scenario 9b needs passwordless sudo to root-own .gitignore"
+fi
+
+# ---------- SCENARIO 10: compose template shape ----------
+# These are template guarantees the fleet depends on, and each one has already
+# cost us an incident: a dead Puma inside a live container (SI#207) and uploads
+# written to tmp/ that an image bump deletes (SI#327).
+echo
+echo "SCENARIO 10: docker-compose template guarantees"
+COMPOSE="$REPO_ROOT/docker-compose.yml"
+
+chk 'python3 - "$COMPOSE" <<'"'"'EOF'"'"'
+import sys, yaml
+c = yaml.safe_load(open(sys.argv[1]))
+hc = c["services"]["llamapress"].get("healthcheck")
+sys.exit(0 if hc and hc.get("test") else 1)
+EOF' "llamapress service declares a healthcheck"
+
+chk 'python3 - "$COMPOSE" <<'"'"'EOF'"'"'
+import sys, yaml
+c = yaml.safe_load(open(sys.argv[1]))
+vols = c["services"]["llamapress"]["volumes"]
+named = [v for v in vols if isinstance(v, str) and v.split(":")[1:2] == ["/rails/tmp/storage"]]
+if not named: sys.exit(1)
+sys.exit(0 if named[0].split(":")[0] in (c.get("volumes") or {}) else 1)
+EOF' "/rails/tmp/storage is a declared named volume"
+
+chk 'grep -q "for attempt in" "$COMPOSE"' \
+    "llamapress command retries Puma before falling back to the debug husk"
+
+chk 'grep -q "exec tail -f /dev/null" "$COMPOSE"' \
+    "debug husk fallback is preserved (tail_rails_logs must still work)"
+
+
 echo
 if [ "$fails" -eq 0 ]; then echo "ALL PASS"; else echo "$fails FAILED"; fi
 exit "$fails"

@@ -29,6 +29,123 @@ function currentPagePath() {
   return `${url.pathname}${url.search}`;
 }
 
+// ---------------------------------------------------------------------------
+// Unsent-draft insurance. A failed submit must never lose what the user typed:
+// the session can expire underneath an open page (Devise daily cutoff / idle
+// timeout), which orphans the page's CSRF token and makes the POST 422 with
+// InvalidAuthenticityToken, and by then a long message has been written. The text
+// is parked in localStorage on any failure and put back into the box the next time
+// the bubble initialises (e.g. right after the user signs in again). Attachments
+// are File objects and cannot be persisted, so only the text is kept.
+// ---------------------------------------------------------------------------
+const DRAFT_STORAGE_KEY = 'llamapress.feedback.draft';
+const DRAFT_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000;
+
+function saveDraft(text) {
+  if (!text) return;
+  try {
+    const previous = loadDraft();
+    localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify({
+      text,
+      path: currentPagePath(),
+      savedAt: Date.now(),
+      // Keep the "already announced" flag if we're re-saving the same draft, so a
+      // repeat failure doesn't re-open the panel on every subsequent page load.
+      announced: previous && previous.text === text ? previous.announced : false
+    }));
+  } catch (_) { /* storage unavailable (private mode, quota) - nothing to do */ }
+}
+
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_STORAGE_KEY);
+    if (!raw) return null;
+    const draft = JSON.parse(raw);
+    if (!draft || !draft.text || (Date.now() - (draft.savedAt || 0)) > DRAFT_MAX_AGE_MS) {
+      clearDraft();
+      return null;
+    }
+    return draft;
+  } catch (_) {
+    return null;
+  }
+}
+
+function clearDraft() {
+  try { localStorage.removeItem(DRAFT_STORAGE_KEY); } catch (_) { /* ignore */ }
+}
+
+function markDraftAnnounced(draft) {
+  try {
+    localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify({ ...draft, announced: true }));
+  } catch (_) { /* ignore */ }
+}
+
+// Put a saved draft back into the textarea (if it's empty). The first time a
+// given draft is restored the panel is opened so the user notices it; later page
+// loads restore silently so it isn't lost but doesn't nag.
+function restoreDraft() {
+  const draft = loadDraft();
+  if (!draft) return;
+  const textarea = document.getElementById('feedback-text');
+  if (!textarea || textarea.value.trim()) return;
+
+  textarea.value = draft.text;
+  showStatus('Restored your unsent feedback from earlier. Review it and press Send (re-add any attachments).');
+  if (!draft.announced) {
+    markDraftAnnounced(draft);
+    togglePanel(true);
+  }
+}
+
+// The CSRF token in the page's <meta> is bound to the session cookie the page was
+// rendered with. If that cookie has since been replaced (the user was signed out by
+// a session timeout, or a cookie-less request minted a fresh session) the token is
+// orphaned and every POST fails with InvalidAuthenticityToken. Re-read it from a
+// fresh copy of the current page and update the <meta> so later calls see it too.
+// Returns { token, signedOut }: signedOut is true when the page now redirects to a
+// sign-in screen, i.e. the session really is gone and a retry is pointless.
+async function refreshCSRFToken() {
+  try {
+    const res = await fetch(window.location.href, {
+      method: 'GET',
+      credentials: 'same-origin',
+      cache: 'no-store',
+      headers: { 'Accept': 'text/html' }
+    });
+    const signedOut = !!(res.redirected && /sign_in|login|session\/new/i.test(res.url || ''));
+    const html = await res.text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const token = doc.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+    if (token && !signedOut) {
+      let meta = document.querySelector('meta[name="csrf-token"]');
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('name', 'csrf-token');
+        document.head.appendChild(meta);
+      }
+      meta.setAttribute('content', token);
+    }
+    return { token, signedOut };
+  } catch (_) {
+    return { token: '', signedOut: false };
+  }
+}
+
+function sessionExpiredError({ requestPath, viewPath, status, body }) {
+  const err = new Error('Your session has expired, so this could not be sent.');
+  err.sessionExpired = true;
+  err.details = buildErrorReport({
+    requestPath,
+    viewPath,
+    stage: 'session-expired',
+    status,
+    message: 'Session expired (signed out) before the feedback was submitted; draft saved locally.',
+    body
+  });
+  return err;
+}
+
 function getCSRFToken() {
   const meta = document.querySelector('meta[name="csrf-token"]');
   return meta ? meta.getAttribute('content') : '';
@@ -218,6 +335,7 @@ function createBubbleHTML() {
 
         <!-- Version footer: shows the running version, links to release notes -->
         <a id="feedback-version-chip"
+           data-turbo-prefetch="false"
            href="${(window.llamapressConfig && window.llamapressConfig.releasesUrl) || '/llama_bot/releases'}"
            class="flex items-center justify-center gap-1.5 px-3 py-2 bg-gray-50 border-t border-gray-200 rounded-b-xl text-[11px] text-gray-400 hover:text-purple-600 transition-colors"
            title="View release notes">
@@ -554,6 +672,43 @@ function hideStatus() {
   if (status) status.classList.add('hidden');
 }
 
+// The session ended (timeout / daily cutoff) between opening the page and pressing
+// Send. The draft has already been parked in localStorage; tell the user plainly and
+// offer a one-click way back: reloading sends them through sign-in and back to this
+// page, where restoreDraft() puts their text back into the box.
+function showSessionExpired(details) {
+  const status = document.getElementById('feedback-status');
+  if (!status) return;
+
+  status.classList.remove('hidden');
+  status.className = 'mt-2 text-xs text-red-600';
+  status.textContent = '';
+
+  const summaryEl = document.createElement('p');
+  summaryEl.textContent = 'Your session has expired, so this could not be sent.';
+
+  const hintEl = document.createElement('p');
+  hintEl.className = 'mt-1 text-gray-600';
+  hintEl.textContent = 'Your message is saved in this browser. Sign in again and it will be restored here (attachments will need to be re-added).';
+
+  const signInBtn = document.createElement('button');
+  signInBtn.type = 'button';
+  signInBtn.className = 'mt-2 px-2 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded transition-colors';
+  signInBtn.textContent = 'Sign in again';
+  signInBtn.addEventListener('click', () => { window.location.reload(); });
+
+  const detailsEl = document.createElement('textarea');
+  detailsEl.id = 'feedback-error-details';
+  detailsEl.readOnly = true;
+  detailsEl.value = details || '';
+  detailsEl.className = 'hidden mt-2 w-full h-24 text-[11px] font-mono border border-gray-300 rounded p-2 resize-none';
+
+  status.appendChild(summaryEl);
+  status.appendChild(hintEl);
+  status.appendChild(signInBtn);
+  status.appendChild(detailsEl);
+}
+
 // Show a failure state that lets the user copy a full error report to send to
 // an admin, and prompts them to refresh and try again.
 function showSubmitError(summary, details) {
@@ -827,37 +982,67 @@ async function submitFeedback(description, files) {
     formData.append('user_feedback[selected_element_selector]', selectedElement.selector || '');
   }
 
-  let response;
-  try {
-    // Ask for JSON. The engine controller used to always redirect, and relying on
-    // browser redirect handling for a fetch() submit surfaced in Chrome as a
-    // network-stage "Failed to fetch" (SupportIncident #139, leo-manu).
-    response = await fetch('/llama_bot/feedback', {
-      method: 'POST',
-      headers: { 'X-CSRF-Token': getCSRFToken(), 'Accept': 'application/json' },
-      body: formData
-    });
-  } catch (networkError) {
-    // Network/CORS failure - no response at all
-    const err = new Error(`Network error while submitting feedback: ${networkError.message}`);
-    err.details = buildErrorReport({
-      requestPath,
-      viewPath,
-      stage: 'network',
-      message: networkError.message
-    });
-    throw err;
-  }
+  // Ask for JSON. The engine controller used to always redirect, and relying on
+  // browser redirect handling for a fetch() submit surfaced in Chrome as a
+  // network-stage "Failed to fetch" (SupportIncident #139, leo-manu).
+  // getCSRFToken() is read at call time so a refreshed <meta> is picked up on retry.
+  const postOnce = async () => {
+    try {
+      return await fetch('/llama_bot/feedback', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'X-CSRF-Token': getCSRFToken(), 'Accept': 'application/json' },
+        body: formData
+      });
+    } catch (networkError) {
+      // Network/CORS failure - no response at all
+      const err = new Error(`Network error while submitting feedback: ${networkError.message}`);
+      err.details = buildErrorReport({
+        requestPath,
+        viewPath,
+        stage: 'network',
+        message: networkError.message
+      });
+      throw err;
+    }
+  };
+  const succeeded = (r) => r.type === 'opaqueredirect' || r.ok || (r.status >= 200 && r.status < 400);
+  const readBody = async (r) => {
+    try { return await r.text(); } catch (_) { return ''; }
+  };
 
-  if (response.type === 'opaqueredirect' || response.ok || (response.status >= 200 && response.status < 400)) {
-    return { success: true };
-  }
+  let response = await postOnce();
+  if (succeeded(response)) return { success: true };
 
   // Pull the response body so admins get something actionable
-  let responseBody = '';
-  try {
-    responseBody = await response.text();
-  } catch (_) { /* body may be unavailable */ }
+  let responseBody = await readBody(response);
+
+  // A 422 carrying InvalidAuthenticityToken means the page's CSRF token no longer
+  // matches the session cookie (the session was replaced underneath the open page -
+  // e.g. Devise signed the user out at a timeout/daily cutoff and a later request
+  // minted a fresh session). Refresh the token from the live page and retry once;
+  // if the page now bounces to sign-in, the session is genuinely gone.
+  // Also accept the engine's structured answer. The gem now rescues
+  // InvalidAuthenticityToken and renders {"error":"session_expired"} as JSON, so the
+  // widget no longer depends on parsing Rails' development debug page — which is what it
+  // was reduced to doing, and why the user saw a bare "Status: 422".
+  if (response.status === 422
+      && /InvalidAuthenticityToken|CSRF token|"error"\s*:\s*"session_expired"/i.test(responseBody)) {
+    const { token, signedOut } = await refreshCSRFToken();
+    if (signedOut) {
+      throw sessionExpiredError({ requestPath, viewPath, status: response.status, body: responseBody });
+    }
+    if (token) {
+      response = await postOnce();
+      if (succeeded(response)) return { success: true };
+      responseBody = await readBody(response);
+    }
+  }
+
+  // The engine answers an unauthenticated JSON POST with 401 "Authentication required".
+  if (response.status === 401) {
+    throw sessionExpiredError({ requestPath, viewPath, status: response.status, body: responseBody });
+  }
 
   const err = new Error(`Failed to submit feedback (HTTP ${response.status})`);
   err.details = buildErrorReport({
@@ -1117,6 +1302,7 @@ function attachEventListeners() {
 
       try {
         await submitFeedback(description, files);
+        clearDraft();
         showStatus('Thanks for your feedback!');
         setTimeout(() => {
           togglePanel(false);
@@ -1128,8 +1314,14 @@ function attachEventListeners() {
         }, 1500);
       } catch (error) {
         console.error('Feedback submission error:', error);
+        // Whatever went wrong, the typed text must survive a reload / re-login.
+        saveDraft(description);
         const details = error.details || `${error.message || 'Unknown error'}\n${error.stack || ''}`.trim();
-        showSubmitError(error.message || 'Failed to send your feedback.', details);
+        if (error.sessionExpired) {
+          showSessionExpired(details);
+        } else {
+          showSubmitError(error.message || 'Failed to send your feedback.', details);
+        }
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.textContent = 'Send';
@@ -1158,6 +1350,7 @@ function initFeedbackBubble() {
   attachEventListeners();
   setupNotificationSubscription();
   fetchUnreadCount();
+  restoreDraft();
 
   bubbleInitialized = true;
 }
