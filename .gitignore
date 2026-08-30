@@ -39,3 +39,28 @@ prompts/
 docker-compose.yml.pre-sync-*
 rails/public/uploads/*
 !rails/public/uploads/.keep
+
+# ── Agent & CLI credentials — NEVER commit (fleet rule, added 2026-08-24) ──
+# Codex CLI runs with CODEX_HOME set INSIDE this repo, so the whole tree is ignored,
+# not just auth.json (which holds OPENAI_API_KEY plus OAuth refresh tokens).
+.leonardo/chatgpt-auth/
+.codex/
+auth.json
+# Claude Code credentials
+.claude/.credentials.json
+.claude.json
+# Generic credential stores
+.netrc
+.git-credentials
+.config/gh/
+.aws/
+# Private keys and service credentials
+.ssh-shared/
+*.pem
+*.ppk
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed25519*
+service-account*.json
+client_secret*.json

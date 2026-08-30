@@ -142,18 +142,46 @@ EOF
 fail() { log "FAILED: $1"; write_marker "failed" "$1"; exit 1; }
 
 # ---- platform sync (allowlist checkout from upstream) ----------------------
+# Append every upstream .gitignore line the box does not already have. Two failure
+# modes made this a silent no-op on a large slice of the fleet (mothership sweep,
+# 2026-08-24), so both are handled and any append failure is now LOGGED:
+#   * a .gitignore with no trailing newline glues the first appended line onto the
+#     last existing one, breaking both rules;
+#   * a root-owned .gitignore inside an ubuntu-owned repo rejects every append, and
+#     the stderr went nowhere — 51 of 160 boxes could never take another rule.
+gitignore_append() { # $1 file, $2 line — returns non-zero (and logs once) if unwritable
+  printf '%s\n' "$2" >> "$1" && return 0
+  [ -n "${_GI_WARNED:-}" ] || { log "gitignore: NOT WRITABLE ($1) — union skipped"; _GI_WARNED=1; }
+  return 1
+}
+
 ensure_gitignore_union() { # $1 ref — append upstream .gitignore lines not already present
-  local ref="$1" up line
+  local ref="$1" up line gi="$PROJECT_DIR/.gitignore" owner
   up="$(git -C "$PROJECT_DIR" show "$ref:.gitignore" 2>/dev/null)" || return 0
-  touch "$PROJECT_DIR/.gitignore"
+  touch "$gi" 2>/dev/null || { log "gitignore: NOT WRITABLE ($gi) — union skipped"; return 0; }
+  _GI_WARNED=""
+
+  # Keep ownership matching the repo root, or a later append by `ubuntu` fails and
+  # the box is frozen out of every future rule.
+  owner="$(stat -c %U "$PROJECT_DIR" 2>/dev/null || true)"
+  if [ -n "$owner" ] && [ "$(stat -c %U "$gi" 2>/dev/null || true)" != "$owner" ]; then
+    chown "$owner:$owner" "$gi" 2>/dev/null || true
+  fi
+
+  # No trailing newline would glue our first line onto the file's last line.
+  if [ -s "$gi" ] && [ "$(tail -c1 "$gi" | wc -l)" -eq 0 ]; then
+    printf '\n' >> "$gi" 2>/dev/null || { log "gitignore: NOT WRITABLE ($gi) — union skipped"; return 0; }
+  fi
+
   while IFS= read -r line; do
     [ -z "$line" ] && continue
-    grep -qxF -- "$line" "$PROJECT_DIR/.gitignore" 2>/dev/null || echo "$line" >> "$PROJECT_DIR/.gitignore"
+    grep -qxF -- "$line" "$gi" 2>/dev/null && continue
+    gitignore_append "$gi" "$line" || return 0
   done <<< "$up"
-  grep -qxF -- ".leonardo/instance.json" "$PROJECT_DIR/.gitignore" 2>/dev/null \
-    || echo ".leonardo/instance.json" >> "$PROJECT_DIR/.gitignore"
-  grep -qxF -- "$COMPOSE_FILE.pre-sync-*" "$PROJECT_DIR/.gitignore" 2>/dev/null \
-    || echo "$COMPOSE_FILE.pre-sync-*" >> "$PROJECT_DIR/.gitignore"
+  grep -qxF -- ".leonardo/instance.json" "$gi" 2>/dev/null \
+    || gitignore_append "$gi" ".leonardo/instance.json" || return 0
+  grep -qxF -- "$COMPOSE_FILE.pre-sync-*" "$gi" 2>/dev/null \
+    || gitignore_append "$gi" "$COMPOSE_FILE.pre-sync-*" || return 0
 }
 
 # ---- pre-sync safety net: snapshot compose before the wholesale checkout ---

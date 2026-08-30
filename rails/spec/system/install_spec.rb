@@ -10,11 +10,13 @@ require 'rails_helper'
 # top-level `user_agent:` option is silently ignored — navigator.userAgent still
 # reports HeadlessChrome and the mobile branches never run.
 #
-# Keep these at Safari 17.2 or newer. ApplicationController sets
-# `allow_browser versions: :modern`, and anything older gets a 406
-# "browser is not supported" page instead of the install page.
-IOS_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) " \
-                 "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1"
+# These used to be pinned at Safari 17.2 or newer to step around ApplicationController's
+# `allow_browser versions: :modern`, which 406s anything older on every route. That is
+# why two years of green CI never caught SupportIncident #344. The controller now names
+# a wider set, so the iOS UA below sits BELOW the old cutoff on purpose: if anyone
+# restores `:modern`, these specs fail instead of passing around the bug.
+IOS_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) " \
+                 "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1"
 
 ANDROID_USER_AGENT = "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 " \
                      "(KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36"
