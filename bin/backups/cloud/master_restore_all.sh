@@ -195,16 +195,46 @@ echo "🔍 Checking for existing backups..."
 FULL_TS=$(aws s3 cp "${S3_BUCKET}/latest-backup.txt" - 2>/dev/null | tr -d '[:space:]' || true)
 QUICK_TS=$(aws s3 cp "${S3_BUCKET}/latest/last-quick-backup.txt" - 2>/dev/null | tr -d '[:space:]' || true)
 
-if [ -z "$FULL_TS" ] && [ -z "$QUICK_TS" ]; then
-    MODE="none"
-elif [ -n "$FULL_TS" ] && [ -z "$QUICK_TS" ]; then
-    MODE="full"
-elif [ -z "$FULL_TS" ] && [ -n "$QUICK_TS" ]; then
-    MODE="quick"
-elif [[ "$QUICK_TS" > "$FULL_TS" ]]; then
-    MODE="hybrid"
-else
-    MODE="full"
+# Mode is decided by restore_mode() in lib/storage_coverage.sh so it can be tested
+# without S3 (test/backup_storage_coverage.sh). SI#327: `hybrid` restores volumes at
+# FULL_TS then overlays a NEWER database from QUICK_TS, so every file uploaded between
+# the two timestamps comes back as a blob row pointing at nothing. 15 of 145 boxes were
+# in that state, with gaps up to 5d13h. It now requires an explicit opt-in.
+RESTORE_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lib/storage_coverage.sh
+. "$RESTORE_SCRIPT_DIR/lib/storage_coverage.sh"
+
+MODE="$(restore_mode "$FULL_TS" "$QUICK_TS" "${ALLOW_HYBRID_RESTORE:-no}")"
+
+if [ "$MODE" = "hybrid-refused" ]; then
+    GAP="$(timestamp_gap_human "$FULL_TS" "$QUICK_TS")"
+    echo "════════════════════════════════════════════════════════════"
+    echo "⛔ REFUSING a hybrid restore — it would create orphaned attachments"
+    echo "   Volumes (files) available at: ${FULL_TS}"
+    echo "   Database available at:        ${QUICK_TS}  (NEWER by ${GAP})"
+    echo ""
+    echo "   Restoring that pair gives the customer a database describing ${GAP} of"
+    echo "   uploads whose files do not exist. Broken images, no error. See SI#327."
+    echo ""
+    echo "   Options:"
+    echo "     • Take a fresh FULL backup first, then restore — recommended."
+    echo "     • ALLOW_HYBRID_RESTORE=yes $0 ...  to proceed anyway, accepting that"
+    echo "       ${GAP} of attachments will be missing."
+    echo "════════════════════════════════════════════════════════════"
+    exit 1
+fi
+
+if [ "$MODE" = "hybrid" ]; then
+    echo "⚠️  HYBRID restore explicitly allowed — attachments from the last" \
+         "$(timestamp_gap_human "$FULL_TS" "$QUICK_TS") will be missing (SI#327)."
+fi
+
+if [ "$MODE" = "quick" ]; then
+    echo "════════════════════════════════════════════════════════════"
+    echo "⚠️  QUICK-ONLY RESTORE — there is NO full backup for this instance"
+    echo "   You will get a complete database and ZERO attachment files."
+    echo "   Every existing attachment will be a broken link. See SI#327."
+    echo "════════════════════════════════════════════════════════════"
 fi
 
 if [ "$MODE" = "none" ]; then

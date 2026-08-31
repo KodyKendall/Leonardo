@@ -37,6 +37,38 @@ PROJECT_NAME="${COMPOSE_PROJECT_NAME:-$(basename "$PWD" | tr '[:upper:]' '[:lowe
 # List of volumes to backup (logical names as defined in docker-compose.yml)
 VOLUMES="postgres_data redis_data rails_storage code_config"
 
+# ─── SI#327: verify this list actually covers where the app stores uploads ───
+# The constant above used to BE the whole definition of what we protect, and nothing
+# checked it against reality. Seven customer boxes wrote uploads to tmp/storage — not
+# one of these volumes — and the nightly backup reported success while capturing none
+# of it. Ask the application instead of assuming.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=lib/storage_coverage.sh
+[ -f "$SCRIPT_DIR/lib/storage_coverage.sh" ] && . "$SCRIPT_DIR/lib/storage_coverage.sh"
+
+EXTRA_STORAGE_ROOT=""
+if command -v root_is_covered >/dev/null 2>&1; then
+    STORAGE_ROOT="$(resolve_storage_root llamapress)"
+    root_is_covered "$STORAGE_ROOT" /rails/storage
+    case "$?" in
+      0) echo "✅ Storage coverage: app root ${STORAGE_ROOT} is inside a backed-up volume" ;;
+      2) echo "ℹ️  Storage coverage: no local storage root (S3-backed service) — nothing to cover" ;;
+      1)
+        echo "════════════════════════════════════════════════════════════"
+        echo "⚠️  STORAGE NOT COVERED BY THE VOLUME BACKUP"
+        echo "   App stores uploads at: ${STORAGE_ROOT}"
+        echo "   Backed-up volumes:     ${VOLUMES}"
+        echo "   Those files are in the container's writable layer and are DESTROYED"
+        echo "   on every image bump. See mothership SI#327."
+        echo "   Backing the directory up anyway so the box is protected while the"
+        echo "   configuration is corrected."
+        echo "════════════════════════════════════════════════════════════"
+        EXTRA_STORAGE_ROOT="$STORAGE_ROOT"
+        BACKUP_WARNINGS="${BACKUP_WARNINGS:-}storage_root_outside_backed_up_volumes(${STORAGE_ROOT});"
+        ;;
+    esac
+fi
+
 for volume in $VOLUMES; do
     echo "📦 Backing up ${volume}..."
     VOL_START=$(date +%s)
@@ -67,6 +99,20 @@ for volume in $VOLUMES; do
     VOL_DURATION=$((VOL_END - VOL_START))
     echo "   ✓ ${volume} done in ${VOL_DURATION}s"
 done
+
+# Back up a storage root that lives OUTSIDE the volume set (SI#327). A misconfigured box
+# stays protected while its configuration is being fixed, rather than silently having no
+# file backup at all.
+if [ -n "$EXTRA_STORAGE_ROOT" ]; then
+    echo "📦 Backing up out-of-volume storage root ${EXTRA_STORAGE_ROOT}..."
+    BACKUP_NAME="rails_storage_outofvolume-${INSTANCE_NAME}-${TIMESTAMP}.tar.gz"
+    if docker compose exec -T llamapress tar czf - -C "$EXTRA_STORAGE_ROOT" . 2>/dev/null \
+        | aws s3 cp - "${S3_BUCKET}/${TIMESTAMP}/${BACKUP_NAME}"; then
+        echo "   ✅ Captured ${EXTRA_STORAGE_ROOT} as ${BACKUP_NAME}"
+    else
+        echo "   ❌ FAILED to capture ${EXTRA_STORAGE_ROOT} — customer uploads are UNPROTECTED"
+    fi
+fi
 
 END=$(date +%s)
 DURATION=$((END - START))

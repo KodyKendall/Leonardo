@@ -79,6 +79,9 @@ services:
       - AWS_PASS=
     volumes:
       - rails_storage:/rails/storage         # ActiveStorage local files
+      # Blast shield (SI#327): a box misconfigured to write uploads under tmp/ still
+      # shows the wrong behaviour, but stops LOSING customer files on every image bump.
+      - rails_storage_tmp:/rails/tmp/storage
       - ./rails/app:/rails/app:delegated
       - ./rails/config/routes.rb:/rails/config/routes.rb:delegated
       - ./rails/db:/rails/db:delegated
@@ -101,7 +104,17 @@ services:
     # via `tail -f /dev/null` so Leonardo can still `docker exec` in and call `tail_rails_logs`
     # to diagnose the failure. Without this, a bad migration crashes the container and Leonardo
     # gets 409 Conflict on every exec call.
-    command: bash -c "rm -f tmp/pids/server.pid; bundle exec rails db:prepare || echo '!! db:prepare failed — keeping container alive for debugging'; bundle exec rails s -b 0.0.0.0; echo '!! Rails server exited — keeping container alive. Use tail_rails_logs to investigate, then restart the container to retry.'; exec tail -f /dev/null"
+    command: bash -c "rm -f tmp/pids/server.pid; bundle exec rails db:prepare || echo '!! db:prepare failed — keeping container alive for debugging'; for attempt in $$(seq 1 $${PUMA_MAX_RESTARTS:-3}); do bundle exec rails s -b 0.0.0.0; echo \"!! Rails server exited (attempt $$attempt of $${PUMA_MAX_RESTARTS:-3}) — retrying in $$((attempt * 15))s\"; sleep $$((attempt * 15)); rm -f tmp/pids/server.pid; done; echo '!! Rails server exited repeatedly — keeping container alive. Use tail_rails_logs to investigate, then restart the container to retry.'; exec tail -f /dev/null"
+    # A cgroup OOM kill takes Puma but not PID 1, so the container stays "running" and
+    # `restart: unless-stopped` never fires — kodykendall.com was down 5 days that way
+    # (SI#207). The healthcheck makes it VISIBLE; the retry loop above makes a transient
+    # OOM self-heal. Both are needed: docker's restart policy ignores health outside Swarm.
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -o /dev/null --max-time 5 http://127.0.0.1:3000/up || exit 1"]
+      interval: 30s
+      timeout: 10s
+      start_period: 180s     # db:prepare + asset boot on a cold 2 GiB box is slow; never flag that
+      retries: 3
     #TO DEBUG, comment the above command, uncomment the below command, restart the container, then run the docker compose exec command below.
     # command: tail -f /dev/null
     # docker compose exec -it llamapress bundle exec rails s -b 0.0.0.0
@@ -118,7 +131,7 @@ services:
       - llama-network
 
   llamabot:
-    image: kody06/llamabot:0.7.4
+    image: kody06/llamabot:0.7.5
     restart: unless-stopped
     logging: *default-logging
     # user: "1000:1000"  # Run as UID 1000 to prevent root-owned file creation
@@ -204,6 +217,7 @@ volumes:
   redis_data:
   postgres_data:
   rails_storage:
+  rails_storage_tmp:
   code_config:
 
 # Declare the external network
