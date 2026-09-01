@@ -29,6 +29,10 @@ jobs:
         run: bash test/bin_update_sync.sh
       - name: backup storage-coverage regression test
         run: bash test/backup_storage_coverage.sh
+      - name: backup exit-code regression test
+        run: bash test/backup_exit_codes.sh
+      - name: rails watchdog regression test
+        run: bash test/rails_watchdog.sh
 
   lint:
     name: ERB Lint (HTML Validity)

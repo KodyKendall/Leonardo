@@ -8,6 +8,12 @@
 #
 # Usage: ./quick_backup.sh <instance_name> <s3_bucket_path> [project_dir]
 
+# Both database stages are `pg_dump | gzip | aws s3 cp -`. Without pipefail the `if`
+# sees only the exit status of the LAST command, so a pg_dump that died mid-dump was
+# reported as ✅ success and its truncated output was uploaded as if it were a backup.
+# Found by test/backup_exit_codes.sh while fixing the exit-2 defect.
+set -o pipefail
+
 INSTANCE_NAME="$1"
 S3_BUCKET="$2"
 PROJECT_DIR="${3:-/home/ubuntu/Leonardo}"
@@ -49,7 +55,15 @@ echo "  ✅ AWS auth OK — $(echo "$AWS_IDENTITY" | awk '{print "Account: "$1, 
 STEP1_STATUS="⏭️  skipped"
 STEP2_STATUS="⏭️  skipped"
 STEP3_STATUS="⏭️  skipped"
-OVERALL_OK=true
+
+# Tracked separately on purpose. Collapsing them into one flag is what let a single
+# unreadable source file cost both database dumps (agent_task 160). The databases are
+# the irreplaceable half of a backup; the source tree is in git.
+SOURCE_OK=true
+DB_OK=true
+
+# shellcheck source=lib/backup_status.sh
+. "$(dirname "${BASH_SOURCE[0]}")/lib/backup_status.sh"
 
 # ─────────────────────────────────────────────────────────────
 # Step 1: Source code sync (incremental, fast for small changes)
@@ -57,7 +71,9 @@ OVERALL_OK=true
 echo ""
 echo "Step 1/3: Syncing Leonardo source code..."
 STEP1_START=$(date +%s)
-if aws s3 sync "${PROJECT_DIR}" "${S3_BUCKET}/latest/project-files/" \
+# Capture the exit code rather than using a bare `if`: exit 2 means "completed, some
+# files skipped", which is a warning. See lib/backup_status.sh.
+aws s3 sync "${PROJECT_DIR}" "${S3_BUCKET}/latest/project-files/" \
     --exclude "*.pyc" \
     --exclude "__pycache__/*" \
     --exclude "tmp/*" \
@@ -67,58 +83,62 @@ if aws s3 sync "${PROJECT_DIR}" "${S3_BUCKET}/latest/project-files/" \
     --exclude "backups/*" \
     --storage-class STANDARD_IA \
     --only-show-errors \
-    --delete; then
-    STEP1_STATUS="✅ success ($(( $(date +%s) - STEP1_START ))s)"
-else
-    STEP1_STATUS="❌ FAILED ($(( $(date +%s) - STEP1_START ))s)"
-    OVERALL_OK=false
-fi
+    --delete
+SYNC_RC=$?
 
-# ─────────────────────────────────────────────────────────────
-# Step 2: LlamaPress database backup (only if step 1 succeeded)
-# ─────────────────────────────────────────────────────────────
-if [ "$OVERALL_OK" = true ]; then
-    echo ""
-    echo "Step 2/3: Backing up llamapress_production..."
-    STEP2_START=$(date +%s)
-    if docker compose exec -T db pg_dump -U postgres llamapress_production \
-        | gzip \
-        | aws s3 cp - "${S3_BUCKET}/latest/llamapress_production-${INSTANCE_NAME}.sql.gz" \
-            --storage-class STANDARD_IA --only-show-errors; then
-        STEP2_STATUS="✅ success ($(( $(date +%s) - STEP2_START ))s)"
+if aws_sync_ok "$SYNC_RC"; then
+    if aws_sync_warned "$SYNC_RC"; then
+        STEP1_STATUS="⚠️  warning — some files skipped, unreadable? ($(( $(date +%s) - STEP1_START ))s)"
     else
-        STEP2_STATUS="❌ FAILED ($(( $(date +%s) - STEP2_START ))s)"
-        OVERALL_OK=false
+        STEP1_STATUS="✅ success ($(( $(date +%s) - STEP1_START ))s)"
     fi
 else
-    STEP2_STATUS="⏭️  skipped (step 1 failed)"
+    STEP1_STATUS="❌ FAILED (exit ${SYNC_RC}) ($(( $(date +%s) - STEP1_START ))s)"
+    SOURCE_OK=false
 fi
 
 # ─────────────────────────────────────────────────────────────
-# Step 3: LlamaBot database backup (only if steps 1+2 succeeded)
+# Step 2: LlamaPress database backup
+#
+# Runs on its own merit. It used to be gated on step 1, which is how one unreadable
+# source file silently cost this dump 66 times in a row.
+# ─────────────────────────────────────────────────────────────
+echo ""
+echo "Step 2/3: Backing up llamapress_production..."
+STEP2_START=$(date +%s)
+if docker compose exec -T db pg_dump -U postgres llamapress_production \
+    | gzip \
+    | aws s3 cp - "${S3_BUCKET}/latest/llamapress_production-${INSTANCE_NAME}.sql.gz" \
+        --storage-class STANDARD_IA --only-show-errors; then
+    STEP2_STATUS="✅ success ($(( $(date +%s) - STEP2_START ))s)"
+else
+    STEP2_STATUS="❌ FAILED ($(( $(date +%s) - STEP2_START ))s)"
+    DB_OK=false
+fi
+
+# ─────────────────────────────────────────────────────────────
+# Step 3: LlamaBot database backup
+#
+# Also runs on its own merit — a failed llamapress dump is no reason to skip this one.
 #
 # Excluded tables (LangGraph checkpoint data — too large):
 #   checkpoints, checkpoint_writes, checkpoint_migrations, checkpoint_blobs
 # ─────────────────────────────────────────────────────────────
-if [ "$OVERALL_OK" = true ]; then
-    echo ""
-    echo "Step 3/3: Backing up llamabot_production (excluding checkpoint tables)..."
-    STEP3_START=$(date +%s)
-    if docker compose exec -T db pg_dump -U postgres llamabot_production \
-        --exclude-table=checkpoints \
-        --exclude-table=checkpoint_writes \
-        --exclude-table=checkpoint_migrations \
-        --exclude-table=checkpoint_blobs \
-        | gzip \
-        | aws s3 cp - "${S3_BUCKET}/latest/llamabot_production-${INSTANCE_NAME}.sql.gz" \
-            --storage-class STANDARD_IA --only-show-errors; then
-        STEP3_STATUS="✅ success ($(( $(date +%s) - STEP3_START ))s)"
-    else
-        STEP3_STATUS="❌ FAILED ($(( $(date +%s) - STEP3_START ))s)"
-        OVERALL_OK=false
-    fi
+echo ""
+echo "Step 3/3: Backing up llamabot_production (excluding checkpoint tables)..."
+STEP3_START=$(date +%s)
+if docker compose exec -T db pg_dump -U postgres llamabot_production \
+    --exclude-table=checkpoints \
+    --exclude-table=checkpoint_writes \
+    --exclude-table=checkpoint_migrations \
+    --exclude-table=checkpoint_blobs \
+    | gzip \
+    | aws s3 cp - "${S3_BUCKET}/latest/llamabot_production-${INSTANCE_NAME}.sql.gz" \
+        --storage-class STANDARD_IA --only-show-errors; then
+    STEP3_STATUS="✅ success ($(( $(date +%s) - STEP3_START ))s)"
 else
-    STEP3_STATUS="⏭️  skipped (step 1 or 2 failed)"
+    STEP3_STATUS="❌ FAILED ($(( $(date +%s) - STEP3_START ))s)"
+    DB_OK=false
 fi
 
 # ─────────────────────────────────────────────────────────────
@@ -146,15 +166,28 @@ fi
 END=$(date +%s)
 DURATION=$((END - START))
 
-echo "${TIMESTAMP}" | aws s3 cp - "${S3_BUCKET}/latest/last-quick-backup.txt" --only-show-errors 2>/dev/null || true
+# The mothership's backup_exists? reads this pointer. Writing it unconditionally is what
+# made 66 failed runs look like 66 successful ones, so it is now gated on the databases
+# actually being dumped. A skipped source file does not block it; a failed dump does.
+if [ "$DB_OK" = true ]; then
+    echo "${TIMESTAMP}" | aws s3 cp - "${S3_BUCKET}/latest/last-quick-backup.txt" --only-show-errors 2>/dev/null || true
+else
+    echo ""
+    echo "⚠️  Not writing last-quick-backup.txt — a database dump failed, so there is no"
+    echo "    complete backup to point at."
+fi
 
 # ─────────────────────────────────────────────────────────────
 # Summary
 # ─────────────────────────────────────────────────────────────
 echo ""
 echo "════════════════════════════════════════"
-if [ "$OVERALL_OK" = true ]; then
+if [ "$DB_OK" = true ] && [ "$SOURCE_OK" = true ]; then
     echo "✅ Backup complete in ${DURATION}s"
+elif [ "$DB_OK" = true ]; then
+    # Databases are safe; only the source sync had trouble. Say so, rather than
+    # collapsing a partial result into a flat FAILED.
+    echo "⚠️  Backup complete with warnings in ${DURATION}s — databases OK, source sync had errors"
 else
     echo "❌ Backup FAILED in ${DURATION}s"
 fi
@@ -165,7 +198,9 @@ echo "  Step 3 — llamabot_production:   ${STEP3_STATUS}"
 [ -n "$CADDY_STATUS" ] && echo "  Caddy:                          ${CADDY_STATUS}"
 echo "════════════════════════════════════════"
 
-if [ "$OVERALL_OK" = true ]; then
+# A skipped source file is a warning and exits 0. A real sync failure, or any failed
+# database dump, exits 1.
+if [ "$DB_OK" = true ] && [ "$SOURCE_OK" = true ]; then
     exit 0
 else
     exit 1
