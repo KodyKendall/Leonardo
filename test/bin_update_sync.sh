@@ -401,7 +401,16 @@ if not named: sys.exit(1)
 sys.exit(0 if named[0].split(":")[0] in (c.get("volumes") or {}) else 1)
 EOF' "/rails/tmp/storage is a declared named volume"
 
-chk 'grep -q "for attempt in" "$COMPOSE"' \
+# Anchored on the guarantee, not on the loop keyword: the command must restart Puma up to
+# a bounded budget BEFORE it parks in the debug husk. (Was `grep "for attempt in"`, which
+# broke when the loop became a `while` to support the SI#417 watchdog's budget reset.)
+chk 'python3 - "$COMPOSE" <<'"'"'EOF'"'"'
+import sys, yaml
+cmd = yaml.safe_load(open(sys.argv[1]))["services"]["llamapress"]["command"]
+body = cmd if isinstance(cmd, str) else "\n".join(cmd)
+sys.exit(0 if "PUMA_MAX_RESTARTS" in body
+         and body.index("rails s") < body.index("tail -f /dev/null") else 1)
+EOF' \
     "llamapress command retries Puma before falling back to the debug husk"
 
 chk 'grep -q "exec tail -f /dev/null" "$COMPOSE"' \

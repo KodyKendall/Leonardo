@@ -14,9 +14,21 @@ let notificationSubscription = null;
 let unreadCount = 0;
 let currentTab = 'feedback';
 
+// The panel does two jobs: reading an inbox (per-person, needs a signed-in user) and
+// sending feedback (not per-person, a stranger can do it honestly). An app opts the
+// second one open with config.llama_bot_rails.anonymous_feedback_enabled, which arrives
+// here as anonymousFeedbackEnabled. feedbackBubbleEnabled stays the master switch.
 function shouldShowBubble() {
   const config = window.llamapressConfig || {};
-  return config.feedbackBubbleEnabled && config.userLoggedIn;
+  if (!config.feedbackBubbleEnabled) return false;
+  return Boolean(config.userLoggedIn || config.anonymousFeedbackEnabled);
+}
+
+// True when the visitor is not signed in. Such a submission carries a signed token and
+// may not attach files.
+function isAnonymousVisitor() {
+  const config = window.llamapressConfig || {};
+  return !config.userLoggedIn;
 }
 
 // The path (with its query) of the page the reporter is on. Our own highlight params
@@ -196,6 +208,14 @@ function createBubbleHTML() {
         <!-- Feedback Tab Content -->
         <div id="content-feedback">
           <form id="feedback-form" class="p-3">
+            <!-- Honeypot. A person never sees this and the bubble never fills it, so
+                 anything arriving in llama_hp came from something reading the markup.
+                 The server discards those and still answers 201, so the bot cannot tell
+                 it failed. aria-hidden and tabindex keep it away from screen readers and
+                 keyboard users; it is off-screen rather than display:none because some
+                 bots skip hidden inputs. -->
+            <input type="text" name="llama_hp" id="llama_hp" tabindex="-1" autocomplete="off"
+                   aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" />
             <textarea id="feedback-text"
                       class="w-full h-20 border border-gray-300 rounded-lg p-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                       placeholder="Share your feedback..."></textarea>
@@ -969,6 +989,14 @@ async function submitFeedback(description, files) {
   formData.append('user_feedback[description]', fullDescription);
   formData.append('user_feedback[feedback_type]', 'general');
 
+  // Issued with the page. The server rejects a signed-out submission without it (403),
+  // which is what stops a bot that POSTs the endpoint without ever loading a page.
+  // A signed-in submission needs none and is not sent one.
+  const submissionToken = (window.llamapressConfig || {}).feedbackSubmissionToken;
+  if (isAnonymousVisitor() && submissionToken) {
+    formData.append('user_feedback[submission_token]', submissionToken);
+  }
+
   (files || []).forEach((file) => formData.append('user_feedback[attachments][]', file));
   if (videoAttachment && videoAttachment.blob) {
     const videoFile = new File([videoAttachment.blob], videoAttachment.filename, { type: 'video/webm' });
@@ -1339,6 +1367,20 @@ function attachEventListeners() {
   });
 }
 
+// For a signed-out visitor the attachment path would be an open file-upload endpoint
+// straight into Active Storage, and the inbox tabs have nothing honest to show. The
+// SERVER is the real control — it strips these fields regardless — but offering a
+// control that silently does nothing is its own bug, so hide them here too.
+function applyAnonymousRestrictions() {
+  if (!isAnonymousVisitor()) return;
+
+  ['feedback-screenshot-btn', 'feedback-video-btn'].forEach((id) => {
+    document.getElementById(id)?.classList.add('hidden');
+  });
+  // The paperclip is a <label> wrapping the file input, so hide the label itself.
+  document.getElementById('feedback-file')?.closest('label')?.classList.add('hidden');
+}
+
 function initFeedbackBubble() {
   if (bubbleInitialized || !shouldShowBubble()) return;
   if (document.getElementById('llamapress-feedback-bubble')) return;
@@ -1347,6 +1389,7 @@ function initFeedbackBubble() {
   wrapper.innerHTML = createBubbleHTML();
   document.body.appendChild(wrapper.firstElementChild);
 
+  applyAnonymousRestrictions();
   attachEventListeners();
   setupNotificationSubscription();
   fetchUnreadCount();
