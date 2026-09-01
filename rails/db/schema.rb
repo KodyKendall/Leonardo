@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_08_16_031122) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_01_004500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -87,6 +87,16 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_16_031122) do
     t.jsonb "checkpoint", null: false
     t.jsonb "metadata", default: {}, null: false
     t.index ["thread_id"], name: "checkpoints_thread_id_idx"
+  end
+
+  create_table "feedbacks", force: :cascade do |t|
+    t.string "title"
+    t.text "details"
+    t.string "kind"
+    t.string "status"
+    t.string "priority"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "llama_bot_rails_activity_events", force: :cascade do |t|
@@ -310,7 +320,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_16_031122) do
     t.string "feedback_type", default: "general", null: false
     t.string "status", default: "open", null: false
     t.integer "priority", default: 0
-    t.integer "user_id", null: false
+    t.integer "user_id"
     t.string "user_email"
     t.text "admin_notes"
     t.string "resolution"
@@ -320,6 +330,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_16_031122) do
     t.text "selected_element_html"
     t.string "selected_element_selector"
     t.string "selected_element_url"
+    t.string "submitted_ip"
     t.index ["created_at"], name: "index_llama_bot_rails_user_feedbacks_on_created_at"
     t.index ["feedback_type"], name: "index_llama_bot_rails_user_feedbacks_on_feedback_type"
     t.index ["priority"], name: "index_llama_bot_rails_user_feedbacks_on_priority"
@@ -361,6 +372,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_08_16_031122) do
     t.boolean "admin"
     t.string "api_token"
     t.string "llamapress_user_guid"
+    t.string "otp_secret"
+    t.integer "consumed_timestep"
+    t.boolean "otp_required_for_login", default: false, null: false
     t.integer "sign_in_count", default: 0, null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"

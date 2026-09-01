@@ -16,7 +16,7 @@ x-logging: &default-logging
 
 services:
   llamapress:
-    image: kody06/llamapress-simple:0.7.5        # <— pre-built tag (includes erb_lint)
+    image: kody06/llamapress-simple:0.7.6        # <— pre-built tag (includes erb_lint)
     # user: "1000:1000"  # Run as UID 1000 to prevent root-owned file creation
     env_file: .env                           # read secrets from this file
     environment:
@@ -104,15 +104,93 @@ services:
     # via `tail -f /dev/null` so Leonardo can still `docker exec` in and call `tail_rails_logs`
     # to diagnose the failure. Without this, a bad migration crashes the container and Leonardo
     # gets 409 Conflict on every exec call.
-    command: bash -c "rm -f tmp/pids/server.pid; bundle exec rails db:prepare || echo '!! db:prepare failed — keeping container alive for debugging'; for attempt in $$(seq 1 $${PUMA_MAX_RESTARTS:-3}); do bundle exec rails s -b 0.0.0.0; echo \"!! Rails server exited (attempt $$attempt of $${PUMA_MAX_RESTARTS:-3}) — retrying in $$((attempt * 15))s\"; sleep $$((attempt * 15)); rm -f tmp/pids/server.pid; done; echo '!! Rails server exited repeatedly — keeping container alive. Use tail_rails_logs to investigate, then restart the container to retry.'; exec tail -f /dev/null"
+    command:
+      - bash
+      - -c
+      - |
+        rm -f tmp/pids/server.pid
+        bundle exec rails db:prepare || echo '!! db:prepare failed — keeping container alive for debugging'
+
+        # >>> rails-watchdog >>>
+        # Docker restarts a container when the process EXITS. It never restarts one whose
+        # process is ALIVE but has stopped answering, and every silent outage we have is
+        # the second kind. crm-4 served nothing for 10 minutes while reporting "Up"
+        # (SI#417): a dev-mode reloader deadlock, blocked above the Rails logger, so even
+        # the log went silent. The /up healthcheck detected it correctly and flipped the
+        # container to unhealthy — and nothing consumed that, because docker's restart
+        # policy ignores health outside Swarm.
+        #
+        # So convert "alive but not serving" into "exited", which our infrastructure
+        # already handles: this watchdog kills Puma, and the retry loop below restarts it.
+        # It lives inline here rather than in bin/ because bin/ is not mounted into the
+        # container and rails/lib is not on the bin/update allowlist — docker-compose.yml
+        # IS, so this reaches the fleet on a normal update push with no image build.
+        # No extra container (2 GiB boxes are core to the model) and no docker.sock mount.
+        #
+        # Same class of failure it also covers: Puma thread exhaustion, the ActiveStorage
+        # Live thread leak, the Grover PDF wedge, the OOM husk.
+        (
+          sleep $${WATCHDOG_GRACE_SECONDS:-240}
+          wedge_fails=0
+          while true; do
+            # 25s, matching the healthcheck: a HEALTHY box measured 10.045s on /up because
+            # the first request after a file save pays the whole dev-mode class reload.
+            # A real wedge lasts forever, so a long timeout still always catches it, while
+            # a short one only manufactures false positives.
+            if curl -fsS -o /dev/null --max-time 25 http://127.0.0.1:3000/up; then
+              wedge_fails=0
+            else
+              wedge_fails=$$((wedge_fails + 1))
+              echo "!! WATCHDOG: /up did not answer ($$wedge_fails of 3)"
+            fi
+            if [ "$$wedge_fails" -ge 3 ]; then
+              echo "!! WATCHDOG: Rails is wedged — /up failed 3 times in a row. Killing Puma to force a restart."
+              pkill -f puma
+              wedge_fails=0
+              sleep 120
+            fi
+            sleep 30
+          done
+        ) &
+        # <<< rails-watchdog <<<
+
+        attempt=0
+        while true; do
+          run_start=$$(date +%s)
+          bundle exec rails s -b 0.0.0.0
+          run_seconds=$$(( $$(date +%s) - run_start ))
+
+          # PUMA_MAX_RESTARTS counts every exit for the LIFE of the container, so without
+          # this a wedge caught on three separate days would quietly exhaust the budget and
+          # park the box in `tail -f /dev/null` — "Up", and serving nothing, permanently.
+          # A crash loop is defined by exits in QUICK succession, so a long healthy run
+          # earns a fresh budget while a genuine boot-crash loop is still bounded.
+          if [ "$$run_seconds" -ge "$${HEALTHY_RUN_SECONDS:-600}" ]; then
+            echo "!! Rails server exited after $${run_seconds}s of healthy service — restart budget reset."
+            attempt=0
+          fi
+
+          attempt=$$((attempt + 1))
+          if [ "$$attempt" -gt "$${PUMA_MAX_RESTARTS:-3}" ]; then
+            break
+          fi
+          echo "!! Rails server exited (attempt $$attempt of $${PUMA_MAX_RESTARTS:-3}) — retrying in $$((attempt * 15))s"
+          sleep $$((attempt * 15))
+          rm -f tmp/pids/server.pid
+        done
+        echo '!! Rails server exited repeatedly — keeping container alive. Use tail_rails_logs to investigate, then restart the container to retry.'
+        exec tail -f /dev/null
     # A cgroup OOM kill takes Puma but not PID 1, so the container stays "running" and
     # `restart: unless-stopped` never fires — kodykendall.com was down 5 days that way
-    # (SI#207). The healthcheck makes it VISIBLE; the retry loop above makes a transient
-    # OOM self-heal. Both are needed: docker's restart policy ignores health outside Swarm.
+    # (SI#207). The healthcheck makes it VISIBLE; the watchdog above now ACTS on it, and
+    # the retry loop makes a transient OOM self-heal.
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS -o /dev/null --max-time 5 http://127.0.0.1:3000/up || exit 1"]
+      # 25s, not 5s: a healthy box in development mode routinely takes ~10s on the first
+      # request after a file save, and the agent saves files all day. Now that a failed
+      # probe can cost a restart, a short timeout would kill healthy servers.
+      test: ["CMD-SHELL", "curl -fsS -o /dev/null --max-time 25 http://127.0.0.1:3000/up || exit 1"]
       interval: 30s
-      timeout: 10s
+      timeout: 30s
       start_period: 180s     # db:prepare + asset boot on a cold 2 GiB box is slow; never flag that
       retries: 3
     #TO DEBUG, comment the above command, uncomment the below command, restart the container, then run the docker compose exec command below.
@@ -131,7 +209,7 @@ services:
       - llama-network
 
   llamabot:
-    image: kody06/llamabot:0.7.5
+    image: kody06/llamabot:0.7.6
     restart: unless-stopped
     logging: *default-logging
     # user: "1000:1000"  # Run as UID 1000 to prevent root-owned file creation
