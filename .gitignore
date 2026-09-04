@@ -36,6 +36,7 @@ prompts/
 .leonardo/instance.json
 .leonardo/update.log
 .leonardo/last_update.json
+.leonardo/model_policy.json
 docker-compose.yml.pre-sync-*
 rails/public/uploads/*
 !rails/public/uploads/.keep
