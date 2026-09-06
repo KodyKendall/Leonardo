@@ -36,6 +36,12 @@ prompts/
 .leonardo/instance.json
 .leonardo/update.log
 .leonardo/last_update.json
+# Written by the box from the mothership's fleet model policy. It landed inside
+# the tree root-owned 0600, which made `git add -A` abort with "unable to index
+# file" — so Leo's automatic checkpoint commits silently stopped on every box
+# that received a policy (AgentTask #255). LlamaBot now writes it 1000:1000 0644;
+# it is still per-instance state and must never be tracked.
+.leonardo/model_policy.json
 docker-compose.yml.pre-sync-*
 rails/public/uploads/*
 !rails/public/uploads/.keep
