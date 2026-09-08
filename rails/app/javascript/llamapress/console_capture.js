@@ -3,6 +3,7 @@
 // Version 2: clears old format logs
 import { parentErrorTargets } from "llamapress/error_push_targets"
 import { drainEarlyErrors } from "llamapress/early_error_buffer"
+import { isExtensionOnly } from "llamapress/extension_error_filter"
 
 try {
     const stored = JSON.parse(sessionStorage.getItem('_consoleLogs') || '[]');
@@ -30,9 +31,28 @@ function _stackOf(value) {
     return null;
 }
 
-function _pushErrorToParent(kind, message, stack) {
+// console.error("some string") carries no Error, so it arrives with no stack and
+// nothing says whose code called it. Take our own stack at the override and drop
+// the frames belonging to this file, and what is left is the caller — which is
+// the only way to tell an extension's console.error from the app's.
+function _callerStack() {
+    try {
+        const frames = String(new Error().stack || '').split('\n');
+        return frames.filter((f) => !f.includes('console_capture')).join('\n');
+    } catch { return null; }
+}
+
+// `classifyStack` is used ONLY to decide provenance; it never reaches the chat,
+// so the user still sees the real stack (or none) as before.
+function _pushErrorToParent(kind, message, stack, classifyStack) {
     try {
         if (window.parent === window) return;  // not framed — nobody to tell
+        // MetaMask et al. run in this page's main world, so their throws land
+        // here looking exactly like ours. The chat pastes these into the user's
+        // prompt, so an extension's problem must not become Leo's. The
+        // _consoleLogs buffer above deliberately keeps them: the capture-logs
+        // button is an explicit action and should stay complete.
+        if (isExtensionOnly({ message, stack: stack || classifyStack })) return;
         const targets = parentErrorTargets(window.location.origin, window.LLAMABOT_ALLOWED_ORIGINS);
         if (targets.length === 0) return;
 
@@ -94,8 +114,9 @@ console.error = function(...args) {
     _saveConsoleLogs();
     // An Error passed to console.error carries the only stack we will ever get
     // for it, so look through the args rather than just formatting them.
+    const reported = _stackOf(args.find((a) => a instanceof Error));
     _pushErrorToParent('console.error', args.map(_formatArg).join(' '),
-                       _stackOf(args.find((a) => a instanceof Error)));
+                       reported, reported ? null : _callerStack());
     originalConsoleError.apply(console, args);
 };
 
