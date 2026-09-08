@@ -400,9 +400,13 @@ sync_from_upstream() {
   seed_overlay_files "$ref"
   seed_override_file
 
-  # 2) .gitignore UNION-merged (never overwritten); 3) instance.json force-untracked
+  # 2) .gitignore UNION-merged (never overwritten); 3) per-instance state force-untracked.
+  #    model_policy.json joined this list 2026-09-04: boxes provisioned before it was
+  #    ignored already have it in the index, and a tracked root-owned 0600 file wedges
+  #    `git add -A` — i.e. Leo's checkpoint commits — until it drops back out.
   ensure_gitignore_union "$ref"
   git -C "$PROJECT_DIR" rm -r --cached --ignore-unmatch -- ".leonardo/instance.json" >/dev/null 2>&1 || true
+  git -C "$PROJECT_DIR" rm -r --cached --ignore-unmatch -- ".leonardo/model_policy.json" >/dev/null 2>&1 || true
 
   # 4) commit the sync — scoped, and only if no UNRELATED staged work is present
   git -C "$PROJECT_DIR" add -- "${present[@]}" "${SEEDED[@]}" ".gitignore" 2>/dev/null || true
