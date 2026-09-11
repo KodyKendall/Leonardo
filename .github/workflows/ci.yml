@@ -74,7 +74,7 @@ jobs:
           docker compose -f docker-compose.yml down
 
   test:
-    name: RSpec Tests
+    name: RSpec + JS Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -110,6 +110,16 @@ jobs:
       - name: Run RSpec
         run: |
           docker compose -f docker-compose.yml exec -T llamapress bundle exec rspec
+
+      # rails/spec/javascript/**.test.js is a vitest suite, and nothing in this
+      # workflow ran it: seven spec files sat in the tree as decoration while CI
+      # reported green. It runs in the container because vitest, its config and
+      # node_modules all come from the base image (LlamaPress-Simple) — the repo
+      # has no package.json of its own.
+      - name: Run JS specs (vitest)
+        run: |
+          docker compose -f docker-compose.yml exec -T llamapress \
+            bash -lc 'cd /rails && npx --no-install vitest run'
 
       - name: Stop services
         if: always()
