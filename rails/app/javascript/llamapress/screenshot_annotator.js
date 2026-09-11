@@ -43,6 +43,9 @@ function loadScriptOnce(src) {
   return promise;
 }
 
+// How long an arrow drawn by a click with no drag comes out, in canvas px.
+const DEFAULT_ARROW_LENGTH = 40;
+
 class ScreenshotAnnotator {
   constructor() {
     this.fabricCanvas = null;
@@ -312,6 +315,12 @@ class ScreenshotAnnotator {
                 <path d="M5 4v3h5.5v12h3V7H19V4z"/>
               </svg>
             </button>
+            <button class="tool-btn" data-tool="move" title="Move / resize annotations">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/>
+              </svg>
+            </button>
             <div style="width: 1px; height: 24px; background: #444; margin: 0 4px;"></div>
             <input type="color" id="annotation-color" value="#ff4444"
                    style="width: 32px; height: 32px; border: none; cursor: pointer;
@@ -452,6 +461,12 @@ class ScreenshotAnnotator {
     this.fabricCanvas.off('mouse:move');
     this.fabricCanvas.off('mouse:up');
 
+    // While a drawing tool is armed, annotations are scenery. Leaving them evented
+    // is what let Fabric claim a mouse-down that landed on one and drag it instead
+    // of drawing — and what made the tools refuse to draw over them at all.
+    // The Move tool is the deliberate way back.
+    this.setObjectsInteractive(tool === 'move' || tool === 'select');
+
     switch (tool) {
       case 'pen':
         this.fabricCanvas.isDrawingMode = true;
@@ -471,7 +486,30 @@ class ScreenshotAnnotator {
       case 'text':
         this.setupTextTool();
         break;
+
+      case 'move':
+      case 'select':
+        // Nothing to arm: the reset above already restored selection, and
+        // setObjectsInteractive() has handed the objects back to Fabric.
+        break;
     }
+  }
+
+  // Fabric decides whether a mouse-down belongs to an object or to the canvas by
+  // hit-testing evented objects. Toggling both flags together is what makes
+  // "drawing tools draw, the move tool moves" true rather than aspirational.
+  setObjectsInteractive(interactive) {
+    if (!this.fabricCanvas) return;
+
+    this.fabricCanvas.getObjects().forEach(obj => {
+      obj.selectable = interactive;
+      obj.evented = interactive;
+    });
+
+    if (!interactive) {
+      this.fabricCanvas.discardActiveObject();
+    }
+    this.fabricCanvas.renderAll();
   }
 
   setupRectangleTool() {
@@ -482,8 +520,9 @@ class ScreenshotAnnotator {
     this.fabricCanvas.selection = false;
     this.fabricCanvas.defaultCursor = 'crosshair';
 
+    // No `if (opt.target) return` guard: a drawing tool draws wherever you press,
+    // including on top of a mark you already made.
     this.fabricCanvas.on('mouse:down', (opt) => {
-      if (opt.target) return;
       isDrawing = true;
       const pointer = this.fabricCanvas.getPointer(opt.e);
       startX = pointer.x;
@@ -497,7 +536,8 @@ class ScreenshotAnnotator {
         fill: 'transparent',
         stroke: this.currentColor,
         strokeWidth: 3,
-        selectable: true
+        selectable: false,
+        evented: false
       });
       this.fabricCanvas.add(rect);
     });
@@ -532,8 +572,8 @@ class ScreenshotAnnotator {
     this.fabricCanvas.selection = false;
     this.fabricCanvas.defaultCursor = 'crosshair';
 
+    // Same as the rectangle: press anywhere, including over an existing arrow.
     this.fabricCanvas.on('mouse:down', (opt) => {
-      if (opt.target) return;
       isDrawing = true;
       const pointer = this.fabricCanvas.getPointer(opt.e);
       startX = pointer.x;
@@ -553,6 +593,13 @@ class ScreenshotAnnotator {
     });
 
     this.fabricCanvas.on('mouse:up', () => {
+      // A click with no drag produced nothing at all, which reads as a broken tool.
+      // Leave a short arrow pointing up-left at the spot instead.
+      if (isDrawing && !arrow) {
+        arrow = this.createArrow(startX - DEFAULT_ARROW_LENGTH, startY - DEFAULT_ARROW_LENGTH, startX, startY);
+        this.fabricCanvas.add(arrow);
+        this.fabricCanvas.renderAll();
+      }
       isDrawing = false;
       arrow = null;
     });
@@ -582,15 +629,15 @@ class ScreenshotAnnotator {
       selectable: false
     });
 
-    return new fabric.Group([line, head], { selectable: true });
+    return new fabric.Group([line, head], { selectable: false, evented: false });
   }
 
   setupTextTool() {
     this.fabricCanvas.selection = false;
     this.fabricCanvas.defaultCursor = 'text';
 
+    // Same as the other shape tools: place text wherever you press.
     this.fabricCanvas.on('mouse:down', (opt) => {
-      if (opt.target) return;
       const pointer = this.fabricCanvas.getPointer(opt.e);
 
       const text = new fabric.IText('Type here', {
