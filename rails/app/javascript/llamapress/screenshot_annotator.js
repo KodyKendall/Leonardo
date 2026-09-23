@@ -160,7 +160,7 @@ class ScreenshotAnnotator {
         this.showAnnotationModal(imageData);
       } catch (err) {
         console.error('Failed to capture region:', err);
-        this.restoreFeedbackBubble();
+        this.finishWithoutAttachment();
       }
     });
 
@@ -176,7 +176,7 @@ class ScreenshotAnnotator {
 
   cancelCapture(overlay) {
     overlay.remove();
-    this.restoreFeedbackBubble();
+    this.finishWithoutAttachment();
   }
 
   // Capture a region using native Screen Capture API (getDisplayMedia)
@@ -344,6 +344,17 @@ class ScreenshotAnnotator {
     if (feedbackBubble) feedbackBubble.style.display = '';
   }
 
+  // Every way out of a capture that isn't a successful attach ends here. The
+  // feedback bubble hides its panel before startCapture() and only reopens it
+  // from the callback, so an exit that skips the callback strands the user on a
+  // hidden panel, draft and all. null means "reopen, nothing to add".
+  finishWithoutAttachment() {
+    const callback = this.onAttachCallback;
+    this.onAttachCallback = null;
+    this.restoreFeedbackBubble();
+    callback?.(null);
+  }
+
   // Show the annotation modal
   showAnnotationModal(imageData) {
     this.originalImageData = imageData;
@@ -494,7 +505,7 @@ class ScreenshotAnnotator {
     img.onerror = () => {
       console.error('Screenshot annotator: captured image could not be decoded');
       this.teardownModal();
-      this.restoreFeedbackBubble();
+      this.finishWithoutAttachment();
     };
     img.src = imageData;
   }
@@ -789,7 +800,7 @@ class ScreenshotAnnotator {
       });
     } catch (err) {
       console.error('Screenshot annotator: failed to attach the raw capture', err);
-      this.restoreFeedbackBubble();
+      this.finishWithoutAttachment();
     }
   }
 
@@ -822,30 +833,30 @@ class ScreenshotAnnotator {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
       const filename = `screenshot-${timestamp}.png`;
 
-      if (this.onAttachCallback) {
-        this.onAttachCallback({
-          filename,
-          mime_type: 'image/png',
-          dataUrl,
-          blob,
-          size: blob.size
-        });
-      }
-
-      this.closeModal();
+      const callback = this.onAttachCallback;
+      this.onAttachCallback = null;
+      this.teardownModal();
+      this.restoreFeedbackBubble();
+      callback?.({
+        filename,
+        mime_type: 'image/png',
+        dataUrl,
+        blob,
+        size: blob.size
+      });
     } catch (err) {
       console.error('Failed to attach screenshot:', err);
       alert('Failed to attach screenshot. Please try again.');
       // The alert used to be the end of it: the modal stayed up over a hidden
       // feedback panel, so "try again" meant reloading and losing the draft.
       this.teardownModal();
-      this.restoreFeedbackBubble();
+      this.finishWithoutAttachment();
     }
   }
 
   closeModal() {
     this.teardownModal();
-    this.restoreFeedbackBubble();
+    this.finishWithoutAttachment();
   }
 }
 
