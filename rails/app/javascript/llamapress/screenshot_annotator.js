@@ -181,6 +181,7 @@ class ScreenshotAnnotator {
 
   // Capture a region using native Screen Capture API (getDisplayMedia)
   async captureRegion(x, y, width, height) {
+    let cropBox = null;
     try {
       // Use getDisplayMedia for pixel-perfect screenshot
       const stream = await navigator.mediaDevices.getDisplayMedia({
@@ -195,7 +196,23 @@ class ScreenshotAnnotator {
       // Get video track
       const track = stream.getVideoTracks()[0];
 
-      // Wait a moment for the stream to be ready
+      // This app runs inside the chat's preview iframe, but getDisplayMedia
+      // captures the whole TAB — chat panel included — while x/y came from a
+      // drag in THIS frame. Same numbers, different origins: the crop landed
+      // one chat-panel to the left of what the user selected, which is how the
+      // chat kept turning up in people's screenshots. Region Capture trims the
+      // stream to an element's box, putting both back in one coordinate space.
+      if (this.isFramed()) {
+        cropBox = this.addViewportCropBox();
+        if (!(await this.cropTrackToElement(track, cropBox))) {
+          // No Region Capture (non-Chromium): the capture can't be trusted to
+          // line up, so render the region rather than crop the wrong pixels.
+          this.stopStream(stream);
+          return await this.captureRegionWithHtml2Canvas(x, y, width, height);
+        }
+      }
+
+      // Wait a moment for the stream to be ready (and any crop to take effect)
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Use ImageCapture to grab a frame
@@ -203,8 +220,7 @@ class ScreenshotAnnotator {
       const bitmap = await imageCapture.grabFrame();
 
       // Stop the stream
-      track.stop();
-      stream.getTracks().forEach(t => t.stop());
+      this.stopStream(stream);
 
       // Draw the full capture to an offscreen canvas
       const fullCanvas = document.createElement('canvas');
@@ -213,9 +229,13 @@ class ScreenshotAnnotator {
       const fullCtx = fullCanvas.getContext('2d');
       fullCtx.drawImage(bitmap, 0, 0);
 
-      // Calculate the scaling factor between captured image and viewport
-      const scaleX = bitmap.width / window.innerWidth;
-      const scaleY = bitmap.height / window.innerHeight;
+      // Scale from the box the capture actually covers — the crop box when the
+      // stream was trimmed, this frame's viewport when it wasn't. Measuring
+      // against window.innerHeight instead cost us the bottom of every shot on
+      // a page shorter (or taller) than the box that was really captured.
+      const box = this.capturedBox(cropBox);
+      const scaleX = bitmap.width / box.width;
+      const scaleY = bitmap.height / box.height;
 
       // Crop to the selected region
       const cropCanvas = document.createElement('canvas');
@@ -225,7 +245,7 @@ class ScreenshotAnnotator {
 
       cropCtx.drawImage(
         fullCanvas,
-        x * scaleX, y * scaleY, width * scaleX, height * scaleY,
+        (x - box.left) * scaleX, (y - box.top) * scaleY, width * scaleX, height * scaleY,
         0, 0, cropCanvas.width, cropCanvas.height
       );
 
@@ -235,27 +255,88 @@ class ScreenshotAnnotator {
 
       // Fall back to html2canvas if getDisplayMedia fails
       console.log('Falling back to html2canvas...');
-      // A bare `html2canvas` here threw ReferenceError on any layout that did not
-      // ship the script tag, turning a merely DENIED screen-share into a dead end.
-      if (!window.html2canvas) {
-        throw new Error('Screen capture failed and html2canvas is unavailable');
-      }
-      const canvas = await window.html2canvas(document.body, {
-        x: x + window.scrollX,
-        y: y + window.scrollY,
-        width: width,
-        height: height,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff',
-        ignoreElements: (el) => {
-          return el.id === 'screenshot-selection-overlay' ||
-                 el.id === 'llamapress-feedback-bubble';
-        }
-      });
-
-      return canvas.toDataURL('image/png');
+      return await this.captureRegionWithHtml2Canvas(x, y, width, height);
+    } finally {
+      cropBox?.remove();
     }
+  }
+
+  // Region Capture crops to an ELEMENT's box, and document.documentElement is
+  // the whole PAGE: taller than the window on a long page, shorter on a short
+  // one, and offset by the scroll position. A transparent fixed div is the one
+  // box that always matches what a selection's coordinates are measured from.
+  addViewportCropBox() {
+    const box = document.createElement('div');
+    box.id = 'screenshot-crop-box';
+    box.style.cssText = 'position:fixed;inset:0;pointer-events:none;background:transparent;z-index:2147483646';
+    document.body.appendChild(box);
+    return box;
+  }
+
+  // The area of this page the captured pixels cover.
+  capturedBox(cropBox) {
+    if (cropBox) {
+      const rect = cropBox.getBoundingClientRect();
+      return { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
+    }
+    return { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
+  }
+
+  // Is this page running inside a frame (the chat's app preview) rather than as
+  // the whole tab? Decides whether captured pixels need trimming to this frame.
+  isFramed() {
+    try {
+      return window.self !== window.top;
+    } catch (err) {
+      // Cross-origin parents can throw on access — if we can't tell, assume the
+      // preview, which is where this code actually runs.
+      return true;
+    }
+  }
+
+  // Region Capture (Chromium): ask the browser to trim the captured stream down
+  // to one element's box, so the frames ARE the preview and nothing around it.
+  async cropTrackToElement(track, element) {
+    const CropTargetCtor = window.CropTarget;
+    if (!track || typeof track.cropTo !== 'function') return false;
+    if (!CropTargetCtor || typeof CropTargetCtor.fromElement !== 'function') return false;
+
+    try {
+      await track.cropTo(await CropTargetCtor.fromElement(element));
+      return true;
+    } catch (err) {
+      console.warn('Region Capture unavailable; screenshot falls back to html2canvas:', err?.message);
+      return false;
+    }
+  }
+
+  stopStream(stream) {
+    stream.getTracks().forEach(t => t.stop());
+  }
+
+  // html2canvas renders THIS document, so a region's coordinates are already
+  // right — there is no surrounding tab to offset them against.
+  async captureRegionWithHtml2Canvas(x, y, width, height) {
+    // A bare `html2canvas` here threw ReferenceError on any layout that did not
+    // ship the script tag, turning a merely DENIED screen-share into a dead end.
+    if (!window.html2canvas) {
+      throw new Error('Screen capture failed and html2canvas is unavailable');
+    }
+    const canvas = await window.html2canvas(document.body, {
+      x: x + window.scrollX,
+      y: y + window.scrollY,
+      width: width,
+      height: height,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff',
+      ignoreElements: (el) => {
+        return el.id === 'screenshot-selection-overlay' ||
+               el.id === 'llamapress-feedback-bubble';
+      }
+    });
+
+    return canvas.toDataURL('image/png');
   }
 
   restoreFeedbackBubble() {
