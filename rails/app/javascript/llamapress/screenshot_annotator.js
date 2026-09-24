@@ -43,6 +43,9 @@ function loadScriptOnce(src) {
   return promise;
 }
 
+// How long an arrow drawn by a click with no drag comes out, in canvas px.
+const DEFAULT_ARROW_LENGTH = 40;
+
 class ScreenshotAnnotator {
   constructor() {
     this.fabricCanvas = null;
@@ -157,7 +160,7 @@ class ScreenshotAnnotator {
         this.showAnnotationModal(imageData);
       } catch (err) {
         console.error('Failed to capture region:', err);
-        this.restoreFeedbackBubble();
+        this.finishWithoutAttachment();
       }
     });
 
@@ -173,11 +176,12 @@ class ScreenshotAnnotator {
 
   cancelCapture(overlay) {
     overlay.remove();
-    this.restoreFeedbackBubble();
+    this.finishWithoutAttachment();
   }
 
   // Capture a region using native Screen Capture API (getDisplayMedia)
   async captureRegion(x, y, width, height) {
+    let cropBox = null;
     try {
       // Use getDisplayMedia for pixel-perfect screenshot
       const stream = await navigator.mediaDevices.getDisplayMedia({
@@ -192,7 +196,23 @@ class ScreenshotAnnotator {
       // Get video track
       const track = stream.getVideoTracks()[0];
 
-      // Wait a moment for the stream to be ready
+      // This app runs inside the chat's preview iframe, but getDisplayMedia
+      // captures the whole TAB — chat panel included — while x/y came from a
+      // drag in THIS frame. Same numbers, different origins: the crop landed
+      // one chat-panel to the left of what the user selected, which is how the
+      // chat kept turning up in people's screenshots. Region Capture trims the
+      // stream to an element's box, putting both back in one coordinate space.
+      if (this.isFramed()) {
+        cropBox = this.addViewportCropBox();
+        if (!(await this.cropTrackToElement(track, cropBox))) {
+          // No Region Capture (non-Chromium): the capture can't be trusted to
+          // line up, so render the region rather than crop the wrong pixels.
+          this.stopStream(stream);
+          return await this.captureRegionWithHtml2Canvas(x, y, width, height);
+        }
+      }
+
+      // Wait a moment for the stream to be ready (and any crop to take effect)
       await new Promise(resolve => setTimeout(resolve, 100));
 
       // Use ImageCapture to grab a frame
@@ -200,8 +220,7 @@ class ScreenshotAnnotator {
       const bitmap = await imageCapture.grabFrame();
 
       // Stop the stream
-      track.stop();
-      stream.getTracks().forEach(t => t.stop());
+      this.stopStream(stream);
 
       // Draw the full capture to an offscreen canvas
       const fullCanvas = document.createElement('canvas');
@@ -210,9 +229,13 @@ class ScreenshotAnnotator {
       const fullCtx = fullCanvas.getContext('2d');
       fullCtx.drawImage(bitmap, 0, 0);
 
-      // Calculate the scaling factor between captured image and viewport
-      const scaleX = bitmap.width / window.innerWidth;
-      const scaleY = bitmap.height / window.innerHeight;
+      // Scale from the box the capture actually covers — the crop box when the
+      // stream was trimmed, this frame's viewport when it wasn't. Measuring
+      // against window.innerHeight instead cost us the bottom of every shot on
+      // a page shorter (or taller) than the box that was really captured.
+      const box = this.capturedBox(cropBox);
+      const scaleX = bitmap.width / box.width;
+      const scaleY = bitmap.height / box.height;
 
       // Crop to the selected region
       const cropCanvas = document.createElement('canvas');
@@ -222,7 +245,7 @@ class ScreenshotAnnotator {
 
       cropCtx.drawImage(
         fullCanvas,
-        x * scaleX, y * scaleY, width * scaleX, height * scaleY,
+        (x - box.left) * scaleX, (y - box.top) * scaleY, width * scaleX, height * scaleY,
         0, 0, cropCanvas.width, cropCanvas.height
       );
 
@@ -232,32 +255,104 @@ class ScreenshotAnnotator {
 
       // Fall back to html2canvas if getDisplayMedia fails
       console.log('Falling back to html2canvas...');
-      // A bare `html2canvas` here threw ReferenceError on any layout that did not
-      // ship the script tag, turning a merely DENIED screen-share into a dead end.
-      if (!window.html2canvas) {
-        throw new Error('Screen capture failed and html2canvas is unavailable');
-      }
-      const canvas = await window.html2canvas(document.body, {
-        x: x + window.scrollX,
-        y: y + window.scrollY,
-        width: width,
-        height: height,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#ffffff',
-        ignoreElements: (el) => {
-          return el.id === 'screenshot-selection-overlay' ||
-                 el.id === 'llamapress-feedback-bubble';
-        }
-      });
-
-      return canvas.toDataURL('image/png');
+      return await this.captureRegionWithHtml2Canvas(x, y, width, height);
+    } finally {
+      cropBox?.remove();
     }
+  }
+
+  // Region Capture crops to an ELEMENT's box, and document.documentElement is
+  // the whole PAGE: taller than the window on a long page, shorter on a short
+  // one, and offset by the scroll position. A transparent fixed div is the one
+  // box that always matches what a selection's coordinates are measured from.
+  addViewportCropBox() {
+    const box = document.createElement('div');
+    box.id = 'screenshot-crop-box';
+    box.style.cssText = 'position:fixed;inset:0;pointer-events:none;background:transparent;z-index:2147483646';
+    document.body.appendChild(box);
+    return box;
+  }
+
+  // The area of this page the captured pixels cover.
+  capturedBox(cropBox) {
+    if (cropBox) {
+      const rect = cropBox.getBoundingClientRect();
+      return { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
+    }
+    return { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
+  }
+
+  // Is this page running inside a frame (the chat's app preview) rather than as
+  // the whole tab? Decides whether captured pixels need trimming to this frame.
+  isFramed() {
+    try {
+      return window.self !== window.top;
+    } catch (err) {
+      // Cross-origin parents can throw on access — if we can't tell, assume the
+      // preview, which is where this code actually runs.
+      return true;
+    }
+  }
+
+  // Region Capture (Chromium): ask the browser to trim the captured stream down
+  // to one element's box, so the frames ARE the preview and nothing around it.
+  async cropTrackToElement(track, element) {
+    const CropTargetCtor = window.CropTarget;
+    if (!track || typeof track.cropTo !== 'function') return false;
+    if (!CropTargetCtor || typeof CropTargetCtor.fromElement !== 'function') return false;
+
+    try {
+      await track.cropTo(await CropTargetCtor.fromElement(element));
+      return true;
+    } catch (err) {
+      console.warn('Region Capture unavailable; screenshot falls back to html2canvas:', err?.message);
+      return false;
+    }
+  }
+
+  stopStream(stream) {
+    stream.getTracks().forEach(t => t.stop());
+  }
+
+  // html2canvas renders THIS document, so a region's coordinates are already
+  // right — there is no surrounding tab to offset them against.
+  async captureRegionWithHtml2Canvas(x, y, width, height) {
+    // A bare `html2canvas` here threw ReferenceError on any layout that did not
+    // ship the script tag, turning a merely DENIED screen-share into a dead end.
+    if (!window.html2canvas) {
+      throw new Error('Screen capture failed and html2canvas is unavailable');
+    }
+    const canvas = await window.html2canvas(document.body, {
+      x: x + window.scrollX,
+      y: y + window.scrollY,
+      width: width,
+      height: height,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff',
+      ignoreElements: (el) => {
+        return el.id === 'screenshot-selection-overlay' ||
+               el.id === 'llamapress-feedback-bubble';
+      }
+    });
+
+    return canvas.toDataURL('image/png');
   }
 
   restoreFeedbackBubble() {
     const feedbackBubble = document.getElementById('llamapress-feedback-bubble');
     if (feedbackBubble) feedbackBubble.style.display = '';
+  }
+
+  // Every way out of a capture that isn't a successful attach ends here. The
+  // feedback bubble hides its panel before startCapture() and only reopens it
+  // from the callback, so an exit that skips the callback strands the user on a
+  // hidden panel, draft and all. null means "reopen, nothing to add".
+  finishWithoutAttachment() {
+    const callback = this.onAttachCallback;
+    this.onAttachCallback = null;
+    this.restoreFeedbackBubble();
+    callback?.(null);
   }
 
   // Show the annotation modal
@@ -310,6 +405,12 @@ class ScreenshotAnnotator {
             <button class="tool-btn" data-tool="text" title="Text">
               <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M5 4v3h5.5v12h3V7H19V4z"/>
+              </svg>
+            </button>
+            <button class="tool-btn" data-tool="move" title="Move / resize annotations">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/>
               </svg>
             </button>
             <div style="width: 1px; height: 24px; background: #444; margin: 0 4px;"></div>
@@ -404,7 +505,7 @@ class ScreenshotAnnotator {
     img.onerror = () => {
       console.error('Screenshot annotator: captured image could not be decoded');
       this.teardownModal();
-      this.restoreFeedbackBubble();
+      this.finishWithoutAttachment();
     };
     img.src = imageData;
   }
@@ -452,6 +553,12 @@ class ScreenshotAnnotator {
     this.fabricCanvas.off('mouse:move');
     this.fabricCanvas.off('mouse:up');
 
+    // While a drawing tool is armed, annotations are scenery. Leaving them evented
+    // is what let Fabric claim a mouse-down that landed on one and drag it instead
+    // of drawing — and what made the tools refuse to draw over them at all.
+    // The Move tool is the deliberate way back.
+    this.setObjectsInteractive(tool === 'move' || tool === 'select');
+
     switch (tool) {
       case 'pen':
         this.fabricCanvas.isDrawingMode = true;
@@ -471,7 +578,30 @@ class ScreenshotAnnotator {
       case 'text':
         this.setupTextTool();
         break;
+
+      case 'move':
+      case 'select':
+        // Nothing to arm: the reset above already restored selection, and
+        // setObjectsInteractive() has handed the objects back to Fabric.
+        break;
     }
+  }
+
+  // Fabric decides whether a mouse-down belongs to an object or to the canvas by
+  // hit-testing evented objects. Toggling both flags together is what makes
+  // "drawing tools draw, the move tool moves" true rather than aspirational.
+  setObjectsInteractive(interactive) {
+    if (!this.fabricCanvas) return;
+
+    this.fabricCanvas.getObjects().forEach(obj => {
+      obj.selectable = interactive;
+      obj.evented = interactive;
+    });
+
+    if (!interactive) {
+      this.fabricCanvas.discardActiveObject();
+    }
+    this.fabricCanvas.renderAll();
   }
 
   setupRectangleTool() {
@@ -482,8 +612,9 @@ class ScreenshotAnnotator {
     this.fabricCanvas.selection = false;
     this.fabricCanvas.defaultCursor = 'crosshair';
 
+    // No `if (opt.target) return` guard: a drawing tool draws wherever you press,
+    // including on top of a mark you already made.
     this.fabricCanvas.on('mouse:down', (opt) => {
-      if (opt.target) return;
       isDrawing = true;
       const pointer = this.fabricCanvas.getPointer(opt.e);
       startX = pointer.x;
@@ -497,7 +628,8 @@ class ScreenshotAnnotator {
         fill: 'transparent',
         stroke: this.currentColor,
         strokeWidth: 3,
-        selectable: true
+        selectable: false,
+        evented: false
       });
       this.fabricCanvas.add(rect);
     });
@@ -532,8 +664,8 @@ class ScreenshotAnnotator {
     this.fabricCanvas.selection = false;
     this.fabricCanvas.defaultCursor = 'crosshair';
 
+    // Same as the rectangle: press anywhere, including over an existing arrow.
     this.fabricCanvas.on('mouse:down', (opt) => {
-      if (opt.target) return;
       isDrawing = true;
       const pointer = this.fabricCanvas.getPointer(opt.e);
       startX = pointer.x;
@@ -553,6 +685,13 @@ class ScreenshotAnnotator {
     });
 
     this.fabricCanvas.on('mouse:up', () => {
+      // A click with no drag produced nothing at all, which reads as a broken tool.
+      // Leave a short arrow pointing up-left at the spot instead.
+      if (isDrawing && !arrow) {
+        arrow = this.createArrow(startX - DEFAULT_ARROW_LENGTH, startY - DEFAULT_ARROW_LENGTH, startX, startY);
+        this.fabricCanvas.add(arrow);
+        this.fabricCanvas.renderAll();
+      }
       isDrawing = false;
       arrow = null;
     });
@@ -582,15 +721,15 @@ class ScreenshotAnnotator {
       selectable: false
     });
 
-    return new fabric.Group([line, head], { selectable: true });
+    return new fabric.Group([line, head], { selectable: false, evented: false });
   }
 
   setupTextTool() {
     this.fabricCanvas.selection = false;
     this.fabricCanvas.defaultCursor = 'text';
 
+    // Same as the other shape tools: place text wherever you press.
     this.fabricCanvas.on('mouse:down', (opt) => {
-      if (opt.target) return;
       const pointer = this.fabricCanvas.getPointer(opt.e);
 
       const text = new fabric.IText('Type here', {
@@ -661,7 +800,7 @@ class ScreenshotAnnotator {
       });
     } catch (err) {
       console.error('Screenshot annotator: failed to attach the raw capture', err);
-      this.restoreFeedbackBubble();
+      this.finishWithoutAttachment();
     }
   }
 
@@ -694,30 +833,30 @@ class ScreenshotAnnotator {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
       const filename = `screenshot-${timestamp}.png`;
 
-      if (this.onAttachCallback) {
-        this.onAttachCallback({
-          filename,
-          mime_type: 'image/png',
-          dataUrl,
-          blob,
-          size: blob.size
-        });
-      }
-
-      this.closeModal();
+      const callback = this.onAttachCallback;
+      this.onAttachCallback = null;
+      this.teardownModal();
+      this.restoreFeedbackBubble();
+      callback?.({
+        filename,
+        mime_type: 'image/png',
+        dataUrl,
+        blob,
+        size: blob.size
+      });
     } catch (err) {
       console.error('Failed to attach screenshot:', err);
       alert('Failed to attach screenshot. Please try again.');
       // The alert used to be the end of it: the modal stayed up over a hidden
       // feedback panel, so "try again" meant reloading and losing the draft.
       this.teardownModal();
-      this.restoreFeedbackBubble();
+      this.finishWithoutAttachment();
     }
   }
 
   closeModal() {
     this.teardownModal();
-    this.restoreFeedbackBubble();
+    this.finishWithoutAttachment();
   }
 }
 

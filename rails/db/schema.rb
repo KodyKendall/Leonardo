@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_09_01_004500) do
+ActiveRecord::Schema[7.2].define(version: 2026_09_24_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -331,11 +331,13 @@ ActiveRecord::Schema[7.2].define(version: 2026_09_01_004500) do
     t.string "selected_element_selector"
     t.string "selected_element_url"
     t.string "submitted_ip"
+    t.string "visitor_token"
     t.index ["created_at"], name: "index_llama_bot_rails_user_feedbacks_on_created_at"
     t.index ["feedback_type"], name: "index_llama_bot_rails_user_feedbacks_on_feedback_type"
     t.index ["priority"], name: "index_llama_bot_rails_user_feedbacks_on_priority"
     t.index ["status"], name: "index_llama_bot_rails_user_feedbacks_on_status"
     t.index ["user_id"], name: "index_llama_bot_rails_user_feedbacks_on_user_id"
+    t.index ["visitor_token"], name: "index_llama_bot_rails_user_feedbacks_on_visitor_token"
   end
 
   create_table "llama_bot_rails_user_requests", force: :cascade do |t|
