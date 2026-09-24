@@ -4,6 +4,8 @@
 
 import { enableElementSelector, disableElementSelector } from "llamapress/element_selector"
 import { enablePasteToAttach, addFilesToInput, mergePickedFiles } from "llamapress/paste_to_attach"
+// Feedback Replay: records only when the app turned it on; see replay_recorder.js.
+import "llamapress/replay_recorder"
 
 let bubbleInitialized = false;
 let isFormOpen = false;
@@ -1001,6 +1003,14 @@ async function submitFeedback(description, files) {
   if (videoAttachment && videoAttachment.blob) {
     const videoFile = new File([videoAttachment.blob], videoAttachment.filename, { type: 'video/webm' });
     formData.append('user_feedback[attachments][]', videoFile);
+  }
+  // Feedback Replay: the last few minutes of this page, as one file. A replay that
+  // cannot be built never costs the note — it just arrives without one.
+  try {
+    const replay = await window.llamaFeedbackReplay?.snapshotFile()
+    if (replay) formData.append('user_feedback[replay]', replay);
+  } catch (replayError) {
+    console.warn('Feedback Replay: not attached:', replayError?.message);
   }
   // The page this was reported on, captured whether or not an element was picked, so
   // every feedback item links back to where it happened.

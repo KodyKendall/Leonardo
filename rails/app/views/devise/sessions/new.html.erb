@@ -6,6 +6,16 @@
 <%= LlamaBotRails::SsoHelper.respond_to?(:cta_html) ? LlamaBotRails::SsoHelper.cta_html : "" %>
 
 <div class="max-w-md mx-auto mt-8 bg-white rounded-lg shadow-md p-8">
+  <%# Shown when the POST was rejected for a stale CSRF token (see
+      Users::SessionsController#render_fresh_sign_in_form). Rendered HERE rather than as a
+      flash: the skeleton's application layout renders no flash at all, so a flash message
+      would have made the re-render look like the form silently did nothing. %>
+  <% if @sign_in_notice.present? %>
+    <div class="mb-4 rounded-md bg-amber-50 border border-amber-200 p-3 text-sm text-amber-800">
+      <%= @sign_in_notice %>
+    </div>
+  <% end %>
+
   <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
     <div class="mb-4">
       <%= f.label :email, class: "block text-sm font-medium text-gray-700" %>
@@ -29,3 +39,30 @@
     <%= render "devise/shared/links" %>
   </div>
 </div>
+
+<%# Cold-load race guard (see Users::SessionsController): the LlamaBot pane and this
+    iframe can each mint a session cookie on first load, leaving this form's token bound
+    to a cookie the browser no longer holds. On submit, fetch a token for the cookie it
+    holds NOW, swap it in, then let Turbo submit as normal. Any failure just submits, so
+    the server-side rescue stays the backstop rather than the first line. %>
+<script>
+  (function () {
+    var form = document.getElementById("new_user");
+    if (!form) return;
+    var refreshed = false;
+    form.addEventListener("submit", function (event) {
+      if (refreshed) return;
+      event.preventDefault();
+      var field = form.querySelector('input[name="authenticity_token"]');
+      var resubmit = function () {
+        refreshed = true;
+        if (form.requestSubmit) { form.requestSubmit(); } else { form.submit(); }
+      };
+      fetch("<%= user_sign_in_token_path %>", { credentials: "same-origin", cache: "no-store", headers: { "Accept": "application/json" } })
+        .then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (data) { if (data && data.token && field) { field.value = data.token; } })
+        .catch(function () {})
+        .then(resubmit, resubmit);
+    });
+  })();
+</script>

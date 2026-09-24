@@ -45,6 +45,8 @@ VOLUMES="postgres_data redis_data rails_storage code_config"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=lib/storage_coverage.sh
 [ -f "$SCRIPT_DIR/lib/storage_coverage.sh" ] && . "$SCRIPT_DIR/lib/storage_coverage.sh"
+# shellcheck source=lib/code_config_excludes.sh
+[ -f "$SCRIPT_DIR/lib/code_config_excludes.sh" ] && . "$SCRIPT_DIR/lib/code_config_excludes.sh"
 
 EXTRA_STORAGE_ROOT=""
 if command -v root_is_covered >/dev/null 2>&1; then
@@ -87,11 +89,25 @@ for volume in $VOLUMES; do
 
     BACKUP_NAME="${volume}-${INSTANCE_NAME}-${TIMESTAMP}.tar.gz"
 
+    # code_config grows without bound (obsolete extension versions + caches) until the
+    # gzip eats the whole backup budget. Leave out what code-server would delete anyway.
+    EXTRA_EXCLUDES=""
+    if [ "$volume" = "code_config" ] && command -v code_config_tar_excludes >/dev/null 2>&1; then
+        EXTRA_EXCLUDES="$(code_config_tar_excludes \
+            "$(docker run --rm -v ${SOURCE_VOLUME}:/volume:ro alpine cat /volume/extensions/.obsolete 2>/dev/null)" \
+            "$(docker run --rm -v ${SOURCE_VOLUME}:/volume:ro alpine cat /volume/extensions/extensions.json 2>/dev/null)")"
+        echo "   Excluding: ${EXTRA_EXCLUDES}"
+    elif [ "$volume" = "code_config" ]; then
+        echo "   ⚠️  lib/code_config_excludes.sh missing: backing up the whole volume, caches and all"
+    fi
+
     # Stream volume directly to S3 (no temp file) - save in timestamped folder
+    # EXTRA_EXCLUDES is unquoted on purpose: one flag per word. The lib only emits names
+    # it has checked contain no spaces or glob characters.
     docker run --rm \
         -v ${SOURCE_VOLUME}:/volume:ro \
         alpine \
-        tar czf - -C /volume . \
+        tar czf - $EXTRA_EXCLUDES -C /volume . \
         | aws s3 cp - "${S3_BUCKET}/${TIMESTAMP}/${BACKUP_NAME}" \
             --storage-class STANDARD_IA
 
