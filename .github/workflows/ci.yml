@@ -31,6 +31,8 @@ jobs:
         run: bash test/backup_storage_coverage.sh
       - name: backup exit-code regression test
         run: bash test/backup_exit_codes.sh
+      - name: backup code_config excludes regression test
+        run: bash test/backup_code_config_excludes.sh
       - name: rails watchdog regression test
         run: bash test/rails_watchdog.sh
 
