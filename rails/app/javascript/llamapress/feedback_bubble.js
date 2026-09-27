@@ -165,9 +165,20 @@ function getCSRFToken() {
   return meta ? meta.getAttribute('content') : '';
 }
 
-function createBubbleHTML() {
+export function createBubbleHTML() {
   return `
     <div id="llamapress-feedback-bubble" class="fixed bottom-5 right-5 z-50 overflow-visible">
+      <style>
+        /* Phones: the action icons were 16px with no padding, far too small for a
+           finger (Kody, 2026-09-27). Touch-only, so the desktop bubble is unchanged. */
+        @media (pointer: coarse) {
+          #llamapress-feedback-bubble [data-feedback-action] {
+            min-width: 44px; min-height: 44px; display: inline-flex;
+            align-items: center; justify-content: center; border-radius: 10px;
+          }
+          #llamapress-feedback-bubble [data-feedback-action] svg { width: 24px; height: 24px; }
+        }
+      </style>
       <!-- Trigger Button with Badge -->
       <button id="feedback-trigger"
               class="relative w-12 h-12 rounded-full bg-gray-400 opacity-60 hover:opacity-100 hover:bg-purple-600 hover:scale-110
@@ -258,26 +269,26 @@ function createBubbleHTML() {
 
             <div class="flex items-center justify-between mt-2">
               <div class="flex items-center gap-2">
-                <button type="button" id="feedback-select-element-btn" title="Select an element on the page"
+                <button type="button" id="feedback-select-element-btn" data-feedback-action title="Select an element on the page"
                         class="text-gray-400 hover:text-purple-600 transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
                   </svg>
                 </button>
-                <button type="button" id="feedback-screenshot-btn" title="Take screenshot"
+                <button type="button" id="feedback-screenshot-btn" data-feedback-action title="Take screenshot"
                         class="text-gray-400 hover:text-purple-600 transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </button>
-                <button type="button" id="feedback-video-btn" title="Record video"
+                <button type="button" id="feedback-video-btn" data-feedback-action title="Record video"
                         class="text-gray-400 hover:text-purple-600 transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                   </svg>
                 </button>
-                <label class="cursor-pointer text-gray-400 hover:text-purple-600 transition-colors flex items-center gap-1">
+                <label data-feedback-action class="cursor-pointer text-gray-400 hover:text-purple-600 transition-colors flex items-center gap-1">
                   <input type="file" id="feedback-file" class="hidden" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt" />
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />

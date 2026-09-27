@@ -24,7 +24,7 @@ beforeEach(async () => {
   delete window.screenshotAnnotator
   document.body.innerHTML = '<div id="llamapress-feedback-bubble"></div>'
   // Present already, so ensureDependencies() injects no script tags.
-  window.html2canvas = vi.fn()
+  window.llamapressHtml2canvas = vi.fn()
   window.fabric = {}
   await import(MODULE)
   annotator = window.screenshotAnnotator
@@ -34,7 +34,7 @@ beforeEach(async () => {
 afterEach(() => {
   vi.restoreAllMocks()
   delete window.screenshotAnnotator
-  delete window.html2canvas
+  delete window.llamapressHtml2canvas
   delete window.fabric
   document.body.innerHTML = ''
 })
@@ -47,7 +47,7 @@ describe('leaving a screenshot capture without attaching', () => {
     expect(bubble().style.display).toBe('none')
 
     const cancel = document.getElementById('screenshot-cancel')
-    cancel.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }))
+    cancel.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }))
 
     expect(document.getElementById('screenshot-selection-overlay')).toBeNull()
     expect(bubble().style.display).toBe('')
@@ -73,12 +73,12 @@ describe('leaving a screenshot capture without attaching', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     const overlay = document.getElementById('screenshot-selection-overlay')
 
-    overlay.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, clientX: 10, clientY: 10 }))
-    overlay.dispatchEvent(new MouseEvent('mousemove', { bubbles: true, clientX: 200, clientY: 200 }))
+    overlay.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, clientX: 10, clientY: 10 }))
+    overlay.dispatchEvent(new PointerEvent('pointermove', { bubbles: true, clientX: 200, clientY: 200 }))
     // happy-dom does no layout; give the drawn box the size it would have.
     vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect')
       .mockReturnValue({ left: 10, top: 10, width: 190, height: 190 })
-    overlay.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, clientX: 200, clientY: 200 }))
+    overlay.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, clientX: 200, clientY: 200 }))
     await vi.waitFor(() => expect(onAttach).toHaveBeenCalled())
 
     expect(onAttach).toHaveBeenCalledTimes(1)

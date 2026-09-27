@@ -73,7 +73,14 @@ echo "Step 1/3: Syncing Leonardo source code..."
 STEP1_START=$(date +%s)
 # Capture the exit code rather than using a bare `if`: exit 2 means "completed, some
 # files skipped", which is a warning. See lib/backup_status.sh.
+#
+# .leonardo/chatgpt-auth/ holds the customer's ChatGPT OAuth tokens (gitignored for the
+# same reason) and codex's tmp/arg0 symlinks, which point into the llamabot container
+# and dangle here. The exclude keeps the tokens out of S3; --no-follow-symlinks is what
+# silences the dangling links, because the CLI checks every path before it applies
+# excludes. See test/backup_chatgpt_auth_excludes.sh.
 aws s3 sync "${PROJECT_DIR}" "${S3_BUCKET}/latest/project-files/" \
+    --no-follow-symlinks \
     --exclude "*.pyc" \
     --exclude "__pycache__/*" \
     --exclude "tmp/*" \
@@ -81,6 +88,7 @@ aws s3 sync "${PROJECT_DIR}" "${S3_BUCKET}/latest/project-files/" \
     --exclude "node_modules/*" \
     --exclude ".claude/*" \
     --exclude "backups/*" \
+    --exclude ".leonardo/chatgpt-auth/*" \
     --storage-class STANDARD_IA \
     --only-show-errors \
     --delete
