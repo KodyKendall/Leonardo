@@ -11,8 +11,17 @@
 // Adding the tags to more layouts is what broke: it regresses the moment Leo writes
 // the next layout, and Leo writes layouts constantly. The annotator fetches what it
 // needs itself, which no new layout can undo.
+//
+// html2canvas is the -pro fork, kept under its own global. Phones have no
+// getDisplayMedia, so capture there ALWAYS falls back to html2canvas — and the
+// original 1.4.1 throws on the oklch() colors Tailwind/DaisyUI emit, so on a phone
+// no screenshot ever reached the annotate modal (Kody, 2026-09-27). The fork writes
+// window.html2canvas too; `captureAs` copies it to our own name on load, because
+// application.html.erb (client-owned, never synced) still ships the 1.4.1 tag and
+// a window.html2canvas being present says nothing about which one it is.
 const ANNOTATOR_DEPENDENCIES = [
-  { global: 'html2canvas', src: 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js' },
+  { global: 'llamapressHtml2canvas', captureAs: 'html2canvas',
+    src: 'https://cdn.jsdelivr.net/npm/html2canvas-pro@1.6.7/dist/html2canvas-pro.min.js' },
   { global: 'fabric', src: 'https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js' }
 ];
 
@@ -60,8 +69,8 @@ class ScreenshotAnnotator {
   // Start the capture process
   async startCapture(onAttach) {
     this.onAttachCallback = onAttach;
-    // Loaded on the button CLICK, not on the region mouseup: getDisplayMedia needs
-    // that mouseup's user activation, and an await in front of it would spend the
+    // Loaded on the button CLICK, not on the region pointerup: getDisplayMedia needs
+    // that gesture's user activation, and an await in front of it would spend the
     // gesture. By the time the user finishes dragging, both libraries are here.
     await this.ensureDependencies();
     this.showSelectionOverlay();
@@ -70,10 +79,11 @@ class ScreenshotAnnotator {
   // A missing library is not fatal — capture degrades to an unannotated screenshot —
   // so a rejection here is logged and the capture goes ahead.
   async ensureDependencies() {
-    await Promise.all(ANNOTATOR_DEPENDENCIES.map(async ({ global, src }) => {
+    await Promise.all(ANNOTATOR_DEPENDENCIES.map(async ({ global, captureAs, src }) => {
       if (window[global]) return;
       try {
         await loadScriptOnce(src);
+        if (captureAs && window[captureAs]) window[global] = window[captureAs];
       } catch (err) {
         console.error(`Screenshot annotator: could not load ${global} from ${src}`, err);
       }
@@ -88,28 +98,36 @@ class ScreenshotAnnotator {
 
     const overlay = document.createElement('div');
     overlay.id = 'screenshot-selection-overlay';
+    // A finger can't "click", and the hint is the only instruction on screen.
+    const hint = this.isTouchPrimaryDevice() ? 'Drag to select area' : 'Click and drag to select area';
     overlay.innerHTML = `
       <div style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
                   background: rgba(0,0,0,0.8); color: white; padding: 12px 24px;
                   border-radius: 8px; font-size: 14px; z-index: 100001;
                   display: flex; align-items: center; gap: 16px;">
-        <span>Click and drag to select area</span>
+        <span>${hint}</span>
         <button id="screenshot-cancel" style="background: rgba(255,255,255,0.2); border: none;
                 color: white; padding: 6px 12px; border-radius: 4px; cursor: pointer;">
           Cancel
         </button>
       </div>
     `;
+    // touch-action: none — without it a finger drag is taken as a page scroll and
+    // the browser never hands us the moves (Kody, 2026-09-27: dragging did nothing
+    // on a phone).
     overlay.style.cssText = `
       position: fixed; inset: 0; z-index: 100000;
-      background: rgba(0,0,0,0.2); cursor: crosshair;
+      background: rgba(0,0,0,0.2); cursor: crosshair; touch-action: none;
+      -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
     `;
 
     let isDrawing = false;
     let startX, startY;
     let selectionBox = null;
 
-    overlay.addEventListener('mousedown', (e) => {
+    // Pointer events, not mouse events: one path for mouse, finger and pen. The
+    // mouse-only version drew nothing on a touchscreen.
+    overlay.addEventListener('pointerdown', (e) => {
       if (e.target.id === 'screenshot-cancel') {
         this.cancelCapture(overlay);
         return;
@@ -119,8 +137,12 @@ class ScreenshotAnnotator {
       isDrawing = true;
       startX = e.clientX;
       startY = e.clientY;
+      // Keep receiving the moves even if the finger slides over the hint bar.
+      try { overlay.setPointerCapture?.(e.pointerId); } catch (_) {}
 
+      selectionBox?.remove();
       selectionBox = document.createElement('div');
+      selectionBox.dataset.screenshotSelectionBox = '';
       selectionBox.style.cssText = `
         position: fixed; border: 2px solid #8b5cf6;
         background: rgba(139, 92, 246, 0.1);
@@ -129,7 +151,7 @@ class ScreenshotAnnotator {
       overlay.appendChild(selectionBox);
     });
 
-    overlay.addEventListener('mousemove', (e) => {
+    overlay.addEventListener('pointermove', (e) => {
       if (!isDrawing || !selectionBox) return;
 
       const left = Math.min(startX, e.clientX);
@@ -143,13 +165,30 @@ class ScreenshotAnnotator {
       selectionBox.style.height = height + 'px';
     });
 
-    overlay.addEventListener('mouseup', async () => {
+    // iOS Safari: a drag that starts near the screen edge fires the browser's
+    // back/forward swipe and navigates away mid-selection, and touch-action: none
+    // doesn't stop it. Cancelling touchstart does; pointer events still arrive, so
+    // the drag is unaffected. Buttons are left alone so Cancel still gets its tap.
+    overlay.addEventListener('touchstart', (e) => {
+      if (e.target.closest?.('button')) return;
+      e.preventDefault();
+    }, { passive: false });
+
+    // The browser took the gesture back (e.g. a system swipe): drop the half-drawn box.
+    overlay.addEventListener('pointercancel', () => {
+      isDrawing = false;
+      selectionBox?.remove();
+      selectionBox = null;
+    });
+
+    overlay.addEventListener('pointerup', async () => {
       if (!isDrawing || !selectionBox) return;
       isDrawing = false;
 
       const rect = selectionBox.getBoundingClientRect();
       if (rect.width < 10 || rect.height < 10) {
         selectionBox.remove();
+        selectionBox = null;
         return;
       }
 
@@ -172,6 +211,11 @@ class ScreenshotAnnotator {
         this.cancelCapture(overlay);
       });
     }, 0);
+  }
+
+  // Primary input is a finger (no hover), e.g. a phone.
+  isTouchPrimaryDevice() {
+    return typeof window.matchMedia === 'function' && window.matchMedia('(hover: none)').matches;
   }
 
   cancelCapture(overlay) {
@@ -319,10 +363,12 @@ class ScreenshotAnnotator {
   async captureRegionWithHtml2Canvas(x, y, width, height) {
     // A bare `html2canvas` here threw ReferenceError on any layout that did not
     // ship the script tag, turning a merely DENIED screen-share into a dead end.
-    if (!window.html2canvas) {
+    // The -pro fork only: the layout's html2canvas 1.4.1 throws on oklch() colors.
+    const html2canvas = window.llamapressHtml2canvas;
+    if (!html2canvas) {
       throw new Error('Screen capture failed and html2canvas is unavailable');
     }
-    const canvas = await window.html2canvas(document.body, {
+    const canvas = await html2canvas(document.body, {
       x: x + window.scrollX,
       y: y + window.scrollY,
       width: width,
@@ -371,9 +417,11 @@ class ScreenshotAnnotator {
     this.modal = document.createElement('div');
     this.modal.id = 'screenshot-annotation-modal';
     this.modal.innerHTML = `
-      <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+      <div style="position: fixed; top: 0; left: 0; right: 0; height: 100vh; height: 100dvh;
+                  background: rgba(0,0,0,0.9);
                   display: flex; align-items: center; justify-content: center; z-index: 100002;">
-        <div style="background: #1a1a1a; border-radius: 12px; max-width: 95vw; max-height: 95vh;
+        <div data-annotation-card
+             style="background: #1a1a1a; border-radius: 12px; max-width: 95vw; max-height: 95vh; max-height: 95dvh;
                     display: flex; flex-direction: column; overflow: hidden; border: 1px solid #333;">
 
           <!-- Header -->
@@ -425,9 +473,8 @@ class ScreenshotAnnotator {
           </div>
 
           <!-- Canvas Container -->
-          <div id="annotation-canvas-container" style="flex: 1; overflow: auto; padding: 16px;
-                                                        display: flex; align-items: center;
-                                                        justify-content: center; background: #111;">
+          <div id="annotation-canvas-container" style="flex: 1; min-height: 0; overflow: auto; padding: 16px;
+                                                        display: flex; background: #111;">
             <canvas id="annotation-canvas"></canvas>
           </div>
 
@@ -446,6 +493,9 @@ class ScreenshotAnnotator {
     // Add tool button styles
     const style = document.createElement('style');
     style.textContent = `
+      /* margin:auto, not align-items/justify-content:center — those clip an
+         oversized canvas on both sides and leave the top unscrollable. */
+      #annotation-canvas-container > * { margin: auto; }
       #screenshot-annotation-modal .tool-btn {
         width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
         background: transparent; border: none; border-radius: 6px; color: #888; cursor: pointer;
@@ -467,6 +517,30 @@ class ScreenshotAnnotator {
     this.attachModalListeners();
   }
 
+  // The largest canvas that fits the space the modal really has: the VISIBLE
+  // screen (visualViewport — on iOS innerHeight includes the area under the
+  // browser toolbar) minus the modal's header, toolbar and footer. Sizing to a
+  // flat share of innerHeight overflowed on phones and cut the capture off.
+  canvasSizeFor(imgWidth, imgHeight) {
+    const vv = window.visualViewport;
+    const viewWidth = vv?.width || window.innerWidth;
+    const viewHeight = vv?.height || window.innerHeight;
+
+    const card = this.modal?.querySelector('[data-annotation-card]');
+    const container = this.modal?.querySelector('#annotation-canvas-container');
+    const chrome = card && container
+      ? card.getBoundingClientRect().height - container.getBoundingClientRect().height
+      : 0;
+
+    const CONTAINER_PADDING = 32;
+    const CARD_BORDER = 2;
+    const availWidth = viewWidth * 0.95 - CARD_BORDER - CONTAINER_PADDING;
+    const availHeight = Math.max(viewHeight * 0.95 - chrome - CONTAINER_PADDING, 120);
+    const scale = Math.min(availWidth / imgWidth, availHeight / imgHeight, 1);
+
+    return { width: Math.floor(imgWidth * scale), height: Math.floor(imgHeight * scale) };
+  }
+
   initFabricCanvas(imageData) {
     const img = new Image();
     // Anything thrown in here used to be swallowed by the image-load callback — it
@@ -474,19 +548,13 @@ class ScreenshotAnnotator {
     // with an empty canvas and no clue why.
     img.onload = () => {
       try {
-        // Scale to fit viewport
-        const maxWidth = window.innerWidth * 0.85;
-        const maxHeight = window.innerHeight * 0.7;
-        const scale = Math.min(maxWidth / img.width, maxHeight / img.height, 1);
+        const { width, height } = this.canvasSizeFor(img.width, img.height);
 
         const canvasEl = document.getElementById('annotation-canvas');
-        canvasEl.width = img.width * scale;
-        canvasEl.height = img.height * scale;
+        canvasEl.width = width;
+        canvasEl.height = height;
 
-        this.fabricCanvas = new fabric.Canvas('annotation-canvas', {
-          width: img.width * scale,
-          height: img.height * scale
-        });
+        this.fabricCanvas = new fabric.Canvas('annotation-canvas', { width, height });
 
         // Set background image
         fabric.Image.fromURL(imageData, (fabricImg) => {

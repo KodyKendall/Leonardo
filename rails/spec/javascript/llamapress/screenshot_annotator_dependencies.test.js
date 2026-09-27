@@ -26,7 +26,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 const MODULE = '../../../app/javascript/llamapress/screenshot_annotator.js'
 
 const FABRIC_SRC = 'https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js'
-const HTML2CANVAS_SRC = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js'
+const HTML2CANVAS_SRC = 'https://cdn.jsdelivr.net/npm/html2canvas-pro@1.6.7/dist/html2canvas-pro.min.js'
 const PNG = 'data:image/png;base64,iVBORw0KGgo='
 
 /** Load a fresh copy of the module, so the in-flight-script cache starts empty. */
@@ -59,6 +59,7 @@ beforeEach(() => {
   document.body.innerHTML = ''
   delete window.fabric
   delete window.html2canvas
+  delete window.llamapressHtml2canvas
   // The raw-attach path turns the data URL into a blob; jsdom has no data: fetch.
   global.fetch = vi.fn(async () => ({ blob: async () => new Blob(['x'], { type: 'image/png' }) }))
 })
@@ -78,17 +79,49 @@ describe('loading its own dependencies', () => {
     expect(injected).toContain(FABRIC_SRC)
   })
 
-  it('injects nothing when the layout already provided them', async () => {
-    // application.html.erb still ships both tags. Boxes where the feature already
-    // worked must not pay for a second copy of fabric on every capture.
+  it('injects nothing when both are already loaded', async () => {
+    // Boxes where the feature already worked must not pay for a second copy of
+    // fabric on every capture.
     window.fabric = {}
-    window.html2canvas = () => {}
+    window.llamapressHtml2canvas = () => {}
     const injected = autoRespondToScripts()
     const annotator = await freshAnnotator()
 
     await annotator.ensureDependencies()
 
     expect(injected).toEqual([])
+  })
+
+  it("loads html2canvas-pro even when the layout already loaded the OLD html2canvas", async () => {
+    // Kody, 2026-09-27: on a phone the region drag worked but no annotate modal
+    // opened and nothing attached. Phones have no getDisplayMedia, so capture always
+    // falls back to html2canvas — and html2canvas 1.4.1 throws "Attempting to parse
+    // an unsupported color function 'oklch'" on the app's Tailwind/DaisyUI colors.
+    // application.html.erb (client-owned, never synced) still ships the 1.4.1 tag,
+    // so a window.html2canvas being present proves nothing about which one it is.
+    window.fabric = {}
+    const oldHtml2canvas = () => {}
+    window.html2canvas = oldHtml2canvas
+    const injected = autoRespondToScripts()
+    const annotator = await freshAnnotator()
+
+    await annotator.ensureDependencies()
+
+    expect(injected).toEqual([HTML2CANVAS_SRC])
+  })
+
+  it('renders the fallback with html2canvas-pro, never the layout copy', async () => {
+    const oldHtml2canvas = vi.fn()
+    const pro = vi.fn(async () => ({ toDataURL: () => PNG }))
+    window.html2canvas = oldHtml2canvas
+    window.llamapressHtml2canvas = pro
+    const annotator = await freshAnnotator()
+
+    const out = await annotator.captureRegionWithHtml2Canvas(0, 0, 100, 100)
+
+    expect(out).toBe(PNG)
+    expect(pro).toHaveBeenCalled()
+    expect(oldHtml2canvas).not.toHaveBeenCalled()
   })
 
   it('appends one tag per URL even when captures overlap', async () => {

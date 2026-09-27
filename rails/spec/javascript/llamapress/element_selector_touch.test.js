@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
 // Nicole Haldis (sipstaff.com) and Jennie Morgan (goconnexa.com), both on box
 // leo-borro, reported 2026-09-11 that the pointer / select-element icon in the
@@ -59,8 +59,19 @@ function banner() {
   return document.getElementById(BANNER_ID)
 }
 
+/** Pretend the device's primary input is a finger (hover: none) or a mouse. */
+function stubPrimaryInput(kind) {
+  vi.stubGlobal('matchMedia', (query) => ({
+    matches: query === '(hover: none)' && kind === 'touch',
+    media: query,
+    addEventListener() {},
+    removeEventListener() {},
+  }))
+}
+
 describe('element selector on touch devices', () => {
   beforeEach(async () => {
+    stubPrimaryInput('touch')
     selector = await freshSelector()
     document.body.innerHTML = `
       <div id="page">
@@ -74,6 +85,7 @@ describe('element selector on touch devices', () => {
   afterEach(() => {
     selector.disableElementSelector()
     document.body.innerHTML = ''
+    vi.unstubAllGlobals()
   })
 
   it('arms a visible banner with a Cancel button, so a phone user is never stuck', () => {
@@ -170,6 +182,34 @@ describe('element selector on touch devices', () => {
     expect(picked).toHaveLength(0)
   })
 
+  // Kody, 2026-09-27: a banner pinned to the TOP covered the navbar, so a phone
+  // user could never point at it. It sits at the bottom instead, and gets out of
+  // the way of whatever is highlighted.
+  it('pins the banner to the bottom, clear of a top navbar', () => {
+    selector.enableElementSelector({ onSelect: () => {} })
+    expect(banner().dataset.edge).toBe('bottom')
+  })
+
+  it('flips the banner to the top when the tapped element sits under it', () => {
+    selector.enableElementSelector({ onSelect: () => {} })
+    const b = banner()
+    const plain = document.getElementById('plain')
+    const other = document.getElementById('other')
+    // Banner occupies the bottom strip; #plain is a bottom tab bar under it,
+    // #other is up in the page.
+    b.getBoundingClientRect = () => ({ top: 700, bottom: 760, left: 0, right: 400 })
+    plain.getBoundingClientRect = () => ({ top: 710, bottom: 760, left: 0, right: 400 })
+    other.getBoundingClientRect = () => ({ top: 100, bottom: 140, left: 0, right: 400 })
+
+    tap(plain)
+    expect(banner().dataset.edge).toBe('top')
+
+    // Picking something clear of the bottom strip puts it back.
+    b.getBoundingClientRect = () => ({ top: 0, bottom: 60, left: 0, right: 400 })
+    tap(other)
+    expect(banner().dataset.edge).toBe('bottom')
+  })
+
   it('stops the page scrolling out from under a drag while armed', () => {
     selector.enableElementSelector({ onSelect: () => {} })
     expect(document.body.style.touchAction).toBe('none')
@@ -181,6 +221,7 @@ describe('element selector on touch devices', () => {
 
 describe('element selector on a mouse (unchanged behaviour)', () => {
   beforeEach(async () => {
+    stubPrimaryInput('mouse')
     selector = await freshSelector()
     document.body.innerHTML = `<p id="plain">A plain paragraph.</p>`
   })
@@ -188,6 +229,17 @@ describe('element selector on a mouse (unchanged behaviour)', () => {
   afterEach(() => {
     selector.disableElementSelector()
     document.body.innerHTML = ''
+    vi.unstubAllGlobals()
+  })
+
+  // Kody, 2026-09-27: on desktop the full-width purple banner sat on top of the
+  // app's navbar, so you could not point at the navbar at all. Hover + Escape are
+  // enough on a mouse; the banner is only needed where there is no hover.
+  it('draws no banner on a mouse device, so the navbar stays pickable', () => {
+    selector.enableElementSelector({ onSelect: () => {} })
+
+    expect(document.body.classList.contains('element-selector-active')).toBe(true)
+    expect(banner()).toBeNull()
   })
 
   it('highlights on hover', () => {
