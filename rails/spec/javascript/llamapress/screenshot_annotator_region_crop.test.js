@@ -78,7 +78,7 @@ function harness({ regionCapture = true, framed = true } = {}) {
     return el
   })
 
-  window.html2canvas = vi.fn(async (node, opts) => {
+  window.llamapressHtml2canvas = vi.fn(async (node, opts) => {
     calls.html2canvas.push(opts)
     return { toDataURL: () => 'data:image/png;base64,HTML2CANVAS' }
   })
@@ -105,7 +105,7 @@ afterEach(() => {
   vi.restoreAllMocks()
   delete window.screenshotAnnotator
   delete window.CropTarget
-  delete window.html2canvas
+  delete window.llamapressHtml2canvas
   delete globalThis.ImageCapture
 })
 

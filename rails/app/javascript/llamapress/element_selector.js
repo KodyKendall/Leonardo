@@ -14,9 +14,13 @@
 //                  banner's "Use this") commits. There is no hover on a finger, so
 //                  committing on the first tap would pick whatever the finger landed
 //                  on before the user could see it.
-// The banner is not optional on either input: enabling the selector used to draw
-// nothing at all while the caller had already hidden the feedback panel, and Escape
-// was the only exit. On a phone that is an invisible mode you escape by reloading.
+// The banner is only drawn on touch-primary devices (no hover): there, enabling the
+// selector used to draw nothing while the caller had already hidden the feedback
+// panel, and Escape was the only exit — an invisible mode you escape by reloading.
+// On a mouse the hover highlight shows the mode and Escape exits it, and a
+// full-width bar pinned to the top covered the app's navbar so it could not be
+// picked (Kody, 2026-09-27) — so desktop gets no banner, and on touch it sits at
+// the BOTTOM, flipping to the top only while the highlighted element is under it.
 
 import { capPayload, MAX_SELECTED_ELEMENT_BYTES } from "llamapress/payload_caps"
 
@@ -59,20 +63,25 @@ export function enableElementSelector(options = {}) {
         }
         #${BANNER_ID} {
             position: fixed;
-            top: 0;
+            bottom: 0;
             left: 0;
             right: 0;
             z-index: 2147483647;
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 10px 14px;
+            padding: 10px 14px calc(10px + env(safe-area-inset-bottom, 0px));
             box-sizing: border-box;
             font: 500 14px/1.3 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             color: #fff;
             background: #6d28d9;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
             cursor: default !important;
+        }
+        #${BANNER_ID}[data-edge="top"] {
+            top: 0;
+            bottom: auto;
+            padding: calc(10px + env(safe-area-inset-top, 0px)) 14px 10px;
         }
         #${BANNER_ID} * { cursor: pointer !important; }
         #${BANNER_ID} .llamapress-es-text {
@@ -112,7 +121,7 @@ export function enableElementSelector(options = {}) {
     previousTouchAction = document.body.style.touchAction;
     document.body.style.touchAction = 'none';
 
-    buildBanner();
+    if (isTouchPrimaryDevice()) buildBanner();
 
     // Add event listeners. Pointer events carry mouse, touch and pen alike; the
     // click listener is here only to swallow the click so picking a link or a
@@ -167,6 +176,7 @@ function buildBanner() {
     const banner = document.createElement('div');
     banner.id = BANNER_ID;
     banner.setAttribute('role', 'toolbar');
+    banner.dataset.edge = 'bottom';
 
     const text = document.createElement('span');
     text.className = 'llamapress-es-text';
@@ -200,6 +210,10 @@ function buildBanner() {
     updateBanner();
 }
 
+function isTouchPrimaryDevice() {
+    return typeof window.matchMedia === 'function' && window.matchMedia('(hover: none)').matches;
+}
+
 function removeBanner() {
     if (elementSelectorBanner) {
         elementSelectorBanner.remove();
@@ -224,6 +238,22 @@ function updateBanner() {
     if (confirm) {
         confirm.disabled = !armed;
     }
+    placeBanner();
+}
+
+// Keep the banner off whatever the user is pointing at: bottom by default (a top
+// navbar stays pickable), top while the highlighted element sits in the bottom
+// strip (e.g. a mobile tab bar).
+function placeBanner() {
+    if (!elementSelectorBanner) return;
+    let edge = 'bottom';
+    if (currentHighlightedElement) {
+        const rect = elementSelectorBanner.getBoundingClientRect();
+        const stripHeight = rect.bottom - rect.top;
+        const stripTop = window.innerHeight - stripHeight;
+        if (currentHighlightedElement.getBoundingClientRect().bottom > stripTop) edge = 'top';
+    }
+    elementSelectorBanner.dataset.edge = edge;
 }
 
 // Cancel selection mode on Escape (e.g. user changed their mind).

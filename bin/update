@@ -577,6 +577,17 @@ if [ "${#CHANGED[@]}" -gt 0 ]; then
   log "pull ok"
 fi
 
+# ---- rescue files Leo wrote into the container's /rails/public ---------------
+# One-shot, self-gating: only when the compose now mounts the whole rails/public/ and
+# the running container predates that mount. See bin/lib/rails_public_rescue.sh.
+# NOTE: this runs from the bin/update already on the box, so a compose that flips the
+# mount must ship in a LATER release than this function, or the first recreate skips it.
+if [ -f "$SCRIPT_DIR/lib/rails_public_rescue.sh" ]; then
+  # shellcheck source=lib/rails_public_rescue.sh
+  . "$SCRIPT_DIR/lib/rails_public_rescue.sh"
+  rescue_rails_public "$($DC ps -q llamapress 2>/dev/null | head -1)"
+fi
+
 # ---- recreate DETACHED so we survive llamabot restarting its own container ----
 # When the sync changed docker-compose.yml, recreate EVERYTHING (`up -d` with no service
 # list) — compose only recreates services whose config actually changed, and this applies
