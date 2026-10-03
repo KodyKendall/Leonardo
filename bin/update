@@ -146,6 +146,32 @@ EOF
 
 fail() { log "FAILED: $1"; write_marker "failed" "$1"; exit 1; }
 
+# ---- one update at a time ---------------------------------------------------
+# leo-sepe 2026-09-27: a second Update click started a second bin/update while the first
+# was still pulling; both detached recreates ran `up -d` at once, collided on compose's
+# temporary <id>_<name> rename, and llamabot was gone for 31 minutes. Two guards:
+#   * this lock, held for the whole script (the detached recreate takes it too, below);
+#   * a still-active leonardo-update-* unit, i.e. the previous run's recreate is pending.
+# Both exit 0 and leave the marker alone: the run already in flight owns it, and a
+# non-zero exit would make LlamaBot record this version pair as a failed update.
+# The lock is update.log itself: already gitignored on every box and append-only. A new
+# lock file would be untracked on the first run (the .gitignore union-merge lands later in
+# that same run) and get swept into the client's next `git add -A`. Opened for APPEND —
+# `9>` would truncate the log.
+LOCK="$PROJECT_DIR/$LOG"
+exec 9>>"$LOCK"
+if ! flock -n 9; then
+  log "another bin/update is already running; exiting"
+  echo "An update is already in progress."
+  exit 0
+fi
+if command -v systemctl >/dev/null 2>&1 \
+   && systemctl list-units 'leonardo-update-*' --state=active,activating --no-legend 2>/dev/null | grep -q .; then
+  log "the previous update's recreate is still running; exiting"
+  echo "An update is already in progress (containers are still restarting)."
+  exit 0
+fi
+
 # ---- platform sync (allowlist checkout from upstream) ----------------------
 # Append every upstream .gitignore line the box does not already have. Two failure
 # modes made this a silent no-op on a large slice of the fleet (mothership sweep,
@@ -614,11 +640,27 @@ if [ "$COMPOSE_SYNC_CHANGED" -eq 1 ]; then
 # 88% pool (2026-08-23) purely from the images this line would have pruned. If you
 # are resolving a conflict in this file, KEEP the prune. Guarded daily by the
 # mothership BinUpdateSyncCheckJob.
+  RECREATE_SERVICES=""
   RESTART_CMD="cd $PROJECT_DIR && $DC up -d && docker image prune -af"
 else
   write_marker "restarting" "images pulled; recreating ${CHANGED[*]:-}"
+  RECREATE_SERVICES="${CHANGED[*]:-}"
   RESTART_CMD="cd $PROJECT_DIR && $DC up -d ${CHANGED[*]:-} && docker image prune -af"
 fi
+# The recreate writes the FINAL marker itself (success only once `up -d` succeeded, else
+# failed), retries once past a rename-conflict leftover, logs to update.log rather than
+# only the journal, and takes the update lock so a later bin/update waits for it. The
+# plain RESTART_CMD above stays as the fallback for a box whose sync has not delivered
+# bin/lib/update_recreate.sh yet (bin/update runs its OLD copy of itself).
+RECREATE_LIB="$SCRIPT_DIR/lib/update_recreate.sh"
+if [ -f "$RECREATE_LIB" ] && command -v flock >/dev/null 2>&1; then
+  RESTART_CMD="cd $PROJECT_DIR && DC='$DC' LLAMABOT_TARGET='$LLAMABOT_TARGET' LLAMAPRESS_TARGET='$LLAMAPRESS_TARGET' flock $LOCK bash $RECREATE_LIB $PROJECT_DIR $RECREATE_SERVICES >>$PROJECT_DIR/$LOG 2>&1 && docker image prune -af >>$PROJECT_DIR/$LOG 2>&1"
+  MARKER_OWNED_BY_RECREATE=1
+else
+  MARKER_OWNED_BY_RECREATE=0
+fi
+# Release our hold first: the recreate's own flock would otherwise wait on this script.
+exec 9>&-
 if command -v systemd-run >/dev/null 2>&1; then
   UNIT="leonardo-update-$(date +%s)"
   if sudo systemd-run --no-block --unit="$UNIT" /bin/bash -c "$RESTART_CMD"; then
@@ -632,7 +674,9 @@ else
   log "recreate scheduled via nohup"
 fi
 
-write_marker "success" "updated ${CHANGED[*]:-config only}; restart scheduled"
+if [ "$MARKER_OWNED_BY_RECREATE" -eq 0 ]; then
+  write_marker "success" "updated ${CHANGED[*]:-config only}; restart scheduled"
+fi
 SYNC_NOTE=""
 if [ "$SYNC_SKIPPED" = "1" ]; then
   SYNC_NOTE="; SYNC SKIPPED"

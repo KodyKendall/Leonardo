@@ -5,6 +5,9 @@
 <%# Unified Login — platform-owned "Sign in with your LlamaPress.ai account" CTA (llama_bot_rails gem). Inert on self-hosted apps. respond_to?-guarded so an old gem image degrades to blank (never a crash) AND there is no lazy engine view-path race on cold boot. %>
 <%= LlamaBotRails::SsoHelper.respond_to?(:cta_html) ? LlamaBotRails::SsoHelper.cta_html : "" %>
 
+<%# "Continue with Google / Microsoft" (llama_bot_rails gem). Blank until SSO_* credentials are set; respond_to?-guarded so an older gem renders nothing instead of crashing. %>
+<%= LlamaBotRails::SocialSignIn.respond_to?(:buttons_html) ? LlamaBotRails::SocialSignIn.buttons_html(self) : "" %>
+
 <div class="max-w-md mx-auto mt-8 bg-white rounded-lg shadow-md p-8">
   <%# Shown when the POST was rejected for a stale CSRF token (see
       Users::SessionsController#render_fresh_sign_in_form). Rendered HERE rather than as a
