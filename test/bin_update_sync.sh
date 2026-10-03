@@ -222,7 +222,14 @@ case "\$*" in
   "inspect --format {{.Config.Image}} cid_llamabot") cat "\$st/running_llamabot" ;;
   "inspect --format {{.Config.Image}} cid_llamapress") cat "\$st/running_llamapress" ;;
   "compose pull"*) echo "\$*" >> "\$st/calls"; exit 0 ;;
-  "compose up -d"*) echo "\$*" >> "\$st/calls"; exit 0 ;;
+  "compose up -d"*) echo "\$*" >> "\$st/calls"
+                    n=\$(cat "\$st/up_failures" 2>/dev/null || echo 0)
+                    if [ "\$n" -gt 0 ]; then echo \$((n - 1)) > "\$st/up_failures"
+                      echo 'Conflict. The container name "/851b7b1d62d5_img_client-llamabot-1" is already in use'; exit 1; fi
+                    exit 0 ;;
+  "ps -a --format {{.Names}}") cat "\$st/all_containers" 2>/dev/null; exit 0 ;;
+  "rm -f"*) echo "\$*" >> "\$st/calls"; exit 0 ;;
+  "image prune -af") echo "\$*" >> "\$st/calls"; exit 0 ;;
   *) exit 1 ;;
 esac
 DOCKEREOF
@@ -238,13 +245,21 @@ done
 exit 1
 SDEOF
   chmod +x "$mock_bin/systemd-run"
+  # systemctl: report an active leonardo-update-* unit only when the test asks for one
+  cat > "$mock_bin/systemctl" <<SCEOF
+#!/usr/bin/env bash
+[ -f "${st}/active_unit" ] && cat "${st}/active_unit"
+exit 0
+SCEOF
+  chmod +x "$mock_bin/systemctl"
 }
 
 img_up="$WORK/img_upstream"
 mkdir -p "$img_up" && cd "$img_up"
 git init -q -b main && git config user.email u@u && git config user.name up
-mkdir -p bin
+mkdir -p bin/lib
 cp "$UPDATE" bin/update && chmod +x bin/update
+cp "$REPO_ROOT/bin/lib/update_recreate.sh" bin/lib/
 printf 'services:\n  llamabot:\n    image: kody06/llamabot:1.0.0\n  llamapress:\n    image: kody06/llamapress-simple:2.0.0\n' > docker-compose.yml
 git add -A && git commit -qm "img upstream v1"
 
@@ -285,6 +300,60 @@ echo "kody06/llamapress-simple:2.3.4" > "$s7/running_llamapress"
 PATH="$mock_bin:$PATH" bash bin/update 1.2.3 2.3.4 >/dev/null 2>&1
 chk 'grep -q "\"status\": \"noop\"" .leonardo/last_update.json'   "noop marker written when truly current"
 chk '[ ! -f "$s7/calls" ]'                                        "no pull or up calls on a true noop"
+
+# ---- scenarios 7b-7f: one update at a time, and a marker that tells the truth ------
+# leo-sepe 2026-09-27: a second Update click started a second bin/update; both recreates
+# raced on compose's temporary <id>_<name> rename, llamabot was gone for 31 min, and the
+# marker said "success" the whole time because it was written when the recreate was
+# merely SCHEDULED. The systemd-run mock runs the payload synchronously, so the marker
+# read after bin/update returns is what the detached unit left behind.
+old_images() { echo "kody06/llamabot:1.0.0" > "$1/running_llamabot"; echo "kody06/llamapress-simple:2.0.0" > "$1/running_llamapress"; }
+
+echo "== scenario 7b: a second bin/update while one holds the lock exits cleanly =="
+s7b="$WORK/state7b"; make_img_mock "$s7b"; old_images "$s7b"
+echo '{"status": "restarting", "message": "first run"}' > .leonardo/last_update.json
+flock .leonardo/update.log sleep 3 &
+holder=$!; sleep 0.3
+out7b="$(PATH="$mock_bin:$PATH" bash bin/update 1.2.3 2.3.4 2>&1)"; rc7b=$?
+wait "$holder"
+chk '[ "$rc7b" -eq 0 ]'                                        "second run exits 0 (not a failed version pair)"
+chk 'echo "$out7b" | grep -qi "already in progress"'           "second run says an update is already in progress"
+chk '[ ! -f "$s7b/calls" ]'                                    "second run pulls and recreates nothing"
+chk 'grep -q "first run" .leonardo/last_update.json'           "second run leaves the first run's marker alone"
+
+echo "== scenario 7c: a previous run's recreate unit still active -> no second recreate =="
+s7c="$WORK/state7c"; make_img_mock "$s7c"; old_images "$s7c"
+echo "leonardo-update-1790539612.service loaded active running /bin/bash -c ..." > "$s7c/active_unit"
+out7c="$(PATH="$mock_bin:$PATH" bash bin/update 1.2.3 2.3.4 2>&1)"; rc7c=$?
+chk '[ "$rc7c" -eq 0 ] && echo "$out7c" | grep -qi "already in progress"' "refuses while leonardo-update-* is active"
+chk '! grep -q "^compose up" "$s7c/calls" 2>/dev/null'         "no second up -d"
+
+echo "== scenario 7d: success is written by the recreate, not by the scheduler =="
+s7d="$WORK/state7d"; make_img_mock "$s7d"; old_images "$s7d"
+PATH="$mock_bin:$PATH" bash bin/update 1.2.3 2.3.4 >/dev/null 2>&1
+chk 'grep -q "\"status\": \"success\"" .leonardo/last_update.json' "marker ends success after a good recreate"
+chk 'grep -q "recreated" .leonardo/last_update.json'           "success message says the containers were recreated"
+chk 'grep -qx "image prune -af" "$s7d/calls"'                   "old images pruned after a good recreate"
+chk '! grep -q "restart scheduled" .leonardo/last_update.json' "no 'success; restart scheduled' before the recreate ran"
+
+echo "== scenario 7e: rename-conflict leftovers are cleared and the recreate retried once =="
+s7e="$WORK/state7e"; make_img_mock "$s7e"; old_images "$s7e"
+echo 1 > "$s7e/up_failures"
+printf 'img_client-llamapress-1\n851b7b1d62d5_img_client-llamabot-1\nunrelated-db-1\n' > "$s7e/all_containers"
+PATH="$mock_bin:$PATH" bash bin/update 1.2.3 2.3.4 >/dev/null 2>&1
+chk 'grep -qx "rm -f 851b7b1d62d5_img_client-llamabot-1" "$s7e/calls"' "leftover <id>_<name> container removed"
+chk '! grep -q "rm -f.*unrelated" "$s7e/calls" && ! grep -qx "rm -f img_client-llamapress-1" "$s7e/calls"' "nothing else removed"
+chk '[ "$(grep -c "^compose up -d" "$s7e/calls")" -eq 2 ]'      "up -d retried exactly once"
+chk 'grep -q "\"status\": \"success\"" .leonardo/last_update.json' "marker success after the retry"
+chk 'grep -q "already in use" .leonardo/update.log'             "the failed up -d output reaches update.log"
+
+echo "== scenario 7f: a recreate that keeps failing ends 'failed', never 'success' =="
+s7f="$WORK/state7f"; make_img_mock "$s7f"; old_images "$s7f"
+echo 5 > "$s7f/up_failures"
+PATH="$mock_bin:$PATH" bash bin/update 1.2.3 2.3.4 >/dev/null 2>&1
+chk 'grep -q "\"status\": \"failed\"" .leonardo/last_update.json' "marker ends failed"
+chk 'grep -q "update.log" .leonardo/last_update.json'           "failed message points at update.log"
+chk '! grep -q "image prune" "$s7f/calls"'                      "no prune when the recreate failed"
 
 # ---- scenario 8: a PROJECT_DIR owned by another uid ------------------------
 # Fleet boxes run bin/update against a checkout owned by a different uid (911 on the dev box).
