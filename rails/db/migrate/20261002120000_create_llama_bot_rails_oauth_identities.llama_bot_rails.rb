@@ -11,6 +11,6 @@ class CreateLlamaBotRailsOauthIdentities < ActiveRecord::Migration[7.0]
       t.string :email
       t.timestamps
     end
-    add_index :llama_bot_rails_oauth_identities, [:provider, :uid], unique: true
+    add_index :llama_bot_rails_oauth_identities, [ :provider, :uid ], unique: true
   end
 end
