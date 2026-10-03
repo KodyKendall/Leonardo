@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :users, controllers: { registrations: 'users/registrations', sessions: 'users/sessions' }
+  devise_for :users, controllers: { registrations: 'users/registrations', sessions: 'users/sessions', omniauth_callbacks: 'llama_bot_omniauth_callbacks' }
   devise_scope :user do
     # A CSRF token for the cookie the browser holds right now. The sign-in form
     # fetches this on submit to survive the cold-load cookie race with the LlamaBot
