@@ -39,6 +39,8 @@ jobs:
         run: bash test/rails_public_rescue.sh
       - name: rails watchdog regression test
         run: bash test/rails_watchdog.sh
+      - name: rails container env opt-in regression test
+        run: bash test/rails_env_optin.sh
 
   lint:
     name: ERB Lint (HTML Validity)
