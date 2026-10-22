@@ -4,6 +4,7 @@
 
 import { enableElementSelector, disableElementSelector } from "llamapress/element_selector"
 import { enablePasteToAttach, addFilesToInput, mergePickedFiles } from "llamapress/paste_to_attach"
+import { screenAnonymousFiles } from "llamapress/anonymous_attachments"
 // Feedback Replay: records only when the app turned it on; see replay_recorder.js.
 import "llamapress/replay_recorder"
 
@@ -27,7 +28,7 @@ function shouldShowBubble() {
 }
 
 // True when the visitor is not signed in. Such a submission carries a signed token and
-// may not attach files.
+// may attach images only (see anonymous_attachments.js).
 function isAnonymousVisitor() {
   const config = window.llamapressConfig || {};
   return !config.userLoggedIn;
@@ -937,6 +938,18 @@ function renderAttachments() {
   const fileInput = getFileInput();
   if (!preview || !fileInput) return;
 
+  // Picks, pastes and screenshots all end here, so this is the one gate for a signed-out
+  // visitor: a file the server would drop is refused now, with the reason on screen.
+  if (isAnonymousVisitor()) {
+    const { accepted, refused } = screenAnonymousFiles(fileInput.files);
+    if (refused.length) {
+      const transfer = new DataTransfer();
+      accepted.forEach((file) => transfer.items.add(file));
+      fileInput.files = transfer.files;
+      showStatus(`Not attached: ${refused.join('; ')}`, true);
+    }
+  }
+
   attachmentObjectUrls.forEach((url) => URL.revokeObjectURL(url));
   attachmentObjectUrls = [];
   preview.innerHTML = '';
@@ -1060,8 +1073,19 @@ async function submitFeedback(description, files) {
     try { return await r.text(); } catch (_) { return ''; }
   };
 
+  // The server names any file or field it refused (signed-out limits). Pass them up so
+  // the sender is told, rather than seeing a plain "sent".
+  const accepted = async (r) => {
+    try {
+      const body = await r.clone().json();
+      return { success: true, dropped: Array.isArray(body?.dropped) ? body.dropped : [] };
+    } catch (_) {
+      return { success: true, dropped: [] };
+    }
+  };
+
   let response = await postOnce();
-  if (succeeded(response)) return { success: true };
+  if (succeeded(response)) return accepted(response);
 
   // Pull the response body so admins get something actionable
   let responseBody = await readBody(response);
@@ -1083,7 +1107,7 @@ async function submitFeedback(description, files) {
     }
     if (token) {
       response = await postOnce();
-      if (succeeded(response)) return { success: true };
+      if (succeeded(response)) return accepted(response);
       responseBody = await readBody(response);
     }
   }
@@ -1350,9 +1374,13 @@ function attachEventListeners() {
       }
 
       try {
-        await submitFeedback(description, files);
+        const { dropped = [] } = await submitFeedback(description, files) || {};
         clearDraft();
-        showStatus('Thanks for your feedback!');
+        if (dropped.length) {
+          showStatus(`Thanks for your feedback! Not attached: ${dropped.join('; ')}`, true);
+        } else {
+          showStatus('Thanks for your feedback!');
+        }
         setTimeout(() => {
           togglePanel(false);
           resetForm();
@@ -1360,7 +1388,7 @@ function attachEventListeners() {
             submitBtn.disabled = false;
             submitBtn.textContent = 'Send';
           }
-        }, 1500);
+        }, dropped.length ? 5000 : 1500);
       } catch (error) {
         console.error('Feedback submission error:', error);
         // Whatever went wrong, the typed text must survive a reload / re-login.
@@ -1388,18 +1416,15 @@ function attachEventListeners() {
   });
 }
 
-// For a signed-out visitor the attachment path would be an open file-upload endpoint
-// straight into Active Storage, and the inbox tabs have nothing honest to show. The
-// SERVER is the real control — it strips these fields regardless — but offering a
-// control that silently does nothing is its own bug, so hide them here too.
-function applyAnonymousRestrictions() {
+// A signed-out visitor may send the picked element and up to 3 images, nothing else
+// (the server enforces it; see anonymous_attachments.js). So the picker, screenshot and
+// paperclip stay, the paperclip offers images only, and video is hidden — offering a
+// control whose result the server throws away is its own bug.
+export function applyAnonymousRestrictions() {
   if (!isAnonymousVisitor()) return;
 
-  ['feedback-screenshot-btn', 'feedback-video-btn'].forEach((id) => {
-    document.getElementById(id)?.classList.add('hidden');
-  });
-  // The paperclip is a <label> wrapping the file input, so hide the label itself.
-  document.getElementById('feedback-file')?.closest('label')?.classList.add('hidden');
+  document.getElementById('feedback-video-btn')?.classList.add('hidden');
+  document.getElementById('feedback-file')?.setAttribute('accept', 'image/*');
 }
 
 function initFeedbackBubble() {
