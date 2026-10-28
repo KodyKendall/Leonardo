@@ -25,7 +25,9 @@ permissions:
 jobs:
   ticket-mode:
     name: Ticket mode with real DeepSeek
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest moved to 26.04, which Playwright can't install
+    # chromium on yet. Bump once Playwright supports it.
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
 
     steps:

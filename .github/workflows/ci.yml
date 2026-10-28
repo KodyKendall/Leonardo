@@ -140,7 +140,9 @@ jobs:
   # The nightly e2e workflow (e2e-nightly.yml) covers the real-LLM agent flow.
   e2e-smoke:
     name: E2E Smoke (browser → chat UI → stack)
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest moved to 26.04, which Playwright can't install
+    # chromium on yet. Bump once Playwright supports it.
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout code
