@@ -179,6 +179,11 @@ export function createBubbleHTML() {
           }
           #llamapress-feedback-bubble [data-feedback-action] svg { width: 24px; height: 24px; }
         }
+        /* LP-26: when pinned to the visual viewport, also clear the iPhone notch/home bar. */
+        #llamapress-feedback-bubble[data-vv-pinned] {
+          translate: calc(-1 * env(safe-area-inset-right, 0px) / var(--lp-vv-scale, 1))
+                     calc(-1 * env(safe-area-inset-bottom, 0px) / var(--lp-vv-scale, 1));
+        }
       </style>
       <!-- Trigger Button with Badge -->
       <button id="feedback-trigger"
@@ -1427,6 +1432,49 @@ export function applyAnonymousRestrictions() {
   document.getElementById('feedback-file')?.setAttribute('accept', 'image/*');
 }
 
+// LP-26: on iPhone/iPad Safari a wide table makes the layout viewport wider than the
+// screen, and `position: fixed` resolves against the layout viewport — so the bubble
+// floated over table controls and drifted with scrolling. On touch devices, place it
+// against the visual viewport (what is actually on screen) and keep it finger-sized
+// when zoomed. Desktop keeps the plain `fixed bottom-5 right-5` classes.
+const BUBBLE_MARGIN_PX = 20;
+let unpinBubble = null;
+
+export function pinToVisualViewport(el, win = window) {
+  const vv = win.visualViewport;
+  const coarse = win.matchMedia?.('(pointer: coarse)').matches;
+  if (!el || !vv || !coarse) return () => {};
+
+  const place = () => {
+    const scale = vv.scale || 1;
+    const margin = BUBBLE_MARGIN_PX / scale;
+    const left = vv.offsetLeft + vv.width - el.offsetWidth - margin;
+    const top = vv.offsetTop + vv.height - el.offsetHeight - margin;
+    el.dataset.vvPinned = '';
+    el.style.setProperty('--lp-vv-scale', String(scale));
+    Object.assign(el.style, {
+      position: 'fixed',
+      right: 'auto',
+      bottom: 'auto',
+      left: `${left}px`,
+      top: `${top}px`,
+      transform: `scale(${1 / scale})`,
+      transformOrigin: 'bottom right',
+    });
+  };
+
+  vv.addEventListener('resize', place);
+  vv.addEventListener('scroll', place);
+  win.addEventListener('scroll', place, { passive: true });
+  place();
+
+  return () => {
+    vv.removeEventListener('resize', place);
+    vv.removeEventListener('scroll', place);
+    win.removeEventListener('scroll', place);
+  };
+}
+
 function initFeedbackBubble() {
   if (bubbleInitialized || !shouldShowBubble()) return;
   if (document.getElementById('llamapress-feedback-bubble')) return;
@@ -1434,6 +1482,9 @@ function initFeedbackBubble() {
   const wrapper = document.createElement('div');
   wrapper.innerHTML = createBubbleHTML();
   document.body.appendChild(wrapper.firstElementChild);
+
+  unpinBubble?.();
+  unpinBubble = pinToVisualViewport(document.getElementById('llamapress-feedback-bubble'));
 
   applyAnonymousRestrictions();
   attachEventListeners();
