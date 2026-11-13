@@ -9,6 +9,10 @@ class User < ApplicationRecord
   # boots on an image older than 0.7.12.
   include LlamaBotRails::SocialSignInUser if defined?(LlamaBotRails::SocialSignInUser)
 
+  # Owner, security admin, system admin, standard user. Guarded so this file still boots
+  # on an image older than 0.7.20.
+  include LlamaBotRails::AdministrativeRoles if defined?(LlamaBotRails::AdministrativeRoles)
+
   has_one_attached :profile_pic
   has_one_attached :bio_audio
 

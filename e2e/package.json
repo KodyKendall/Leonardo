@@ -6,12 +6,14 @@
   "scripts": {
     "test": "playwright test",
     "test:smoke": "playwright test tests/smoke.spec.ts",
+    "test:a11y": "playwright test tests/accessibility.spec.ts tests/keyboard.spec.ts",
     "test:ticket": "playwright test tests/ticket-mode.spec.ts",
     "test:mock": "E2E_MOCK_LLM=true playwright test tests/mock-llm.spec.ts",
     "test:headed": "playwright test --headed",
     "report": "playwright show-report"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
     "@playwright/test": "^1.49.0",
     "@types/node": "^22.0.0",
     "dotenv": "^16.4.5"

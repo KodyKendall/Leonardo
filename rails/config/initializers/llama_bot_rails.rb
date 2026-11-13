@@ -106,4 +106,22 @@ Rails.application.configure do
   #   # Set user in rack session
   #   env['rack.session'][:user_id] = user&.id
   # end
+
+  # ------------------------------------------------------------------------
+  # Accessibility (LP-34, LP-43)
+  # ------------------------------------------------------------------------
+  # The llama_bot_rails gem adds these to every HTML page: page language, a skip
+  # link, a visible focus ring, a hidden live region with window.LlamaA11y.announce,
+  # announcements of flash notices and form errors, and aria-invalid on failed
+  # fields. All on by default. Uncomment a line and set it to false to turn one
+  # feature off, then restart Rails. inject_accessibility turns off all of them.
+  #
+  # These are plain config keys, so they are safe on an older image: one that
+  # doesn't know a key ignores it rather than failing to boot.
+  #
+  # config.llama_bot_rails.inject_accessibility = true
+  # config.llama_bot_rails.a11y_skip_link = true
+  # config.llama_bot_rails.a11y_focus_ring = true
+  # config.llama_bot_rails.a11y_live_region = true
+  # config.llama_bot_rails.a11y_field_errors = true
 end

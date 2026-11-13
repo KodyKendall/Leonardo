@@ -2,6 +2,7 @@ import { test as setup, expect } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
 import { provisionTestUser } from '../helpers/stack';
+import { expectNoBlockingViolations } from '../helpers/a11y';
 
 const AUTH_FILE = path.resolve(__dirname, '..', 'playwright', '.auth', 'user.json');
 const USERNAME = process.env.E2E_USERNAME || 'leonardo-e2e';
@@ -38,6 +39,8 @@ setup('authenticate', async ({ page, baseURL }) => {
   // Unauthenticated browsers get redirected to /login (or /register on a
   // fresh instance with zero users).
   if (page.url().includes('/register')) {
+    // Only a fresh instance ever shows this page, so scan it while it is here.
+    await expectNoBlockingViolations(page, 'llamabot /register');
     await page.fill('#username', USERNAME);
     await page.fill('#password', PASSWORD);
     await page.fill('#confirm', PASSWORD);

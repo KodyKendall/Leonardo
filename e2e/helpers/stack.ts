@@ -13,7 +13,7 @@ const PG_USER = process.env.E2E_PG_USER || 'postgres';
 // ASCII unit separator — never appears in ticket text, safe column delimiter.
 const SEP = '\u001F';
 
-async function compose(args: string[]): Promise<string> {
+export async function compose(args: string[]): Promise<string> {
   const { stdout } = await pExecFile(
     'docker',
     ['compose', ...COMPOSE_FILE_ARGS, ...args],

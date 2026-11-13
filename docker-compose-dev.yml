@@ -20,6 +20,9 @@ services:
       - RAILS_ENV=development
       - BOOTSNAP_CACHE_DIR=/rails/tmp/cache/bootsnap
       - MALLOC_ARENA_MAX=2                   # cap glibc malloc arenas — curbs Puma memory fragmentation
+      # Institutional deployments (LP-38, HECVAT APPL-09): set INSTITUTIONAL=1 in .env to show
+      # visitors only the generic 404/422/500 pages. Off on fleet boxes; recreate to apply.
+      - INSTITUTIONAL=${INSTITUTIONAL:-0}
       # Secrets withheld from the Rails container. Keep this list identical to
       # docker-compose.yml, or the dev box stops matching what the fleet runs.
       # Rationale and the kept-on-purpose list live in docker-compose.yml.

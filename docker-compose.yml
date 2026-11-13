@@ -23,6 +23,9 @@ services:
       - RAILS_ENV=development
       - BOOTSNAP_CACHE_DIR=/rails/tmp/cache/bootsnap
       - MALLOC_ARENA_MAX=2                   # cap glibc malloc arenas — curbs Puma memory fragmentation
+      # Institutional deployments (LP-38, HECVAT APPL-09): set INSTITUTIONAL=1 in .env to show
+      # visitors only the generic 404/422/500 pages. Off on fleet boxes; recreate to apply.
+      - INSTITUTIONAL=${INSTITUTIONAL:-0}
       # --- Secrets withheld from the Rails container ------------------------
       # `env_file` above loads the whole .env, which holds credentials this
       # container has no use for. Anything set here overrides env_file, so an
