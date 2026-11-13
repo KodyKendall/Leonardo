@@ -19,6 +19,9 @@
       <br />
       <em><%= @minimum_password_length %> characters minimum</em>
     <% end %>
+    <% if respond_to?(:llama_password_requirements) && (rules = llama_password_requirements) %>
+    <span id="password-rules" class="block text-xs text-gray-500"><%= rules %></span>
+    <% end %>
   </div>
 
   <div class="field">

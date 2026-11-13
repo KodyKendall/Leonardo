@@ -9,6 +9,9 @@
     <% if @minimum_password_length %>
       <em>(<%= @minimum_password_length %> characters minimum)</em><br />
     <% end %>
+    <% if respond_to?(:llama_password_requirements) && (rules = llama_password_requirements) %>
+    <span id="password-rules" class="block text-xs text-gray-500"><%= rules %></span>
+    <% end %>
     <%= f.password_field :password, autofocus: true, autocomplete: "new-password" %>
   </div>
 

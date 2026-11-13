@@ -63,6 +63,21 @@ validate the composition.
 Open a PR. ERB lint + RSpec + e2e smoke all run against the pinned images.
 Merge when green.
 
+### Adding or changing an approved model (blocking)
+
+Required for HECVAT AILM-06. A model that is `True` in LlamaBot's `ZDR_COMPLIANT`
+table may not ship to an institutional box until this is done.
+
+1. Run the eval fixtures on the new model. They live with the harness in
+   LlamaPressLeo: `.claude/skills/agent_eval_harness/`, using
+   `python3 parallel_eval.py run fixtures/<f>/experiment.json --parallel 8`.
+2. Record the result in LlamaBot's `app/agents/leonardo/model_evals.json`:
+   `{"status": "passed", "pass_rate": 0.92, "date": "2026-11-06"}`.
+3. Put the pass rate in the release notes.
+
+CI fails if an approved model has no entry. `"status": "pending"` means the eval has
+not been run: **do not release to an institutional box with a pending model.**
+
 ### Before a risky deploy (optional, ~10 min)
 
 Actions tab → **E2E Nightly (real LLM)** → "Run workflow". Same canary the
