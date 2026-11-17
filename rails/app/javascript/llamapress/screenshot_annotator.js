@@ -511,6 +511,7 @@ class ScreenshotAnnotator {
     this.modal.appendChild(style);
 
     document.body.appendChild(this.modal);
+    this.enableModalKeyboard();
 
     // Initialize Fabric.js canvas
     this.initFabricCanvas(imageData);
@@ -920,6 +921,45 @@ class ScreenshotAnnotator {
       this.teardownModal();
       this.finishWithoutAttachment();
     }
+  }
+
+  // Escape cancels, Tab stays inside, focus goes back afterwards (HECVAT ITAC-17, LP-34).
+  // Drawing itself is pointer-only; WCAG 2.1.1 exempts path-dependent input.
+  enableModalKeyboard() {
+    const modal = this.modal;
+    const opener = document.activeElement;
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Annotate screenshot');
+    modal.querySelector('#annotation-close')?.setAttribute('aria-label', 'Close');
+    modal.querySelector('#annotation-attach')?.focus();
+
+    const onKey = (e) => {
+      if (!this.modal) {
+        document.removeEventListener('keydown', onKey);
+        if (opener?.isConnected) opener.focus();
+        return;
+      }
+      // Typing a text annotation uses Escape to finish editing it.
+      if (e.key === 'Escape' && e.target.tagName !== 'TEXTAREA') {
+        modal.querySelector('#annotation-cancel')?.click();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      const items = [...modal.querySelectorAll('button, input, select, textarea, a[href]')]
+        .filter((el) => !el.disabled && el.getClientRects().length > 0);
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+    document.addEventListener('keydown', onKey);
   }
 
   closeModal() {

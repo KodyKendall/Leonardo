@@ -179,12 +179,21 @@ export function createBubbleHTML() {
           }
           #llamapress-feedback-bubble [data-feedback-action] svg { width: 24px; height: 24px; }
         }
+        #llamapress-feedback-bubble label:focus-within { outline: 2px solid #4f46e5; outline-offset: 2px; border-radius: 4px; }
+        /* LP-26: when pinned to the visual viewport, also clear the iPhone notch/home bar. */
+        #llamapress-feedback-bubble[data-vv-pinned] {
+          translate: calc(-1 * env(safe-area-inset-right, 0px) / var(--lp-vv-scale, 1))
+                     calc(-1 * env(safe-area-inset-bottom, 0px) / var(--lp-vv-scale, 1));
+        }
       </style>
       <!-- Trigger Button with Badge -->
       <button id="feedback-trigger"
-              class="relative w-12 h-12 rounded-full bg-gray-400 opacity-60 hover:opacity-100 hover:bg-purple-600 hover:scale-110
+              class="relative w-12 h-12 rounded-full bg-gray-600 opacity-80 hover:opacity-100 hover:bg-purple-600 hover:scale-110
                      transition-all duration-200 shadow-lg flex items-center justify-center text-white overflow-visible"
-              title="Feedback & Messages">
+              title="Feedback & Messages"
+              aria-label="Feedback & Messages"
+              aria-expanded="false"
+              aria-controls="feedback-panel">
         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
         </svg>
@@ -197,21 +206,24 @@ export function createBubbleHTML() {
 
       <!-- Expanded Panel -->
       <div id="feedback-panel"
+           role="dialog"
+           aria-modal="true"
+           aria-label="Feedback and messages"
            class="hidden absolute bottom-16 right-0 w-80 bg-white rounded-xl shadow-2xl border border-gray-200">
 
         <!-- Tab Navigation - Icon only, cleaner -->
         <div class="flex border-b border-gray-200 rounded-t-xl overflow-hidden">
-          <button id="tab-feedback" class="tab-btn flex-1 py-3 flex justify-center items-center text-purple-600 border-b-2 border-purple-600 bg-white" data-tab="feedback" title="Feedback">
+          <button id="tab-feedback" aria-label="Send feedback" class="tab-btn flex-1 py-3 flex justify-center items-center text-purple-600 border-b-2 border-purple-600 bg-white" data-tab="feedback" title="Feedback">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
             </svg>
           </button>
-          <button id="tab-messages" class="tab-btn flex-1 py-3 flex justify-center items-center text-gray-400 hover:text-gray-600 border-b-2 border-transparent bg-gray-50 hover:bg-white" data-tab="messages" title="Messages">
+          <button id="tab-messages" aria-label="Messages" class="tab-btn flex-1 py-3 flex justify-center items-center text-gray-600 hover:text-gray-600 border-b-2 border-transparent bg-gray-50 hover:bg-white" data-tab="messages" title="Messages">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
           </button>
-          <button id="tab-notifications" class="tab-btn flex-1 py-3 flex justify-center items-center text-gray-400 hover:text-gray-600 border-b-2 border-transparent bg-gray-50 hover:bg-white relative overflow-visible" data-tab="notifications" title="Notifications">
+          <button id="tab-notifications" aria-label="Notifications" class="tab-btn flex-1 py-3 flex justify-center items-center text-gray-600 hover:text-gray-600 border-b-2 border-transparent bg-gray-50 hover:bg-white relative overflow-visible" data-tab="notifications" title="Notifications">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
@@ -271,26 +283,26 @@ export function createBubbleHTML() {
             <div class="flex items-center justify-between mt-2">
               <div class="flex items-center gap-2">
                 <button type="button" id="feedback-select-element-btn" data-feedback-action title="Select an element on the page"
-                        class="text-gray-400 hover:text-purple-600 transition-colors">
+                        class="text-gray-600 hover:text-purple-600 transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
                   </svg>
                 </button>
                 <button type="button" id="feedback-screenshot-btn" data-feedback-action title="Take screenshot"
-                        class="text-gray-400 hover:text-purple-600 transition-colors">
+                        class="text-gray-600 hover:text-purple-600 transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </button>
                 <button type="button" id="feedback-video-btn" data-feedback-action title="Record video"
-                        class="text-gray-400 hover:text-purple-600 transition-colors">
+                        class="text-gray-600 hover:text-purple-600 transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                   </svg>
                 </button>
-                <label data-feedback-action class="cursor-pointer text-gray-400 hover:text-purple-600 transition-colors flex items-center gap-1">
-                  <input type="file" id="feedback-file" class="hidden" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt" />
+                <label data-feedback-action class="cursor-pointer text-gray-600 hover:text-purple-600 transition-colors flex items-center gap-1">
+                  <input type="file" id="feedback-file" aria-label="Attach files" class="" style="position:absolute;width:1px;height:1px;opacity:0;" multiple accept="image/*,video/*,.pdf,.doc,.docx,.txt" />
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                   </svg>
@@ -371,7 +383,7 @@ export function createBubbleHTML() {
         <a id="feedback-version-chip"
            data-turbo-prefetch="false"
            href="${(window.llamapressConfig && window.llamapressConfig.releasesUrl) || '/llama_bot/releases'}"
-           class="flex items-center justify-center gap-1.5 px-3 py-2 bg-gray-50 border-t border-gray-200 rounded-b-xl text-[11px] text-gray-400 hover:text-purple-600 transition-colors"
+           class="flex items-center justify-center gap-1.5 px-3 py-2 bg-gray-50 border-t border-gray-200 rounded-b-xl text-[11px] text-gray-600 hover:text-purple-600 transition-colors"
            title="View release notes">
           <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -433,7 +445,7 @@ function switchTab(tabName) {
     if (tab === tabName) {
       // Active tab
       tabBtn.classList.add('text-purple-600', 'border-purple-600', 'bg-white');
-      tabBtn.classList.remove('text-gray-400', 'border-transparent', 'bg-gray-50');
+      tabBtn.classList.remove('text-gray-600', 'border-transparent', 'bg-gray-50');
       content.classList.remove('hidden');
 
       // Load data for the tab
@@ -448,7 +460,7 @@ function switchTab(tabName) {
     } else {
       // Inactive tab
       tabBtn.classList.remove('text-purple-600', 'border-purple-600', 'bg-white');
-      tabBtn.classList.add('text-gray-400', 'border-transparent', 'bg-gray-50');
+      tabBtn.classList.add('text-gray-600', 'border-transparent', 'bg-gray-50');
       content.classList.add('hidden');
     }
   });
@@ -484,7 +496,7 @@ async function loadConversations() {
             </svg>
           </div>
           <p class="text-sm font-medium text-gray-700">No messages yet</p>
-          <p class="text-xs text-gray-400 mt-1">Start a conversation from the messages page</p>
+          <p class="text-xs text-gray-600 mt-1">Start a conversation from the messages page</p>
         </div>`;
       return;
     }
@@ -537,7 +549,7 @@ async function loadNotifications() {
             </svg>
           </div>
           <p class="text-sm font-medium text-gray-700">All caught up!</p>
-          <p class="text-xs text-gray-400 mt-1">No new notifications</p>
+          <p class="text-xs text-gray-600 mt-1">No new notifications</p>
         </div>`;
       return;
     }
@@ -549,7 +561,7 @@ async function loadNotifications() {
           <div class="flex-shrink-0 mt-0.5">${getNotificationIcon(notif.type)}</div>
           <div class="flex-1 min-w-0">
             <p class="text-sm text-gray-800 ${notif.read ? '' : 'font-medium'}">${escapeHtml(notif.message)}</p>
-            <p class="text-xs text-gray-400 mt-0.5">${formatTimeAgo(notif.created_at)}</p>
+            <p class="text-xs text-gray-600 mt-0.5">${formatTimeAgo(notif.created_at)}</p>
           </div>
           ${notif.read ? '' : '<div class="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-1.5"></div>'}
         </div>
@@ -568,7 +580,7 @@ function getNotificationIcon(type) {
     'feedback_mention': '<svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" /></svg>',
     'feedback_status_change': '<svg class="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'
   };
-  return icons[type] || '<svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>';
+  return icons[type] || '<svg class="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>';
 }
 
 // Global function for onclick handler
@@ -667,7 +679,7 @@ function showToastNotification(data) {
       <div class="flex-1 min-w-0">
         <p class="text-sm text-gray-800">${escapeHtml(message)}</p>
       </div>
-      <button onclick="this.parentElement.parentElement.remove()" class="text-gray-400 hover:text-gray-600 flex-shrink-0">
+      <button onclick="this.parentElement.parentElement.remove()" class="text-gray-600 hover:text-gray-600 flex-shrink-0">
         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
@@ -859,17 +871,25 @@ function togglePanel(show) {
     if (show) {
       panel.classList.remove('hidden');
       trigger.classList.add('bg-purple-600', 'opacity-100');
-      trigger.classList.remove('bg-gray-400', 'opacity-60');
+      trigger.classList.remove('bg-gray-600', 'opacity-80');
+
+      trigger.setAttribute('aria-expanded', 'true');
 
       // Always default to feedback tab when opening
       switchTab('feedback');
 
       // Fetch unread count
       fetchUnreadCount();
+
+      document.getElementById('feedback-text')?.focus();
     } else {
       panel.classList.add('hidden');
       trigger.classList.remove('bg-purple-600', 'opacity-100');
-      trigger.classList.add('bg-gray-400', 'opacity-60');
+      trigger.classList.add('bg-gray-600', 'opacity-80');
+      trigger.setAttribute('aria-expanded', 'false');
+
+      const active = document.activeElement;
+      if (!active || active === document.body || panel.contains(active)) trigger.focus();
     }
     isFormOpen = show;
   }
@@ -1407,6 +1427,33 @@ function attachEventListeners() {
     });
   }
 
+  // Keyboard: Escape closes, Tab stays inside while open (HECVAT ITAC-17, LP-34).
+  document.addEventListener('keydown', (e) => {
+    if (!isFormOpen) return;
+    const panel = document.getElementById('feedback-panel');
+    if (!panel) return;
+
+    if (e.key === 'Escape') {
+      if (!e.defaultPrevented) togglePanel(false);
+      return;
+    }
+    if (e.key !== 'Tab') return;
+
+    const items = [...panel.querySelectorAll('a[href], button, input, select, textarea')]
+      .filter((el) => !el.disabled && el.tabIndex !== -1 && el.getClientRects().length > 0);
+    if (!items.length) return;
+    const first = items[0];
+    const last = items[items.length - 1];
+    const inside = panel.contains(document.activeElement);
+    if (e.shiftKey && (document.activeElement === first || !inside)) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && (document.activeElement === last || !inside)) {
+      e.preventDefault();
+      first.focus();
+    }
+  });
+
   // Close on click outside
   document.addEventListener('click', (e) => {
     const bubble = document.getElementById('llamapress-feedback-bubble');
@@ -1427,6 +1474,49 @@ export function applyAnonymousRestrictions() {
   document.getElementById('feedback-file')?.setAttribute('accept', 'image/*');
 }
 
+// LP-26: on iPhone/iPad Safari a wide table makes the layout viewport wider than the
+// screen, and `position: fixed` resolves against the layout viewport — so the bubble
+// floated over table controls and drifted with scrolling. On touch devices, place it
+// against the visual viewport (what is actually on screen) and keep it finger-sized
+// when zoomed. Desktop keeps the plain `fixed bottom-5 right-5` classes.
+const BUBBLE_MARGIN_PX = 20;
+let unpinBubble = null;
+
+export function pinToVisualViewport(el, win = window) {
+  const vv = win.visualViewport;
+  const coarse = win.matchMedia?.('(pointer: coarse)').matches;
+  if (!el || !vv || !coarse) return () => {};
+
+  const place = () => {
+    const scale = vv.scale || 1;
+    const margin = BUBBLE_MARGIN_PX / scale;
+    const left = vv.offsetLeft + vv.width - el.offsetWidth - margin;
+    const top = vv.offsetTop + vv.height - el.offsetHeight - margin;
+    el.dataset.vvPinned = '';
+    el.style.setProperty('--lp-vv-scale', String(scale));
+    Object.assign(el.style, {
+      position: 'fixed',
+      right: 'auto',
+      bottom: 'auto',
+      left: `${left}px`,
+      top: `${top}px`,
+      transform: `scale(${1 / scale})`,
+      transformOrigin: 'bottom right',
+    });
+  };
+
+  vv.addEventListener('resize', place);
+  vv.addEventListener('scroll', place);
+  win.addEventListener('scroll', place, { passive: true });
+  place();
+
+  return () => {
+    vv.removeEventListener('resize', place);
+    vv.removeEventListener('scroll', place);
+    win.removeEventListener('scroll', place);
+  };
+}
+
 function initFeedbackBubble() {
   if (bubbleInitialized || !shouldShowBubble()) return;
   if (document.getElementById('llamapress-feedback-bubble')) return;
@@ -1434,6 +1524,9 @@ function initFeedbackBubble() {
   const wrapper = document.createElement('div');
   wrapper.innerHTML = createBubbleHTML();
   document.body.appendChild(wrapper.firstElementChild);
+
+  unpinBubble?.();
+  unpinBubble = pinToVisualViewport(document.getElementById('llamapress-feedback-bubble'));
 
   applyAnonymousRestrictions();
   attachEventListeners();

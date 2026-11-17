@@ -4,8 +4,8 @@
   <div class="flex justify-between items-center">
     <h1 class="text-2xl font-bold">Users</h1>
     <%= form_with url: admin_users_path, method: :get, class: "flex items-center" do |form| %>
-      <%= form.text_field :q, value: params[:q], class: "border rounded-l px-2 py-1" %>
-      <%= form.submit "Search", class: "bg-blue-500 text-white rounded-r px-4 py-1" %>
+      <%= form.text_field :q, value: params[:q], "aria-label": "Search users", class: "border rounded-l px-2 py-1" %>
+      <%= form.submit "Search", class: "bg-blue-700 text-white rounded-r px-4 py-1" %>
     <% end %>
   </div>
 
@@ -14,6 +14,7 @@
       <tr class="border-b">
         <th class="text-left p-2">ID</th>
         <th class="text-left p-2">Email</th>
+        <th class="text-left p-2">Roles</th>
         <th class="text-left p-2">Actions</th>
       </tr>
     </thead>
@@ -23,7 +24,22 @@
           <td class="p-2"><%= user.id %></td>
           <td class="p-2"><%= user.email %></td>
           <td class="p-2">
-            <%= button_to "Impersonate", impersonate_admin_user_path(user), method: :post, class: "text-blue-500" %>
+            <%= form_with url: update_roles_admin_user_path(user), method: :patch, class: "flex flex-wrap items-center gap-3" do |form| %>
+              <% if current_user.owner? %>
+                <label><%= hidden_field_tag :owner, "0", id: nil %><%= check_box_tag :owner, "1", user.owner?, id: "owner_#{user.id}" %> Owner</label>
+              <% end %>
+              <label><%= hidden_field_tag :security_admin, "0", id: nil %><%= check_box_tag :security_admin, "1", user.security_admin? && !user.owner?, id: "security_admin_#{user.id}" %> Security admin</label>
+              <label><%= hidden_field_tag :system_admin, "0", id: nil %><%= check_box_tag :system_admin, "1", user.system_admin? && !user.owner?, id: "system_admin_#{user.id}" %> System admin</label>
+              <% if current_user.owner? %>
+                <%= text_field_tag :reason, nil, id: "reason_#{user.id}", placeholder: "Reason, if giving both", "aria-label": "Reason for giving both roles", class: "border rounded px-2 py-1" %>
+              <% end %>
+              <%= form.submit "Save", class: "text-blue-700" %>
+            <% end %>
+          </td>
+          <td class="p-2">
+            <% if AdminUserPolicy.new(current_user, user).impersonate? %>
+              <%= button_to "Impersonate", impersonate_admin_user_path(user), method: :post, class: "text-blue-700" %>
+            <% end %>
           </td>
         </tr>
       <% end %>

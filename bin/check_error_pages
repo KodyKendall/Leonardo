@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+# check_error_pages — HECVAT evidence check A12 (LP-38, APPL-09).
+#
+# Proves, over HTTP from OUTSIDE the box, that errors show only the app's own generic
+# pages: no stack trace, source code, file path, SQL, exception class or version string,
+# and no dev-mode extras (view file-path comments, Server-Timing, web-console) on normal
+# pages either. Run it against the real deployed URL, never against the test suite:
+# specs run in RAILS_ENV=test, which hides traces anyway, while boxes run development.
+#
+# Usage:
+#   bin/check_error_pages https://rails-<box>.llamapress.ai [--out DIR]
+#
+# Optional environment:
+#   ERROR_PROBE_TOKEN     the box's token, to prove a real 500 is generic (GET /__error_probe).
+#                         Without it that check is SKIPPED (and A12 is incomplete).
+#   MISSING_RECORD_PATH   a real resource route with an id that does not exist, open to
+#                         a signed-out visitor (default /users/999999999, open in the
+#                         Leonardo base app; set this if the box gates /users).
+#   CSRF_PATH, CSRF_METHOD  a write the app's own controllers check for CSRF (default
+#                         PATCH /users/999999999). Not Devise sign-up or sign-in: those
+#                         handle a bad token themselves and re-render their form.
+#
+# Every response is saved under the --out directory with a summary.txt (result, time,
+# target). Exits 0 only if every check passes; 1 on any failure; 2 on bad usage.
+set -uo pipefail
+
+BASE="${1:-}"
+if [[ -z "$BASE" || "$BASE" == -* ]]; then
+  sed -n '2,27p' "$0" | sed 's/^# \{0,1\}//'
+  exit 2
+fi
+BASE="${BASE%/}"
+shift
+OUT="error-page-evidence-$(date -u +%Y%m%dT%H%M%SZ)"
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --out) OUT="$2"; shift 2 ;;
+    *) echo "Unknown option: $1" >&2; exit 2 ;;
+  esac
+done
+mkdir -p "$OUT"
+
+MISSING_RECORD_PATH="${MISSING_RECORD_PATH:-/users/999999999}"
+CSRF_PATH="${CSRF_PATH:-/users/999999999}"
+CSRF_METHOD="${CSRF_METHOD:-PATCH}"
+RAND="$(od -An -N4 -tx4 /dev/urandom | tr -d ' ')"
+
+# What must never reach a visitor. Kept narrow enough not to trip on a normal page:
+# "/rails/active_storage" URLs are fine, container file paths are not.
+BODY_LEAKS='[Bb]acktrace|Traceback|Application Trace|Framework Trace|Full Trace|\.rb:[0-9]+|app/(controllers|models|views|helpers|jobs|mailers)/|/rails/(app|lib|config|vendor|db)/|/usr/local/bundle|ActiveRecord::|ActionController::|ActionDispatch::|ActionView::|AbstractController::|NoMethodError|NameError|RuntimeError|ProbeError|Routing Error|Rails\.root|SELECT .* FROM|<!-- BEGIN|<!-- END|Rails [0-9]+\.[0-9]+|Ruby [0-9]+\.[0-9]+|web-console|data-session-id|console\.js'
+
+FAILED=0
+SKIPPED=0
+RESULTS=()
+
+record() { # name status detail
+  RESULTS+=("$(printf '%-5s %-26s %s' "$2" "$1" "$3")")
+  [[ "$2" == FAIL ]] && FAILED=1
+  [[ "$2" == SKIP ]] && SKIPPED=1
+  printf '%-5s %-26s %s\n' "$2" "$1" "$3"
+}
+
+# check NAME EXPECTED_STATUS [curl args...] — fetch, save, assert status + no leaks.
+check() {
+  local name="$1" expected="$2"; shift 2
+  local file="$OUT/$name"
+  local status
+  status="$(curl -sS -o "$file.body" -D "$file.headers" -w '%{http_code}' --max-time 30 "$@" 2>"$file.err")" || status="000"
+  local problems=()
+
+  [[ "$status" == "$expected" ]] || problems+=("status $status, expected $expected")
+
+  local hits
+  hits="$(grep -oE "$BODY_LEAKS" "$file.body" 2>/dev/null | sort -u | head -5 | paste -sd',' -)"
+  [[ -z "$hits" ]] || problems+=("body leaks: $hits")
+
+  grep -qi '^server-timing:' "$file.headers" && problems+=("Server-Timing header")
+  grep -qi '^x-web-console' "$file.headers" && problems+=("web-console header")
+  local versioned
+  versioned="$(grep -iE '^(server|x-powered-by):.*[0-9]' "$file.headers" | tr -d '\r' | paste -sd';' -)"
+  [[ -z "$versioned" ]] || problems+=("version header: $versioned")
+
+  if [[ ${#problems[@]} -eq 0 ]]; then
+    record "$name" PASS "$status"
+  else
+    record "$name" FAIL "$(IFS='; '; echo "${problems[*]}")"
+  fi
+  LAST_BODY="$file.body"
+}
+
+echo "A12 generic error pages: $BASE"
+echo "Evidence: $OUT"
+echo
+
+check missing-record 404 "$BASE$MISSING_RECORD_PATH"
+check missing-route 404 "$BASE/lp38-missing-$RAND"
+check missing-route-json 404 -H 'Accept: application/json' "$BASE/lp38-missing-$RAND"
+# JSON errors carry only a status and a generic message.
+if [[ -f "$LAST_BODY" ]] && ! grep -qE '^\{"status":404,"error":"Not Found"\}$' "$LAST_BODY"; then
+  record json-shape FAIL "body is not {\"status\":404,\"error\":\"Not Found\"}"
+else
+  record json-shape PASS '{"status":404,"error":"Not Found"}'
+fi
+check csrf-rejected 422 -X "$CSRF_METHOD" -H 'Content-Type: application/x-www-form-urlencoded' --data '' "$BASE$CSRF_PATH"
+check probe-no-token 404 "$BASE/__error_probe"
+check probe-wrong-token 404 -H "X-Error-Probe-Token: wrong-$RAND" "$BASE/__error_probe"
+if [[ -n "${ERROR_PROBE_TOKEN:-}" ]]; then
+  check probe-raised-error 500 -H "X-Error-Probe-Token: $ERROR_PROBE_TOKEN" "$BASE/__error_probe"
+else
+  record probe-raised-error SKIP "ERROR_PROBE_TOKEN not set; a raised 500 was not tested"
+fi
+check home-page 200 "$BASE/"
+
+if [[ $FAILED -ne 0 ]]; then RESULT=FAIL; elif [[ $SKIPPED -ne 0 ]]; then RESULT=PASS-INCOMPLETE; else RESULT=PASS; fi
+{
+  echo "check:     A12 generic error pages (LP-38, HECVAT APPL-09)"
+  echo "result:    $RESULT"
+  echo "timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  echo "target:    $BASE"
+  echo
+  printf '%s\n' "${RESULTS[@]}"
+} > "$OUT/summary.txt"
+
+echo
+echo "A12 $RESULT — details in $OUT/summary.txt"
+[[ $FAILED -eq 0 ]]
