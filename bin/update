@@ -127,6 +127,21 @@ SYNC_SKIPPED=0           # set by sync_from_upstream when the allowlist sync did
                          # so the box drifts version-by-version until something 500s or a
                          # feature reports itself "not installed". Surfaced in the done line.
 
+# ---- image source (LP-51) ---------------------------------------------------
+# IMAGE_SOURCE=registry pulls kody06 images from our own registry instead of Docker Hub,
+# falling back to Docker Hub per service on ANY registry failure. Unset / dockerhub /
+# anything else = today's behaviour exactly. Both values arrive via `lxc exec --env` from
+# the mothership's UpdatePusher. The box key is moved into an UNEXPORTED shell variable
+# right here, so no child process (git, compose, the detached recreate) ever inherits it.
+REGISTRY="registry.llamapress.ai"
+IMAGE_SOURCE="${IMAGE_SOURCE:-dockerhub}"
+[ "$IMAGE_SOURCE" = "registry" ] || IMAGE_SOURCE="dockerhub"
+REGISTRY_PULL_TIMEOUT_SEC="${REGISTRY_PULL_TIMEOUT_SEC:-600}"
+_BOX_KEY="${BOX_LICENSE_KEY:-}"
+unset BOX_LICENSE_KEY
+IMAGE_SOURCES=()         # per-service JSON entries; written into the marker
+IMAGE_SOURCES_JSON="{}"
+
 mkdir -p "$MARKER_DIR" 2>/dev/null || true
 
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*" | tee -a "$LOG" >&2; }
@@ -139,6 +154,7 @@ write_marker() { # $1 status  $2 message
   "llamabot_target": "$LLAMABOT_TARGET",
   "llamapress_target": "$LLAMAPRESS_TARGET",
   "changed_services": "${CHANGED[*]:-}",
+  "image_sources": ${IMAGE_SOURCES_JSON},
   "finished_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 }
 EOF
@@ -594,12 +610,110 @@ if [ "${#CHANGED[@]}" -eq 0 ] && [ "$COMPOSE_SYNC_CHANGED" -eq 0 ]; then
   exit 0
 fi
 
+# ---- image source helpers (LP-51) -----------------------------------------
+# Fallback reasons are short fixed codes the mothership groups on: no_key, login_failed,
+# timeout, tag_not_found, pull_failed, retag_failed, digest_mismatch (+ docker's first
+# error line where useful). Reasons are squashed to a safe charset: they are embedded in
+# JSON and in the single-quoted detached recreate command.
+REG_CONFIG=""   # throwaway DOCKER_CONFIG: the login never touches ~/.docker/config.json
+REG_REASON=""   # set once when the login fails -> every service falls back
+REASON=""       # set per service by pull_from_registry
+
+first_err() { printf '%s' "$1" | grep -m1 -iE 'error|denied|unauthorized|refused|no such|timeout' || printf '%s' "${1%%$'\n'*}"; }
+safe_reason() { printf '%s' "$1" | head -n1 | tr -c 'A-Za-z0-9 _.:/@=+-' ' ' | cut -c1-200 | sed 's/ *$//'; }
+
+record_source() { # $1 service  $2 registry|dockerhub  $3 fallback reason (optional)
+  local entry="\"$1\": {\"image_source\": \"$2\""
+  [ -n "${3:-}" ] && entry+=", \"fallback_reason\": \"$(safe_reason "$3")\""
+  IMAGE_SOURCES+=("$entry}")
+  local IFS=','; IMAGE_SOURCES_JSON="{${IMAGE_SOURCES[*]}}"
+  if [ -n "${3:-}" ]; then log "$1: image_source=$2 fallback_reason=$(safe_reason "$3")"
+  else log "$1: image_source=$2"; fi
+}
+
+registry_cleanup() { # logout + delete the throwaway config; safe to call twice
+  [ -n "$REG_CONFIG" ] || return 0
+  DOCKER_CONFIG="$REG_CONFIG" docker logout "$REGISTRY" >/dev/null 2>&1 || true
+  rm -rf "$REG_CONFIG"
+  REG_CONFIG=""
+}
+trap registry_cleanup EXIT
+
+registry_user() { # the box name the token endpoint expects
+  if [ -n "${DNS_NAME:-}" ]; then echo "$DNS_NAME"; return; fi
+  sed -nE 's/.*"instance_name"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/p' "$MARKER_DIR/instance.json" 2>/dev/null | head -n1
+}
+
+registry_login() {
+  [ -n "$_BOX_KEY" ] || { REG_REASON="no_key"; return 1; }
+  local user out rc xtrace=0
+  user="$(registry_user)"
+  [ -n "$user" ] || { REG_REASON="login_failed: no box name"; _BOX_KEY=""; return 1; }
+  REG_CONFIG="$(mktemp -d)" || { REG_REASON="login_failed: mktemp"; REG_CONFIG=""; _BOX_KEY=""; return 1; }
+  chmod 700 "$REG_CONFIG"
+  case $- in *x*) xtrace=1; set +x ;; esac   # the key must never reach xtrace output
+  out="$(printf '%s' "$_BOX_KEY" \
+    | DOCKER_CONFIG="$REG_CONFIG" timeout -k 10 120 docker login "$REGISTRY" -u "$user" --password-stdin 2>&1)"
+  rc=$?
+  _BOX_KEY=""
+  [ "$xtrace" -eq 1 ] && set -x
+  [ "$rc" -eq 0 ] && return 0
+  if [ "$rc" -eq 124 ]; then REG_REASON="timeout"; else REG_REASON="login_failed: $(first_err "$out")"; fi
+  return 1
+}
+
+pull_from_registry() { # $1 image name  $2 tag — sets REASON on failure
+  local src="$REGISTRY/llamapress/$1:$2" dst="kody06/$1:$2" out rc digest
+  out="$(DOCKER_CONFIG="$REG_CONFIG" timeout -k 10 "$REGISTRY_PULL_TIMEOUT_SEC" docker pull "$src" 2>&1)"
+  rc=$?
+  printf '%s\n' "$out" >> "$LOG"
+  if [ "$rc" -ne 0 ]; then
+    if [ "$rc" -eq 124 ] || [ "$rc" -eq 137 ]; then REASON="timeout"
+    elif printf '%s' "$out" | grep -qiE 'manifest unknown|manifest for .* not found'; then REASON="tag_not_found"
+    else REASON="pull_failed: $(first_err "$out")"; fi
+    return 1
+  fi
+  digest="$(printf '%s\n' "$out" | sed -n 's/^Digest: //p' | head -n1)"
+  if [ -z "$digest" ] || ! docker image inspect -f '{{json .RepoDigests}}' "$src" 2>/dev/null | grep -qF "@$digest"; then
+    REASON="digest_mismatch"; docker rmi "$src" >/dev/null 2>&1; return 1
+  fi
+  docker tag "$src" "$dst" >>"$LOG" 2>&1 || { REASON="retag_failed"; docker rmi "$src" >/dev/null 2>&1; return 1; }
+  docker rmi "$src" >/dev/null 2>&1 || log "$1: WARN could not drop the $src tag"   # tag only; image stays
+}
+
+image_name() { case "$1" in llamabot) echo llamabot ;; llamapress) echo llamapress-simple ;; esac; }
+image_tag()  { case "$1" in llamabot) echo "$LLAMABOT_TARGET" ;; llamapress) echo "$LLAMAPRESS_TARGET" ;; esac; }
+
 # ---- pull (synchronous; pull does NOT recreate/kill containers) -----------
-if [ "${#CHANGED[@]}" -gt 0 ]; then
+if [ "${#CHANGED[@]}" -gt 0 ] && [ "$IMAGE_SOURCE" != "registry" ]; then
+  # Default path: byte-for-byte today's pull.
   log "pulling: ${CHANGED[*]}"
   if ! $DC pull "${CHANGED[@]}" >>"$LOG" 2>&1; then
     fail "docker compose pull failed for: ${CHANGED[*]} (see $LOG)"
   fi
+  log "pull ok"
+  for svc in "${CHANGED[@]}"; do record_source "$svc" dockerhub; done
+elif [ "${#CHANGED[@]}" -gt 0 ]; then
+  log "pulling: ${CHANGED[*]} (image source: registry $REGISTRY, Docker Hub fallback)"
+  registry_login || log "registry: login skipped/failed ($REG_REASON) — falling back to Docker Hub"
+  for svc in "${CHANGED[@]}"; do
+    REASON=""
+    if [ -z "$REG_REASON" ] && pull_from_registry "$(image_name "$svc")" "$(image_tag "$svc")"; then
+      record_source "$svc" registry
+      continue
+    fi
+    reason="${REG_REASON:-$REASON}"
+    log "$svc: registry pull failed ($reason) — pulling from Docker Hub"
+    if ! hub_out="$($DC pull "$svc" 2>&1)"; then
+      printf '%s\n' "$hub_out" >> "$LOG"
+      record_source "$svc" dockerhub "$reason"
+      registry_cleanup
+      fail "both sources failed for $svc: registry=$(safe_reason "$reason") dockerhub=$(safe_reason "$(first_err "$hub_out")")"
+    fi
+    printf '%s\n' "$hub_out" >> "$LOG"
+    record_source "$svc" dockerhub "$reason"
+  done
+  registry_cleanup
   log "pull ok"
 fi
 
@@ -654,7 +768,7 @@ fi
 # bin/lib/update_recreate.sh yet (bin/update runs its OLD copy of itself).
 RECREATE_LIB="$SCRIPT_DIR/lib/update_recreate.sh"
 if [ -f "$RECREATE_LIB" ] && command -v flock >/dev/null 2>&1; then
-  RESTART_CMD="cd $PROJECT_DIR && DC='$DC' LLAMABOT_TARGET='$LLAMABOT_TARGET' LLAMAPRESS_TARGET='$LLAMAPRESS_TARGET' flock $LOCK bash $RECREATE_LIB $PROJECT_DIR $RECREATE_SERVICES >>$PROJECT_DIR/$LOG 2>&1 && docker image prune -af >>$PROJECT_DIR/$LOG 2>&1"
+  RESTART_CMD="cd $PROJECT_DIR && DC='$DC' LLAMABOT_TARGET='$LLAMABOT_TARGET' LLAMAPRESS_TARGET='$LLAMAPRESS_TARGET' IMAGE_SOURCES_JSON='$IMAGE_SOURCES_JSON' flock $LOCK bash $RECREATE_LIB $PROJECT_DIR $RECREATE_SERVICES >>$PROJECT_DIR/$LOG 2>&1 && docker image prune -af >>$PROJECT_DIR/$LOG 2>&1"
   MARKER_OWNED_BY_RECREATE=1
 else
   MARKER_OWNED_BY_RECREATE=0

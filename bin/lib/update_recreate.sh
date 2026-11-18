@@ -20,6 +20,9 @@ MARKER=".leonardo/last_update.json"
 LOG=".leonardo/update.log"
 PROJECT="${COMPOSE_PROJECT_NAME:-$(basename "$PWD" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9_-]//g')}"
 
+IMAGE_SOURCES_JSON="${IMAGE_SOURCES_JSON:-}"   # per-service image_source/fallback_reason (LP-51)
+[ -n "$IMAGE_SOURCES_JSON" ] || IMAGE_SOURCES_JSON="{}"
+
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*" >> "$LOG"; }
 
 # Same shape as bin/update's write_marker (the UI reads this file).
@@ -31,6 +34,7 @@ write_marker() { # $1 status  $2 message
   "llamabot_target": "${LLAMABOT_TARGET:-}",
   "llamapress_target": "${LLAMAPRESS_TARGET:-}",
   "changed_services": "${SERVICES[*]:-}",
+  "image_sources": ${IMAGE_SOURCES_JSON},
   "finished_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 }
 JSON
