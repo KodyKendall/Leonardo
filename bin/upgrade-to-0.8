@@ -1,0 +1,305 @@
+#!/usr/bin/env bash
+#
+# bin/upgrade-to-0.8 — LP-52 C: move THIS box from 0.7.x to the Rails 8.1 images (0.8.0) in one
+# command, and put it back on its 0.7.x images by itself if anything fails.
+#
+# Steps, stopping at the first failure:
+#   1. Refuse (change nothing) if the box is on the NEVER-TOUCH or read-only list, the scan
+#      classes it needs_human, or a snapshot id / edge URL was not given.
+#   2. Record the ZFS snapshot (taken by the mothership) — --snapshot-id, or UPGRADE_SNAPSHOT_CMD.
+#   3. git commit the current overlay state ("Before Rails 8 upgrade"), if anything is uncommitted.
+#   4. Apply the scan's auto-fixes as ONE commit, "Rails 8 codemods" (skipped if there are none).
+#   5. bin/update <llamabot 0.8.0> <llamapress 0.8.0>, and wait for the recreate.
+#   6. db:migrate, zeitwerk:check, Rails answering on :3000 on the new image.
+#   7. Health: Rails :3000, public HTTPS edge 200 with a non-zero body, and a sign-in smoke
+#      (a correct password signs in and the session sticks).
+#   On failure: bin/update back to the PREVIOUS tags (recorded before step 5), git revert the
+#   codemod commit, confirm Rails and the edge serve again -> rolled_back. If any of that fails
+#   -> rollback_failed: page-worthy, the mothership restores the ZFS snapshot.
+#
+# Usage (run on the box, from the mothership over SSH like the fleet-push):
+#   bin/upgrade-to-0.8 --snapshot-id SNAP --edge-url https://rails-<box>.leo.llamapress.ai \
+#       [--never-touch FILE] [--read-only FILE] [--llamabot 0.8.0] [--llamapress 0.8.0]
+#   The protected lists default to .leonardo/never_touch.txt and .leonardo/read_only.txt (the
+#   mothership copies them over first). They are REQUIRED: without them the script refuses.
+#
+# Status for /admin/fleet_versions: .leonardo/upgrade_0_8.json, rewritten at every step
+#   (snapshot, codemods, updating, verifying, upgraded, rolled_back, rollback_failed), with the
+#   failed step, a log excerpt, the previous tags and the snapshot id. The mothership reads it
+#   over SSH like .leonardo/last_update.json; UPGRADE_REPORT_CMD, if set, is also run with the
+#   marker path after every write. Full log: .leonardo/upgrade_0_8.log.
+#
+# Sign-in smoke: a throwaway user (rails8-smoke-<random>@example.invalid) with a random password
+# that exists only in this process and is passed on stdin, never argv/env/log; deleted afterwards.
+#
+# Exit: 0 upgraded or already upgraded | 10 refused, nothing changed | 1 failed, rolled back |
+#       2 rollback failed (restore the snapshot) | 3 another upgrade is running
+#
+set -uo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="${PROJECT_DIR:-$(dirname "$SCRIPT_DIR")}"
+cd "$PROJECT_DIR" || { echo "upgrade-to-0.8: cannot cd to $PROJECT_DIR" >&2; exit 10; }
+# shellcheck source=lib/rails8_common.sh
+. "$SCRIPT_DIR/lib/rails8_common.sh"
+
+LB_TARGET="0.8.0"; LP_TARGET="0.8.0"; SNAPSHOT_ID=""; EDGE_URL=""
+NEVER=".leonardo/never_touch.txt"; READONLY=".leonardo/read_only.txt"
+POLL="${UPGRADE_POLL_SEC:-5}"
+UPDATE_TIMEOUT="${UPGRADE_UPDATE_TIMEOUT_SEC:-1800}"
+BOOT_TIMEOUT="${UPGRADE_BOOT_TIMEOUT_SEC:-300}"
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --snapshot-id) SNAPSHOT_ID="$2"; shift 2 ;;
+    --edge-url) EDGE_URL="${2%/}"; shift 2 ;;
+    --never-touch) NEVER="$2"; shift 2 ;;
+    --read-only) READONLY="$2"; shift 2 ;;
+    --llamabot) LB_TARGET="$2"; shift 2 ;;
+    --llamapress) LP_TARGET="$2"; shift 2 ;;
+    -h|--help) sed -n '2,45p' "$0"; exit 0 ;;
+    *) echo "upgrade-to-0.8: unknown argument $1" >&2; exit 10 ;;
+  esac
+done
+
+MARKER=".leonardo/upgrade_0_8.json"
+LOG=".leonardo/upgrade_0_8.log"
+LOCKFILE=".leonardo/upgrade_0_8.lock"
+IMAGE="kody06/llamapress-simple:$LP_TARGET"
+DC="$(r8_dc)"
+
+refuse() { echo "upgrade-to-0.8: refused, nothing changed: $*" >&2; exit 10; }
+log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*" | tee -a "$LOG" >&2; }
+
+# ---- 1. refuse checks (read-only; no file is written before these pass) --------------------
+[ -d rails ] && git rev-parse --git-dir >/dev/null 2>&1 || refuse "$PROJECT_DIR is not a Leonardo checkout"
+BOX="$(r8_box_name)"
+[ -n "$BOX" ] || refuse "cannot tell this box's name (no DNS_NAME, no instance.json)"
+[ -f "$NEVER" ] || refuse "NEVER-TOUCH list not found at $NEVER (required)"
+[ -f "$READONLY" ] || refuse "read-only list not found at $READONLY (required)"
+r8_listed "$BOX" "$NEVER" && refuse "$BOX is on the NEVER-TOUCH list: upgrade it through its dev twin and owner"
+r8_listed "$BOX" "$READONLY" && refuse "$BOX is on the read-only list: upgrade it through its dev twin and owner"
+
+PREV_LB="$(r8_current_tag llamabot)"; PREV_LP="$(r8_current_tag llamapress)"
+
+http_code() { # GET via the container: Rails itself on :3000
+  $DC exec -T llamapress curl -s -o /dev/null -w '%{http_code}' --max-time 8 "http://localhost:3000$1" 2>/dev/null
+}
+rails_up() { local c; c="$(http_code /)"; [ "$c" = "200" ] || [ "$c" = "302" ]; }
+edge_ok() { # public HTTPS edge: 200 with a non-empty body
+  local out code size
+  out="$(curl -sS -o /dev/null -w '%{http_code} %{size_download}' --max-time 20 "$EDGE_URL/users/sign_in" 2>/dev/null)"
+  code="${out%% *}"; size="${out##* }"
+  [ "$code" = "200" ] && [ "${size%%.*}" -gt 0 ] 2>/dev/null
+}
+
+if [ "$PREV_LB" = "$LB_TARGET" ] && [ "$PREV_LP" = "$LP_TARGET" ]; then
+  if rails_up && { [ -z "$EDGE_URL" ] || edge_ok; }; then
+    echo "already upgraded: $BOX runs llamabot $LB_TARGET / llamapress $LP_TARGET and is healthy"
+    exit 0
+  fi
+  refuse "$BOX is already on $LP_TARGET but not healthy; not touching it (needs a human)"
+fi
+[ -n "$PREV_LB" ] && [ -n "$PREV_LP" ] || refuse "cannot read the running image tags, so there is nothing safe to roll back to"
+[ -n "$EDGE_URL" ] || refuse "--edge-url is required (the public HTTPS URL the health check hits)"
+[ -n "$SNAPSHOT_ID" ] || [ -n "${UPGRADE_SNAPSHOT_CMD:-}" ] || refuse "no snapshot: pass --snapshot-id, or set UPGRADE_SNAPSHOT_CMD"
+
+r8_ensure_image "$IMAGE" 1 || refuse "cannot get image $IMAGE"
+SCAN_JSON="$(r8_scan_overlay "$IMAGE" --box "$BOX")" || refuse "the Rails 8.1 scan itself failed"
+BUCKET="$(printf '%s' "$SCAN_JSON" | grep -oE '"bucket":"[a-z_0-9]+"' | cut -d'"' -f4)"
+case "$BUCKET" in
+  0_fixes|auto_only) ;;
+  needs_human) refuse "the scan classed $BOX needs_human: $SCAN_JSON" ;;
+  *) refuse "unexpected scan result: $SCAN_JSON" ;;
+esac
+
+exec 8>"$LOCKFILE"
+flock -n 8 || { echo "upgrade-to-0.8: another upgrade is already running on $BOX" >&2; exit 3; }
+
+# ---- status marker ---------------------------------------------------------------------------
+STEP="start"; FAILED_STEP=""; CODEMOD_SHA=""; UPDATED=0; SMOKE_EMAIL=""
+json_str() { # JSON string body: escape \ " and turn control characters into spaces
+  printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' | tr '\000-\037' ' '
+}
+mark() { # $1 status  $2 message
+  local excerpt=""
+  [ -n "$FAILED_STEP" ] && excerpt="$(tail -n 20 "$LOG" 2>/dev/null)"
+  cat > "$MARKER.tmp" <<JSON
+{
+  "status": "$1",
+  "step": "$STEP",
+  "message": "$(json_str "$2")",
+  "box": "$(json_str "$BOX")",
+  "failed_step": "$FAILED_STEP",
+  "log_excerpt": "$(json_str "$excerpt")",
+  "previous_llamabot": "$PREV_LB",
+  "previous_llamapress": "$PREV_LP",
+  "target_llamabot": "$LB_TARGET",
+  "target_llamapress": "$LP_TARGET",
+  "snapshot_id": "$(json_str "$SNAPSHOT_ID")",
+  "codemod_commit": "$CODEMOD_SHA",
+  "updated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+}
+JSON
+  mv "$MARKER.tmp" "$MARKER"
+  if [ -n "${UPGRADE_REPORT_CMD:-}" ]; then
+    bash -c "$UPGRADE_REPORT_CMD \"\$1\"" _ "$MARKER" </dev/null >>"$LOG" 2>&1 || log "report hook failed (continuing)"
+  fi
+}
+
+git_commit() { # $1 message, then pathspec
+  local msg="$1"; shift
+  local -a id=()
+  git config user.email >/dev/null 2>&1 || id=(-c user.name="Leonardo upgrade" -c user.email="upgrade@leonardo.invalid")
+  git add -A -- "$@" ':!.leonardo/upgrade_0_8.*' >>"$LOG" 2>&1 &&
+    git "${id[@]}" commit --quiet -m "$msg" >>"$LOG" 2>&1
+}
+
+# bin/update recreates DETACHED and writes the final status to .leonardo/last_update.json; wait
+# for that AND for the running containers to report the wanted tags.
+run_update() { # $1 llamabot tag  $2 llamapress tag
+  log "bin/update $1 $2"
+  bash bin/update "$1" "$2" >>"$LOG" 2>&1 || { log "bin/update exited non-zero"; return 1; }
+  local waited=0 st
+  while [ "$waited" -lt "$UPDATE_TIMEOUT" ]; do
+    st="$(sed -nE 's/.*"status"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/p' .leonardo/last_update.json 2>/dev/null | head -n1)"
+    [ "$st" = "failed" ] && { log "bin/update reported failed"; return 1; }
+    if [ "$st" = "success" ] || [ "$st" = "noop" ]; then
+      [ "$(r8_current_tag llamabot)" = "$1" ] && [ "$(r8_current_tag llamapress)" = "$2" ] && return 0
+    fi
+    sleep "$POLL"; waited=$((waited + ${POLL%.*} + 1))
+  done
+  log "timed out waiting for the recreate to $1 / $2"; return 1
+}
+
+wait_rails() {
+  local waited=0
+  while [ "$waited" -lt "$BOOT_TIMEOUT" ]; do
+    rails_up && return 0
+    sleep "$POLL"; waited=$((waited + ${POLL%.*} + 1))
+  done
+  log "Rails did not answer on :3000 (last: $(http_code /))"; return 1
+}
+
+SMOKE_CREATE='pw = STDIN.read
+u = User.new(email: ENV.fetch("SMOKE_EMAIL"), password: pw, password_confirmation: pw)
+attrs = u.attributes.compact.except("id")
+attrs["confirmed_at"] ||= Time.current if User.column_names.include?("confirmed_at")
+User.insert!(attrs)'
+SMOKE_DELETE='User.where(email: ENV.fetch("SMOKE_EMAIL")).delete_all'
+smoke_cleanup() {
+  [ -n "$SMOKE_EMAIL" ] || return 0
+  $DC exec -T -e SMOKE_EMAIL="$SMOKE_EMAIL" llamapress bundle exec rails runner "$SMOKE_DELETE" >>"$LOG" 2>&1 ||
+    log "WARN could not delete smoke user $SMOKE_EMAIL"
+  SMOKE_EMAIL=""
+}
+
+# Correct password signs in through the public edge (the session cookie is Secure, so it must be
+# https) and the session sticks: /users/sign_in then redirects a signed-in user away.
+sign_in_smoke() {
+  local pw jar body code token rc=1
+  pw="$(head -c 48 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 28)aA9!"
+  SMOKE_EMAIL="rails8-smoke-$(head -c 6 /dev/urandom | od -An -tx1 | tr -d ' \n')@example.invalid"
+  if ! printf '%s' "$pw" | $DC exec -T -e SMOKE_EMAIL="$SMOKE_EMAIL" llamapress \
+       bundle exec rails runner "$SMOKE_CREATE" >>"$LOG" 2>&1; then
+    log "sign-in smoke: could not create the throwaway user"; pw=""; return 1
+  fi
+  jar="$(mktemp)"; body="$(mktemp)"
+  code="$(curl -sS -c "$jar" -b "$jar" -o "$body" -w '%{http_code}' --max-time 20 "$EDGE_URL/users/sign_in")"
+  token="$(grep -o 'name="authenticity_token" value="[^"]*"' "$body" | head -n1 | sed 's/.*value="//; s/"$//')"
+  if [ "$code" = "200" ] && [ -n "$token" ]; then
+    code="$(printf '%s' "$pw" | curl -sS -c "$jar" -b "$jar" -o /dev/null -w '%{http_code}' --max-time 20 \
+      --data-urlencode "authenticity_token=$token" --data-urlencode "user[email]=$SMOKE_EMAIL" \
+      --data-urlencode "user[password]@-" "$EDGE_URL/users/sign_in")"
+    if [ "$code" = "302" ] || [ "$code" = "303" ]; then
+      code="$(curl -sS -c "$jar" -b "$jar" -o /dev/null -w '%{http_code}' --max-time 20 "$EDGE_URL/users/sign_in")"
+      if [ "$code" = "302" ]; then rc=0; else log "sign-in smoke: signed in but the session did not stick (got $code)"; fi
+    else
+      log "sign-in smoke: correct password did not sign in (got $code)"
+    fi
+  else
+    log "sign-in smoke: sign-in page $code, token ${token:+found}${token:-missing}"
+  fi
+  pw=""; rm -f "$jar" "$body"
+  smoke_cleanup
+  return "$rc"
+}
+
+rollback() {
+  local ok=1
+  smoke_cleanup
+  log "rolling back after failed step: $FAILED_STEP"
+  mark "rolling_back" "step $FAILED_STEP failed; rolling back"
+  if [ "$UPDATED" -eq 1 ]; then
+    run_update "$PREV_LB" "$PREV_LP" || { log "rollback: bin/update back to $PREV_LB/$PREV_LP failed"; ok=0; }
+  fi
+  if [ -n "$CODEMOD_SHA" ]; then
+    if git_commit_revert; then log "rollback: reverted codemod commit $CODEMOD_SHA"
+    else log "rollback: git revert $CODEMOD_SHA failed"; ok=0; fi
+  fi
+  wait_rails || ok=0
+  edge_ok || { log "rollback: edge $EDGE_URL not serving 200"; ok=0; }
+  if [ "$ok" -eq 1 ]; then
+    mark "rolled_back" "step $FAILED_STEP failed; back on llamabot $PREV_LB / llamapress $PREV_LP"
+    log "rolled back"; exit 1
+  fi
+  mark "rollback_failed" "step $FAILED_STEP failed AND the rollback failed: restore snapshot $SNAPSHOT_ID"
+  log "ROLLBACK FAILED — restore snapshot $SNAPSHOT_ID"; exit 2
+}
+git_commit_revert() {
+  local -a id=()
+  git config user.email >/dev/null 2>&1 || id=(-c user.name="Leonardo upgrade" -c user.email="upgrade@leonardo.invalid")
+  git "${id[@]}" revert --no-edit "$CODEMOD_SHA" >>"$LOG" 2>&1 || { git revert --abort >/dev/null 2>&1; return 1; }
+}
+fail() { FAILED_STEP="$STEP"; log "FAILED at $STEP: $*"; rollback; }
+trap 'smoke_cleanup' EXIT
+
+log "=== upgrade-to-0.8 on $BOX: llamabot $PREV_LB -> $LB_TARGET, llamapress $PREV_LP -> $LP_TARGET (scan: $BUCKET) ==="
+
+# ---- 2. snapshot -----------------------------------------------------------------------------
+STEP="snapshot"; mark "snapshot" "recording the snapshot"
+if [ -z "$SNAPSHOT_ID" ]; then
+  SNAPSHOT_ID="$(bash -c "$UPGRADE_SNAPSHOT_CMD" 2>>"$LOG" | tail -n1)" && [ -n "$SNAPSHOT_ID" ] || fail "UPGRADE_SNAPSHOT_CMD gave no snapshot id"
+fi
+log "snapshot: $SNAPSHOT_ID"
+
+# ---- 3. commit the current overlay state -----------------------------------------------------
+STEP="commit_state"; mark "snapshot" "committing the current overlay state"
+if [ -n "$(git status --porcelain -- . ':!.leonardo/upgrade_0_8.*')" ]; then
+  git_commit "Before Rails 8 upgrade" . || fail "could not commit the current state"
+fi
+
+# ---- 4. codemods -----------------------------------------------------------------------------
+STEP="codemods"; mark "codemods" "applying Rails 8 auto-fixes"
+if [ "$BUCKET" = "auto_only" ]; then
+  docker run --rm --network none --entrypoint ruby \
+    -v "$PROJECT_DIR/rails:/overlay" -v "$R8_SCANNER:/r8/rails8_scan.rb:ro" "$IMAGE" \
+    /r8/rails8_scan.rb apply /overlay --gemfile-lock /rails/Gemfile.lock >>"$LOG" 2>&1 || fail "codemods did not run"
+  if [ -n "$(git status --porcelain -- rails)" ]; then
+    git_commit "Rails 8 codemods" rails || fail "could not commit the codemods"
+    CODEMOD_SHA="$(git rev-parse HEAD)"
+    log "codemods committed: $CODEMOD_SHA"
+  fi
+  RESCAN="$(r8_scan_overlay "$IMAGE" --box "$BOX")" || fail "re-scan after codemods failed"
+  printf '%s' "$RESCAN" | grep -q '"bucket":"0_fixes"' || fail "codemods left work behind: $RESCAN"
+fi
+
+# ---- 5. images -------------------------------------------------------------------------------
+STEP="updating"; mark "updating" "bin/update $LB_TARGET $LP_TARGET"
+UPDATED=1
+run_update "$LB_TARGET" "$LP_TARGET" || fail "bin/update to $LB_TARGET / $LP_TARGET did not complete"
+
+# ---- 6. migrate, zeitwerk, boot ------------------------------------------------------------
+STEP="boot"; mark "verifying" "db:migrate, zeitwerk:check, boot"
+$DC exec -T llamapress bundle exec rails db:migrate >>"$LOG" 2>&1 || fail "db:migrate failed"
+$DC exec -T llamapress bundle exec rails zeitwerk:check >>"$LOG" 2>&1 || fail "zeitwerk:check failed"
+wait_rails || fail "Rails did not come up on $LP_TARGET"
+
+# ---- 7. health -------------------------------------------------------------------------------
+STEP="health"; mark "verifying" "edge + sign-in smoke"
+edge_ok || fail "public edge $EDGE_URL/users/sign_in is not 200 with a body"
+STEP="sign_in"
+sign_in_smoke || fail "sign-in smoke failed"
+
+STEP="done"; mark "upgraded" "llamabot $LB_TARGET / llamapress $LP_TARGET; healthy"
+log "=== upgraded $BOX ==="
+echo "upgraded: $BOX runs llamabot $LB_TARGET / llamapress $LP_TARGET"
+exit 0

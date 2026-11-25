@@ -36,6 +36,8 @@ prompts/
 .leonardo/instance.json
 .leonardo/update.log
 .leonardo/last_update.json
+# bin/upgrade-to-0.8 status marker, log and lock (LP-52)
+.leonardo/upgrade_0_8.*
 # Written by the box from the mothership's fleet model policy. It landed inside
 # the tree root-owned 0600, which made `git add -A` abort with "unable to index
 # file" — so Leo's automatic checkpoint commits silently stopped on every box

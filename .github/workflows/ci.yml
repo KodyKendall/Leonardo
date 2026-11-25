@@ -43,6 +43,16 @@ jobs:
         run: bash test/rails_watchdog.sh
       - name: rails container env opt-in regression test
         run: bash test/rails_env_optin.sh
+      # LP-52: Rails 8 fleet scan + bin/upgrade-to-0.8. The pattern test needs a Ruby
+      # (the runner image ships one); the other two are pure bash with mocks.
+      - name: Rails 8 scripts syntax check
+        run: bash -n bin/rails8-scan && bash -n bin/rails8-fleet-scan && bash -n bin/upgrade-to-0.8 && bash -n bin/lib/rails8_common.sh && ruby -c bin/lib/rails8_scan.rb
+      - name: Rails 8 scan patterns + codemods test
+        run: bash test/rails8_scan_patterns.sh
+      - name: Rails 8 fleet scan test
+        run: bash test/rails8_fleet_scan.sh
+      - name: bin/upgrade-to-0.8 upgrade + rollback test
+        run: bash test/upgrade_to_0_8.sh
 
   lint:
     name: ERB Lint (HTML Validity)

@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+#
+# bin/rails8-scan — LP-52: READ-ONLY check of this box's overlay against Rails 8.1 / Ruby 3.4.
+#
+# Greps the overlay for code Rails 8.1 / Ruby 3.4 removed and runs `zeitwerk:check` against the
+# overlay inside a throwaway 0.8.0 container (no network, every mount read-only), so the check
+# uses Rails 8.1, not the box's running 7.2. Changes no file, container or database. May pull the
+# 0.8.0 image if it is not on the box yet (--no-pull to forbid).
+#
+# Usage: bin/rails8-scan [--image IMG] [--no-pull] [--csv --node NODE --tier TIER]
+#   default output: one JSON object {box, image_tags, bucket, auto, human, zeitwerk}
+#   --csv:          one CSV row (box,node,owner_tier,image_tags,bucket,auto_fixes,human_fixes,zeitwerk)
+# Buckets: 0_fixes | auto_only | needs_human. Exit 0 when the scan ran, whatever the bucket;
+# 3 = image unavailable, 4 = the scan itself failed.
+# Fleet-wide: bin/rails8-fleet-scan (runs this on every box, skips protected ones).
+#
+set -uo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="${PROJECT_DIR:-$(dirname "$SCRIPT_DIR")}"
+# shellcheck source=lib/rails8_common.sh
+. "$SCRIPT_DIR/lib/rails8_common.sh"
+
+IMAGE="$R8_IMAGE_DEFAULT"; PULL=1; CSV=0; NODE=""; TIER=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --image) IMAGE="$2"; shift 2 ;;
+    --no-pull) PULL=0; shift ;;
+    --csv) CSV=1; shift ;;
+    --node) NODE="$2"; shift 2 ;;
+    --tier) TIER="$2"; shift 2 ;;
+    -h|--help) sed -n '2,20p' "$0"; exit 0 ;;
+    *) echo "rails8-scan: unknown argument $1" >&2; exit 2 ;;
+  esac
+done
+
+[ -d "$PROJECT_DIR/rails" ] || { echo "rails8-scan: no rails/ overlay in $PROJECT_DIR" >&2; exit 4; }
+r8_ensure_image "$IMAGE" "$PULL" || { echo "rails8-scan: image $IMAGE not available" >&2; exit 3; }
+
+BOX="$(r8_box_name)"; BOX="${BOX:-unknown}"
+TAGS="llamabot=$(r8_current_tag llamabot || echo '?') llamapress=$(r8_current_tag llamapress || echo '?')"
+
+ARGS=(--box "$BOX" --tags "$TAGS")
+[ "$CSV" -eq 1 ] && ARGS+=(--csv --node "$NODE" --tier "$TIER")
+r8_scan_overlay "$IMAGE" "${ARGS[@]}" || { echo "rails8-scan: scan failed" >&2; exit 4; }

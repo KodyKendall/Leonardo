@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+#
+# bin/rails8-fleet-scan — LP-52 B: READ-ONLY Rails 8.1 readiness scan of the whole fleet.
+# Runs where the fleet's SSH keys live (the mothership), not on a box.
+#
+# For every box in the inventory, runs bin/rails8-scan on that box and writes one CSV row:
+#   box,node,owner_tier,image_tags,bucket,auto_fixes,human_fixes,zeitwerk
+# then prints the counts. Buckets: 0_fixes | auto_only | needs_human | skipped | scan_failed.
+#
+# Boxes on the NEVER-TOUCH or read-only list get bucket=skipped and are never connected to.
+# The scanner is shipped with each run (to a temp dir that is removed afterwards), so every box
+# is scanned by the same code whatever its bin/ sync state. Nothing in the box's Leonardo dir,
+# its containers or its database changes; the 0.8.0 image may be pulled if it is missing.
+#
+# Usage:
+#   bin/rails8-fleet-scan --inventory boxes.csv --never-touch FILE --read-only FILE \
+#       [--out rails8_scan.csv] [--exec 'ssh -o BatchMode=yes {target}'] [--image IMG] [--timeout SEC]
+#
+#   inventory: CSV with header box,node,owner_tier,ssh_target[,project_dir]
+#              (project_dir defaults to /home/ubuntu/Leonardo)
+#   lists:     one box name per line, # comments allowed. Both are REQUIRED: a scan that
+#              cannot see the lists would connect to boxes it must not touch.
+#   --exec:    how to reach a box. {box} {node} {target} are substituted. It must behave like
+#              ssh: the command arrives as ONE shell-quoted trailing argument. For LXD boxes:
+#              --exec 'ssh -i ~/.ssh/lxd_node_key ubuntu@{node} lxc exec lp-{box} --'
+#
+set -uo pipefail
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+INVENTORY=""; NEVER=""; READONLY=""; OUT="rails8_scan.csv"
+EXEC_TMPL='ssh -o BatchMode=yes -o ConnectTimeout=15 {target}'
+IMAGE="kody06/llamapress-simple:0.8.0"; TIMEOUT=900
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --inventory) INVENTORY="$2"; shift 2 ;;
+    --never-touch) NEVER="$2"; shift 2 ;;
+    --read-only) READONLY="$2"; shift 2 ;;
+    --out) OUT="$2"; shift 2 ;;
+    --exec) EXEC_TMPL="$2"; shift 2 ;;
+    --image) IMAGE="$2"; shift 2 ;;
+    --timeout) TIMEOUT="$2"; shift 2 ;;
+    -h|--help) sed -n '2,30p' "$0"; exit 0 ;;
+    *) echo "rails8-fleet-scan: unknown argument $1" >&2; exit 2 ;;
+  esac
+done
+die() { echo "rails8-fleet-scan: $*" >&2; exit 2; }
+[ -f "$INVENTORY" ] || die "--inventory file not found: $INVENTORY"
+[ -f "$NEVER" ] || die "--never-touch list not found: '$NEVER' (required; refusing to scan anything)"
+[ -f "$READONLY" ] || die "--read-only list not found: '$READONLY' (required; refusing to scan anything)"
+
+listed() { sed -e 's/#.*//' -e 's/[[:space:]]//g' "$2" | grep -qxF "$1"; }
+safe() { [[ "$1" =~ ^[A-Za-z0-9._@:/-]+$ ]]; }
+csvq() { local s="${1//\"/\"\"}"; printf '"%s"' "$s"; }
+
+# The three files the box needs, as one base64 tarball passed IN the command (no stdin, no scp).
+PAYLOAD="$(tar -C "$SCRIPT_DIR/.." -cz bin/rails8-scan bin/lib/rails8_common.sh bin/lib/rails8_scan.rb | base64 | tr -d '\n')"
+
+echo "box,node,owner_tier,image_tags,bucket,auto_fixes,human_fixes,zeitwerk" > "$OUT"
+declare -A COUNT=([0_fixes]=0 [auto_only]=0 [needs_human]=0 [skipped]=0 [scan_failed]=0)
+
+failed_row() { # box node tier reason
+  echo "$1,$2,$3,,scan_failed,,,$(csvq "$4")" >> "$OUT"; COUNT[scan_failed]=$((COUNT[scan_failed] + 1))
+}
+
+while IFS=, read -r box node tier target dir _rest; do
+  box="${box//[$'\r ']/}"; node="${node//[$'\r ']/}"; tier="${tier//[$'\r ']/}"
+  target="${target//[$'\r ']/}"; dir="${dir//[$'\r ']/}"
+  [ -z "$box" ] || [ "$box" = "box" ] && continue
+  dir="${dir:-/home/ubuntu/Leonardo}"
+
+  if listed "$box" "$NEVER" || listed "$box" "$READONLY"; then
+    echo "$box,$node,$tier,,skipped,,,\"\"" >> "$OUT"; COUNT[skipped]=$((COUNT[skipped] + 1))
+    echo "  $box: skipped (protected)" >&2
+    continue
+  fi
+  if ! safe "$box" || ! safe "$node" || ! safe "${target:-x}" || ! safe "$dir" || ! safe "$tier"; then
+    failed_row "$(csvq "$box")" "" "" "unsafe characters in inventory row; not run"
+    echo "  $box: refused (unsafe inventory row)" >&2
+    continue
+  fi
+
+  remote="T=\$(mktemp -d) && trap 'rm -rf \"\$T\"' EXIT && echo $PAYLOAD | base64 -d | tar -xz -C \"\$T\" && PROJECT_DIR=$dir timeout $TIMEOUT bash \"\$T/bin/rails8-scan\" --csv --node $node --tier $tier --image $IMAGE"
+  cmd="${EXEC_TMPL//\{box\}/$box}"; cmd="${cmd//\{node\}/$node}"; cmd="${cmd//\{target\}/$target}"
+  read -ra prefix <<< "$cmd"
+
+  echo "  $box: scanning..." >&2
+  if row="$("${prefix[@]}" "bash -c $(printf '%q' "$remote")" 2>"$OUT.err.tmp" </dev/null)" && [ -n "$row" ]; then
+    row="$(printf '%s\n' "$row" | tail -n1)"
+    bucket="$(printf '%s' "$row" | grep -oE ',(0_fixes|auto_only|needs_human),' | head -n1 | tr -d ,)"
+    if [ -n "$bucket" ]; then
+      echo "$row" >> "$OUT"; COUNT[$bucket]=$((COUNT[$bucket] + 1))
+      continue
+    fi
+  fi
+  failed_row "$box" "$node" "$tier" "$(tail -n1 "$OUT.err.tmp" 2>/dev/null | cut -c1-200)"
+done < "$INVENTORY"
+rm -f "$OUT.err.tmp"
+
+echo "Rails 8.1 readiness ($(($(wc -l < "$OUT") - 1)) boxes) -> $OUT"
+echo "  0 fixes: ${COUNT[0_fixes]}"
+echo "  auto-fixes only: ${COUNT[auto_only]}"
+echo "  needs a human: ${COUNT[needs_human]}"
+echo "  skipped: ${COUNT[skipped]}"
+echo "  scan failed: ${COUNT[scan_failed]}"
