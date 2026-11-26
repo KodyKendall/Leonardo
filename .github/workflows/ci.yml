@@ -27,6 +27,8 @@ jobs:
         run: bash -n bin/update
       - name: allowlist-sync regression test
         run: bash test/bin_update_sync.sh
+      - name: image-source (registry + Docker Hub fallback) regression test
+        run: bash test/bin_update_image_source.sh
       - name: backup storage-coverage regression test
         run: bash test/backup_storage_coverage.sh
       - name: backup exit-code regression test
