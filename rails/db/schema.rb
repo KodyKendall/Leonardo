@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_11_09_000001) do
+ActiveRecord::Schema[7.2].define(version: 2026_11_26_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -361,8 +361,16 @@ ActiveRecord::Schema[7.2].define(version: 2026_11_09_000001) do
     t.string "selected_element_url"
     t.string "submitted_ip"
     t.string "visitor_token"
+    t.text "anchor_quote"
+    t.string "anchor_prefix", limit: 64
+    t.string "anchor_suffix", limit: 64
+    t.string "anchor_label"
+    t.string "page_path"
+    t.string "anchor_state", default: "attached"
+    t.datetime "anchor_checked_at"
     t.index ["created_at"], name: "index_llama_bot_rails_user_feedbacks_on_created_at"
     t.index ["feedback_type"], name: "index_llama_bot_rails_user_feedbacks_on_feedback_type"
+    t.index ["page_path", "feedback_type"], name: "index_llama_bot_rails_user_feedbacks_on_page_comments"
     t.index ["priority"], name: "index_llama_bot_rails_user_feedbacks_on_priority"
     t.index ["status"], name: "index_llama_bot_rails_user_feedbacks_on_status"
     t.index ["user_id"], name: "index_llama_bot_rails_user_feedbacks_on_user_id"

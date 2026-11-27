@@ -277,6 +277,8 @@ function isSelectable(target) {
     if (target.tagName === 'HTML' || target.tagName === 'BODY') return false;
     if (typeof target.closest !== 'function') return false;
     if (target.closest('#llamapress-feedback-bubble')) return false;
+    // Page comment pins and cards (LP-57), and anything else we inject.
+    if (target.closest('llama-comments, [data-lp-injected]')) return false;
     if (target.closest(`#${BANNER_ID}`)) return false;
     return true;
 }

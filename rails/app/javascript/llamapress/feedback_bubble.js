@@ -7,8 +7,9 @@ import { enablePasteToAttach, addFilesToInput, mergePickedFiles } from "llamapre
 import { screenAnonymousFiles } from "llamapress/anonymous_attachments"
 // Feedback Replay: records only when the app turned it on; see replay_recorder.js.
 import "llamapress/replay_recorder"
+// Page comments (LP-57) ride along with the bubble so every app that has it gets them.
+import "llamapress/page_comments"
 
-let bubbleInitialized = false;
 let isFormOpen = false;
 let videoAttachment = null;
 let selectedElement = null; // { text, html, selector, url }
@@ -1517,9 +1518,20 @@ export function pinToVisualViewport(el, win = window) {
   };
 }
 
+// Turbo keeps a copy of each page it leaves and puts that copy back on Back/Forward.
+// The copy is a clone, and a clone has none of the bubble's click handlers, so a
+// "bubble already there" check left a bubble that showed but did nothing when tapped
+// (RSB, Richard on his phone, 2026-11-20). A bubble we wired carries a JS property
+// that cloning does not copy, which is how a live bubble is told from a dead copy.
+function liveBubble() {
+  const el = document.getElementById('llamapress-feedback-bubble');
+  return el && el.__llamaBubbleWired ? el : null;
+}
+
 function initFeedbackBubble() {
-  if (bubbleInitialized || !shouldShowBubble()) return;
-  if (document.getElementById('llamapress-feedback-bubble')) return;
+  if (!shouldShowBubble() || liveBubble()) return;
+  document.getElementById('llamapress-feedback-bubble')?.remove();
+  isFormOpen = false;
 
   const wrapper = document.createElement('div');
   wrapper.innerHTML = createBubbleHTML();
@@ -1534,16 +1546,19 @@ function initFeedbackBubble() {
   fetchUnreadCount();
   restoreDraft();
 
-  bubbleInitialized = true;
+  document.getElementById('llamapress-feedback-bubble').__llamaBubbleWired = true;
 }
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', initFeedbackBubble);
 
-// Handle Turbo navigation
-document.addEventListener('turbo:load', () => {
-  if (shouldShowBubble() && !document.getElementById('llamapress-feedback-bubble')) {
-    bubbleInitialized = false;
-    initFeedbackBubble();
-  }
+// Handle Turbo navigation. Runs on every visit: initFeedbackBubble keeps a live bubble
+// and replaces a dead clone.
+document.addEventListener('turbo:load', initFeedbackBubble);
+
+// Out before Turbo snapshots the page, so the cached copy never holds a dead bubble.
+document.addEventListener('turbo:before-cache', () => {
+  unpinBubble?.();
+  unpinBubble = null;
+  document.getElementById('llamapress-feedback-bubble')?.remove();
 });
